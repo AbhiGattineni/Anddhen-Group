@@ -27,6 +27,7 @@ function Footer() {
                         <div><p className='text-white mb-1'>#64, Banglore, karnataka, India</p></div>
                         <div><p className='text-white mb-1'>#+91 8801043088</p></div>
                         <div><p className='text-white mb-1'>email@domain.com</p></div>
+                        <div><a className='fw-bolder text-decoration-underline badge bg-warning' href="https://abhishekgattineni.com/">Developed by Abhishek Gattineni</a></div>
                     </div>
                 </div>
             </div>

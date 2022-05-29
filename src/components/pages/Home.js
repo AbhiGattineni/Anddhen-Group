@@ -16,8 +16,7 @@ function Home() {
                             <h3 className='main-heading'>Our Company</h3>
                             <div className='underline mx-auto'></div>
                             <p>
-                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-                            </p>
+                                To create a world where anyone can belong anywhere and we are focused on creating an end-to-end platform that will handle every part of your everything.</p>
                             <Link to="/about" className='btn btn-warning shadow'>Read More</Link>
                         </div>
                     </div>
