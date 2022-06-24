@@ -1,12 +1,13 @@
-.card{
-    box-shadow: 0 0 15px rgb(168, 168, 168);
+.card {
+    /* box-shadow: 0 0 15px rgb(168, 168, 168); */
     overflow: hidden;
     border-radius: 15px;
     padding: 20px;
-    margin: 20px 0;
+    /* margin: 20px 0; */
     background-color: azure;
 }
-.image img{
+
+.image img {
     position: relative;
     display: block;
     margin-left: auto;
@@ -17,35 +18,35 @@
     border-radius: 50%;
     border: 4px solid white;
 }
-.card:hover img{
+
+.card:hover img {
     border-color: #f76c2f;
     transition: .7s;
 }
-.main-text{
-    padding: 10px 0;
-    text-align: center;
-}
-.main-text h5{
-    margin-bottom: 15px;
-}
-.socials{
+
+.socials {
     text-align: center;
     padding-bottom: 15px;
 }
-.socials i{
+
+.socials i {
     font-size: 25px;
     margin: 0 15px;
     color: rgb(148, 168, 193);
 }
-.socials i:hover{
+
+.socials i:hover {
     transition: .7s;
 }
-#f:hover{
+
+#f:hover {
     color: #3b5998;
 }
-#l:hover{
+
+#l:hover {
     color: #0e76a8;
 }
-#t:hover{
+
+#t:hover {
     color: #00acee;
 }

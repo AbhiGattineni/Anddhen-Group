@@ -1,7 +1,7 @@
 import React from 'react';
-import Slider1 from '../images/pic1.jpg';
-import Slider2 from '../images/pic2.jpg';
-import Slider3 from '../images/pic3.jpg';
+import Slider1 from '../images/web.jpg';
+import Slider2 from '../images/fullstack.png';
+import Slider3 from '../images/app.jpg';
 
 function Slider() {
     return (
