@@ -8,6 +8,8 @@ import stephen from '../images/stephen.jpg';
 import saiteja from '../images/saiteja.png';
 import vijetha from '../images/vijetha.jpg';
 import chandu from '../images/chandu.jpg';
+import neha from '../images/neha.jpg';
+import charan from '../images/charan.jpg';
 
 
 const Cards = () => {
@@ -28,7 +30,7 @@ const Cards = () => {
             Photo: stephen,
             Start_date: "10/10/2022",
             End_date: "10/10/2022",
-            Role: "Senior Software Engineer",
+            Role: "CTO",
             Facebook: "https://www.facebook.com/gundla.trinath",
             LinkedIn: "https://www.linkedin.com/in/trinath-gundla-298828210/",
             GitHub: "https://github.com/GundlaTrinath",
@@ -38,7 +40,7 @@ const Cards = () => {
             Photo: saiteja,
             Start_date: "10/10/2022",
             End_date: "10/10/2022",
-            Role: "Software Developer",
+            Role: "Senior Architech",
             Facebook: "https://www.facebook.com/abhi.gattineni/",
             LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
             GitHub: "https://github.com/AbhiGattineni",
@@ -49,7 +51,7 @@ const Cards = () => {
             Photo: vijetha,
             Start_date: "10/10/2022",
             End_date: "10/10/2022",
-            Role: "Software Developer",
+            Role: "CFO",
             Facebook: "https://www.facebook.com/abhi.gattineni/",
             LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
             GitHub: "https://github.com/AbhiGattineni",
@@ -60,7 +62,18 @@ const Cards = () => {
             Photo: chandu,
             Start_date: "10/10/2022",
             End_date: "10/10/2022",
-            Role: "Software Developer",
+            Role: "Junior most Senior Developer",
+            Facebook: "https://www.facebook.com/abhi.gattineni/",
+            LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
+            GitHub: "https://github.com/AbhiGattineni",
+
+        },
+        {
+            Name: "Neha Goli",
+            Photo: neha,
+            Start_date: "10/10/2022",
+            End_date: "10/10/2022",
+            Role: "Senior Software Developer",
             Facebook: "https://www.facebook.com/abhi.gattineni/",
             LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
             GitHub: "https://github.com/AbhiGattineni",
@@ -69,6 +82,17 @@ const Cards = () => {
         {
             Name: "Abhishek Gattineni",
             Photo: image1,
+            Start_date: "10/10/2022",
+            End_date: "10/10/2022",
+            Role: "Software Developer",
+            Facebook: "https://www.facebook.com/abhi.gattineni/",
+            LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
+            GitHub: "https://github.com/AbhiGattineni",
+
+        },
+        {
+            Name: "Sai Charan",
+            Photo: charan,
             Start_date: "10/10/2022",
             End_date: "10/10/2022",
             Role: "Software Developer",

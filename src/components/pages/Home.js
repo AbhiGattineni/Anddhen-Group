@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Slider from '../inc/Slider';
 import Vmc from './inc/Vmc';
 import Company from '../inc/Company';
