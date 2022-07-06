@@ -12,12 +12,12 @@ function Footer() {
                         <p className='text-white'>
                             Anddhen is a startup company that offers leading consultancy and implementation expertise to help drive value across your business.</p>
                         <div className="socials">
-                            <a href=""><i id="f" class="bi bi-facebook"></i></a>
-                            <a href=""><i id="l" class="bi bi-linkedin"></i></a>
-                            <a href=""><i id="t" class="bi bi-github"></i></a>
-                            <a href=""><i id="t" class="bi bi-twitter"></i></a>
-                            <a href=""><i id="t" class="bi bi-instagram"></i></a>
-                            <a href=""><i id="t" class="bi bi-youtube"></i></a>
+                            <a href="/"><i id="f" class="bi bi-facebook"></i></a>
+                            <a href="/"><i id="l" class="bi bi-linkedin"></i></a>
+                            <a href="/"><i id="t" class="bi bi-github"></i></a>
+                            <a href="/"><i id="t" class="bi bi-twitter"></i></a>
+                            <a href="/"><i id="t" class="bi bi-instagram"></i></a>
+                            <a href="/"><i id="t" class="bi bi-youtube"></i></a>
                         </div>
                     </div>
                     <div className='col-md-4'>

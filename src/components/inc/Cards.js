@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './Card.css';
 import "bootstrap-icons/font/bootstrap-icons.css"
 import image1 from '../images/dp.jpg';
@@ -126,7 +126,7 @@ const Cards = () => {
                         <div className="col-lg-3 col-md-4 col-sm-6 mb-5">
                             <div className="card shadow p-1 border border-1">
                                 <div className="image">
-                                    <img src={detail.Photo} />
+                                    <img src={detail.Photo} alt="" />
                                 </div>
                                 <div class="card-body text-center p-1">
                                     <h5>{detail.Name}</h5>
