@@ -4,7 +4,7 @@ import Vmc from './inc/Vmc';
 import Company from '../inc/Company';
 import Services from '../inc/Services';
 import Cards from '../inc/Cards';
-import Mywork from '../inc/Mywork';
+import Myworks from '../inc/Myworks';
 
 
 function Home() {
@@ -18,7 +18,7 @@ function Home() {
             {/* Services */}
             <Services />
             {/* Ourwork */}
-            <Mywork />
+            <Myworks />
             {/* Our employees */}
             <Cards />
         </div>
