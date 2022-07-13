@@ -70,19 +70,19 @@ const Myworks = () => {
             <div className='border rounded'>
                 <nav className='justify-content-center'>
                     <div className='nav nav-tabs' id='nav-tab' role='tablist'>
-                        <button className='nav-link active px-3 fw-bold' id='nav-portfolio-tab' data-bs-toggle='tab' data-bs-target="#nav-portfolio" type='button' role={tab} aria-controls='nav-home' aria-selected='true'>
+                        <button className='nav-link active px-3 fw-bold' id='nav-portfolio-tab' data-bs-toggle='tab' data-bs-target="#nav-portfolio" type='button' role={tab} aria-controls='nav-portfolio' aria-selected='true'>
                             Portfolio or Business Applications
                         </button>
 
-                        <button className='nav-link px-3 fw-bold' id='nav-fullstack-tab' data-bs-toggle='tab' data-bs-target="#nav-fullstack" type='button' role={tab} aria-controls='nav-profile' aria-selected='false'>
+                        <button className='nav-link px-3 fw-bold' id='nav-fullstack-tab' data-bs-toggle='tab' data-bs-target="#nav-fullstack" type='button' role={tab} aria-controls='nav-fullstack' aria-selected='false'>
                             Full Stack Applications
                         </button>
 
-                        <button className='nav-link px-3 fw-bold' id='nav-mobile-tab' data-bs-toggle='tab' data-bs-target="#nav-mobile" type='button' role={tab} aria-controls='nav-contact' aria-selected='false'>
+                        <button className='nav-link px-3 fw-bold' id='nav-mobile-tab' data-bs-toggle='tab' data-bs-target="#nav-mobile" type='button' role={tab} aria-controls='nav-mobile' aria-selected='false'>
                             Mobile Applications
                         </button>
 
-                        <button className='nav-link px-3 fw-bold' id='nav-web-tab' data-bs-toggle='tab' data-bs-target="#nav-web" type='button' role={tab} aria-controls='nav-home' aria-selected='false'>
+                        <button className='nav-link px-3 fw-bold' id='nav-web-tab' data-bs-toggle='tab' data-bs-target="#nav-web" type='button' role={tab} aria-controls='nav-web' aria-selected='false'>
                             Web Applications
                         </button>
                     </div>
