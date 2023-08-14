@@ -5,6 +5,7 @@ import Company from '../inc/Company';
 import Services from '../inc/Services';
 import Cards from '../inc/Cards';
 import Myworks from '../inc/Myworks';
+import Subsidiaries from '../inc/Subsidiaries';
 
 
 function Home() {
@@ -16,6 +17,7 @@ function Home() {
             {/* Our Mission, Vision & Values */}
             <Vmc />
             {/* Services */}
+            <Subsidiaries />
             <Services />
             {/* Ourwork */}
             <Myworks />
