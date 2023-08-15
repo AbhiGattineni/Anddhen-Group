@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Router } from 'react-router-dom';
 import Subsidiary1 from '../images/marketing.jpg';
 import Subsidiary2 from '../images/consulting2.jpg';
 import Subsidiary3 from '../images/service6.jpg';
@@ -48,10 +48,13 @@ const Subsidiaries = () => {
                             <div className='card'>
                                 <img src={subsidiary.Photo} className="w-100 border-bottom" alt="subsidiary" />
                                 <div className='card-body'>
-                                    <h6>{subsidiary.Name}</h6>
+                                    {/* <h6>{subsidiary.Name}</h6> */}
+                                    {/* <Link to={`/subsidiary/${subsidiary.Name}`} style={{ textDecoration: 'none' }}>
+                                        <h6>{subsidiary.Name}</h6>
+                                    </Link> */}
+                                    <Link to="/about" className='btn btn-warning shadow'><h6>{subsidiary.Name}</h6></Link>
                                     <div className='underline'></div>
                                     <p>{subsidiary.Description}</p>
-                                    <Link to="/subsidiaries" className='btn btn-warning shadow'>Read More</Link>
                                 </div>
                             </div>
                         </div>

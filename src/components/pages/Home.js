@@ -18,6 +18,7 @@ function Home() {
             <Vmc />
             {/* Services */}
             <Subsidiaries />
+            *dataaaa*
             <Services />
             {/* Ourwork */}
             <Myworks />
