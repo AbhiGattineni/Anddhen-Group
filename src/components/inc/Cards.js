@@ -14,16 +14,6 @@ import charan from "../images/charan.jpg";
 const Cards = () => {
   const details = [
     {
-      Name: "Abhishek Gattineni",
-      Photo: image1,
-      Start_date: "10/10/2022",
-      End_date: "10/10/2022",
-      Role: "Founder",
-      Facebook: "https://www.facebook.com/abhi.gattineni/",
-      LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
-      GitHub: "https://github.com/AbhiGattineni",
-    },
-    {
       Name: "Rushil Basappa",
       Photo: rushil,
       Start_date: "10/10/2022",
@@ -79,6 +69,16 @@ const Cards = () => {
       Start_date: "10/10/2022",
       End_date: "10/10/2022",
       Role: "Senior Software Developer",
+      Facebook: "https://www.facebook.com/abhi.gattineni/",
+      LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
+      GitHub: "https://github.com/AbhiGattineni",
+    },
+    {
+      Name: "Abhishek Gattineni",
+      Photo: image1,
+      Start_date: "10/10/2022",
+      End_date: "10/10/2022",
+      Role: "Founder",
       Facebook: "https://www.facebook.com/abhi.gattineni/",
       LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
       GitHub: "https://github.com/AbhiGattineni",
