@@ -19,11 +19,6 @@
     border: 4px solid white;
 }
 
-.card:hover img {
-    border-color: #f76c2f;
-    transition: .7s;
-}
-
 .socials {
     text-align: center;
     padding-bottom: 15px;

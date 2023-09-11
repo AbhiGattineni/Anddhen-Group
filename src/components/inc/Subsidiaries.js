@@ -5,6 +5,8 @@ import Subsidiary2 from '../images/consulting2.jpg';
 import Subsidiary3 from '../images/service6.jpg';
 import Subsidiary4 from '../images/philanthropy1.jpg';
 import Subsidiary5 from '../images/trade3.jpg';
+import Services from './Services';
+import Myworks from './Myworks';
 
 const Subsidiaries = () => {
     const subsidiaries = [
@@ -48,10 +50,10 @@ const Subsidiaries = () => {
                             <div className='card'>
                                 <img src={subsidiary.Photo} className="w-100 border-bottom" alt="subsidiary" />
                                 <div className='card-body'>
-                                    <h6>{subsidiary.Name}</h6>
+                                    <h6><Link to="/subsidiaries" state={subsidiary} className='text-black text-decoration-none'>{subsidiary.Name}</Link></h6>
                                     <div className='underline'></div>
                                     <p>{subsidiary.Description}</p>
-                                    <Link to="/subsidiaries" className='btn btn-warning shadow'>Read More</Link>
+                                    <Link to="/subsidiaries" state={subsidiary} className='btn btn-warning shadow'>Read More</Link>
                                 </div>
                             </div>
                         </div>
