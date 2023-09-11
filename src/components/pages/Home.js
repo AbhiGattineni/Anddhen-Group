@@ -16,11 +16,8 @@ function Home() {
             <Company />
             {/* Our Mission, Vision & Values */}
             <Vmc />
-            {/* Services */}
+            {/* Subsidiaries */}
             <Subsidiaries />
-            <Services />
-            {/* Ourwork */}
-            <Myworks />
             {/* Our employees */}
             <Cards />
         </div>
