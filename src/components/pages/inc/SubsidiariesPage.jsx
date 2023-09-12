@@ -2,6 +2,7 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 import Services from '../../inc/Services';
 import Myworks from '../../inc/Myworks';
+import { Pricing } from '../Pricing';
 
 export const SubsidiariesPage = () => {
   const location = useLocation()
@@ -17,6 +18,9 @@ export const SubsidiariesPage = () => {
             <Services />
             <Myworks />
           </>
+        }
+        {prop.Name === "Anddhen Consulting Services" &&
+          <Pricing />
         }
       </div>
     </div>
