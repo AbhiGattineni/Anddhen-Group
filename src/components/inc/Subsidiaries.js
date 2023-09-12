@@ -5,8 +5,6 @@ import Subsidiary2 from '../images/consulting2.jpg';
 import Subsidiary3 from '../images/service6.jpg';
 import Subsidiary4 from '../images/philanthropy1.jpg';
 import Subsidiary5 from '../images/trade3.jpg';
-import Services from './Services';
-import Myworks from './Myworks';
 
 const Subsidiaries = () => {
     const subsidiaries = [

@@ -2,9 +2,7 @@ import React from 'react';
 import Slider from '../inc/Slider';
 import Vmc from './inc/Vmc';
 import Company from '../inc/Company';
-import Services from '../inc/Services';
 import Cards from '../inc/Cards';
-import Myworks from '../inc/Myworks';
 import Subsidiaries from '../inc/Subsidiaries';
 
 
