@@ -11,7 +11,7 @@ export const PriceCard = ({ data }) => {
           <p className='fs-4 fw-bold'>{data.priceName}</p>
           <div className="d-flex justify-content-center align-self-center">
             <h1>$ {data.price}</h1>
-            <p className='fs-3 mt-1 text-secondary'>/month</p>
+            <p className='fs-3 mt-lg-1 text-secondary'>/month</p>
           </div>
           <div className="text-start p-3">
             {data.features.map((feature) => (
