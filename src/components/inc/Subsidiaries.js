@@ -16,10 +16,10 @@ const Subsidiaries = () => {
                             <div className='card'>
                                 <img src={subsidiary.Photo} className="w-100 border-bottom" alt="subsidiary" />
                                 <div className='card-body'>
-                                    <h6><Link to="/subsidiaries" state={subsidiary} className='text-black text-decoration-none'>{subsidiary.Name}</Link></h6>
+                                    <h6><Link to={subsidiary.link}y className='text-black text-decoration-none'>{subsidiary.Name}</Link></h6>
                                     <div className='underline'></div>
                                     <p>{subsidiary.Description}</p>
-                                    <Link to={subsidiary.link} state={subsidiary} className='btn btn-warning shadow'>Read More</Link>
+                                    <Link to={subsidiary.link}y className='btn btn-warning shadow'>Read More</Link>
                                 </div>
                             </div>
                         </div>
