@@ -21,6 +21,33 @@ function Navbar() {
                                         <li className="nav-item">
                                             <Link to="/about" className="nav-link active" >About</Link>
                                         </li>
+                                        <li class="nav-item dropdown d-none d-lg-block">
+                                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Subsidiaries
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li><Link to="/ams" class="dropdown-item">Anddhen Marketing Services</Link></li>
+                                                <li><Link to="/acs" class="dropdown-item">Anddhen Consulting Services</Link></li>
+                                                <li><Link to="/ass" class="dropdown-item">Anddhen Software Services</Link></li>
+                                                <li><Link to="/aps" class="dropdown-item">Anddhen Philanthropy Services</Link></li>
+                                                <li><Link to="/ati" class="dropdown-item">Anddhen Trading & Investiment</Link></li>
+                                            </ul>
+                                        </li>
+                                        <li className="nav-item d-lg-none">
+                                            <Link to="/ams" className="nav-link active" >Anddhen Marketing Services</Link>
+                                        </li>
+                                        <li className="nav-item d-lg-none">
+                                            <Link to="/acs" className="nav-link active" >Anddhen Consulting Services</Link>
+                                        </li>
+                                        <li className="nav-item d-lg-none">
+                                            <Link to="/ass" className="nav-link active" >Anddhen Software Services</Link>
+                                        </li>
+                                        <li className="nav-item d-lg-none">
+                                            <Link to="/aps" className="nav-link active" >Anddhen Philanthropy Services</Link>
+                                        </li>
+                                        <li className="nav-item d-lg-none">
+                                            <Link to="/ati" className="nav-link active" >Anddhen Trading &  Investiment</Link>
+                                        </li>
                                         <li className="nav-item">
                                             <Link to="/contact" className="nav-link active" >Contact</Link>
                                         </li>
