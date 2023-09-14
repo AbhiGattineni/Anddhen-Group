@@ -16,8 +16,6 @@ function Home() {
             <Vmc />
             {/* Subsidiaries */}
             <Subsidiaries />
-            {/* Our employees */}
-            <Cards />
         </div>
     );
 }

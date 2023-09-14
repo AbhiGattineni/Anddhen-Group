@@ -35,7 +35,7 @@ const Services = () => {
         },
     ];
     return (
-        <section className='section border-top'>
+        <section className='section'>
             <div className='container'>
                 <div className='row'>
                     <div className='col-md-12 mb-4 text-center'>

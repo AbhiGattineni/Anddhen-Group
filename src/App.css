@@ -38,3 +38,7 @@ p {
     color: gray;
     text-decoration: none !important;
 }
+.dropdown:hover .dropdown-menu{
+    display: block;
+    margin-top: 2px;
+}
