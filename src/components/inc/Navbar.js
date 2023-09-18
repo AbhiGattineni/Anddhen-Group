@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function Navbar() {
+    const [navbarOpen, setNavbarOpen] = useState(false);
+
+    const handleLinkClick = () => {
+        setNavbarOpen(false);
+    };
+
     return (
         <div className="navbar-dark bg-dark shadow">
             <div className="container">
@@ -9,17 +15,23 @@ function Navbar() {
                     <div className="col-md-12">
                         <nav className="navbar navbar-expand-lg ">
                             <div className="container-fluid">
-                                <Link to="/" className="navbar-brand" >Anddhen Group</Link>
-                                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <Link to="/" className="navbar-brand">Anddhen Group</Link>
+                                <button
+                                    className="navbar-toggler"
+                                    type="button"
+                                    onClick={() => setNavbarOpen(!navbarOpen)}
+                                    aria-controls="navbarSupportedContent"
+                                    aria-expanded={navbarOpen}
+                                    aria-label="Toggle navigation">
                                     <span className="navbar-toggler-icon"></span>
                                 </button>
-                                <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                                <div className={`collapse navbar-collapse ${navbarOpen ? 'show' : ''}`} id="navbarSupportedContent">
                                     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                                         <li className="nav-item">
-                                            <Link to="/" className="nav-link active" >Home</Link>
+                                            <Link to="/" onClick={handleLinkClick} className="nav-link active" >Home</Link>
                                         </li>
                                         <li className="nav-item">
-                                            <Link to="/about" className="nav-link active" >About</Link>
+                                            <Link to="/about" onClick={handleLinkClick} className="nav-link active" >About</Link>
                                         </li>
                                         <li class="nav-item dropdown d-none d-lg-block">
                                             <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -34,22 +46,22 @@ function Navbar() {
                                             </ul>
                                         </li>
                                         <li className="nav-item d-lg-none">
-                                            <Link to="/ams" className="nav-link active" >Anddhen Marketing Services</Link>
+                                            <Link to="/ams" onClick={handleLinkClick} className="nav-link active" >Anddhen Marketing Services</Link>
                                         </li>
                                         <li className="nav-item d-lg-none">
-                                            <Link to="/acs" className="nav-link active" >Anddhen Consulting Services</Link>
+                                            <Link to="/acs" onClick={handleLinkClick} className="nav-link active" >Anddhen Consulting Services</Link>
                                         </li>
                                         <li className="nav-item d-lg-none">
-                                            <Link to="/ass" className="nav-link active" >Anddhen Software Services</Link>
+                                            <Link to="/ass" onClick={handleLinkClick} className="nav-link active" >Anddhen Software Services</Link>
                                         </li>
                                         <li className="nav-item d-lg-none">
-                                            <Link to="/aps" className="nav-link active" >Anddhen Philanthropy Services</Link>
+                                            <Link to="/aps" onClick={handleLinkClick} className="nav-link active" >Anddhen Philanthropy Services</Link>
                                         </li>
                                         <li className="nav-item d-lg-none">
-                                            <Link to="/ati" className="nav-link active" >Anddhen Trading &  Investiment</Link>
+                                            <Link to="/ati" onClick={handleLinkClick} className="nav-link active" >Anddhen Trading &  Investiment</Link>
                                         </li>
                                         <li className="nav-item">
-                                            <Link to="/contact" className="nav-link active" >Contact</Link>
+                                            <Link to="/contact" onClick={handleLinkClick} className="nav-link active">Contact</Link>
                                         </li>
                                     </ul>
                                 </div>

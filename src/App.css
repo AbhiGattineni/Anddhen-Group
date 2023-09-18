@@ -38,7 +38,19 @@ p {
     color: gray;
     text-decoration: none !important;
 }
-.dropdown:hover .dropdown-menu{
+
+.dropdown:hover .dropdown-menu {
     display: block;
     margin-top: 2px;
+}
+
+.card-body {
+    min-width: 300px;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
 }
