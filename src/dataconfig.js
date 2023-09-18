@@ -158,3 +158,53 @@ export const details = [
         GitHub: "https://github.com/GundlaTrinath",
     },
 ];
+export const myworks = [
+    {
+        name: "Anddhen Group",
+        image: "https://www.anddhengroup.com/static/media/web.8be0ea3c0799cfab269f.jpg",
+        description: "Anddhen is a startup company that offers leading consultancy and implementation expertise to help drive value across your business. We can deliver both out-of-the box and proprietary solutions and be a trustworthy, long-term technology partner that aligns with your goals and helps you achieve the results you require.",
+        link: "https://www.anddhengroup.com/"
+    },
+    {
+        name: "Satya sreeman Engineering & Constructions",
+        image: "https://www.satyasreeman.com/static/media/image1.3aa18de420eceb523489.jpg",
+        description: "We believe that fundamental role of leadership is to create and maintain a culture that strengthens the company's core values, encourages employees to do the right thing, and helps drive the company's long-term strategy. All delivered with humility and compassion.",
+        link: "http://www.satyasreeman.com"
+    },
+    {
+        name: "Hyderabad Trekking Company",
+        image: "https://www.thehtc.in/wp-content/uploads/2021/07/HyderabadTrekkingCompany.jpg",
+        description: "HTC preserves and cherishes these amazing leads. It is a fact that HTC is the only one keeping up the ideals of a trek free from cigarettes, alcohol and substance abuse. We are proud of the fact that our events went 100 percent safe for all trekkers, including numerous women, elderly, introverts, specially-abled, and children.",
+        link: "http://www.thehtc.in/"
+    },
+    {
+        name: "Aroma Restaurant & Bar",
+        image: "https://static.wixstatic.com/media/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg/v1/fill/w_655,h_449,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg",
+        description: " We will be more than happy to cater your event, host you at our restaurant, or deliver food to your doorstep. Should you be interested in our services, don’t wait to get in touch with us. Give us a call today to set up an event or stop by the restaurant for quality dining services.",
+        link: "http://www.aromarestaurant.com/"
+    },
+    {
+        name: "Anddhen Group",
+        image: "https://www.anddhengroup.com/static/media/web.8be0ea3c0799cfab269f.jpg",
+        description: "Anddhen is a startup company that offers leading consultancy and implementation expertise to help drive value across your business. We can deliver both out-of-the box and proprietary solutions and be a trustworthy, long-term technology partner that aligns with your goals and helps you achieve the results you require.",
+        link: "https://www.anddhengroup.com/"
+    },
+    {
+        name: "Satya sreeman Engineering & Constructions",
+        image: "https://www.satyasreeman.com/static/media/image1.3aa18de420eceb523489.jpg",
+        description: "We believe that fundamental role of leadership is to create and maintain a culture that strengthens the company's core values, encourages employees to do the right thing, and helps drive the company's long-term strategy. All delivered with humility and compassion.",
+        link: "http://www.satyasreeman.com"
+    },
+    {
+        name: "Hyderabad Trekking Company",
+        image: "https://www.thehtc.in/wp-content/uploads/2021/07/HyderabadTrekkingCompany.jpg",
+        description: "HTC preserves and cherishes these amazing leads. It is a fact that HTC is the only one keeping up the ideals of a trek free from cigarettes, alcohol and substance abuse. We are proud of the fact that our events went 100 percent safe for all trekkers, including numerous women, elderly, introverts, specially-abled, and children.",
+        link: "http://www.thehtc.in/"
+    },
+    {
+        name: "Aroma Restaurant & Bar",
+        image: "https://static.wixstatic.com/media/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg/v1/fill/w_655,h_449,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg",
+        description: " We will be more than happy to cater your event, host you at our restaurant, or deliver food to your doorstep. Should you be interested in our services, don’t wait to get in touch with us. Give us a call today to set up an event or stop by the restaurant for quality dining services.",
+        link: "http://www.aromarestaurant.com/"
+    },
+]

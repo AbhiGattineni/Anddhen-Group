@@ -2,8 +2,8 @@ import React from 'react';
 import Slider from '../inc/Slider';
 import Vmc from './inc/Vmc';
 import Company from '../inc/Company';
-import Cards from '../inc/Cards';
 import Subsidiaries from '../inc/Subsidiaries';
+import { Card } from '../inc/Card';
 
 
 function Home() {
