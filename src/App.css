@@ -44,10 +44,6 @@ p {
     margin-top: 2px;
 }
 
-.card-body {
-    min-width: 300px;
-}
-
 .truncate {
     white-space: nowrap;
     overflow: hidden;
