@@ -8,10 +8,10 @@ export const PriceCard = ({ data }) => {
           <p className="position-absolute bg-danger p-1 rounded-3 text-white top-0 translate-middle start-50">MOST POPUPULAR</p>
           : null}
         <div className="p-4">
-          <p className='fs-4 fw-bold'>{data.priceName}</p>
+          {/* <p className='fs-4 fw-bold text-secondary'>{data.Name}</p> */}
+          <p className='fs-3 mt-lg-1 text-secondary'>{data.Name}</p>
           <div className="d-flex justify-content-center align-self-center">
-            <h1>$ {data.price}</h1>
-            <p className='fs-3 mt-lg-1 text-secondary'>/month</p>
+            <h3>{data.categery}</h3>
           </div>
           <div className="text-start p-3">
             {data.features.map((feature) => (

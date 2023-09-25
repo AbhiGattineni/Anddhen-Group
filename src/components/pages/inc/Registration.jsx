@@ -4,13 +4,16 @@ import { InputField } from '../../inc/InputField'
 export const Registration = () => {
     return (
         <div className="py-3">
-            <h1 className='text-center pb-3'>Registration</h1>
-            <div className='card shadow-sm p-3'>
+            <div className='col-md-12 mb-4 text-center'>
+                <h3 className='main-heading'>Registration</h3>
+                <div className='underline mx-auto'></div>
+            </div>
+            <div className='card shadow-sm p-3 my-3'>
                 <div className="row gap-4">
                     <div className="col-md-6">
                         <h5 className=''>Student Registration</h5>
                         <div className='underline'></div>
-                        <form action="https://script.google.com/macros/s/AKfycbz1o4WMurk0JJjWFYhLqKpoBqd_ZG2fmKL-pmmHlHgnHDYblvgLNT7GdW9bXLViI9U/exec" method='post'>
+                        <form action="https://script.google.com/macros/s/AKfycby4yFPN4-yxpBzTkvakGdbllfFzPiYG44EaJ8MP65XjJRcX4z2-2x_ewyM5xd-IeEdUig/exec" method='post'>
                             <InputField name="name" label="Name" placeholder="Full Name" type="text" />
                             <InputField name="email" label="Email" placeholder="Email" type="email" />
                             <InputField name="phone" label="Phone" placeholder="Phone" type="tel" />
@@ -44,13 +47,12 @@ export const Registration = () => {
                         </form>
                     </div>
                 </div>
-                <div className="border-top py-2">
-                    <h5 className='main-heading'>Address Information</h5>
-                    <div className='underline'></div>
-                    <p>Hyderabad, Telangana-521175</p>
-                    <p>Phone: +91 8801043608</p>
-                    <p>Email: email@domain.com</p>
-                </div>
+            </div>
+            <h4>Contact Us</h4>
+            <div className="underline"></div>
+            <div className="">
+                <p><i class="bi bi-envelope mx-3"></i>email@domain.com</p>
+                <p><i class="bi bi-telephone-fill mx-3"></i>+91 8801043088</p>
             </div>
         </div>
     )
