@@ -15,23 +15,28 @@ import charan from "./components/images/charan.jpg";
 export const priceData = [
     {
         id: 1,
-        priceName: "Hobby",
-        price: 79,
-        features: ["unlimited build.", "lorem duplicate data.", "5TB Lorem, ipsum dolor."]
+        Name: "You send the links, we apply",
+        categery: "Full Time",
+        features: ["11 Applications - $1", "20 Easy Apply - $1", "20 Recruiter Messages - $1", "16 Direct Messages - $1"]
     },
     {
         id: 2,
-        priceName: "Growth",
-        price: 149,
-        features: ["unlimited build.", "lorem duplicate data.", "5TB Lorem, ipsum dolor.", "5TB Lorem, ipsum dolor.", "5TB Lorem, ipsum dolor."],
-        popularity: true
+        Name: "We check the links, we apply",
+        categery: "Full Time",
+        features: ["8 Applications - $1", "20 Easy Apply - $1", "20 Recruiter Messages - $1", "16 Direct Messages - $1"]
     },
     {
         id: 3,
-        priceName: "Scale",
-        price: 349,
-        features: ["unlimited build.", "lorem duplicate data.", "5TB Lorem, ipsum dolor."]
+        Name: "You send the links, we apply",
+        categery: "Internships",
+        features: ["8 Applications - $1", "20 Easy Apply - $1", "20 Recruiter Messages - $1", "16 Direct Messages - $1"]
     },
+    {
+        id: 4,
+        Name: "We check the links, we apply",
+        categery: "Internships",
+        features: ["5 Applications - $1", "20 Easy Apply - $1", "20 Recruiter Messages - $1", "16 Direct Messages - $1"]
+    }
 ]
 
 export const subsidiaries = [
