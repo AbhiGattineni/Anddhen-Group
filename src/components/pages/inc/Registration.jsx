@@ -51,8 +51,8 @@ export const Registration = () => {
             <h4>Contact Us</h4>
             <div className="underline"></div>
             <div className="">
-                <p><i class="bi bi-envelope mx-3"></i>email@domain.com</p>
-                <p><i class="bi bi-telephone-fill mx-3"></i>+91 8801043088</p>
+                <p><i class="bi bi-envelope me-3"></i>email@domain.com</p>
+                <p><i class="bi bi-telephone-fill me-3"></i>+91 8801043608</p>
             </div>
         </div>
     )

@@ -31,9 +31,9 @@ function Footer() {
                     <div className='col-md-4'>
                         <h6>Contact Information</h6>
                         <hr />
-                        <div><p className='text-white mb-1'>#64, Banglore, karnataka, India</p></div>
-                        <div><p className='text-white mb-1'>#+91 8801043088</p></div>
-                        <div><p className='text-white mb-1'>email@domain.com</p></div>
+                        <div><p className='text-white mb-1'><i class="bi bi-geo-alt-fill me-3"></i>64, Banglore, karnataka, India</p></div>
+                        <div><p className='text-white mb-1'><i class="bi bi-telephone-fill me-3"></i>+91 8801043608</p></div>
+                        <div><p className='text-white mb-1'><i class="bi bi-envelope me-3"></i>email@domain.com</p></div>
                         <div><a className='fw-bolder text-decoration-underline badge bg-warning' href="https://abhishekgattineni.com/">Developed by Abhishek Gattineni</a></div>
                     </div>
                 </div>

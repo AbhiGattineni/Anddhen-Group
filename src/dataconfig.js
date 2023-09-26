@@ -35,7 +35,7 @@ export const priceData = [
         id: 4,
         Name: "We check the links, we apply",
         categery: "Internships",
-        features: ["5 Applications - $1", "20 Easy Apply - $1", "20 Recruiter Messages - $1", "16 Direct Messages - $1"]
+        features: ["6 Applications - $1", "20 Easy Apply - $1", "20 Recruiter Messages - $1", "16 Direct Messages - $1"]
     }
 ]
 
@@ -211,5 +211,38 @@ export const myworks = [
         image: "https://static.wixstatic.com/media/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg/v1/fill/w_655,h_449,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg",
         description: " We will be more than happy to cater your event, host you at our restaurant, or deliver food to your doorstep. Should you be interested in our services, don’t wait to get in touch with us. Give us a call today to set up an event or stop by the restaurant for quality dining services.",
         link: "http://www.aromarestaurant.com/"
+    },
+]
+
+export const videoLinks = [
+    {
+        link: "https://www.youtube.com/embed/NB_bj5H1UR0?si=46yLwpYCUnAush3U",
+        title: "Video for applying Student Job Applications",
+        description: "Some quick example text to build on the card title and make up the bulk of the card's content."
+    },
+    {
+        link:"https://www.youtube.com/embed/NAMvdbS4lk4",
+        title:"Video for applying Easy Apply and Recruiter Messages",
+        description:"Some quick example text to build on the card title and make up the bulk of the card's content."
+    },
+    {
+        link:"https://www.youtube.com/embed/l_EaQ0_kmbE?si=OwIqpaf5Iij-cwuE",
+        title:"Video for filtering unnecessary Job Applications",
+        description:"Some quick example text to build on the card title and make up the bulk of the card's content."
+    },
+    {
+        link:"https://www.youtube.com/embed/1X9-BYFx9_k?si=V19wlivDq6eXQPXj",
+        title:"Video for filtering Staffing and Consulting jobs",
+        description:"Some quick example text to build on the card title and make up the bulk of the card's content."
+    },
+    {
+        link:"https://www.youtube.com/embed/Wk_p1JYFA8Y?si=lViZVlVt7Ld2xz_Y",
+        title:"Video to filter out sponsorship, active clearance, citizen or resident jobs",
+        description:"Some quick example text to build on the card title and make up the bulk of the card's content."
+    },
+    {
+        link:"https://www.youtube.com/embed/NAMvdbS4lk4",
+        title:"How to use simplify chrome extension",
+        description:"Some quick example text to build on the card title and make up the bulk of the card's content."
     },
 ]

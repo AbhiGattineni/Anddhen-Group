@@ -9,9 +9,9 @@ export const PriceCard = ({ data }) => {
           : null}
         <div className="p-4">
           {/* <p className='fs-4 fw-bold text-secondary'>{data.Name}</p> */}
-          <p className='fs-3 mt-lg-1 text-secondary'>{data.Name}</p>
+          {/* <p className='fs-3 mt-lg-1 text-secondary'>{data.Name}</p> */}
           <div className="d-flex justify-content-center align-self-center">
-            <h3>{data.categery}</h3>
+            <h4>{data.categery} : {data.Name}</h4>
           </div>
           <div className="text-start p-3">
             {data.features.map((feature) => (
