@@ -1,7 +1,32 @@
-import React from 'react'
+import React, { createRef, useState } from 'react'
 import { InputField } from '../../inc/InputField'
+import { Toast } from '../../inc/Toast';
 
 export const Registration = () => {
+    const [showToast, setShowToast] = useState(false);
+    const formRef = createRef();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formEle = e.target;
+        const formData = new FormData(formEle);
+        try {
+            const response = await fetch("https://script.google.com/macros/s/AKfycby4yFPN4-yxpBzTkvakGdbllfFzPiYG44EaJ8MP65XjJRcX4z2-2x_ewyM5xd-IeEdUig/exec", {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.text();
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
+            formRef.current.reset();
+
+        } catch (error) {
+            console.error("There was a problem with the fetch operation:", error);
+        }
+    };
+
     return (
         <div className="py-3">
             <div className='col-md-12 mb-4 text-center'>
@@ -13,7 +38,7 @@ export const Registration = () => {
                     <div className="col-md-6">
                         <h5 className=''>Student Registration</h5>
                         <div className='underline'></div>
-                        <form action="https://script.google.com/macros/s/AKfycby4yFPN4-yxpBzTkvakGdbllfFzPiYG44EaJ8MP65XjJRcX4z2-2x_ewyM5xd-IeEdUig/exec" method='post'>
+                        <form method='post' ref={formRef} onSubmit={(e) => handleSubmit(e)}>
                             <InputField name="name" label="Name" placeholder="Full Name" type="text" />
                             <InputField name="email" label="Email" placeholder="Email" type="email" />
                             <InputField name="phone" label="Phone" placeholder="Phone" type="tel" />
@@ -54,6 +79,7 @@ export const Registration = () => {
                 <p><i class="bi bi-envelope me-3"></i>email@domain.com</p>
                 <p><i class="bi bi-telephone-fill me-3"></i>+91 8801043608</p>
             </div>
+            <Toast show={showToast} onClose={() => setShowToast(false)} />
         </div>
     )
 }

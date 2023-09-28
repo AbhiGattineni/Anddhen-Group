@@ -34,7 +34,7 @@ function Navbar() {
                                             <Link to="/about" onClick={handleLinkClick} className="nav-link active" >About</Link>
                                         </li>
                                         <li class="nav-item dropdown d-none d-lg-block">
-                                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <a class="nav-link dropdown-toggle active custom-dropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Subsidiaries
                                             </a>
                                             <ul class="dropdown-menu">
