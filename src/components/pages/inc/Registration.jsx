@@ -72,16 +72,8 @@ export const Registration = () => {
                         </form>
                     </div>
                 </div>
-              </div>
-              <div className="form-group py-3">
-                <button type="button " className="btn btn-warning shadow w-100">
-                  Submit
-                </button>
-              </div>
-            </form>
-          </div>
-          <div className="col-md-5">
-            <h5 className=""> Part Timer Registration</h5>
+            </div>
+            <h4>Contact Us</h4>
             <div className="underline"></div>
             <div className="">
                 <p><i class="bi bi-envelope me-3"></i>email@domain.com</p>
@@ -89,17 +81,5 @@ export const Registration = () => {
             </div>
             <Toast show={showToast} onClose={() => setShowToast(false)} />
         </div>
-      </div>
-      <h4>Contact Us</h4>
-      <div className="underline"></div>
-      <div className="">
-        <p>
-          <i class="bi bi-envelope mx-3"></i>email@domain.com
-        </p>
-        <p>
-          <i class="bi bi-telephone-fill mx-3"></i>+91 8801043088
-        </p>
-      </div>
-    </div>
-  );
-};
+    )
+}
