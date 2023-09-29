@@ -4,23 +4,32 @@ import { Toast } from '../../inc/Toast';
 
 export const Registration = () => {
     const [showToast, setShowToast] = useState(false);
-    const formRef = createRef();
-    const handleSubmit = async (e) => {
+    const formRef1 = createRef();
+    const formRef2 = createRef();
+
+    const handleSubmit = async (e, sheetName) => {
         e.preventDefault();
         const formEle = e.target;
         const formData = new FormData(formEle);
+        formData.append("sheetName", sheetName);
+
         try {
-            const response = await fetch("https://script.google.com/macros/s/AKfycby4yFPN4-yxpBzTkvakGdbllfFzPiYG44EaJ8MP65XjJRcX4z2-2x_ewyM5xd-IeEdUig/exec", {
+            const response = await fetch("https://script.google.com/macros/s/AKfycbypYp94MQ_ypnwfMf_jUQrKocmo1aDOAr4jeYAiNw1vUkJekOJqXsUUY1yBFaEKN3v6Jg/exec", {
                 method: "POST",
                 body: formData
             });
+            const responseData = await response.text();
+            console.log("Received data from Google Apps Script:", responseData);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            const data = await response.text();
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);
-            formRef.current.reset();
+            if (sheetName === "Sheet1" && formRef1.current) {
+                formRef1.current.reset();
+            } else if (sheetName === "Sheet2" && formRef2.current) {
+                formRef2.current.reset();
+            }
 
         } catch (error) {
             console.error("There was a problem with the fetch operation:", error);
@@ -38,7 +47,7 @@ export const Registration = () => {
                     <div className="col-md-6">
                         <h5 className=''>Student Registration</h5>
                         <div className='underline'></div>
-                        <form method='post' ref={formRef} onSubmit={(e) => handleSubmit(e)}>
+                        <form method='post' ref={formRef1} onSubmit={(e) => handleSubmit(e, "Sheet1")}>
                             <InputField name="name" label="Name" placeholder="Full Name" type="text" />
                             <InputField name="email" label="Email" placeholder="Email" type="email" />
                             <InputField name="phone" label="Phone" placeholder="Phone" type="tel" />
@@ -52,14 +61,14 @@ export const Registration = () => {
                                 </div>
                             </div>
                             <div className='form-group py-3'>
-                                <button type="button " className='btn btn-warning shadow w-100'>Submit</button>
+                                <button type="submit" className='btn btn-warning shadow w-100'>Submit</button>
                             </div>
                         </form>
                     </div>
                     <div className="col-md-5">
                         <h5 className=''> Part Timer Registration</h5>
                         <div className='underline'></div>
-                        <form action="" method='post'>
+                        <form method='post' ref={formRef2} onSubmit={(e) => handleSubmit(e, "Sheet2")}>
                             <InputField name="name" label="Name" placeholder="Full Name" type="text" />
                             <InputField name="email" label="Email" placeholder="Email" type="email" />
                             <InputField name="phone" label="Phone" placeholder="Phone" type="tel" />
@@ -67,7 +76,7 @@ export const Registration = () => {
                             <InputField name="reference" label="Referred by" placeholder="Referrer Name" type="text" />
                             <InputField name="status" label="Current Status" placeholder="Current Status" type="text" />
                             <div className='form-group py-3'>
-                                <button type="button " className='btn btn-warning shadow w-100'>Submit</button>
+                                <button type="submit" className='btn btn-warning shadow w-100'>Submit</button>
                             </div>
                         </form>
                     </div>
