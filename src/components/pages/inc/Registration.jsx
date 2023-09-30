@@ -1,39 +1,79 @@
-import React, { createRef, useState } from 'react'
-import { InputField } from '../../inc/InputField'
+import React, { useState } from 'react';
+import { InputField } from '../../inc/InputField';
 import { Toast } from '../../inc/Toast';
 
 export const Registration = () => {
     const [showToast, setShowToast] = useState(false);
-    const formRef1 = createRef();
-    const formRef2 = createRef();
+    const [loader1, setLoader1] = useState(false);
+    const [loader2, setLoader2] = useState(false);
 
-    const handleSubmit = async (e, sheetName) => {
+    const [studentName, setStudentName] = useState("");
+    const [studentEmail, setStudentEmail] = useState("");
+    const [studentPhone, setStudentPhone] = useState("");
+    const [studentCollege, setStudentCollege] = useState("");
+    const [studentReference, setStudentReference] = useState("");
+    const [studentJob, setStudentJob] = useState("");
+
+    const [partTimerName, setPartTimerName] = useState("");
+    const [partTimerEmail, setPartTimerEmail] = useState("");
+    const [partTimerPhone, setPartTimerPhone] = useState("");
+    const [partTimerCollege, setPartTimerCollege] = useState("");
+    const [partTimerReference, setPartTimerReference] = useState("");
+    const [partTimerStatus, setPartTimerStatus] = useState("");
+
+    const resetStudentForm = () => {
+        setStudentName("");
+        setStudentEmail("");
+        setStudentPhone("");
+        setStudentCollege("");
+        setStudentReference("");
+        setStudentJob("");
+    };
+
+    const resetPartTimerForm = () => {
+        setPartTimerName("");
+        setPartTimerEmail("");
+        setPartTimerPhone("");
+        setPartTimerCollege("");
+        setPartTimerReference("");
+        setPartTimerStatus("");
+    };
+
+    const handleSubmit = async (e, sheetName, resetFunction) => {
         e.preventDefault();
-        const formEle = e.target;
-        const formData = new FormData(formEle);
+        const formData = new FormData(e.target);
         formData.append("sheetName", sheetName);
+        if (sheetName === "Sheet1") {
+            setLoader1(true);
+        } else if (sheetName === "Sheet2") {
+            setLoader2(true);
+        }
+
 
         try {
             const response = await fetch("https://script.google.com/macros/s/AKfycbypYp94MQ_ypnwfMf_jUQrKocmo1aDOAr4jeYAiNw1vUkJekOJqXsUUY1yBFaEKN3v6Jg/exec", {
                 method: "POST",
                 body: formData
             });
-            const responseData = await response.text();
-            console.log("Received data from Google Apps Script:", responseData);
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+            if (sheetName === "Sheet1") {
+                resetStudentForm();
+            } else if (sheetName === "Sheet2") {
+                resetPartTimerForm();
+            }
+
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);
-            if (sheetName === "Sheet1" && formRef1.current) {
-                formRef1.current.reset();
-            } else if (sheetName === "Sheet2" && formRef2.current) {
-                formRef2.current.reset();
-            }
+            resetFunction();
 
         } catch (error) {
             console.error("There was a problem with the fetch operation:", error);
         }
+        setLoader1(false);
+        setLoader2(false);
     };
 
     return (
@@ -47,36 +87,127 @@ export const Registration = () => {
                     <div className="col-md-6">
                         <h5 className=''>Student Registration</h5>
                         <div className='underline'></div>
-                        <form method='post' ref={formRef1} onSubmit={(e) => handleSubmit(e, "Sheet1")}>
-                            <InputField name="name" label="Name" placeholder="Full Name" type="text" />
-                            <InputField name="email" label="Email" placeholder="Email" type="email" />
-                            <InputField name="phone" label="Phone" placeholder="Phone" type="tel" />
-                            <InputField name="college" label="College" placeholder="College" type="text" />
-                            <InputField name="reference" label=" Referred by" placeholder="Referrer Name" type="text" />
+                        <form onSubmit={(e) => handleSubmit(e, "Sheet1", resetStudentForm)}>
+                            <InputField
+                                name="name"
+                                label="Name"
+                                placeholder="Full Name"
+                                type="text"
+                                value={studentName}
+                                onChange={e => setStudentName(e.target.value)}
+                            />
+                            <InputField
+                                name="email"
+                                label="Email"
+                                placeholder="Email"
+                                type="email"
+                                value={studentEmail}
+                                onChange={e => setStudentEmail(e.target.value)}
+                            />
+                            <InputField
+                                name="phone"
+                                label="Phone"
+                                placeholder="Phone"
+                                type="tel"
+                                value={studentPhone}
+                                onChange={e => setStudentPhone(e.target.value)}
+                            />
+                            <InputField
+                                name="college"
+                                label="College"
+                                placeholder="College"
+                                type="text"
+                                value={studentCollege}
+                                onChange={e => setStudentCollege(e.target.value)}
+                            />
+                            <InputField
+                                name="reference"
+                                label=" Referred by"
+                                placeholder="Referrer Name"
+                                type="text"
+                                value={studentReference}
+                                onChange={e => setStudentReference(e.target.value)}
+                            />
                             <div className='d-md-flex my-3 gap-5'>
                                 <label className=''>Job Type</label>
                                 <div className="d-flex gap-2">
-                                    <input type="radio" name="job" value="Internship" />Internship
-                                    <input type="radio" name="job" value="Full Time" />Full Time
+                                    <input
+                                        type="radio"
+                                        name="job"
+                                        value="Internship"
+                                        checked={studentJob === "Internship"}
+                                        onChange={() => setStudentJob("Internship")}
+                                    />
+                                    Internship
+                                    <input
+                                        type="radio"
+                                        name="job"
+                                        value="Full Time"
+                                        checked={studentJob === "Full Time"}
+                                        onChange={() => setStudentJob("Full Time")}
+                                    />
+                                    Full Time
                                 </div>
                             </div>
                             <div className='form-group py-3'>
-                                <button type="submit" className='btn btn-warning shadow w-100'>Submit</button>
+                                <button type="submit" className='btn btn-warning shadow w-100'>{loader1 ? "loading..." : "Submit"}</button>
                             </div>
                         </form>
                     </div>
                     <div className="col-md-5">
                         <h5 className=''> Part Timer Registration</h5>
                         <div className='underline'></div>
-                        <form method='post' ref={formRef2} onSubmit={(e) => handleSubmit(e, "Sheet2")}>
-                            <InputField name="name" label="Name" placeholder="Full Name" type="text" />
-                            <InputField name="email" label="Email" placeholder="Email" type="email" />
-                            <InputField name="phone" label="Phone" placeholder="Phone" type="tel" />
-                            <InputField name="college" label="College" placeholder="College" type="text" />
-                            <InputField name="reference" label="Referred by" placeholder="Referrer Name" type="text" />
-                            <InputField name="status" label="Current Status" placeholder="Current Status" type="text" />
+                        <form onSubmit={(e) => handleSubmit(e, "Sheet2", resetPartTimerForm)}>
+                            <InputField
+                                name="name"
+                                label="Name"
+                                placeholder="Full Name"
+                                type="text"
+                                value={partTimerName}
+                                onChange={e => setPartTimerName(e.target.value)}
+                            />
+                            <InputField
+                                name="email"
+                                label="Email"
+                                placeholder="Email"
+                                type="email"
+                                value={partTimerEmail}
+                                onChange={e => setPartTimerEmail(e.target.value)}
+                            />
+                            <InputField
+                                name="phone"
+                                label="Phone"
+                                placeholder="Phone"
+                                type="tel"
+                                value={partTimerPhone}
+                                onChange={e => setPartTimerPhone(e.target.value)}
+                            />
+                            <InputField
+                                name="college"
+                                label="College"
+                                placeholder="College"
+                                type="text"
+                                value={partTimerCollege}
+                                onChange={e => setPartTimerCollege(e.target.value)}
+                            />
+                            <InputField
+                                name="reference"
+                                label="Referred by"
+                                placeholder="Referrer Name"
+                                type="text"
+                                value={partTimerReference}
+                                onChange={e => setPartTimerReference(e.target.value)}
+                            />
+                            <InputField
+                                name="status"
+                                label="Current Status"
+                                placeholder="Current Status"
+                                type="text"
+                                value={partTimerStatus}
+                                onChange={e => setPartTimerStatus(e.target.value)}
+                            />
                             <div className='form-group py-3'>
-                                <button type="submit" className='btn btn-warning shadow w-100'>Submit</button>
+                                <button type="submit" className='btn btn-warning shadow w-100'>{loader2 ? "loading..." : "Submit"}</button>
                             </div>
                         </form>
                     </div>
@@ -85,10 +216,10 @@ export const Registration = () => {
             <h4>Contact Us</h4>
             <div className="underline"></div>
             <div className="">
-                <p><i class="bi bi-envelope me-3"></i>email@domain.com</p>
-                <p><i class="bi bi-telephone-fill me-3"></i>+91 8801043608</p>
+                <p><i className="bi bi-envelope me-3"></i>email@domain.com</p>
+                <p><i className="bi bi-telephone-fill me-3"></i>+91 8801043608</p>
             </div>
             <Toast show={showToast} onClose={() => setShowToast(false)} />
         </div>
-    )
+    );
 }
