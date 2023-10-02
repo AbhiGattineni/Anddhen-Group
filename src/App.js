@@ -12,24 +12,70 @@ import { Ams } from './components/pages/inc/Ams';
 import { Acs } from './components/pages/inc/Acs';
 import { Aps } from './components/pages/inc/Aps';
 import { Ati } from './components/pages/inc/Ati';
+import { Exam } from './components/pages/Exam';
+import { Quiz } from './components/pages/inc/Quiz';
+
+function MainLayout({ children }) {
+  return (
+    <div>
+      <Navbar />
+      {children}
+      <Footer />
+    </div>
+  );
+}
 
 function App() {
   return (
     <Router>
-      <div>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/ass" element={<Ass />} />
-          <Route path="/ams" element={<Ams />} />
-          <Route path="/acs" element={<Acs />} />
-          <Route path="/aps" element={<Aps />} />
-          <Route path="/ati" element={<Ati />} />
-        </Routes>
-        <Footer />
-      </div>
+      <Routes>
+        <Route path="/" element={
+          <MainLayout>
+            <Home />
+          </MainLayout>
+        } />
+        <Route path="/about" element={
+          <MainLayout>
+            <About />
+          </MainLayout>
+        } />
+        <Route path="/contact" element={
+          <MainLayout>
+            <Contact />
+          </MainLayout>
+        } />
+        <Route path="/ass" element={
+          <MainLayout>
+            <Ass />
+          </MainLayout>
+        } />
+        <Route path="/ams" element={
+          <MainLayout>
+            <Ams />
+          </MainLayout>
+        } />
+        <Route path="/acs" element={
+          <MainLayout>
+            <Acs />
+          </MainLayout>
+        } />
+        <Route path="/aps" element={
+          <MainLayout>
+            <Aps />
+          </MainLayout>
+        } />
+        <Route path="/ati" element={
+          <MainLayout>
+            <Ati />
+          </MainLayout>
+        } />
+        <Route path='/test' element={
+          <MainLayout>
+            <Exam />
+          </MainLayout>
+        } />
+        <Route path='/quiz' element={<Quiz />} />
+      </Routes>
     </Router>
   );
 }
