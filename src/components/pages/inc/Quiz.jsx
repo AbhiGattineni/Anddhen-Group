@@ -1,9 +1,53 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 export const Quiz = () => {
+    const [quiz, setQuiz] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch("https://sheet.best/api/sheets/f8d5124b-bbe7-4a1a-bd26-7805d50e3261");
+                const jsonData = await res.json();
+                setQuiz(jsonData);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, []);
+    console.log(quiz);
     return (
-        <div onContextMenu={(e) => e.preventDefault()}>
-            <h1>Quiz Test</h1>
-        </div>
+        <div>
+            <nav className="navbar bg-dark">
+                <div className="container-fluid">
+                    <span className="navbar-brand mb-0 h1 text-white">Anddhen Group</span>
+                </div>
+            </nav>
+            <div className="container">
+                <div className="my-3 ">
+                    <p className='fw-bold fs-5 d-inline'>Number of Quetions : </p><span className='fs-4'>{quiz.length}</span>
+                </div>
+                <form>
+                    {quiz.map((data,index) => (
+                        <div key={index} className="py-3">
+                            <p className='fs-5'>{index+1}. {data.Question}</p>
+                            <div className="mx-4">
+                                <input className='me-2' type="radio" name="question1" />{data.option1}
+                            </div>
+                            <div className="mx-4">
+                                <input className='me-2' type="radio" name="question1" />{data.option2}
+                            </div>
+                            <div className="mx-4">
+                                <input className='me-2' type="radio" name="question1" />{data.option3}
+                            </div>
+                            <div className="mx-4">
+                                <input className='me-2' type="radio" name="question1" />{data.option4}
+                            </div>
+                        </div>
+                    ))}
+                    <button className='btn btn-warning'>Submit</button>
+                </form>
+            </div >
+        </div >
     )
 }
