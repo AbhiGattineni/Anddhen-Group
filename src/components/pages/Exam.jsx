@@ -1,15 +1,29 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InputField } from '../inc/InputField'
 import { Link } from 'react-router-dom'
 
 export const Exam = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [scoreBoard, setScoreBoard] = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch("https://sheet.best/api/sheets/f8d5124b-bbe7-4a1a-bd26-7805d50e3261");
+                const jsonData = await res.json();
+                setScoreBoard(jsonData);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, []);
     const startExam = () => {
         if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen();
+            document.documentElement.requestFullscreen();
         }
-      };
+    };
     return (
         <div className='container py-2'>
             <h1 className='main-heading'>Quiz Test</h1>
@@ -35,6 +49,19 @@ export const Exam = () => {
                     </tr>
                 </tbody>
             </table>
+            {scoreBoard && (
+                <>
+                    <h3>Attempts</h3>
+                    <table class="table table-bordered mb-5">
+                        <tbody>
+                            <tr>
+                                <th>Attempt 1</th>
+                                <td>20</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </>
+            )}
             <h4 className=''>Details</h4>
             <div className="underline"></div>
             <form className='d-flex gap-5'>
