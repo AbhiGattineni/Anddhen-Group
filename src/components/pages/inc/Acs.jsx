@@ -19,7 +19,7 @@ export const Acs = () => {
                                 <img style={{ height: "250px" }} className="card-img-top" src={resgistration1} alt="Card image cap" />
                             </div>
                             <div className="card-body card-body-cascade text-center">
-                                <Link to={'collegeregistration'} className='text-decoration-none'><h4 className="card-title text-black">College registration</h4></Link>
+                                <h4 className="card-title text-black">Higher education consulting</h4>
                                 <p className="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex,
                                     recusandae. Facere modi sunt, quod quibusdam.
                                 </p>
@@ -32,7 +32,7 @@ export const Acs = () => {
                                 <img style={{ height: "250px" }} className="card-img-top object-fit-fill" src={resgistration2} alt="Card image cap" />
                             </div>
                             <div className="card-body card-body-cascade text-center">
-                                <h4 className="card-title">Job applications</h4>
+                                <Link to={'collegeregistration'} className='text-decoration-none'><h4 className="card-title text-black">Job applications</h4></Link>
                                 <p className="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex,
                                     recusandae. Facere modi sunt, quod quibusdam.
                                 </p>
