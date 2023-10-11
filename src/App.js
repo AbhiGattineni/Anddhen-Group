@@ -14,6 +14,7 @@ import { Aps } from './components/pages/inc/Aps';
 import { Ati } from './components/pages/inc/Ati';
 import { Exam } from './components/pages/Exam';
 import { Quiz } from './components/pages/inc/Quiz';
+import { CollegeRegistration } from './components/pages/CollegeRegistration';
 
 function MainLayout({ children }) {
   return (
@@ -72,6 +73,11 @@ function App() {
         <Route path='/test' element={
           <MainLayout>
             <Exam />
+          </MainLayout>
+        } />
+        <Route path='/acs/collegeregistration' element={
+          <MainLayout>
+            <CollegeRegistration />
           </MainLayout>
         } />
         <Route path='/quiz' element={<Quiz />} />

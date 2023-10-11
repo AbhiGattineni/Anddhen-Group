@@ -213,12 +213,6 @@ export const Registration = () => {
                     </div>
                 </div>
             </div>
-            <h4>Contact Us</h4>
-            <div className="underline"></div>
-            <div className="">
-                <p><i className="bi bi-envelope me-3"></i>email@domain.com</p>
-                <p><i className="bi bi-telephone-fill me-3"></i>+91 8801043608</p>
-            </div>
             <Toast show={showToast} onClose={() => setShowToast(false)} />
         </div>
     );

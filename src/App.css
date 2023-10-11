@@ -50,6 +50,6 @@ p {
     text-overflow: ellipsis;
     max-width: 200px;
 }
-li.nav-item.dropdown.d-none.d-lg-block .nav-link.dropdown-toggle.custom-dropdown::after {
+.custom-dropdown::after {
     display: none !important; 
 }
