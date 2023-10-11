@@ -47,16 +47,16 @@ export const Quiz = () => {
                                 <div key={index} className="py-3">
                                     <p className='fs-5'>{index + 1}. {data.Question}</p>
                                     <div className="mx-4">
-                                        <input className='me-2' type="radio" name="question1" />{data.option1}
+                                        <input className='me-2' type="radio" name={`question${index}`} />{data.option1}
                                     </div>
                                     <div className="mx-4">
-                                        <input className='me-2' type="radio" name="question1" />{data.option2}
+                                        <input className='me-2' type="radio" name={`question${index}`} />{data.option2}
                                     </div>
                                     <div className="mx-4">
-                                        <input className='me-2' type="radio" name="question1" />{data.option3}
+                                        <input className='me-2' type="radio" name={`question${index}`} />{data.option3}
                                     </div>
                                     <div className="mx-4">
-                                        <input className='me-2' type="radio" name="question1" />{data.option4}
+                                        <input className='me-2' type="radio" name={`question${index}`} />{data.option4}
                                     </div>
                                 </div>
                             ))}
