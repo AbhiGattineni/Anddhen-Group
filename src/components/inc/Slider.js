@@ -2,6 +2,8 @@ import React from 'react';
 import Slider1 from '../images/web.jpg';
 import Slider2 from '../images/fullstack.png';
 import Slider3 from '../images/app.jpg';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 function Slider() {
     return (
@@ -13,21 +15,21 @@ function Slider() {
             </div>
             <div className="carousel-inner">
                 <div className="carousel-item active">
-                    <img src={Slider1} className="d-block w-100" alt="..." />
+                    <LazyLoadImage effect="blur" src={Slider1} className="d-block w-100" alt="..." />
                     <div className="carousel-caption d-none d-md-block">
                         <h5>First slide label</h5>
                         <p>Some representative placeholder content for the first slide.</p>
                     </div>
                 </div>
                 <div className="carousel-item">
-                    <img src={Slider2} className="d-block w-100" alt="..." />
+                    <LazyLoadImage effect="blur" src={Slider2} className="d-block w-100" alt="..." />
                     <div className="carousel-caption d-none d-md-block">
                         <h5>Second slide label</h5>
                         <p>Some representative placeholder content for the second slide.</p>
                     </div>
                 </div>
                 <div className="carousel-item">
-                    <img src={Slider3} className="d-block w-100" alt="..." />
+                    <LazyLoadImage effect="blur" src={Slider3} className="d-block w-100" alt="..." />
                     <div className="carousel-caption d-none d-md-block">
                         <h5>Third slide label</h5>
                         <p>Some representative placeholder content for the third slide.</p>
