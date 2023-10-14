@@ -4,6 +4,8 @@ import Service1 from '../images/portfolio.jpg';
 import Service2 from '../images/web.jpg';
 import Service3 from '../images/fullstack.png';
 import Service4 from '../images/app.jpg';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 
 
@@ -45,7 +47,7 @@ const Services = () => {
                     {services.map((service) =>
                         <div className='col-md-4 mb-3'>
                             <div className='card'>
-                                <img src={service.Photo} className="w-100 border-bottom" alt="services" />
+                                <LazyLoadImage effect='blur' src={service.Photo} className="w-100 border-bottom" alt="services" />
                                 <div className='card-body'>
                                     <h6>{service.Name}</h6>
                                     <div className='underline'></div>

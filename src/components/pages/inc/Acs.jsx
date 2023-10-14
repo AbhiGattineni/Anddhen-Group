@@ -5,6 +5,8 @@ import { Videos } from '../../inc/Videos'
 import { Link } from 'react-router-dom'
 import resgistration1 from '../../images/resgistration1.png';
 import resgistration2 from '../../images/registration2.png';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export const Acs = () => {
     return (
@@ -16,7 +18,7 @@ export const Acs = () => {
                     <div className="col-lg-4 col-md-6 mb-4">
                         <div className="card card-cascade shadow">
                             <div className="view view-cascade overlay shadow">
-                                <img style={{ height: "250px" }} className="card-img-top" src={resgistration1} alt="Card image cap" />
+                                <LazyLoadImage effect='blur' height= "250px" width="100%" className="card-img-top object-fit-fill" src={resgistration1} alt="Card image cap" />
                             </div>
                             <div className="card-body card-body-cascade text-center">
                                 <h4 className="card-title text-black">Higher education consulting</h4>
@@ -29,7 +31,7 @@ export const Acs = () => {
                     <div className="col-lg-4 col-md-6 mb-4">
                         <div className="card card-cascade shadow">
                             <div className="view view-cascade overlay shadow">
-                                <img style={{ height: "250px" }} className="card-img-top object-fit-fill" src={resgistration2} alt="Card image cap" />
+                                <LazyLoadImage effect='blur' className="card-img-top object-fit-fill" src={resgistration2} alt="Card image cap" height="250px" />
                             </div>
                             <div className="card-body card-body-cascade text-center">
                                 <Link to={'collegeregistration'} className='text-decoration-none'><h4 className="card-title text-black">Job applications</h4></Link>

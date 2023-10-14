@@ -3,6 +3,7 @@ import "./Card.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { details } from "../../dataconfig";
 
+
 const Cards = () => {
   return (
     <section className="section">
