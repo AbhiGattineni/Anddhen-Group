@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { subsidiaries } from '../../dataconfig';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const Subsidiaries = () => {
     return (
@@ -14,7 +16,7 @@ const Subsidiaries = () => {
                     {subsidiaries.map((subsidiary) =>
                         <div className='col-md-4 mb-3' key={subsidiary.Name}>
                             <div className='card'>
-                                <img src={subsidiary.Photo} className="w-100 border-bottom" alt="subsidiary" />
+                                <LazyLoadImage effect='blur' src={subsidiary.Photo} className="w-100 border-bottom" alt="subsidiary" />
                                 <div className='card-body'>
                                     <h6><Link to={subsidiary.link} className='text-black text-decoration-none'>{subsidiary.Name}</Link></h6>
                                     <div className='underline'></div>
