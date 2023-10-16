@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { InputField } from '../inc/InputField'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export const Exam = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [scoreBoard, setScoreBoard] = useState(null);
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -20,6 +21,8 @@ export const Exam = () => {
         fetchData();
     }, []);
     const startExam = () => {
+        sessionStorage.setItem('isTestStarted', 'true');
+        navigate('/quiz');
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen();
         }
@@ -85,7 +88,7 @@ export const Exam = () => {
                 />
             </form>
             <div className="my-5">
-                <Link to='/quiz' onClick={startExam} className={`btn btn-warning ${name.length && email.length ? "shadow" : "disabled"}`}>Start Test</Link>
+                <button onClick={startExam} className={`btn btn-warning ${name.length && email.length ? "shadow" : "disabled"}`}>Start Test</button>
             </div>
         </div>
     )

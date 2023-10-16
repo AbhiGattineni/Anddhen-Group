@@ -22,7 +22,10 @@ export const Quiz = () => {
 
         fetchData();
     }, []);
-    console.log(quiz);
+    function handleSubmit(){
+        sessionStorage.setItem('isTestStarted', 'false');
+        setIsModalOpen(true);
+    }
     return (
         <div>
             {loading ?
@@ -60,7 +63,7 @@ export const Quiz = () => {
                                     </div>
                                 </div>
                             ))}
-                            <button className='btn btn-warning' onClick={()=>setIsModalOpen(true)}>Submit</button>
+                            <button onClick={handleSubmit} className='btn btn-warning'>Submit</button>
                         </form>
                     </div >
                     <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />

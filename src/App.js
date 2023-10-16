@@ -15,6 +15,7 @@ import { Ati } from './components/pages/inc/Ati';
 import { Exam } from './components/pages/Exam';
 import { Quiz } from './components/pages/inc/Quiz';
 import { CollegeRegistration } from './components/pages/CollegeRegistration';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 function MainLayout({ children }) {
   return (
@@ -75,12 +76,14 @@ function App() {
             <Exam />
           </MainLayout>
         } />
-        <Route path='/acs/collegeregistration' element={
+        <Route path='/acs/jobapplications' element={
           <MainLayout>
             <CollegeRegistration />
           </MainLayout>
         } />
-        <Route path='/quiz' element={<Quiz />} />
+        <Route path="/quiz" element={<ProtectedRoute />}>
+          <Route index element={<Quiz />} />
+        </Route>
       </Routes>
     </Router>
   );
