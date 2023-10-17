@@ -57,10 +57,7 @@ export const Acs = () => {
                 />
               </div>
               <div className="card-body card-body-cascade text-center">
-                <Link
-                  to={"collegeregistration"}
-                  className="text-decoration-none"
-                >
+                <Link to={"jobapplication"} className="text-decoration-none">
                   <h4 className="card-title text-black">Job applications</h4>
                 </Link>
                 <p className="card-text">

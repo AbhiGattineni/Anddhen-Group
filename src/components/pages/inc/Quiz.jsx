@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from "../../inc/Modal";
+import { Modal } from "../../organisms/Modal";
 
 export const Quiz = () => {
   const [quiz, setQuiz] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [score, setScore] = useState(0);
-  const [data, setData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -15,12 +13,9 @@ export const Quiz = () => {
           "https://sheet.best/api/sheets/f8d5124b-bbe7-4a1a-bd26-7805d50e3261"
         );
         const jsonData = await res.json();
-        console.log("Json Data", jsonData);
         setQuiz(jsonData);
         setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
 
     fetchData();
@@ -35,9 +30,7 @@ export const Quiz = () => {
       `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${TAB_NAME}!A1:F10?key=${API_KEY}`
     )
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data.values);
-      })
+      .then((data) => {})
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
   return (
@@ -47,8 +40,8 @@ export const Quiz = () => {
           className="d-flex align-items-center justify-content-center w-100"
           style={{ height: "100vh" }}
         >
-          <div class="spinner-border " role="status">
-            <span class="visually-hidden">Loading...</span>
+          <div className="spinner-border " role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       ) : (

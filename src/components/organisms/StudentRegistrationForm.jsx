@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import InputField from "../../organisms/InputField";
-import Toast from "../../organisms/Toast";
+import InputField from "../organisms/InputField";
+import Toast from "../organisms/Toast";
 
-export const Registration = () => {
+const StudentRegistrationForm = () => {
   const [showToast, setShowToast] = useState(false);
   const [loader1, setLoader1] = useState(false);
-  const [loader2, setLoader2] = useState(false);
 
   const [studentName, setStudentName] = useState("");
   const [studentEmail, setStudentEmail] = useState("");
@@ -13,13 +12,6 @@ export const Registration = () => {
   const [studentCollege, setStudentCollege] = useState("");
   const [studentReference, setStudentReference] = useState("");
   const [studentJob, setStudentJob] = useState("");
-
-  const [partTimerName, setPartTimerName] = useState("");
-  const [partTimerEmail, setPartTimerEmail] = useState("");
-  const [partTimerPhone, setPartTimerPhone] = useState("");
-  const [partTimerCollege, setPartTimerCollege] = useState("");
-  const [partTimerReference, setPartTimerReference] = useState("");
-  const [partTimerStatus, setPartTimerStatus] = useState("");
 
   const resetStudentForm = () => {
     setStudentName("");
@@ -30,23 +22,12 @@ export const Registration = () => {
     setStudentJob("");
   };
 
-  const resetPartTimerForm = () => {
-    setPartTimerName("");
-    setPartTimerEmail("");
-    setPartTimerPhone("");
-    setPartTimerCollege("");
-    setPartTimerReference("");
-    setPartTimerStatus("");
-  };
-
   const handleSubmit = async (e, sheetName, resetFunction) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append("sheetName", sheetName);
     if (sheetName === "Sheet1") {
       setLoader1(true);
-    } else if (sheetName === "Sheet2") {
-      setLoader2(true);
     }
 
     try {
@@ -63,8 +44,6 @@ export const Registration = () => {
       }
       if (sheetName === "Sheet1") {
         resetStudentForm();
-      } else if (sheetName === "Sheet2") {
-        resetPartTimerForm();
       }
 
       setShowToast(true);
@@ -74,9 +53,7 @@ export const Registration = () => {
       console.error("There was a problem with the fetch operation:", error);
     }
     setLoader1(false);
-    setLoader2(false);
   };
-
   return (
     <div className="py-3">
       <div className="col-md-12 mb-4 text-center">
@@ -84,7 +61,7 @@ export const Registration = () => {
         <div className="underline mx-auto"></div>
       </div>
       <div className="card shadow-sm p-3 my-3">
-        <div className="row gap-4">
+        <div className="d-flex align-items-center justify-content-center">
           <div className="col-md-6">
             <h5 className="">Student Registration</h5>
             <div className="underline"></div>
@@ -157,70 +134,11 @@ export const Registration = () => {
               </div>
             </form>
           </div>
-          <div className="col-md-5">
-            <h5 className=""> Part Timer Registration</h5>
-            <div className="underline"></div>
-            <form
-              onSubmit={(e) => handleSubmit(e, "Sheet2", resetPartTimerForm)}
-            >
-              <InputField
-                name="name"
-                label="Name"
-                placeholder="Full Name"
-                type="text"
-                value={partTimerName}
-                onChange={(e) => setPartTimerName(e.target.value)}
-              />
-              <InputField
-                name="email"
-                label="Email"
-                placeholder="Email"
-                type="email"
-                value={partTimerEmail}
-                onChange={(e) => setPartTimerEmail(e.target.value)}
-              />
-              <InputField
-                name="phone"
-                label="Phone"
-                placeholder="Phone"
-                type="tel"
-                value={partTimerPhone}
-                onChange={(e) => setPartTimerPhone(e.target.value)}
-              />
-              <InputField
-                name="college"
-                label="College"
-                placeholder="College"
-                type="text"
-                value={partTimerCollege}
-                onChange={(e) => setPartTimerCollege(e.target.value)}
-              />
-              <InputField
-                name="reference"
-                label="Referred by"
-                placeholder="Referrer Name"
-                type="text"
-                value={partTimerReference}
-                onChange={(e) => setPartTimerReference(e.target.value)}
-              />
-              <InputField
-                name="status"
-                label="Current Status"
-                placeholder="Current Status"
-                type="text"
-                value={partTimerStatus}
-                onChange={(e) => setPartTimerStatus(e.target.value)}
-              />
-              <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100">
-                  {loader2 ? "loading..." : "Submit"}
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       </div>
       <Toast show={showToast} onClose={() => setShowToast(false)} />
     </div>
   );
 };
+
+export default StudentRegistrationForm;

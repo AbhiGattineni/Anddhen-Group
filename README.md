@@ -68,3 +68,32 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+Atomic structure
+src/
+|-- components/
+| |-- atoms/
+| | |-- Button/
+| | | |-- index.js
+| | | |-- Button.css (or Button.module.css or Button.scss depending on your styling choice)
+| | |-- Input/
+| | | |-- ...
+| |-- molecules/
+| | |-- FormInput/
+| | | |-- ...
+| |-- organisms/
+| | |-- LoginForm/
+| | | |-- index.js
+| | | |-- LoginForm.css
+| | |-- Header/
+| | | |-- ...
+| |-- templates/
+| | |-- MainLayout/
+| | | |-- ...
+| |-- pages/
+| | |-- HomePage/
+| | | |-- ...
+| | |-- AboutPage/
+| | | |-- ...
+|-- App.js
+|-- index.js

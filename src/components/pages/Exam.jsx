@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { InputField } from "../inc/InputField";
+import InputField from "../../components/organisms/InputField";
 import { Link } from "react-router-dom";
 
 export const Exam = () => {
@@ -14,9 +14,7 @@ export const Exam = () => {
         );
         const jsonData = await res.json();
         setScoreBoard(jsonData);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
 
     fetchData();
@@ -30,7 +28,7 @@ export const Exam = () => {
     <div className="container py-2">
       <h1 className="main-heading">Quiz Test</h1>
       <div className="underline"></div>
-      <table class="table table-bordered my-5">
+      <table className="table table-bordered my-5">
         <thead>
           <tr>
             <th colSpan={2}>Instructions</th>
@@ -54,7 +52,7 @@ export const Exam = () => {
       {scoreBoard && (
         <>
           <h3>Attempts</h3>
-          <table class="table table-bordered mb-5">
+          <table className="table table-bordered mb-5">
             <tbody>
               <tr>
                 <th>Attempt 1</th>

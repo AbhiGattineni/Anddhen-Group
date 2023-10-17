@@ -1,0 +1,28 @@
+import React from "react";
+
+const Toast = ({ show, onClose }) => {
+  return (
+    <div
+      className={`toast ${show ? "show" : ""} bg-info`}
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      style={{ position: "fixed", left: "10px", bottom: "10px", zIndex: 1050 }}
+    >
+      <div className="toast-body d-flex justify-content-between fw-bold">
+        Data successfully submitted!
+        <button
+          type="button"
+          className="ml-2 mb-1 close border-0"
+          data-dismiss="toast"
+          aria-label="Close"
+          onClick={onClose}
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Toast;

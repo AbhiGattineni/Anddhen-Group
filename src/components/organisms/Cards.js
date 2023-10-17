@@ -3,7 +3,6 @@ import "./Card.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { details } from "../../dataconfig";
 
-
 const Cards = () => {
   return (
     <section className="section">
@@ -20,7 +19,7 @@ const Cards = () => {
                   <div className="image">
                     <img src={detail.Photo} alt="" />
                   </div>
-                  <div class="card-body text-center p-1">
+                  <div className="card-body text-center p-1">
                     <h5>{detail.Name}</h5>
                     <p>
                       {detail.Start_date} - {detail.End_date}
@@ -28,13 +27,13 @@ const Cards = () => {
                     <p>{detail.Role}</p>
                     <div className="socials">
                       <a href={detail.Facebook}>
-                        <i id="f" class="bi bi-facebook"></i>
+                        <i id="f" className="bi bi-facebook"></i>
                       </a>
                       <a href={detail.LinkedIn}>
-                        <i id="l" class="bi bi-linkedin"></i>
+                        <i id="l" className="bi bi-linkedin"></i>
                       </a>
                       <a href={detail.GitHub}>
-                        <i id="t" class="bi bi-github"></i>
+                        <i id="t" className="bi bi-github"></i>
                       </a>
                     </div>
                   </div>
