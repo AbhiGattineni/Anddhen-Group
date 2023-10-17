@@ -17,6 +17,8 @@ import { Quiz } from "./components/pages/inc/Quiz";
 import { JobApplicationRegistration } from "./components/pages/JobApplicationRegistration";
 import { PartTimerPortal } from "./components/pages/PartTimerPortal";
 import { StudentPortal } from "./components/pages/StudentPortal";
+import { UpdatesAndStatus } from "./components/pages/UpdatesAndStatus/UpdatesAndStatus";
+import AcsManagerUpdates from "./components/pages/UpdatesAndStatus/AcsManagerUpdates";
 
 function MainLayout({ children }) {
   return (
@@ -77,6 +79,23 @@ function App() {
           element={
             <MainLayout>
               <Acs />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/updatesandstatus"
+          element={
+            <MainLayout>
+              <UpdatesAndStatus />
+            </MainLayout>
+          }
+        />
+
+        <Route
+          path="/updatesandstatus/managers/updates"
+          element={
+            <MainLayout>
+              <AcsManagerUpdates />
             </MainLayout>
           }
         />
