@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import InputField from "../../organisms/InputField";
 import Toast from "../../organisms/Toast";
 
-const AcsManagerUpdates = () => {
+const AssInternUpdates = () => {
   const [showToast, setShowToast] = useState(false);
   const [loader1, setLoader1] = useState(false);
 
@@ -22,47 +22,51 @@ const AcsManagerUpdates = () => {
     setStudentJob("");
   };
 
-  const handleSubmit = async (e, resetFunction) => {
+  const handleSubmit = async (e, sheetName, resetFunction) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    formData.append("sheetName", "Manager Status");
-
-    try {
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbypYp94MQ_ypnwfMf_jUQrKocmo1aDOAr4jeYAiNw1vUkJekOJqXsUUY1yBFaEKN3v6Jg/exec",
-
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      resetStudentForm();
-
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-      resetFunction();
-    } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+    formData.append("sheetName", sheetName);
+    if (sheetName === "Sheet1") {
+      setLoader1(true);
     }
-    setLoader1(false);
   };
 
+  //     try {
+  //       const response = await fetch(
+  //         "https://script.google.com/macros/s/AKfycbypYp94MQ_ypnwfMf_jUQrKocmo1aDOAr4jeYAiNw1vUkJekOJqXsUUY1yBFaEKN3v6Jg/exec",
+  //         {
+  //           method: "POST",
+  //           body: formData,
+  //         }
+  //       );
+
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       if (sheetName === "Sheet1") {
+  //         resetStudentForm();
+  //       }
+
+  //       setShowToast(true);
+  //       setTimeout(() => setShowToast(false), 3000);
+  //       resetFunction();
+  //     } catch (error) {
+  //       console.error("There was a problem with the fetch operation:", error);
+  //     }
+  //     setLoader1(false);
+  //   };
   return (
     <div className="py-3">
       <div className="col-md-12 mb-4 text-center">
-        <h3 className="main-heading">AcsManagerUpdates</h3>
+        <h3 className="main-heading">ACS Managers Daily Updates</h3>
         <div className="underline mx-auto"></div>
       </div>
       <div className="card shadow-sm p-3 my-3">
-        <div className="row gap-4">
+        <div className="d-flex align-items-center justify-content-center">
           <div className="col-md-6">
-            <h5 className="">Student Registration</h5>
+            <h5 className="">Daily Updates</h5>
             <div className="underline"></div>
-            <form onSubmit={(e) => handleSubmit(e, resetStudentForm)}>
+            <form onSubmit={(e) => handleSubmit(e, "Sheet1", resetStudentForm)}>
               <InputField
                 name="name"
                 label="Name"
@@ -138,4 +142,4 @@ const AcsManagerUpdates = () => {
   );
 };
 
-export default AcsManagerUpdates;
+export default AssInternUpdates;

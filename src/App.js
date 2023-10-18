@@ -19,6 +19,7 @@ import { PartTimerPortal } from "./components/pages/PartTimerPortal";
 import { StudentPortal } from "./components/pages/StudentPortal";
 import { UpdatesAndStatus } from "./components/pages/UpdatesAndStatus/UpdatesAndStatus";
 import AcsManagerUpdates from "./components/pages/UpdatesAndStatus/AcsManagerUpdates";
+import AcsParttimerStatusUpdates from "./components/pages/UpdatesAndStatus/AcsParttimerStatusUpdates";
 
 function MainLayout({ children }) {
   return (
@@ -96,6 +97,22 @@ function App() {
           element={
             <MainLayout>
               <AcsManagerUpdates />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/updatesandstatus/parttimers/updates"
+          element={
+            <MainLayout>
+              <AcsParttimerStatusUpdates />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/updatesandstatus/interns/updates"
+          element={
+            <MainLayout>
+              <AcsParttimerStatusUpdates />
             </MainLayout>
           }
         />
