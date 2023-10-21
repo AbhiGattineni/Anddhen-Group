@@ -297,17 +297,17 @@ export const videoLinks = [
       "Some quick example text to build on the card title and make up the bulk of the card's content.",
   },
   {
-    link: " https://youtu.be/nLWmNMtxAYU ",
+    link: "https://www.youtube.com/embed/nLWmNMtxAYU?si=CBOB-6ZqigNeHVu8 ",
     title: "How to use simplify chrome extension",
     description: "How to use simplify chrome extension",
   },
   {
-    link: "https://youtu.be/3CFm4lvkRtY ",
+    link: "https://www.youtube.com/embed/3CFm4lvkRtY?si=qGH_QK-Bi1m83yrr",
     title: "Avoid same job links and How to check reposted jobs",
     description: "Avoid same job links and How to check reposted jobs",
   },
   {
-    link: "https://youtu.be/bkaglpSi2hk",
+    link: "https://www.youtube.com/embed/bkaglpSi2hk?si=ttxt6OVvpuxguQMy",
     title: "Update & Status format in whatsapp group and excel sheet:",
     description: "Update & Status format in whatsapp group and excel sheet:",
   },
