@@ -34,6 +34,7 @@ export const Quiz = () => {
     updatedAnswers[questionIndex] = e.target.value;
     setUserAnswers(updatedAnswers);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -47,27 +48,33 @@ export const Quiz = () => {
 
     setIsModalOpen(true);
 
+    const data = {
+      sheetName: "Marks",
+      score: score
+    };
+
     try {
-      // console.log(process.env.REACT_APP_SHEETAPI_ID)
-      const response = await fetch(`https://script.google.com/macros/s/${process.env.REACT_APP_SHEETAPI_ID}`,
-        {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-          },
-          body: `score=${score}`,
-        }
-      );
+      const response = await fetch('https://script.google.com/macros/s/AKfycbwGMNYOC26_sohGkqU-vsPM9Za-GhzSMG9oHJHsEdTtqpY2sgqqJ_lpzyaOZoisIK-b/exec', {
+        method: "POST",
+        mode:"no-cors",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
 
       if (!response.ok) {
+        console.log("HTTP Status:", response.status, response.statusText);
         throw new Error("Network response was not ok");
       }
+
+      const responseBody = await response.json();
+      console.log("Fetch response:", responseBody);
+
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+      console.error("There was a problem with the fetch operation:", error.message);
     }
   };
-
 
   return (
     <div>

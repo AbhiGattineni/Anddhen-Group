@@ -29,7 +29,7 @@ const AcsManagerUpdates = () => {
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbypYp94MQ_ypnwfMf_jUQrKocmo1aDOAr4jeYAiNw1vUkJekOJqXsUUY1yBFaEKN3v6Jg/exec",
+        `https://script.google.com/macros/s/AKfycbyhIfzW7rVAx3c3XZUg9SS_qqbyhimucCNphlhTnRrMo-9XQS3nQJfsFYuBYToLObz_0A/exec`,
 
         {
           method: "POST",

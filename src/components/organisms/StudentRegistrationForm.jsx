@@ -22,17 +22,15 @@ const StudentRegistrationForm = () => {
     setStudentJob("");
   };
 
-  const handleSubmit = async (e, sheetName, resetFunction) => {
+  const handleSubmit = async (e, resetFunction) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    formData.append("sheetName", sheetName);
-    if (sheetName === "Sheet1") {
-      setLoader1(true);
-    }
+    formData.append("sheetName", "Student Registration");
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbypYp94MQ_ypnwfMf_jUQrKocmo1aDOAr4jeYAiNw1vUkJekOJqXsUUY1yBFaEKN3v6Jg/exec",
+        `https://script.google.com/macros/s/AKfycbyhIfzW7rVAx3c3XZUg9SS_qqbyhimucCNphlhTnRrMo-9XQS3nQJfsFYuBYToLObz_0A/exec`,
+
         {
           method: "POST",
           body: formData,
@@ -42,9 +40,7 @@ const StudentRegistrationForm = () => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      if (sheetName === "Sheet1") {
-        resetStudentForm();
-      }
+      resetStudentForm();
 
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -65,7 +61,7 @@ const StudentRegistrationForm = () => {
           <div className="col-md-6">
             <h5 className="">Student Registration</h5>
             <div className="underline"></div>
-            <form onSubmit={(e) => handleSubmit(e, "Sheet1", resetStudentForm)}>
+            <form onSubmit={(e) => handleSubmit(e, resetStudentForm)}>
               <InputField
                 name="name"
                 label="Name"
