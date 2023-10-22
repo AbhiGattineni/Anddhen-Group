@@ -6,19 +6,6 @@ export const Exam = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [scoreBoard, setScoreBoard] = useState(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          "https://sheet.best/api/sheets/f8d5124b-bbe7-4a1a-bd26-7805d50e3261"
-        );
-        const jsonData = await res.json();
-        setScoreBoard(jsonData);
-      } catch (error) {}
-    };
-
-    fetchData();
-  }, []);
   const startExam = () => {
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen();

@@ -23,19 +23,15 @@ export const PartTimerRegistrationForm = () => {
     setPartTimerStatus("");
   };
 
-  const handleSubmit = async (e, sheetName, resetFunction) => {
+  const handleSubmit = async (e, resetFunction) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    formData.append("sheetName", sheetName);
-    if (sheetName === "Sheet1") {
-      setLoader1(true);
-    } else if (sheetName === "Sheet2") {
-      setLoader2(true);
-    }
+    formData.append("sheetName", "Part Timers Registrations");
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbypYp94MQ_ypnwfMf_jUQrKocmo1aDOAr4jeYAiNw1vUkJekOJqXsUUY1yBFaEKN3v6Jg/exec",
+        `https://script.google.com/macros/s/AKfycbyhIfzW7rVAx3c3XZUg9SS_qqbyhimucCNphlhTnRrMo-9XQS3nQJfsFYuBYToLObz_0A/exec`,
+
         {
           method: "POST",
           body: formData,
@@ -45,9 +41,7 @@ export const PartTimerRegistrationForm = () => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      if (sheetName === "Sheet2") {
-        resetPartTimerForm();
-      }
+      resetPartTimerForm();
 
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
@@ -56,7 +50,6 @@ export const PartTimerRegistrationForm = () => {
       console.error("There was a problem with the fetch operation:", error);
     }
     setLoader1(false);
-    setLoader2(false);
   };
 
   return (
@@ -71,7 +64,7 @@ export const PartTimerRegistrationForm = () => {
             <h5 className=""> Part Timer Registration</h5>
             <div className="underline"></div>
             <form
-              onSubmit={(e) => handleSubmit(e, "Sheet2", resetPartTimerForm)}
+              onSubmit={(e) => handleSubmit(e, resetPartTimerForm)}
             >
               <InputField
                 name="name"
