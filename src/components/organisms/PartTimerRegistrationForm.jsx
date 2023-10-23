@@ -35,8 +35,10 @@ export const PartTimerRegistrationForm = () => {
     formData.append("status", partTimerStatus);
     if (partTimerStatus === "student") {
       formData.append("studyYear", studyYear);
+      formData.append("otherStatus", "N/A");
     } else if (partTimerStatus === "other") {
       formData.append("otherStatus", otherStatus);
+      formData.append("studyYear", "N/A");
     } else {
       formData.append("studyYear", "N/A");
       formData.append("otherStatus", "N/A");
