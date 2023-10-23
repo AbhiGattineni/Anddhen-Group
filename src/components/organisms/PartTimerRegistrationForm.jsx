@@ -10,22 +10,38 @@ export const PartTimerRegistrationForm = () => {
   const [partTimerName, setPartTimerName] = useState("");
   const [partTimerEmail, setPartTimerEmail] = useState("");
   const [partTimerPhone, setPartTimerPhone] = useState("");
-  const [partTimerCollege, setPartTimerCollege] = useState("");
-  const [partTimerReference, setPartTimerReference] = useState("");
   const [partTimerStatus, setPartTimerStatus] = useState("");
+  const [studyYear, setStudyYear] = useState("");
+  const [otherStatus, setOtherStatus] = useState("");
+  const [partTimerReference, setPartTimerReference] = useState("");
 
   const resetForm = () => {
     setPartTimerName("");
     setPartTimerEmail("");
     setPartTimerPhone("");
-    setPartTimerCollege("");
-    setPartTimerReference("");
     setPartTimerStatus("");
+    setStudyYear("");
+    setOtherStatus("");
+    setPartTimerReference("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+
+    const formData = new FormData();
+    formData.append("name", partTimerName);
+    formData.append("email", partTimerEmail);
+    formData.append("phone", partTimerPhone);
+    formData.append("status", partTimerStatus);
+    if (partTimerStatus === "student") {
+      formData.append("studyYear", studyYear);
+    } else if (partTimerStatus === "other") {
+      formData.append("otherStatus", otherStatus);
+    } else {
+      formData.append("studyYear", "N/A");
+      formData.append("otherStatus", "N/A");
+    }
+    formData.append("reference", partTimerReference);
     formData.append("sheetName", "Part Timers Registrations");
 
     try {
@@ -74,14 +90,39 @@ export const PartTimerRegistrationForm = () => {
                 value={partTimerPhone}
                 onChange={(e) => setPartTimerPhone(e.target.value)}
               />
-              <InputField
-                name="college"
-                label="College"
-                placeholder="College"
-                type="text"
-                value={partTimerCollege}
-                onChange={(e) => setPartTimerCollege(e.target.value)}
-              />
+              <div className="form-group">
+                <label>Status</label>
+                <select
+                  className="form-control"
+                  value={partTimerStatus}
+                  onChange={(e) => setPartTimerStatus(e.target.value)}
+                >
+                  <option value="">Select Status</option>
+                  <option value="student">Student</option>
+                  <option value="housewife">Housewife</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              {partTimerStatus === "student" && (
+                <InputField
+                  name="studyYear"
+                  label="Year of Study"
+                  placeholder="Year of Study"
+                  type="text"
+                  value={studyYear}
+                  onChange={(e) => setStudyYear(e.target.value)}
+                />
+              )}
+              {partTimerStatus === "other" && (
+                <InputField
+                  name="otherStatus"
+                  label="Please specify"
+                  placeholder="Please specify"
+                  type="text"
+                  value={otherStatus}
+                  onChange={(e) => setOtherStatus(e.target.value)}
+                />
+              )}
               <InputField
                 name="reference"
                 label="Referred by"
@@ -89,14 +130,6 @@ export const PartTimerRegistrationForm = () => {
                 type="text"
                 value={partTimerReference}
                 onChange={(e) => setPartTimerReference(e.target.value)}
-              />
-              <InputField
-                name="status"
-                label="Current Status"
-                placeholder="Current Status"
-                type="text"
-                value={partTimerStatus}
-                onChange={(e) => setPartTimerStatus(e.target.value)}
               />
               <div className="form-group py-3">
                 <button type="submit" className="btn btn-warning shadow w-100">

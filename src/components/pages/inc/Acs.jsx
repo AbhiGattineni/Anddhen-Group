@@ -68,6 +68,29 @@ export const Acs = () => {
               </div>
             </div>
           </div>
+          <div className="col-lg-4 col-md-6 mb-4">
+            <div className="card card-cascade shadow">
+              <div className="view view-cascade overlay shadow">
+                <LazyLoadImage
+                  effect="blur"
+                  className="card-img-top object-fit-fill"
+                  src={resgistration2}
+                  alt="Card image cap"
+                  height="250px"
+                />
+              </div>
+              <div className="card-body card-body-cascade text-center">
+                <Link to={"jobapplication"} className="text-decoration-none">
+                  <h4 className="card-title text-black">Courses</h4>
+                </Link>
+                <p className="card-text">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                  Voluptatibus, ex, recusandae. Facere modi sunt, quod
+                  quibusdam.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
         <h4>Contact Us</h4>
         <div className="underline"></div>
