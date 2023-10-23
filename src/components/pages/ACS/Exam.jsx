@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import InputField from "../../components/organisms/InputField";
+import InputField from "../../organisms/InputField";
 import { Link } from "react-router-dom";
 
 export const Exam = () => {

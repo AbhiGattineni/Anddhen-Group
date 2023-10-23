@@ -327,3 +327,14 @@ export const updatesAndStatus = [
     route: "interns/updates",
   },
 ];
+
+export const adminPortal = [
+  {
+    child: "Anddhen Consulting Services",
+    route: "acs_admin",
+  },
+  {
+    child: "Anddhen Software Services",
+    route: "ass_admin",
+  },
+];

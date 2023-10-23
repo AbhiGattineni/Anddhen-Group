@@ -12,15 +12,16 @@ import { Ams } from "./components/pages/inc/Ams";
 import { Acs } from "./components/pages/inc/Acs";
 import { Aps } from "./components/pages/inc/Aps";
 import { Ati } from "./components/pages/inc/Ati";
-import { Exam } from "./components/pages/Exam";
+import { Exam } from "./components/pages/ACS/Exam";
 import { Quiz } from "./components/pages/inc/Quiz";
-import { JobApplicationRegistration } from "./components/pages/JobApplicationRegistration";
-import { PartTimerPortal } from "./components/pages/PartTimerPortal";
-import { StudentPortal } from "./components/pages/StudentPortal";
+import { JobApplicationRegistration } from "./components/pages/ACS/JobApplicationRegistration";
+import { PartTimerPortal } from "./components/pages/ACS/PartTimerPortal";
+import { StudentPortal } from "./components/pages/ACS/StudentPortal";
 import { UpdatesAndStatus } from "./components/pages/UpdatesAndStatus/UpdatesAndStatus";
 import AcsManagerUpdates from "./components/pages/UpdatesAndStatus/AcsManagerUpdates";
 import AcsParttimerStatusUpdates from "./components/pages/UpdatesAndStatus/AcsParttimerStatusUpdates";
 import AssInternUpdates from "./components/pages/UpdatesAndStatus/AssInternUpdates";
+import { AdminPortal } from "./components/pages/Admin/AdminPortal";
 
 function MainLayout({ children }) {
   return (
@@ -163,6 +164,14 @@ function App() {
           element={
             <MainLayout>
               <Exam />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/admin_portal"
+          element={
+            <MainLayout>
+              <AdminPortal />
             </MainLayout>
           }
         />

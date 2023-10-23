@@ -1,5 +1,4 @@
-const API_BASE_URL =
-  "https://script.google.com/macros/s/AKfycbwCR7OIf0I1uskhHdarFpOfonzElsFTkWblJf6YIBpINeyaj3hieClY0z3CAkLbbWEwhw/exec";
+const API_BASE_URL = process.env.REACT_APP_SPREAD_SHEET_LINK;
 
 export const submitFormData = async (formData) => {
   try {

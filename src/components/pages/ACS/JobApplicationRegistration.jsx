@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import resgistration1 from "../images/resgistration1.png";
-import resgistration2 from "../images/registration2.png";
+import resgistration1 from "../../images/resgistration1.png";
+import resgistration2 from "../../images/registration2.png";
 
 export const JobApplicationRegistration = () => {
   return (

@@ -1,7 +1,7 @@
 import React from "react";
-import { Videos } from "../organisms/Videos";
+import { Videos } from "../../organisms/Videos";
 import { Link } from "react-router-dom";
-import { PartTimerRegistrationForm } from "../organisms/PartTimerRegistrationForm";
+import { PartTimerRegistrationForm } from "../../organisms/PartTimerRegistrationForm";
 
 export const PartTimerPortal = () => {
   return (

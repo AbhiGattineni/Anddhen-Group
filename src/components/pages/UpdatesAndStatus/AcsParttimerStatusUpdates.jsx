@@ -61,7 +61,7 @@ const AcsParttimerStatusUpdates = () => {
   return (
     <div className="py-3">
       <div className="col-md-12 mb-4 text-center">
-        <h3 className="main-heading">ACS Part-timer Daily Status</h3>
+        <h3 className="main-heading">ACS Part-timer Daily Status & Updates</h3>
         <div className="underline mx-auto"></div>
       </div>
       <div className="card shadow-sm p-3 my-3">
