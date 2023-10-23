@@ -20,6 +20,7 @@ import { StudentPortal } from "./components/pages/StudentPortal";
 import { UpdatesAndStatus } from "./components/pages/UpdatesAndStatus/UpdatesAndStatus";
 import AcsManagerUpdates from "./components/pages/UpdatesAndStatus/AcsManagerUpdates";
 import AcsParttimerStatusUpdates from "./components/pages/UpdatesAndStatus/AcsParttimerStatusUpdates";
+import AssInternUpdates from "./components/pages/UpdatesAndStatus/AssInternUpdates";
 
 function MainLayout({ children }) {
   return (
@@ -112,7 +113,7 @@ function App() {
           path="/updatesandstatus/interns/updates"
           element={
             <MainLayout>
-              <AcsParttimerStatusUpdates />
+              <AssInternUpdates />
             </MainLayout>
           }
         />

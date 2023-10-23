@@ -1,132 +1,155 @@
 import React, { useState } from "react";
 import InputField from "../../organisms/InputField";
+import TextAreaField from "../../atoms/TextAreaField";
 import Toast from "../../organisms/Toast";
+import { useApi } from "../../../hooks/useApi";
 
 const AcsManagerUpdates = () => {
   const [showToast, setShowToast] = useState(false);
-  const [loader1, setLoader1] = useState(false);
+  const { loading, error, callApi } = useApi();
 
-  const [studentName, setStudentName] = useState("");
-  const [studentEmail, setStudentEmail] = useState("");
-  const [studentPhone, setStudentPhone] = useState("");
-  const [studentCollege, setStudentCollege] = useState("");
-  const [studentReference, setStudentReference] = useState("");
-  const [studentJob, setStudentJob] = useState("");
+  const [date, setDate] = useState("");
+  const [managerName, setManagerName] = useState("");
+  const [activeParttimers, setActiveParttimers] = useState("");
+  const [activeStudents, setActiveStudents] = useState("");
+  const [needToUpdate, setNeedToUpdate] = useState("");
+  const [notUpdatedFrom3Days, setNotUpdatedFrom3Days] = useState("");
+  const [applicationsBelow20From2Days, setApplicationsBelow20From2Days] =
+    useState("");
+  const [leave, setLeave] = useState("");
+  const [needWeekendTime, setNeedWeekendTime] = useState("");
+  const [holdByStudent, setHoldByStudent] = useState("");
+  const [newStudent, setNewStudent] = useState("");
+  const [status, setStatus] = useState("");
 
-  const resetStudentForm = () => {
-    setStudentName("");
-    setStudentEmail("");
-    setStudentPhone("");
-    setStudentCollege("");
-    setStudentReference("");
-    setStudentJob("");
+  const resetForm = () => {
+    setDate("");
+    setManagerName("");
+    setActiveParttimers("");
+    setActiveStudents("");
+    setNeedToUpdate("");
+    setNotUpdatedFrom3Days("");
+    setApplicationsBelow20From2Days("");
+    setLeave("");
+    setNeedWeekendTime("");
+    setHoldByStudent("");
+    setNewStudent("");
+    setStatus(""); // Don't forget to reset this as well
   };
 
-  const handleSubmit = async (e, resetFunction) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append("sheetName", "Manager Status");
-
     try {
-      const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbyhIfzW7rVAx3c3XZUg9SS_qqbyhimucCNphlhTnRrMo-9XQS3nQJfsFYuBYToLObz_0A/exec`,
-
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      resetStudentForm();
-
+      await callApi(formData);
+      resetForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      resetFunction();
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+      console.error("Error:", error);
     }
-    setLoader1(false);
   };
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div className="py-3">
       <div className="col-md-12 mb-4 text-center">
-        <h3 className="main-heading">AcsManagerUpdates</h3>
+        <h3 className="main-heading">Daily Updates Form</h3>
         <div className="underline mx-auto"></div>
       </div>
       <div className="card shadow-sm p-3 my-3">
-        <div className="row gap-4">
+        <div className="d-flex justify-content-center">
           <div className="col-md-6">
-            <h5 className="">Student Registration</h5>
+            <h5>Daily Updates</h5>
             <div className="underline"></div>
-            <form onSubmit={(e) => handleSubmit(e, resetStudentForm)}>
+            <form onSubmit={handleSubmit}>
               <InputField
-                name="name"
-                label="Name"
-                placeholder="Full Name"
-                type="text"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
+                name="date"
+                label="Date"
+                type="date"
+                max={today}
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
               />
               <InputField
-                name="email"
-                label="Email"
-                placeholder="Email"
-                type="email"
-                value={studentEmail}
-                onChange={(e) => setStudentEmail(e.target.value)}
+                name="managerName"
+                label="Manager Name"
+                placeholder="Manager Name"
+                value={managerName}
+                onChange={(e) => setManagerName(e.target.value)}
               />
               <InputField
-                name="phone"
-                label="Phone"
-                placeholder="Phone"
-                type="tel"
-                value={studentPhone}
-                onChange={(e) => setStudentPhone(e.target.value)}
+                name="activeParttimers"
+                label="Active Parttimers"
+                type="number"
+                value={activeParttimers}
+                onChange={(e) => setActiveParttimers(e.target.value)}
               />
               <InputField
-                name="college"
-                label="College"
-                placeholder="College"
-                type="text"
-                value={studentCollege}
-                onChange={(e) => setStudentCollege(e.target.value)}
+                name="activeStudents"
+                label="Active Students"
+                type="number"
+                value={activeStudents}
+                onChange={(e) => setActiveStudents(e.target.value)}
               />
               <InputField
-                name="reference"
-                label=" Referred by"
-                placeholder="Referrer Name"
-                type="text"
-                value={studentReference}
-                onChange={(e) => setStudentReference(e.target.value)}
+                name="needToUpdate"
+                label="Need to Update"
+                value={needToUpdate}
+                onChange={(e) => setNeedToUpdate(e.target.value)}
               />
-              <div className="d-md-flex my-3 gap-5">
-                <label className="">Job Type</label>
-                <div className="d-flex gap-2">
-                  <input
-                    type="radio"
-                    name="job"
-                    value="Internship"
-                    checked={studentJob === "Internship"}
-                    onChange={() => setStudentJob("Internship")}
-                  />
-                  Internship
-                  <input
-                    type="radio"
-                    name="job"
-                    value="Full Time"
-                    checked={studentJob === "Full Time"}
-                    onChange={() => setStudentJob("Full Time")}
-                  />
-                  Full Time
-                </div>
-              </div>
+              <InputField
+                name="notUpdatedFrom3Days"
+                label="Not Updated From 3 Days"
+                value={notUpdatedFrom3Days}
+                onChange={(e) => setNotUpdatedFrom3Days(e.target.value)}
+              />
+              <InputField
+                name="applicationsBelow20From2Days"
+                label="Applications Below 20 From 2 Days"
+                value={applicationsBelow20From2Days}
+                onChange={(e) =>
+                  setApplicationsBelow20From2Days(e.target.value)
+                }
+              />
+              <InputField
+                name="leave"
+                label="Leave"
+                placeholder="Leave Details"
+                value={leave}
+                onChange={(e) => setLeave(e.target.value)}
+              />
+              <InputField
+                name="needWeekendTime"
+                label="Need Weekend Time"
+                placeholder="Need Weekend Time Details"
+                value={needWeekendTime}
+                onChange={(e) => setNeedWeekendTime(e.target.value)}
+              />
+              <InputField
+                name="holdByStudent"
+                label="Hold By Student"
+                value={holdByStudent}
+                onChange={(e) => setHoldByStudent(e.target.value)}
+              />
+              <InputField
+                name="newStudent"
+                label="New Student"
+                placeholder="New Student Details"
+                value={newStudent}
+                onChange={(e) => setNewStudent(e.target.value)}
+              />
+              <TextAreaField
+                name="status"
+                label="Status"
+                placeholder="Enter your status here..."
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              />
               <div className="form-group py-3">
                 <button type="submit" className="btn btn-warning shadow w-100">
-                  {loader1 ? "loading..." : "Submit"}
+                  {loading ? "Loading..." : "Submit"}
                 </button>
               </div>
             </form>

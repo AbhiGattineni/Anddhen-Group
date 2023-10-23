@@ -24,12 +24,12 @@ export const PartTimerPortal = () => {
         </div>
       </div>
       <div className="d-flex justify-content-center align-items-center mb-3">
-        <Link
+        {/* <Link
           to={"/test"}
           className="btn btn-warning shadow justify-content-center"
         >
           Take Test
-        </Link>
+        </Link> */}
       </div>
       <PartTimerRegistrationForm />
     </div>

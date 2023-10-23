@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import InputField from "./InputField";
 import Toast from "./Toast";
+import { useApi } from "../../hooks/useApi";
 
 export const PartTimerRegistrationForm = () => {
   const [showToast, setShowToast] = useState(false);
-  const [loader1, setLoader1] = useState(false);
-  const [loader2, setLoader2] = useState(false);
+  const { loading, callApi } = useApi();
 
   const [partTimerName, setPartTimerName] = useState("");
   const [partTimerEmail, setPartTimerEmail] = useState("");
@@ -14,7 +14,7 @@ export const PartTimerRegistrationForm = () => {
   const [partTimerReference, setPartTimerReference] = useState("");
   const [partTimerStatus, setPartTimerStatus] = useState("");
 
-  const resetPartTimerForm = () => {
+  const resetForm = () => {
     setPartTimerName("");
     setPartTimerEmail("");
     setPartTimerPhone("");
@@ -23,33 +23,19 @@ export const PartTimerRegistrationForm = () => {
     setPartTimerStatus("");
   };
 
-  const handleSubmit = async (e, resetFunction) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append("sheetName", "Part Timers Registrations");
 
     try {
-      const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbyhIfzW7rVAx3c3XZUg9SS_qqbyhimucCNphlhTnRrMo-9XQS3nQJfsFYuBYToLObz_0A/exec`,
-
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      resetPartTimerForm();
-
+      await callApi(formData);
+      resetForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      resetFunction();
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+      console.error("Error:", error);
     }
-    setLoader1(false);
   };
 
   return (
@@ -63,9 +49,7 @@ export const PartTimerRegistrationForm = () => {
           <div className="col-md-5">
             <h5 className=""> Part Timer Registration</h5>
             <div className="underline"></div>
-            <form
-              onSubmit={(e) => handleSubmit(e, resetPartTimerForm)}
-            >
+            <form onSubmit={(e) => handleSubmit(e)}>
               <InputField
                 name="name"
                 label="Name"
@@ -116,7 +100,7 @@ export const PartTimerRegistrationForm = () => {
               />
               <div className="form-group py-3">
                 <button type="submit" className="btn btn-warning shadow w-100">
-                  {loader2 ? "loading..." : "Submit"}
+                  {loading ? "loading..." : "Submit"}
                 </button>
               </div>
             </form>

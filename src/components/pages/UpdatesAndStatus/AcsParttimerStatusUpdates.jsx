@@ -1,131 +1,144 @@
 import React, { useState } from "react";
 import InputField from "../../organisms/InputField";
 import Toast from "../../organisms/Toast";
+import { useApi } from "../../../hooks/useApi";
+import TextAreaField from "../../atoms/TextAreaField";
 
 const AcsParttimerStatusUpdates = () => {
   const [showToast, setShowToast] = useState(false);
-  const [loader1, setLoader1] = useState(false);
 
-  const [studentName, setStudentName] = useState("");
-  const [studentEmail, setStudentEmail] = useState("");
-  const [studentPhone, setStudentPhone] = useState("");
-  const [studentCollege, setStudentCollege] = useState("");
-  const [studentReference, setStudentReference] = useState("");
-  const [studentJob, setStudentJob] = useState("");
+  const [date, setDate] = useState("");
+  const [name, setName] = useState("");
+  const [studentGroup, setStudentGroup] = useState("");
+  const [applications, setApplications] = useState("");
+  const [easyApply, setEasyApply] = useState("");
+  const [connectMessages, setConnectMessages] = useState("");
+  const [directMessages, setDirectMessages] = useState("");
+  const [reason, setReason] = useState("");
+  const [status, setStatus] = useState("");
 
-  const resetStudentForm = () => {
-    setStudentName("");
-    setStudentEmail("");
-    setStudentPhone("");
-    setStudentCollege("");
-    setStudentReference("");
-    setStudentJob("");
+  const { loading, callApi } = useApi();
+
+  const resetForm = () => {
+    setDate("");
+    setName("");
+    setStudentGroup("");
+    setApplications("");
+    setEasyApply("");
+    setConnectMessages("");
+    setDirectMessages("");
+    setReason("");
+    setStatus("");
   };
 
-  const handleSubmit = async (e, resetFunction) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+
+    const formData = new FormData();
+    formData.append("date", date);
+    formData.append("name", name);
+    formData.append("studentGroup", studentGroup);
+    formData.append("applications", applications);
+    formData.append("easyApply", easyApply);
+    formData.append("connectMessages", connectMessages);
+    formData.append("directMessages", directMessages);
+    if (parseInt(applications) < 20) {
+      formData.append("reason", reason);
+    }
+    formData.append("status", status);
     formData.append("sheetName", "Part Timer Status");
 
     try {
-      const response = await fetch(
-        `https://script.google.com/macros/s/AKfycbyhIfzW7rVAx3c3XZUg9SS_qqbyhimucCNphlhTnRrMo-9XQS3nQJfsFYuBYToLObz_0A/exec`,
-
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      resetStudentForm();
-
+      await callApi(formData);
+      resetForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      resetFunction();
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+      console.error("Error:", error);
     }
-    setLoader1(false);
   };
+
   return (
     <div className="py-3">
       <div className="col-md-12 mb-4 text-center">
-        <h3 className="main-heading">ACS Managers Daily Updates</h3>
+        <h3 className="main-heading">ACS Part-timer Daily Status</h3>
         <div className="underline mx-auto"></div>
       </div>
       <div className="card shadow-sm p-3 my-3">
         <div className="d-flex align-items-center justify-content-center">
           <div className="col-md-6">
-            <h5 className="">Daily Updates</h5>
+            <h5 className="">Daily Status</h5>
             <div className="underline"></div>
-            <form onSubmit={(e) => handleSubmit(e, resetStudentForm)}>
+            <form onSubmit={handleSubmit}>
+              <InputField
+                name="date"
+                label="Date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
               <InputField
                 name="name"
                 label="Name"
-                placeholder="Full Name"
                 type="text"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
               <InputField
-                name="email"
-                label="Email"
-                placeholder="Email"
-                type="email"
-                value={studentEmail}
-                onChange={(e) => setStudentEmail(e.target.value)}
-              />
-              <InputField
-                name="phone"
-                label="Phone"
-                placeholder="Phone"
-                type="tel"
-                value={studentPhone}
-                onChange={(e) => setStudentPhone(e.target.value)}
-              />
-              <InputField
-                name="college"
-                label="College"
-                placeholder="College"
+                name="studentGroup"
+                label="Student Group"
                 type="text"
-                value={studentCollege}
-                onChange={(e) => setStudentCollege(e.target.value)}
+                value={studentGroup}
+                onChange={(e) => setStudentGroup(e.target.value)}
               />
               <InputField
-                name="reference"
-                label=" Referred by"
-                placeholder="Referrer Name"
-                type="text"
-                value={studentReference}
-                onChange={(e) => setStudentReference(e.target.value)}
+                name="applications"
+                label="Applications"
+                type="number"
+                value={applications}
+                onChange={(e) => setApplications(e.target.value)}
               />
-              <div className="d-md-flex my-3 gap-5">
-                <label className="">Job Type</label>
-                <div className="d-flex gap-2">
-                  <input
-                    type="radio"
-                    name="job"
-                    value="Internship"
-                    checked={studentJob === "Internship"}
-                    onChange={() => setStudentJob("Internship")}
-                  />
-                  Internship
-                  <input
-                    type="radio"
-                    name="job"
-                    value="Full Time"
-                    checked={studentJob === "Full Time"}
-                    onChange={() => setStudentJob("Full Time")}
-                  />
-                  Full Time
-                </div>
-              </div>
+              <InputField
+                name="easyApply"
+                label="Easy Apply"
+                type="number"
+                value={easyApply}
+                onChange={(e) => setEasyApply(e.target.value)}
+              />
+              <InputField
+                name="connectMessages"
+                label="Connect Messages"
+                type="number"
+                value={connectMessages}
+                onChange={(e) => setConnectMessages(e.target.value)}
+              />
+              <InputField
+                name="directMessages"
+                label="Direct Messages"
+                type="number"
+                value={directMessages}
+                onChange={(e) => setDirectMessages(e.target.value)}
+              />
+              {parseInt(applications) < 20 && (
+                <InputField
+                  name="reason"
+                  label="Reason"
+                  type="text"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Due to Health issues and Festival"
+                />
+              )}
+              <TextAreaField
+                name="status"
+                label="Status"
+                placeholder="Enter your status here..."
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              />
               <div className="form-group py-3">
                 <button type="submit" className="btn btn-warning shadow w-100">
-                  {loader1 ? "loading..." : "Submit"}
+                  {loading ? "Loading..." : "Submit"}
                 </button>
               </div>
             </form>
