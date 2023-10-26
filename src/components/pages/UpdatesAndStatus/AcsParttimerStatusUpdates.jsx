@@ -18,7 +18,27 @@ const AcsParttimerStatusUpdates = () => {
   const [status, setStatus] = useState("");
 
   const { loading, callApi } = useApi();
-
+  const [fieldErrors, setFieldErrors] = useState({});
+  const handleFieldError = (fieldName, error) => {
+    setFieldErrors(prevErrors => ({
+      ...prevErrors,
+      [fieldName]: error,
+    }));
+  };
+  const fields = {
+    date,
+    name,
+    studentGroup,
+    applications,
+    easyApply,
+    connectMessages,
+    directMessages,
+    reason,
+    status
+  };
+  const allFieldsFilled = Object.values(fields).every(Boolean);
+  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const disableButton = !allFieldsFilled || hasErrors || loading || status.length <= 0;
   const resetForm = () => {
     setDate("");
     setName("");
@@ -33,7 +53,7 @@ const AcsParttimerStatusUpdates = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!allFieldsFilled || hasErrors) return;
     const formData = new FormData();
     formData.append("date", date);
     formData.append("name", name);
@@ -76,6 +96,7 @@ const AcsParttimerStatusUpdates = () => {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                setError={(error) => handleFieldError('date', error)}
               />
               <InputField
                 name="name"
@@ -83,6 +104,7 @@ const AcsParttimerStatusUpdates = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                setError={(error) => handleFieldError('name', error)}
               />
               <InputField
                 name="studentGroup"
@@ -90,6 +112,7 @@ const AcsParttimerStatusUpdates = () => {
                 type="text"
                 value={studentGroup}
                 onChange={(e) => setStudentGroup(e.target.value)}
+                setError={(error) => handleFieldError('studentGroup', error)}
               />
               <InputField
                 name="applications"
@@ -97,6 +120,7 @@ const AcsParttimerStatusUpdates = () => {
                 type="number"
                 value={applications}
                 onChange={(e) => setApplications(e.target.value)}
+                setError={(error) => handleFieldError('applications', error)}
               />
               <InputField
                 name="easyApply"
@@ -104,6 +128,7 @@ const AcsParttimerStatusUpdates = () => {
                 type="number"
                 value={easyApply}
                 onChange={(e) => setEasyApply(e.target.value)}
+                setError={(error) => handleFieldError('easyApply', error)}
               />
               <InputField
                 name="connectMessages"
@@ -111,6 +136,7 @@ const AcsParttimerStatusUpdates = () => {
                 type="number"
                 value={connectMessages}
                 onChange={(e) => setConnectMessages(e.target.value)}
+                setError={(error) => handleFieldError('connectMessages', error)}
               />
               <InputField
                 name="directMessages"
@@ -118,6 +144,7 @@ const AcsParttimerStatusUpdates = () => {
                 type="number"
                 value={directMessages}
                 onChange={(e) => setDirectMessages(e.target.value)}
+                setError={(error) => handleFieldError('directMessages', error)}
               />
               {parseInt(applications) < 20 && (
                 <InputField
@@ -126,6 +153,7 @@ const AcsParttimerStatusUpdates = () => {
                   type="text"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
+                  setError={(error) => handleFieldError('reason', error)}
                   placeholder="Due to Health issues and Festival"
                 />
               )}
@@ -137,7 +165,7 @@ const AcsParttimerStatusUpdates = () => {
                 onChange={(e) => setStatus(e.target.value)}
               />
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100">
+                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
                   {loading ? "Loading..." : "Submit"}
                 </button>
               </div>

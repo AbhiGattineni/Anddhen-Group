@@ -12,7 +12,20 @@ const AssInternUpdates = () => {
   const [description, setDescription] = useState("");
 
   const { loading, callApi } = useApi();
-
+  const [fieldErrors, setFieldErrors] = useState({});
+  const handleFieldError = (fieldName, error) => {
+    setFieldErrors(prevErrors => ({
+      ...prevErrors,
+      [fieldName]: error,
+    }));
+  };
+  const fields = {
+    date,
+    name
+  }
+  const allFieldsFilled = Object.values(fields).every(Boolean);
+  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const disableButton = !allFieldsFilled || hasErrors || loading || description.length <= 0;
   const resetForm = () => {
     setDate("");
     setName("");
@@ -21,6 +34,7 @@ const AssInternUpdates = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!allFieldsFilled || hasErrors) return;
     const formData = new FormData();
     formData.append("date", date);
     formData.append("name", name);
@@ -55,6 +69,7 @@ const AssInternUpdates = () => {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                setError={(error) => handleFieldError('date', error)}
               />
               <InputField
                 name="name"
@@ -62,6 +77,7 @@ const AssInternUpdates = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                setError={(error) => handleFieldError('name', error)}
               />
               <TextAreaField
                 name="description"
@@ -71,11 +87,7 @@ const AssInternUpdates = () => {
                 onChange={(e) => setDescription(e.target.value)}
               />
               <div className="form-group py-3">
-                <button
-                  type="submit"
-                  className="btn btn-warning shadow w-100"
-                  disabled={!date || !name || !description}
-                >
+                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
                   {loading ? "Loading..." : "Submit"}
                 </button>
               </div>

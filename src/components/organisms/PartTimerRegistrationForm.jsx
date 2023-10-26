@@ -14,6 +14,21 @@ export const PartTimerRegistrationForm = () => {
   const [studyYear, setStudyYear] = useState("");
   const [otherStatus, setOtherStatus] = useState("");
   const [partTimerReference, setPartTimerReference] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const fields = {
+    partTimerName,
+    partTimerEmail,
+    partTimerPhone,
+    partTimerStatus,
+    studyYear,
+    otherStatus,
+    partTimerReference
+  };
+
+  const allFieldsFilled = Object.values(fields).every(Boolean);
+  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const disableButton = !allFieldsFilled || hasErrors || loading;
 
   const resetForm = () => {
     setPartTimerName("");
@@ -25,8 +40,19 @@ export const PartTimerRegistrationForm = () => {
     setPartTimerReference("");
   };
 
+  const handleFieldError = (fieldName, error) => {
+    setFieldErrors(prevErrors => ({
+      ...prevErrors,
+      [fieldName]: error,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!allFieldsFilled || hasErrors) {
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", partTimerName);
@@ -65,9 +91,9 @@ export const PartTimerRegistrationForm = () => {
       <div className="card shadow-sm p-3 my-3">
         <div className="d-flex align-items-center justify-content-center">
           <div className="col-md-5">
-            <h5 className=""> Part Timer Registration</h5>
+            <h5 className="">Part Timer Registration</h5>
             <div className="underline"></div>
-            <form onSubmit={(e) => handleSubmit(e)}>
+            <form onSubmit={handleSubmit}>
               <InputField
                 name="name"
                 label="Name"
@@ -75,6 +101,7 @@ export const PartTimerRegistrationForm = () => {
                 type="text"
                 value={partTimerName}
                 onChange={(e) => setPartTimerName(e.target.value)}
+                setError={(error) => handleFieldError('name', error)}
               />
               <InputField
                 name="email"
@@ -83,6 +110,7 @@ export const PartTimerRegistrationForm = () => {
                 type="email"
                 value={partTimerEmail}
                 onChange={(e) => setPartTimerEmail(e.target.value)}
+                setError={(error) => handleFieldError('email', error)}
               />
               <InputField
                 name="phone"
@@ -91,6 +119,7 @@ export const PartTimerRegistrationForm = () => {
                 type="tel"
                 value={partTimerPhone}
                 onChange={(e) => setPartTimerPhone(e.target.value)}
+                setError={(error) => handleFieldError('phone', error)}
               />
               <div className="form-group">
                 <label>Status</label>
@@ -113,6 +142,7 @@ export const PartTimerRegistrationForm = () => {
                   type="text"
                   value={studyYear}
                   onChange={(e) => setStudyYear(e.target.value)}
+                  setError={(error) => handleFieldError('studyYear', error)}
                 />
               )}
               {partTimerStatus === "other" && (
@@ -123,6 +153,7 @@ export const PartTimerRegistrationForm = () => {
                   type="text"
                   value={otherStatus}
                   onChange={(e) => setOtherStatus(e.target.value)}
+                  setError={(error) => handleFieldError('otherStatus', error)}
                 />
               )}
               <InputField
@@ -132,9 +163,10 @@ export const PartTimerRegistrationForm = () => {
                 type="text"
                 value={partTimerReference}
                 onChange={(e) => setPartTimerReference(e.target.value)}
+                setError={(error) => handleFieldError('reference', error)}
               />
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100">
+                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
                   {loading ? "loading..." : "Submit"}
                 </button>
               </div>
@@ -146,3 +178,5 @@ export const PartTimerRegistrationForm = () => {
     </div>
   );
 };
+
+export default PartTimerRegistrationForm;

@@ -13,6 +13,21 @@ const StudentRegistrationForm = () => {
   const [studentCollege, setStudentCollege] = useState("");
   const [studentReference, setStudentReference] = useState("");
   const [studentJob, setStudentJob] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [submissionError, setSubmissionError] = useState(null);
+
+  const fields = {
+    studentName,
+    studentEmail,
+    studentPhone,
+    studentCollege,
+    studentReference,
+    studentJob
+  };
+
+  const allFieldsFilled = Object.values(fields).every(Boolean);
+  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const disableButton = !allFieldsFilled || hasErrors || loading;
 
   const resetForm = () => {
     setStudentName("");
@@ -23,20 +38,31 @@ const StudentRegistrationForm = () => {
     setStudentJob("");
   };
 
+  const handleFieldError = (fieldName, error) => {
+    setFieldErrors(prevErrors => ({
+      ...prevErrors,
+      [fieldName]: error,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    formData.append("sheetName", "Student Registration");
+
+    if (!allFieldsFilled || hasErrors) {
+      return;
+    }
 
     try {
-      await callApi(formData);
+      await callApi(new FormData(e.target));
       resetForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
       console.error("Error:", error);
+      setSubmissionError('There was an issue submitting the form. Please try again.');
     }
   };
+
   return (
     <div className="py-3">
       <div className="col-md-12 mb-4 text-center">
@@ -48,7 +74,7 @@ const StudentRegistrationForm = () => {
           <div className="col-md-6">
             <h5 className="">Student Registration</h5>
             <div className="underline"></div>
-            <form onSubmit={(e) => handleSubmit(e)}>
+            <form onSubmit={handleSubmit}>
               <InputField
                 name="name"
                 label="Name"
@@ -56,6 +82,7 @@ const StudentRegistrationForm = () => {
                 type="text"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
+                setError={(error) => handleFieldError('name', error)}
               />
               <InputField
                 name="email"
@@ -64,6 +91,7 @@ const StudentRegistrationForm = () => {
                 type="email"
                 value={studentEmail}
                 onChange={(e) => setStudentEmail(e.target.value)}
+                setError={(error) => handleFieldError('email', error)}
               />
               <InputField
                 name="phone"
@@ -72,6 +100,7 @@ const StudentRegistrationForm = () => {
                 type="tel"
                 value={studentPhone}
                 onChange={(e) => setStudentPhone(e.target.value)}
+                setError={(error) => handleFieldError('phone', error)}
               />
               <InputField
                 name="college"
@@ -80,14 +109,16 @@ const StudentRegistrationForm = () => {
                 type="text"
                 value={studentCollege}
                 onChange={(e) => setStudentCollege(e.target.value)}
+                setError={(error) => handleFieldError('college', error)}
               />
               <InputField
                 name="reference"
-                label=" Referred by"
+                label="Referred by"
                 placeholder="Referrer Name"
                 type="text"
                 value={studentReference}
                 onChange={(e) => setStudentReference(e.target.value)}
+                setError={(error) => handleFieldError('reference', error)}
               />
               <div className="d-md-flex my-3 gap-5">
                 <label className="">Job Type</label>
@@ -111,9 +142,10 @@ const StudentRegistrationForm = () => {
                 </div>
               </div>
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100">
+                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
                   {loading ? "loading..." : "Submit"}
                 </button>
+                {submissionError && <p className="text-danger mt-3">{submissionError}</p>}
               </div>
             </form>
           </div>

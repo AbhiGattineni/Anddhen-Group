@@ -21,6 +21,29 @@ const AcsManagerUpdates = () => {
   const [holdByStudent, setHoldByStudent] = useState("");
   const [newStudent, setNewStudent] = useState("");
   const [status, setStatus] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const handleFieldError = (fieldName, error) => {
+    setFieldErrors(prevErrors => ({
+      ...prevErrors,
+      [fieldName]: error,
+    }));
+  };
+  const fields = {
+    date,
+    managerName,
+    activeParttimers,
+    activeStudents,
+    needToUpdate,
+    notUpdatedFrom3Days,
+    applicationsBelow20From2Days,
+    leave,
+    needWeekendTime,
+    holdByStudent,
+    newStudent
+  };
+  const allFieldsFilled = Object.values(fields).every(Boolean);
+  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const disableButton = !allFieldsFilled || hasErrors || loading || status.length<=0;
 
   const resetForm = () => {
     setDate("");
@@ -34,11 +57,12 @@ const AcsManagerUpdates = () => {
     setNeedWeekendTime("");
     setHoldByStudent("");
     setNewStudent("");
-    setStatus(""); // Don't forget to reset this as well
+    setStatus(""); 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!allFieldsFilled || hasErrors) return;
     const formData = new FormData(e.target);
     formData.append("sheetName", "Manager Status");
     try {
@@ -71,6 +95,7 @@ const AcsManagerUpdates = () => {
                 max={today}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                setError={(error) => handleFieldError('date', error)}
               />
               <InputField
                 name="managerName"
@@ -78,6 +103,7 @@ const AcsManagerUpdates = () => {
                 placeholder="Manager Name"
                 value={managerName}
                 onChange={(e) => setManagerName(e.target.value)}
+                setError={(error) => handleFieldError('managerName', error)}
               />
               <InputField
                 name="activeParttimers"
@@ -85,6 +111,7 @@ const AcsManagerUpdates = () => {
                 type="number"
                 value={activeParttimers}
                 onChange={(e) => setActiveParttimers(e.target.value)}
+                setError={(error) => handleFieldError('activeParttimers', error)}
               />
               <InputField
                 name="activeStudents"
@@ -92,18 +119,21 @@ const AcsManagerUpdates = () => {
                 type="number"
                 value={activeStudents}
                 onChange={(e) => setActiveStudents(e.target.value)}
+                setError={(error) => handleFieldError('activeStudents', error)}
               />
               <InputField
                 name="needToUpdate"
                 label="Need to Update"
                 value={needToUpdate}
                 onChange={(e) => setNeedToUpdate(e.target.value)}
+                setError={(error) => handleFieldError('needToUpdate', error)}
               />
               <InputField
                 name="notUpdatedFrom3Days"
                 label="Not Updated From 3 Days"
                 value={notUpdatedFrom3Days}
                 onChange={(e) => setNotUpdatedFrom3Days(e.target.value)}
+                setError={(error) => handleFieldError('notUpdatedFrom3Days', error)}
               />
               <InputField
                 name="applicationsBelow20From2Days"
@@ -112,6 +142,7 @@ const AcsManagerUpdates = () => {
                 onChange={(e) =>
                   setApplicationsBelow20From2Days(e.target.value)
                 }
+                setError={(error) => handleFieldError('applicationsBelow20From2Days', error)}
               />
               <InputField
                 name="leave"
@@ -119,6 +150,7 @@ const AcsManagerUpdates = () => {
                 placeholder="Leave Details"
                 value={leave}
                 onChange={(e) => setLeave(e.target.value)}
+                setError={(error) => handleFieldError('leave', error)}
               />
               <InputField
                 name="needWeekendTime"
@@ -126,12 +158,14 @@ const AcsManagerUpdates = () => {
                 placeholder="Need Weekend Time Details"
                 value={needWeekendTime}
                 onChange={(e) => setNeedWeekendTime(e.target.value)}
+                setError={(error) => handleFieldError('needWeekendTime', error)}
               />
               <InputField
                 name="holdByStudent"
                 label="Hold By Student"
                 value={holdByStudent}
                 onChange={(e) => setHoldByStudent(e.target.value)}
+                setError={(error) => handleFieldError('holdByStudent', error)}
               />
               <InputField
                 name="newStudent"
@@ -139,6 +173,7 @@ const AcsManagerUpdates = () => {
                 placeholder="New Student Details"
                 value={newStudent}
                 onChange={(e) => setNewStudent(e.target.value)}
+                setError={(error) => handleFieldError('newStudent', error)}
               />
               <TextAreaField
                 name="status"
@@ -148,7 +183,7 @@ const AcsManagerUpdates = () => {
                 onChange={(e) => setStatus(e.target.value)}
               />
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100">
+                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
                   {loading ? "Loading..." : "Submit"}
                 </button>
               </div>
