@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "./InputField";
 import Toast from "./Toast";
 import { useApi } from "../../hooks/useApi";
@@ -25,7 +25,13 @@ export const PartTimerRegistrationForm = () => {
     otherStatus,
     partTimerReference
   };
-
+  useEffect(() => {
+    if (partTimerStatus === "student") {
+      setOtherStatus("N/A")
+    } else if (partTimerStatus === "other") {
+      setStudyYear("N/A")
+    }
+  }, [partTimerStatus]);
   const allFieldsFilled = Object.values(fields).every(Boolean);
   const hasErrors = Object.values(fieldErrors).some(error => error);
   const disableButton = !allFieldsFilled || hasErrors || loading;

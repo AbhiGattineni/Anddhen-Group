@@ -47,19 +47,19 @@ const StudentRegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData(e.target);
+    formData.append("sheetName", "Student Registration");
 
     if (!allFieldsFilled || hasErrors) {
       return;
     }
-
     try {
-      await callApi(new FormData(e.target));
+      await callApi(formData);
       resetForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
       console.error("Error:", error);
-      setSubmissionError('There was an issue submitting the form. Please try again.');
     }
   };
 
