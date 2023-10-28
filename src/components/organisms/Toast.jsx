@@ -3,7 +3,7 @@ import React from "react";
 const Toast = ({ show, onClose }) => {
   return (
     <div
-      className={`toast ${show ? "show" : ""} bg-info`}
+      className={`toast ${show ? "show" : ""} .bg-body-secondary`}
       role="alert"
       aria-live="assertive"
       aria-atomic="true"

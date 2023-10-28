@@ -22,6 +22,7 @@ import AcsManagerUpdates from "./components/pages/UpdatesAndStatus/AcsManagerUpd
 import AcsParttimerStatusUpdates from "./components/pages/UpdatesAndStatus/AcsParttimerStatusUpdates";
 import AssInternUpdates from "./components/pages/UpdatesAndStatus/AssInternUpdates";
 import { AdminPortal } from "./components/pages/Admin/AdminPortal";
+import { AcsAdmin } from "./components/pages/Admin/AcsAdmin";
 
 function MainLayout({ children }) {
   return (
@@ -172,6 +173,14 @@ function App() {
           element={
             <MainLayout>
               <AdminPortal />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <MainLayout>
+              <AcsAdmin />
             </MainLayout>
           }
         />

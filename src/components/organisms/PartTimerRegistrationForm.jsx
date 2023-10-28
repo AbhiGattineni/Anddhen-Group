@@ -31,6 +31,10 @@ export const PartTimerRegistrationForm = () => {
     } else if (partTimerStatus === "other") {
       setStudyYear("N/A")
     }
+    else{
+      setOtherStatus("N/A")
+      setStudyYear("N/A")
+    }
   }, [partTimerStatus]);
   const allFieldsFilled = Object.values(fields).every(Boolean);
   const hasErrors = Object.values(fieldErrors).some(error => error);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../../organisms/InputField";
 import Toast from "../../organisms/Toast";
 import { useApi } from "../../../hooks/useApi";
@@ -36,6 +36,11 @@ const AcsParttimerStatusUpdates = () => {
     reason,
     status
   };
+  useEffect(() => {
+    if (parseInt(applications) >= 20) {
+      setReason("N/A");
+    }
+  },[applications])
   const allFieldsFilled = Object.values(fields).every(Boolean);
   const hasErrors = Object.values(fieldErrors).some(error => error);
   const disableButton = !allFieldsFilled || hasErrors || loading || status.length <= 0;
