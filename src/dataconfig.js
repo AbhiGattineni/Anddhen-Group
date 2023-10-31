@@ -338,3 +338,5 @@ export const adminPortal = [
     route: "ass_admin",
   },
 ];
+
+export const sheetNames = ["Part Timers Registrations","Student Registration","Manager Status","Part Timer Status","Intern Status"];
