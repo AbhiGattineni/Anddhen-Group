@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { sheetNames } from "../../../dataconfig";
+import { StatusCalendar } from "../../templates/StatusCalender";
 
 export const AcsAdmin = () => {
   const [headers, setHeaders] = useState([]);
@@ -15,6 +16,8 @@ export const AcsAdmin = () => {
     direction: "ascending",
   });
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [showCalendar, setShowCalendar] = useState(false);
 
   function handleTab(details) {
     if (
@@ -105,6 +108,7 @@ export const AcsAdmin = () => {
 
     return filteredData;
   };
+  const toggleCalendar = () => setShowCalendar(!showCalendar);
 
   return (
     <div className="">
@@ -121,7 +125,8 @@ export const AcsAdmin = () => {
         <>
           <div className="container p-3">
             <div className="row justify-content-between align-items-center">
-              <div className="col-12 col-md-auto mb-2 mb-md-0">
+              {/* Dropdowns to the left */}
+              <div className="col-lg-auto mb-2 mb-lg-0">
                 <div className="dropdown">
                   <button
                     className="btn btn-secondary dropdown-toggle"
@@ -169,18 +174,40 @@ export const AcsAdmin = () => {
                   </div>
                 )}
               </div>
-              <div className="col-12 col-md-auto">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+
+              {/* Search and toggle to the right */}
+              <div className="col-lg-auto">
+                <div className="d-lg-flex justify-content-end align-items-center">
+                  <input
+                    type="text"
+                    className="form-control me-2"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <div className="form-check form-switch">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="calendarToggle"
+                      checked={showCalendar}
+                      onChange={toggleCalendar}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor="calendarToggle"
+                    >
+                      Calendar View
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
+          {showCalendar && empName && (
+            <StatusCalendar data={getFilteredData()} empName={empName} />
+          )}
           <div className="table-responsive">
             <table className="table table-striped">
               <thead>
