@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import InputField from "../organisms/InputField";
 import Toast from "../organisms/Toast";
 import { useApi } from "../../hooks/useApi";
+import { sendEmail } from "../templates/email";
 
 const StudentRegistrationForm = () => {
   const [showToast, setShowToast] = useState(false);
@@ -55,6 +56,7 @@ const StudentRegistrationForm = () => {
     }
     try {
       await callApi(formData);
+      sendEmail("student");
       resetForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);

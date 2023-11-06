@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import InputField from "./InputField";
 import Toast from "./Toast";
 import { useApi } from "../../hooks/useApi";
+import { sendEmail } from "../templates/email";
 
 export const PartTimerRegistrationForm = () => {
   const [showToast, setShowToast] = useState(false);
@@ -31,7 +32,7 @@ export const PartTimerRegistrationForm = () => {
     } else if (partTimerStatus === "other") {
       setStudyYear("N/A")
     }
-    else{
+    else {
       setOtherStatus("N/A")
       setStudyYear("N/A")
     }
@@ -84,6 +85,7 @@ export const PartTimerRegistrationForm = () => {
 
     try {
       await callApi(formData);
+      sendEmail("parttimer");
       resetForm();
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
