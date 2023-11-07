@@ -16,6 +16,7 @@ const StudentRegistrationForm = () => {
   const [studentJob, setStudentJob] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(null);
+  const [toastMsg,setToastMsg] = useState(null);
 
   const fields = {
     studentName,
@@ -58,9 +59,11 @@ const StudentRegistrationForm = () => {
       await callApi(formData);
       sendEmail("student");
       resetForm();
+      setToastMsg("Data successfully submitted!");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
+      setToastMsg("Something went wrong!")
       console.error("Error:", error);
     }
   };
@@ -153,7 +156,7 @@ const StudentRegistrationForm = () => {
           </div>
         </div>
       </div>
-      <Toast show={showToast} onClose={() => setShowToast(false)} />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

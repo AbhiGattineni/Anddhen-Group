@@ -6,7 +6,7 @@ export const sendEmail = (application) => {
         to_email: email_emailJs,
         subject: 'Your email subject',
         message: `You have received a new application from ${application} application.`
-    }, process.env.REACT_APP_EMAIL_USER_ID,)
+    }, process.env.REACT_APP_EMAIL_USER_ID)
         .then((response) => {
             console.log('Email sent:', response);
         })

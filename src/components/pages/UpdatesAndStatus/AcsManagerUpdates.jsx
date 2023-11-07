@@ -22,6 +22,7 @@ const AcsManagerUpdates = () => {
   const [newStudent, setNewStudent] = useState("");
   const [status, setStatus] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [toastMsg,setToastMsg] = useState(null);
   const handleFieldError = (fieldName, error) => {
     setFieldErrors(prevErrors => ({
       ...prevErrors,
@@ -68,9 +69,11 @@ const AcsManagerUpdates = () => {
     try {
       await callApi(formData);
       resetForm();
+      setToastMsg("Data successfully submitted!");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
+      setToastMsg("Something went wrong!")
       console.error("Error:", error);
     }
   };
@@ -191,7 +194,7 @@ const AcsManagerUpdates = () => {
           </div>
         </div>
       </div>
-      <Toast show={showToast} onClose={() => setShowToast(false)} />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

@@ -341,4 +341,4 @@ export const adminPortal = [
 
 export const sheetNames = ["Part Timers Registrations","Student Registration","Manager Status","Part Timer Status","Intern Status"];
 
-export const email_emailJs = "trinathgundla@gmail.com";
+export const email_emailJs = "abhishekgattineni@gmail.com";

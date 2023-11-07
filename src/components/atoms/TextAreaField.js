@@ -5,7 +5,7 @@ const TextAreaField = ({ label, name, value, onChange, placeholder }) => {
     <div className="mb-3">
       {label && (
         <label htmlFor={name} className="form-label">
-          {label}
+          {label} <span className="text-danger">*</span>
         </label>
       )}
       <textarea
