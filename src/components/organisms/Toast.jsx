@@ -1,6 +1,6 @@
 import React from "react";
 
-const Toast = ({ show, onClose }) => {
+const Toast = ({ show, onClose, message }) => {
   return (
     <div
       className={`toast ${show ? "show" : ""} .bg-body-secondary`}
@@ -10,7 +10,7 @@ const Toast = ({ show, onClose }) => {
       style={{ position: "fixed", left: "10px", bottom: "10px", zIndex: 1050 }}
     >
       <div className="toast-body d-flex justify-content-between fw-bold">
-        Data successfully submitted!
+        {message}
         <button
           type="button"
           className="ml-2 mb-1 close border-0"

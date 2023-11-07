@@ -16,6 +16,7 @@ export const PartTimerRegistrationForm = () => {
   const [otherStatus, setOtherStatus] = useState("");
   const [partTimerReference, setPartTimerReference] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
+  const [toastMsg,setToastMsg] = useState(null);
 
   const fields = {
     partTimerName,
@@ -87,9 +88,11 @@ export const PartTimerRegistrationForm = () => {
       await callApi(formData);
       sendEmail("parttimer");
       resetForm();
+      setToastMsg("Data successfully submitted!");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
+      setToastMsg("Something went wrong!")
       console.error("Error:", error);
     }
   };
@@ -186,7 +189,7 @@ export const PartTimerRegistrationForm = () => {
           </div>
         </div>
       </div>
-      <Toast show={showToast} onClose={() => setShowToast(false)} />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

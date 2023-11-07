@@ -20,6 +20,7 @@ export const Registration = () => {
   const [partTimerCollege, setPartTimerCollege] = useState("");
   const [partTimerReference, setPartTimerReference] = useState("");
   const [partTimerStatus, setPartTimerStatus] = useState("");
+  const [toastMsg,setToastMsg] = useState(null);
 
   const resetStudentForm = () => {
     setStudentName("");
@@ -66,12 +67,12 @@ export const Registration = () => {
       } else if (sheetName === "Sheet2") {
         resetPartTimerForm();
       }
-
+      setToastMsg("Data successfully submitted!");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      resetFunction();
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+      setToastMsg("Something went wrong!")
+      console.error("Error:", error);
     }
     setLoader1(false);
     setLoader2(false);
@@ -220,7 +221,7 @@ export const Registration = () => {
           </div>
         </div>
       </div>
-      <Toast show={showToast} onClose={() => setShowToast(false)} />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };
