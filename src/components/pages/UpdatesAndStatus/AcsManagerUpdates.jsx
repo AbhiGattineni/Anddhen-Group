@@ -74,6 +74,8 @@ const AcsManagerUpdates = () => {
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
       setToastMsg("Something went wrong!")
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
       console.error("Error:", error);
     }
   };

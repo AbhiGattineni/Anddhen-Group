@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import InputField from "./InputField";
 import Toast from "./Toast";
 import { useApi } from "../../hooks/useApi";
-import { sendEmail } from "../templates/email";
+import { sendEmail } from "../templates/emailService";
 
 export const PartTimerRegistrationForm = () => {
   const [showToast, setShowToast] = useState(false);
@@ -93,6 +93,8 @@ export const PartTimerRegistrationForm = () => {
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
       setToastMsg("Something went wrong!")
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
       console.error("Error:", error);
     }
   };
