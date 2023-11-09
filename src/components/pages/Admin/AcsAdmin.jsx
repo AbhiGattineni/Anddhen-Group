@@ -134,7 +134,7 @@ export const AcsAdmin = () => {
                     <div className="container p-3">
                         <div className="row justify-content-between align-items-center gap-2">
                             {/* Dropdowns to the left */}
-                            <div className="col col-12 col-md-6 d-flex gap-2">
+                            <div className="col col-12 col-md-3 d-flex justify-content-center gap-2">
                                 <div className="dropdown">
                                     <button
                                         className="btn btn-secondary dropdown-toggle"
@@ -166,7 +166,7 @@ export const AcsAdmin = () => {
                                             aria-expanded="false"
                                             disabled={!data.length}
                                         >
-                                            Name
+                                            {empName ? empName : "Name"}
                                         </button>
                                         {data.length ?
                                             <ul className="dropdown-menu">
@@ -187,16 +187,18 @@ export const AcsAdmin = () => {
                             </div>
 
                             {/* Search and toggle to the right */}
-                            <div className="col">
-                                <div className="">
-                                    <input
-                                        type="text"
-                                        className="form-control me-2 rounded-pill"
-                                        placeholder="Search..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                    <div className="form-check form-switch d-flex justify-content-end gap-2">
+                            <div className="col col-12 col-md-8">
+                                <div className="row align-items-center">
+                                    <div className="col">
+                                        <input
+                                            type="text"
+                                            className="col-3 form-control me-2 rounded-pill"
+                                            placeholder="Search..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
                                         <input
                                             className="form-check-input"
                                             type="checkbox"
@@ -242,7 +244,13 @@ export const AcsAdmin = () => {
                                         {getFilteredData().map((row, rowIndex) => (
                                             <tr key={rowIndex}>
                                                 {row.map((cell, cellIndex) => (
-                                                    <td key={cellIndex}>{cell}</td>
+                                                    <td key={cellIndex}>
+                                                        {(
+                                                            sheetName === "Manager Status" ||
+                                                            sheetName === "Part Timer Status" ||
+                                                            sheetName === "Intern Status"
+                                                        ) && cellIndex == 0 ? new Date(cell).toLocaleDateString() : cell}
+                                                    </td>
                                                 ))}
                                                 <td>
                                                     <a href="#edit">edit</a>
