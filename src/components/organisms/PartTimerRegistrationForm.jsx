@@ -5,96 +5,73 @@ import { useApi } from "../../hooks/useApi";
 import { sendEmail } from "../templates/emailService";
 
 export const PartTimerRegistrationForm = () => {
-  const [showToast, setShowToast] = useState(false);
   const { loading, callApi } = useApi();
-
-  const [partTimerName, setPartTimerName] = useState("");
-  const [partTimerEmail, setPartTimerEmail] = useState("");
-  const [partTimerPhone, setPartTimerPhone] = useState("");
-  const [partTimerStatus, setPartTimerStatus] = useState("");
-  const [studyYear, setStudyYear] = useState("");
-  const [otherStatus, setOtherStatus] = useState("");
-  const [partTimerReference, setPartTimerReference] = useState("");
+  const [formData, setFormData] = useState({
+    partTimerName: "",
+    partTimerEmail: "",
+    partTimerPhone: "",
+    partTimerStatus: "",
+    studyYear: "",
+    otherStatus: "",
+    partTimerReference: "",
+  });
   const [fieldErrors, setFieldErrors] = useState({});
-  const [toastMsg,setToastMsg] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: "" });
 
-  const fields = {
-    partTimerName,
-    partTimerEmail,
-    partTimerPhone,
-    partTimerStatus,
-    studyYear,
-    otherStatus,
-    partTimerReference
-  };
   useEffect(() => {
-    if (partTimerStatus === "student") {
-      setOtherStatus("N/A")
-    } else if (partTimerStatus === "other") {
-      setStudyYear("N/A")
-    }
-    else {
-      setOtherStatus("N/A")
-      setStudyYear("N/A")
-    }
-  }, [partTimerStatus]);
-  const allFieldsFilled = Object.values(fields).every(Boolean);
-  const hasErrors = Object.values(fieldErrors).some(error => error);
-  const disableButton = !allFieldsFilled || hasErrors || loading;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      studyYear:
+        formData.partTimerStatus === "student" ? prevFormData.studyYear : "N/A",
+      otherStatus:
+        formData.partTimerStatus === "other" ? prevFormData.otherStatus : "N/A",
+    }));
+  }, [formData.partTimerStatus]);
 
-  const resetForm = () => {
-    setPartTimerName("");
-    setPartTimerEmail("");
-    setPartTimerPhone("");
-    setPartTimerStatus("");
-    setStudyYear("");
-    setOtherStatus("");
-    setPartTimerReference("");
+  const handleChange = (field, value) => {
+    setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors(prevErrors => ({
-      ...prevErrors,
-      [fieldName]: error,
-    }));
+    setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
+  };
+
+  const isFormValid = () => {
+    return (
+      Object.values(formData).every(Boolean) &&
+      !Object.values(fieldErrors).some(Boolean) &&
+      !loading
+    );
+  };
+
+  const constructFormData = () => {
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => data.append(key, value));
+    data.append("sheetName", "Part Timers Registrations");
+    return data;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!allFieldsFilled || hasErrors) {
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("name", partTimerName);
-    formData.append("email", partTimerEmail);
-    formData.append("phone", partTimerPhone);
-    formData.append("status", partTimerStatus);
-    if (partTimerStatus === "student") {
-      formData.append("studyYear", studyYear);
-      formData.append("otherStatus", "N/A");
-    } else if (partTimerStatus === "other") {
-      formData.append("otherStatus", otherStatus);
-      formData.append("studyYear", "N/A");
-    } else {
-      formData.append("studyYear", "N/A");
-      formData.append("otherStatus", "N/A");
-    }
-    formData.append("reference", partTimerReference);
-    formData.append("sheetName", "Part Timers Registrations");
+    if (!isFormValid()) return;
 
     try {
-      await callApi(formData);
+      await callApi(constructFormData());
       sendEmail("parttimer");
-      resetForm();
-      setToastMsg("Data successfully submitted!");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      setFormData({
+        partTimerName: "",
+        partTimerEmail: "",
+        partTimerPhone: "",
+        partTimerStatus: "",
+        studyYear: "",
+        otherStatus: "",
+        partTimerReference: "",
+      });
+      setToast({ show: true, message: "Data successfully submitted!" });
+      setTimeout(() => setToast({ show: false, message: "" }), 3000);
     } catch (error) {
-      setToastMsg("Something went wrong!")
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      setToast({ show: true, message: "Something went wrong!" });
+      setTimeout(() => setToast({ show: false, message: "" }), 3000);
       console.error("Error:", error);
     }
   };
@@ -116,34 +93,36 @@ export const PartTimerRegistrationForm = () => {
                 label="Name"
                 placeholder="Full Name"
                 type="text"
-                value={partTimerName}
-                onChange={(e) => setPartTimerName(e.target.value)}
-                setError={(error) => handleFieldError('name', error)}
+                value={formData.partTimerName}
+                onChange={(e) => handleChange("partTimerName", e.target.value)}
+                setError={(error) => handleFieldError("name", error)}
               />
               <InputField
                 name="email"
                 label="Email"
                 placeholder="Email"
                 type="email"
-                value={partTimerEmail}
-                onChange={(e) => setPartTimerEmail(e.target.value)}
-                setError={(error) => handleFieldError('email', error)}
+                value={formData.partTimerEmail}
+                onChange={(e) => handleChange("partTimerEmail", e.target.value)}
+                setError={(error) => handleFieldError("email", error)}
               />
               <InputField
                 name="phone"
                 label="Phone"
                 placeholder="Phone"
                 type="tel"
-                value={partTimerPhone}
-                onChange={(e) => setPartTimerPhone(e.target.value)}
-                setError={(error) => handleFieldError('phone', error)}
+                value={formData.partTimerPhone}
+                onChange={(e) => handleChange("partTimerPhone", e.target.value)}
+                setError={(error) => handleFieldError("phone", error)}
               />
               <div className="form-group">
                 <label>Status</label>
                 <select
                   className="form-control"
-                  value={partTimerStatus}
-                  onChange={(e) => setPartTimerStatus(e.target.value)}
+                  value={formData.partTimerStatus}
+                  onChange={(e) =>
+                    handleChange("partTimerStatus", e.target.value)
+                  }
                 >
                   <option value="">Select Status</option>
                   <option value="student">Student</option>
@@ -151,26 +130,26 @@ export const PartTimerRegistrationForm = () => {
                   <option value="other">Other</option>
                 </select>
               </div>
-              {partTimerStatus === "student" && (
+              {formData.partTimerStatus === "student" && (
                 <InputField
                   name="studyYear"
-                  label="Year of Study"
-                  placeholder="Year of Study"
+                  label="Which year you are in ?"
+                  placeholder="Which year you are in ?"
                   type="text"
-                  value={studyYear}
-                  onChange={(e) => setStudyYear(e.target.value)}
-                  setError={(error) => handleFieldError('studyYear', error)}
+                  value={formData.studyYear}
+                  onChange={(e) => handleChange("studyYear", e.target.value)}
+                  setError={(error) => handleFieldError("studyYear", error)}
                 />
               )}
-              {partTimerStatus === "other" && (
+              {formData.partTimerStatus === "other" && (
                 <InputField
                   name="otherStatus"
                   label="Please specify"
                   placeholder="Please specify"
                   type="text"
-                  value={otherStatus}
-                  onChange={(e) => setOtherStatus(e.target.value)}
-                  setError={(error) => handleFieldError('otherStatus', error)}
+                  value={formData.otherStatus}
+                  onChange={(e) => handleChange("otherStatus", e.target.value)}
+                  setError={(error) => handleFieldError("otherStatus", error)}
                 />
               )}
               <InputField
@@ -178,20 +157,30 @@ export const PartTimerRegistrationForm = () => {
                 label="Referred by"
                 placeholder="Referrer Name"
                 type="text"
-                value={partTimerReference}
-                onChange={(e) => setPartTimerReference(e.target.value)}
-                setError={(error) => handleFieldError('reference', error)}
+                value={formData.partTimerReference}
+                onChange={(e) =>
+                  handleChange("partTimerReference", e.target.value)
+                }
+                setError={(error) => handleFieldError("reference", error)}
               />
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
-                  {loading ? "loading..." : "Submit"}
+                <button
+                  type="submit"
+                  className="btn btn-warning shadow w-100"
+                  disabled={!isFormValid()}
+                >
+                  {loading ? "Loading..." : "Submit"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        onClose={() => setToast({ show: false, message: "" })}
+      />
     </div>
   );
 };
