@@ -133,8 +133,8 @@ export const PartTimerRegistrationForm = () => {
               {formData.partTimerStatus === "student" && (
                 <InputField
                   name="studyYear"
-                  label="Which year you are in ?"
-                  placeholder="Which year you are in ?"
+                  label="Year of Study"
+                  placeholder="Year of Study"
                   type="text"
                   value={formData.studyYear}
                   onChange={(e) => handleChange("studyYear", e.target.value)}
