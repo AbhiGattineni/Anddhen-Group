@@ -342,3 +342,10 @@ export const adminPortal = [
 export const sheetNames = ["Part Timers Registrations","Student Registration","Manager Status","Part Timer Status","Intern Status"];
 
 export const emailJs_email = "abhishekgattineni@gmail.com";
+
+export const colleges = [
+  { value: 'option1', label: 'option1' },
+  { value: 'option2', label: 'option2' },
+  { value: 'option3', label: 'option3' },
+  { value: 'option4', label: 'option4' },
+];
