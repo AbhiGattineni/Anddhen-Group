@@ -23,6 +23,7 @@ import AcsParttimerStatusUpdates from "./components/pages/UpdatesAndStatus/AcsPa
 import AssInternUpdates from "./components/pages/UpdatesAndStatus/AssInternUpdates";
 import { AdminPortal } from "./components/pages/Admin/AdminPortal";
 import { AcsAdmin } from "./components/pages/Admin/AcsAdmin";
+import { EducationConsultant } from "./components/organisms/EducationConsultant";
 
 function MainLayout({ children }) {
   return (
@@ -124,6 +125,14 @@ function App() {
           element={
             <MainLayout>
               <JobApplicationRegistration />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/acs/educationconsulting"
+          element={
+            <MainLayout>
+              <EducationConsultant />
             </MainLayout>
           }
         />

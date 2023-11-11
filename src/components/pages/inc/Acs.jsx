@@ -34,9 +34,9 @@ export const Acs = () => {
                 />
               </div>
               <div className="card-body card-body-cascade text-center">
-                <h4 className="card-title text-black">
-                  Higher education consulting
-                </h4>
+                <Link to={"/acs/educationconsulting"} className="text-decoration-none">
+                  <h4 className="card-title text-black">Higher education consulting</h4>
+                </Link>
                 <p className="card-text">
                   Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                   Voluptatibus, ex, recusandae. Facere modi sunt, quod
@@ -80,7 +80,7 @@ export const Acs = () => {
                 />
               </div>
               <div className="card-body card-body-cascade text-center">
-                <Link to={"jobapplication"} className="text-decoration-none">
+                <Link to={"/"} className="text-decoration-none">
                   <h4 className="card-title text-black">Courses</h4>
                 </Link>
                 <p className="card-text">
