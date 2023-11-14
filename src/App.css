@@ -53,3 +53,6 @@ p {
 .custom-dropdown::after {
     display: none !important; 
 }
+.cursor-pointer {
+    cursor: pointer;
+  }

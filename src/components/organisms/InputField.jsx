@@ -20,6 +20,10 @@ const InputField = (props) => {
     if (props.name === "email" && !emailPattern.test(props.value)) {
       return "Enter a valid email address";
     }
+    
+    if (props.name === "password" && props.value.length<=0) {
+      return "Password should not be empty";
+    }
 
     if (props.name === "phone" && !phonePattern.test(props.value)) {
       return "Enter valid phone number";
@@ -66,6 +70,7 @@ const InputField = (props) => {
         value={props.value}
         onChange={props.onChange}
         onBlur={handleBlur}
+        onFocus={props.onFocus}
         required
       />
       {error ? <span className="text-danger">{error}</span> : null}

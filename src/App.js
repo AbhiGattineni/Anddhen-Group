@@ -24,6 +24,7 @@ import AssInternUpdates from "./components/pages/UpdatesAndStatus/AssInternUpdat
 import { AdminPortal } from "./components/pages/Admin/AdminPortal";
 import { AcsAdmin } from "./components/pages/Admin/AcsAdmin";
 import { EducationConsultant } from "./components/organisms/EducationConsultant";
+import { Login } from "./components/pages/Auth/Login";
 
 function MainLayout({ children }) {
   return (
@@ -194,6 +195,7 @@ function App() {
           }
         />
 
+        <Route path="/login" element={<Login />} />
         <Route path="/quiz" element={<Quiz />} />
       </Routes>
     </Router>
