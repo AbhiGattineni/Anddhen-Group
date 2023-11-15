@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
-import InputField from '../../organisms/InputField'
 import Toast from '../../organisms/Toast';
+import InputField from '../../organisms/InputField';
 import { Link } from 'react-router-dom';
 
-export const Login = () => {
+export const Register = () => {
     const [formData, setFormData] = useState({
         email: "",
-        password: ""
+        password: "",
+        confirmpassword:""
     });
     const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword1, setShowPassword1] = useState(false);
+    const [showPassword2, setShowPassword2] = useState(false);
     const [fieldErrors, setFieldErrors] = useState({});
     const [focus, setFocus] = useState(false);
     const [toast, setToast] = useState({ show: false, message: "" });
@@ -32,7 +34,7 @@ export const Login = () => {
         if (!isFormValid()) return;
 
         try {
-            setToast({ show: true, message: "Login successfully" });
+            setToast({ show: true, message: "Account created" });
             setTimeout(() => setToast({ show: false, message: "" }), 3000);
         } catch (error) {
             setToast({ show: true, message: "Something went wrong!" });
@@ -50,7 +52,7 @@ export const Login = () => {
                         </div>
                         <div className="col w-50">
                             <div className="d-flex align-items-center mb-3">
-                                <div>Sign in with </div>
+                                <div>Sign up with </div>
                                 <div className="ms-3 d-flex gap-3">
                                     <i className="fs-3 cursor-pointer bi bi-google" style={{ color: "#4285F4" }}></i>
                                     <i className="fs-3 cursor-pointer bi bi-facebook" style={{ color: "#3b5998" }}></i>
@@ -69,6 +71,15 @@ export const Login = () => {
                             </div>
                             <form onSubmit={handleSubmit}>
                                 <InputField
+                                    name="name"
+                                    label="Name"
+                                    placeholder="Full Name"
+                                    type="text"
+                                    value={formData.partTimerName}
+                                    onChange={(e) => handleChange("partTimerName", e.target.value)}
+                                    setError={(error) => handleFieldError("name", error)}
+                                />
+                                <InputField
                                     name="email"
                                     label="Email Address"
                                     placeholder="Enter valid email address"
@@ -82,19 +93,31 @@ export const Login = () => {
                                         name="password"
                                         label="Password"
                                         placeholder="Enter password"
-                                        type={showPassword ? "text" : "password"}
+                                        type={showPassword1 ? "text" : "password"}
                                         value={formData.password}
                                         onChange={(e) => handleChange("password", e.target.value)}
                                         onFocus={() => setFocus(true)}
                                         setError={(error) => handleFieldError("password", error)}
                                     />
                                     {focus && formData.password.length ?
-                                        <i onClick={() => setShowPassword(!showPassword)} className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"} position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`} style={{top:"35px"}}></i>
+                                        <i onClick={() => setShowPassword1(!showPassword1)} className={`bi ${showPassword1 ? "bi-eye-slash-fill" : "bi-eye-fill"} position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`} style={{top:"35px"}}></i>
                                         : null}
                                 </div>
-                                <div className="row">
-                                    <div className="col"></div>
-                                    <p className='col col-auto cursor-pointer m-0'>Forget Password?</p>
+                                <div className="position-relative">
+                                    <InputField
+                                        name="confirmpassword"
+                                        label="Confirm Password"
+                                        placeholder="Enter password"
+                                        type={showPassword2 ? "text" : "password"}
+                                        value={formData.confirmpassword}
+                                        onChange={(e) => handleChange("confirmpassword", e.target.value)}
+                                        onFocus={() => setFocus(true)}
+                                        setError={(error) => handleFieldError("confirmpassword", error)}
+                                        data={formData.password}
+                                    />
+                                    {focus && formData.confirmpassword.length ?
+                                        <i onClick={() => setShowPassword2(!showPassword2)} className={`bi ${showPassword2 ? "bi-eye-slash-fill" : "bi-eye-fill"} position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`} style={{top:"35px"}}></i>
+                                        : null}
                                 </div>
                                 <div className={`form-group mb-2`}>
                                     <button
@@ -107,8 +130,8 @@ export const Login = () => {
                                 </div>
                             </form>
                             <div className="d-flex align-items-center gap-2">
-                                <div>Don't have an account? </div>
-                                <Link to="/register" className="text-primary fw-bold text-decoration-none">register</Link>
+                                <div>Already have an account? </div>
+                                <Link to="/login" className="text-primary fw-bold text-decoration-none">login</Link>
                             </div>
                         </div>
                     </div>

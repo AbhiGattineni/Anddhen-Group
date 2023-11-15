@@ -24,6 +24,10 @@ const InputField = (props) => {
     if (props.name === "password" && props.value.length<=0) {
       return "Password should not be empty";
     }
+    
+    if (props.name === "confirmpassword" && props.value !== props.data) {
+      return "Password is not matching";
+    }
 
     if (props.name === "phone" && !phonePattern.test(props.value)) {
       return "Enter valid phone number";
@@ -57,7 +61,9 @@ const InputField = (props) => {
     setError(currentError);
     props.setError(currentError);
   };
-
+  if(props.name === "confirmpassword"){
+    console.log(props.data !== props.value);
+  }
   return (
     <div className={`form-group ${props.className}`}>
       <label className="mb-1">{props.label} <span className="text-danger">*</span></label>

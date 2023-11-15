@@ -25,6 +25,7 @@ import { AdminPortal } from "./components/pages/Admin/AdminPortal";
 import { AcsAdmin } from "./components/pages/Admin/AcsAdmin";
 import { EducationConsultant } from "./components/organisms/EducationConsultant";
 import { Login } from "./components/pages/Auth/Login";
+import { Register } from "./components/pages/Auth/Register";
 
 function MainLayout({ children }) {
   return (
@@ -196,6 +197,7 @@ function App() {
         />
 
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/quiz" element={<Quiz />} />
       </Routes>
     </Router>
