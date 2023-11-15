@@ -15,22 +15,22 @@ function Footer() {
             </p>
             <div className="socials">
               <a href="/">
-                <i id="f" className="bi bi-facebook"></i>
+                <i className="bi bi-facebook"></i>
               </a>
               <a href="/">
-                <i id="l" className="bi bi-linkedin"></i>
+                <i className="bi bi-linkedin"></i>
               </a>
               <a href="/">
-                <i id="t" className="bi bi-github"></i>
+                <i className="bi bi-github"></i>
               </a>
               <a href="/">
-                <i id="t" className="bi bi-twitter"></i>
+                <i className="bi bi-twitter"></i>
               </a>
               <a href="/">
-                <i id="t" className="bi bi-instagram"></i>
+                <i className="bi bi-instagram"></i>
               </a>
               <a href="/">
-                <i id="t" className="bi bi-youtube"></i>
+                <i className="bi bi-youtube"></i>
               </a>
             </div>
           </div>

@@ -34,14 +34,25 @@
     transition: .7s;
 }
 
-#f:hover {
+.socials .bi-facebook:hover {
     color: #3b5998;
 }
 
-#l:hover {
-    color: #0e76a8;
+.socials .bi-linkedin:hover {
+    color: #0A66C2;
 }
 
-#t:hover {
+.socials .bi-twitter:hover {
     color: #00acee;
+}
+
+.socials .bi-github:hover{
+    color: #fff;
+}
+
+.socials .bi-instagram:hover{
+    color: #E1306C;
+}
+.socials .bi-youtube:hover{
+    color: #FF0000;
 }
