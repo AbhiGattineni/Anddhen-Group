@@ -26,6 +26,7 @@ import { AcsAdmin } from "./components/pages/Admin/AcsAdmin";
 import { EducationConsultant } from "./components/organisms/EducationConsultant";
 import { Login } from "./components/pages/Auth/Login";
 import { Register } from "./components/pages/Auth/Register";
+import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
 
 function MainLayout({ children }) {
   return (
@@ -190,9 +191,11 @@ function App() {
         <Route
           path="/admin"
           element={
-            <MainLayout>
-              <AcsAdmin />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout>
+                <AcsAdmin />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
 
