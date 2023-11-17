@@ -339,7 +339,7 @@ export const adminPortal = [
   },
 ];
 
-export const sheetNames = ["Part Timers Registrations","Student Registration","Manager Status","Part Timer Status","Intern Status"];
+export const sheetNames = ["Part Timers Registrations", "Student Registration", "Manager Status", "Part Timer Status", "Intern Status"];
 
 export const emailJs_email = "abhishekgattineni@gmail.com";
 
@@ -349,3 +349,44 @@ export const colleges = [
   { value: 'option3', label: 'option3' },
   { value: 'option4', label: 'option4' },
 ];
+
+export const bTechBranches = [
+  "Agricultural Engineering",
+  "Genetic Engineering",
+  "Aeronautical Engineering",
+  "Information Technology",
+  "Aerospace Engineering",
+  "Marine Engineering",
+  "Artificial Intelligence",
+  "Mechanical Engineering",
+  "Automobile Engineering",
+  "Nano Technology",
+  "Biotechnology",
+  "Petroleum Engineering",
+  "Chemical Engineering",
+  "Plastic Engineering",
+  "Civil Engineering",
+  "Production Engineering",
+  "Computer Science",
+  "Robotics Engineering",
+  "Data Science and Engineering",
+  "Software Engineering",
+  "Electrical and Electronics Engineering",
+  "Telecommunication Engineering",
+  "Electrical Engineering",
+  "Biotechnology Engineering",
+  "Electronics and Communication Engineering",
+  "Naval Architecture and Ocean Engineering",
+  "Electronics Engineering",
+  "Metallurgical Engineering",
+  "Food Technology",
+  "Ceramic Engineering",
+  "Industrial and Production Engineering",
+  "Instrumentation Engineering",
+  "Manufacturing Science and Engineering",
+  "Materials Engineering",
+  "Footwear Engineering",
+  "Artificial Intelligence and Data Science",
+  "Bio Medical Engineering",
+  "Computational Mathematics",
+]

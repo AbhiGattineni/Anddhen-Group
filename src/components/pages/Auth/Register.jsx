@@ -7,7 +7,7 @@ export const Register = () => {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-        confirmpassword:""
+        confirmpassword: ""
     });
     const [loading, setLoading] = useState(false);
     const [showPassword1, setShowPassword1] = useState(false);
@@ -34,6 +34,11 @@ export const Register = () => {
         if (!isFormValid()) return;
 
         try {
+            setFormData({
+                email: "",
+                password: "",
+                confirmpassword: ""
+            })
             setToast({ show: true, message: "Account created" });
             setTimeout(() => setToast({ show: false, message: "" }), 3000);
         } catch (error) {
@@ -44,7 +49,7 @@ export const Register = () => {
     };
     return (
         <div className='bg-light'>
-            <div className="container d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+            <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "90vh", padding: "10px" }}>
                 <div className="bg-white w-100 rounded shadow">
                     <div className="row p-3">
                         <div className="col w-50 d-none d-md-block d-lg-block">
@@ -100,7 +105,7 @@ export const Register = () => {
                                         setError={(error) => handleFieldError("password", error)}
                                     />
                                     {focus && formData.password.length ?
-                                        <i onClick={() => setShowPassword1(!showPassword1)} className={`bi ${showPassword1 ? "bi-eye-slash-fill" : "bi-eye-fill"} position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`} style={{top:"35px"}}></i>
+                                        <i onClick={() => setShowPassword1(!showPassword1)} className={`bi ${showPassword1 ? "bi-eye-slash-fill" : "bi-eye-fill"} position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`} style={{ top: "35px" }}></i>
                                         : null}
                                 </div>
                                 <div className="position-relative">
@@ -116,7 +121,7 @@ export const Register = () => {
                                         data={formData.password}
                                     />
                                     {focus && formData.confirmpassword.length ?
-                                        <i onClick={() => setShowPassword2(!showPassword2)} className={`bi ${showPassword2 ? "bi-eye-slash-fill" : "bi-eye-fill"} position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`} style={{top:"35px"}}></i>
+                                        <i onClick={() => setShowPassword2(!showPassword2)} className={`bi ${showPassword2 ? "bi-eye-slash-fill" : "bi-eye-fill"} position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`} style={{ top: "35px" }}></i>
                                         : null}
                                 </div>
                                 <div className={`form-group mb-2`}>

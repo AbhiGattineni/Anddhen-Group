@@ -23,10 +23,11 @@ import AcsParttimerStatusUpdates from "./components/pages/UpdatesAndStatus/AcsPa
 import AssInternUpdates from "./components/pages/UpdatesAndStatus/AssInternUpdates";
 import { AdminPortal } from "./components/pages/Admin/AdminPortal";
 import { AcsAdmin } from "./components/pages/Admin/AcsAdmin";
-import { EducationConsultant } from "./components/organisms/EducationConsultant";
 import { Login } from "./components/pages/Auth/Login";
 import { Register } from "./components/pages/Auth/Register";
 import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
+import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
+import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
 
 function MainLayout({ children }) {
   return (
@@ -201,6 +202,7 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/resetpassword" element={<ForgotPassword />} />
         <Route path="/quiz" element={<Quiz />} />
       </Routes>
     </Router>
