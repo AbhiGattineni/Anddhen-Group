@@ -38,6 +38,10 @@ export const Login = () => {
     if (!isFormValid()) return;
 
     try {
+      setFormData({
+        email: "",
+        password: "",
+      })
       setToast({ show: true, message: "Login successfully" });
       setTimeout(() => setToast({ show: false, message: "" }), 3000);
     } catch (error) {
@@ -60,7 +64,7 @@ export const Login = () => {
     <div className="bg-light">
       <div
         className="container d-flex justify-content-center align-items-center"
-        style={{ height: "100vh" }}
+        style={{ minHeight: "90vh", padding: "10px" }}
       >
         <div className="bg-white w-100 rounded shadow">
           <div className="row p-3">
@@ -121,18 +125,15 @@ export const Login = () => {
                   {focus && formData.password.length ? (
                     <i
                       onClick={() => setShowPassword(!showPassword)}
-                      className={`bi ${
-                        showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"
-                      } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
+                      className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"
+                        } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
                       style={{ top: "35px" }}
                     ></i>
                   ) : null}
                 </div>
                 <div className="row">
                   <div className="col"></div>
-                  <p className="col col-auto cursor-pointer m-0">
-                    Forget Password?
-                  </p>
+                  <Link to="/resetpassword" className="col col-auto cursor-pointer m-0 text-decoration-none text-black">Forget Password?</Link>
                 </div>
                 <div className={`form-group mb-2`}>
                   <button
