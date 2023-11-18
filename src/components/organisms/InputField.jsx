@@ -56,7 +56,7 @@ const InputField = (props) => {
       return "Enter valid year";
     }
     if (props.name === "score" && props.value.length <=0) {
-      return "Enter valid score";
+      return "This field should not be empty";
     }
 
     return null;

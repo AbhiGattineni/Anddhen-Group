@@ -343,12 +343,6 @@ export const sheetNames = ["Part Timers Registrations", "Student Registration", 
 
 export const emailJs_email = "abhishekgattineni@gmail.com";
 
-export const colleges = [
-  { value: 'option1', label: 'option1' },
-  { value: 'option2', label: 'option2' },
-  { value: 'option3', label: 'option3' },
-  { value: 'option4', label: 'option4' },
-];
 
 export const bTechBranches = [
   "Agricultural Engineering",
@@ -390,3 +384,42 @@ export const bTechBranches = [
   "Bio Medical Engineering",
   "Computational Mathematics",
 ]
+
+export const indianStates = [
+  { value: 'andhra_pradesh', label: 'Andhra Pradesh' },
+  { value: 'arunachal_pradesh', label: 'Arunachal Pradesh' },
+  { value: 'assam', label: 'Assam' },
+  { value: 'bihar', label: 'Bihar' },
+  { value: 'chhattisgarh', label: 'Chhattisgarh' },
+  { value: 'goa', label: 'Goa' },
+  { value: 'gujarat', label: 'Gujarat' },
+  { value: 'haryana', label: 'Haryana' },
+  { value: 'himachal_pradesh', label: 'Himachal Pradesh' },
+  { value: 'jammu_kashmir', label: 'Jammu and Kashmir' },
+  { value: 'jharkhand', label: 'Jharkhand' },
+  { value: 'karnataka', label: 'Karnataka' },
+  { value: 'kerala', label: 'Kerala' },
+  { value: 'madhya_pradesh', label: 'Madhya Pradesh' },
+  { value: 'maharashtra', label: 'Maharashtra' },
+  { value: 'manipur', label: 'Manipur' },
+  { value: 'meghalaya', label: 'Meghalaya' },
+  { value: 'mizoram', label: 'Mizoram' },
+  { value: 'nagaland', label: 'Nagaland' },
+  { value: 'odisha', label: 'Odisha' },
+  { value: 'punjab', label: 'Punjab' },
+  { value: 'rajasthan', label: 'Rajasthan' },
+  { value: 'sikkim', label: 'Sikkim' },
+  { value: 'tamil_nadu', label: 'Tamil Nadu' },
+  { value: 'telangana', label: 'Telangana' },
+  { value: 'tripura', label: 'Tripura' },
+  { value: 'uttar_pradesh', label: 'Uttar Pradesh' },
+  { value: 'uttarakhand', label: 'Uttarakhand' },
+  { value: 'west_bengal', label: 'West Bengal' },
+  { value: 'andaman_nicobar', label: 'Andaman and Nicobar Islands' },
+  { value: 'chandigarh', label: 'Chandigarh' },
+  { value: 'dadra_nagar_haveli', label: 'Dadra and Nagar Haveli' },
+  { value: 'daman_diu', label: 'Daman and Diu' },
+  { value: 'lakshadweep', label: 'Lakshadweep' },
+  { value: 'delhi', label: 'Delhi' },
+  { value: 'puducherry', label: 'Puducherry' },
+];
