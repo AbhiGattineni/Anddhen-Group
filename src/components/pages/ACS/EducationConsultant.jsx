@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import InputField from '../../organisms/InputField';
-import { bTechBranches } from '../../../dataconfig';
+import { bTechBranches, indianStates } from '../../../dataconfig';
 import Toast from '../../organisms/Toast';
+import { Search } from '../../organisms/Search';
 
 export const EducationConsultant = () => {
     const [formData, setFormData] = useState({
@@ -24,10 +25,12 @@ export const EducationConsultant = () => {
         branchStream: "",
         selectedOptions: [],
         greValues: { AWA: '', Quantitative: '', Verbal: '' },
+        greTotalScore: "",
         ieltsValue: "",
         tofelValue: "",
     })
     const [loading, setLoading] = useState(false);
+    const [selectedState, setSelectedState] = useState(null);
     const [fieldErrors, setFieldErrors] = useState({});
     const [toast, setToast] = useState({ show: false, message: "" });
     const handleCheckboxChange = (option) => {
@@ -43,12 +46,20 @@ export const EducationConsultant = () => {
             }));
         } else {
             // If the checkbox is being checked
-            setFormData((prevData) => ({
-                ...prevData,
-                selectedOptions: [...prevData.selectedOptions, option],
-            }));
+            if (option === 'GRE') {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    selectedOptions: [...prevData.selectedOptions, option],
+                    greTotalScore: '', // Initialize total score when GRE is selected
+                }));
+            } else {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    selectedOptions: [...prevData.selectedOptions, option],
+                }));
+            }
         }
-    }; 
+    };
 
     const isFormValid = () => {
         const formFields = Object.keys(formData).filter(
@@ -209,7 +220,7 @@ export const EducationConsultant = () => {
                                 </div>
                             </div>
                             <InputField
-                                name={formData.schoolGradeType}
+                                name={"score"}
                                 label={formData.schoolGradeType}
                                 placeholder={formData.schoolGradeType}
                                 type="number"
@@ -254,7 +265,7 @@ export const EducationConsultant = () => {
                                 </div>
                             </div>
                             <InputField
-                                name={formData.middleGradeType}
+                                name={"score"}
                                 label={formData.middleGradeType}
                                 placeholder={formData.middleGradeType}
                                 type="number"
@@ -384,6 +395,16 @@ export const EducationConsultant = () => {
                                             onChange={(e) => handleInputChange('Verbal', e.target.value)}
                                             setError={(error) => handleFieldError("score", error)}
                                         />
+                                        <InputField
+                                            name="score"
+                                            label="Total Score"
+                                            placeholder="Total Score"
+                                            type="number"
+                                            className="form-control col"
+                                            value={formData.greTotalScore}
+                                            onChange={(e) => handleChange("greTotalScore", e.target.value)}
+                                            setError={(error) => handleFieldError("score", error)}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -412,7 +433,6 @@ export const EducationConsultant = () => {
                                     />
                                 )}
                             </div>
-
                             <div className="form-check">
                                 <input
                                     className="form-check-input"
@@ -439,6 +459,13 @@ export const EducationConsultant = () => {
                             </div>
                         </div>
                     </div>
+                    <Search
+                        selectedOption={selectedState}
+                        setSelectedOption={setSelectedState}
+                        placeholder={"search states ..."}
+                        options={indianStates}
+                        isMulti={true}
+                    />
                     <div className="form-group py-3">
                         <button
                             type="submit"
