@@ -7,13 +7,13 @@ import { sendEmail } from "../templates/emailService";
 export const PartTimerRegistrationForm = () => {
   const { loading, callApi } = useApi();
   const [formData, setFormData] = useState({
-    partTimerName: "",
-    partTimerEmail: "",
-    partTimerPhone: "",
-    partTimerStatus: "",
+    name: "",
+    email: "",
+    phone: "",
+    status: "",
     studyYear: "",
     otherStatus: "",
-    partTimerReference: "",
+    reference: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: "" });
@@ -21,12 +21,11 @@ export const PartTimerRegistrationForm = () => {
   useEffect(() => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      studyYear:
-        formData.partTimerStatus === "student" ? prevFormData.studyYear : "N/A",
+      studyYear: formData.status === "student" ? prevFormData.studyYear : "N/A",
       otherStatus:
-        formData.partTimerStatus === "other" ? prevFormData.otherStatus : "N/A",
+        formData.status === "other" ? prevFormData.otherStatus : "N/A",
     }));
-  }, [formData.partTimerStatus]);
+  }, [formData.status]);
 
   const handleChange = (field, value) => {
     setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
@@ -59,13 +58,13 @@ export const PartTimerRegistrationForm = () => {
       await callApi(constructFormData());
       sendEmail("parttimer");
       setFormData({
-        partTimerName: "",
-        partTimerEmail: "",
-        partTimerPhone: "",
-        partTimerStatus: "",
+        name: "",
+        email: "",
+        phone: "",
+        status: "",
         studyYear: "",
         otherStatus: "",
-        partTimerReference: "",
+        reference: "",
       });
       setToast({ show: true, message: "Data successfully submitted!" });
       setTimeout(() => setToast({ show: false, message: "" }), 3000);
@@ -93,8 +92,8 @@ export const PartTimerRegistrationForm = () => {
                 label="Name"
                 placeholder="Full Name"
                 type="text"
-                value={formData.partTimerName}
-                onChange={(e) => handleChange("partTimerName", e.target.value)}
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
                 setError={(error) => handleFieldError("name", error)}
               />
               <InputField
@@ -102,8 +101,8 @@ export const PartTimerRegistrationForm = () => {
                 label="Email"
                 placeholder="Email"
                 type="email"
-                value={formData.partTimerEmail}
-                onChange={(e) => handleChange("partTimerEmail", e.target.value)}
+                value={formData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
                 setError={(error) => handleFieldError("email", error)}
               />
               <InputField
@@ -111,18 +110,16 @@ export const PartTimerRegistrationForm = () => {
                 label="Phone"
                 placeholder="Phone"
                 type="tel"
-                value={formData.partTimerPhone}
-                onChange={(e) => handleChange("partTimerPhone", e.target.value)}
+                value={formData.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
                 setError={(error) => handleFieldError("phone", error)}
               />
               <div className="form-group">
                 <label>Status</label>
                 <select
                   className="form-control"
-                  value={formData.partTimerStatus}
-                  onChange={(e) =>
-                    handleChange("partTimerStatus", e.target.value)
-                  }
+                  value={formData.status}
+                  onChange={(e) => handleChange("status", e.target.value)}
                 >
                   <option value="">Select Status</option>
                   <option value="student">Student</option>
@@ -130,7 +127,7 @@ export const PartTimerRegistrationForm = () => {
                   <option value="other">Other</option>
                 </select>
               </div>
-              {formData.partTimerStatus === "student" && (
+              {formData.status === "student" && (
                 <InputField
                   name="studyYear"
                   label="Year of Study"
@@ -141,7 +138,7 @@ export const PartTimerRegistrationForm = () => {
                   setError={(error) => handleFieldError("studyYear", error)}
                 />
               )}
-              {formData.partTimerStatus === "other" && (
+              {formData.status === "other" && (
                 <InputField
                   name="otherStatus"
                   label="Please specify"
@@ -157,10 +154,8 @@ export const PartTimerRegistrationForm = () => {
                 label="Referred by"
                 placeholder="Referrer Name"
                 type="text"
-                value={formData.partTimerReference}
-                onChange={(e) =>
-                  handleChange("partTimerReference", e.target.value)
-                }
+                value={formData.reference}
+                onChange={(e) => handleChange("reference", e.target.value)}
                 setError={(error) => handleFieldError("reference", error)}
               />
               <div className="form-group py-3">
