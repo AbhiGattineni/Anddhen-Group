@@ -8,40 +8,40 @@ const StudentRegistrationForm = () => {
   const [showToast, setShowToast] = useState(false);
   const { loading, callApi } = useApi();
 
-  const [studentName, setStudentName] = useState("");
-  const [studentEmail, setStudentEmail] = useState("");
-  const [studentPhone, setStudentPhone] = useState("");
-  const [studentCollege, setStudentCollege] = useState("");
-  const [studentReference, setStudentReference] = useState("");
+  const [name, setname] = useState("");
+  const [email, setemail] = useState("");
+  const [phone, setphone] = useState("");
+  const [college, setcollege] = useState("");
+  const [reference, setreference] = useState("");
   const [studentJob, setStudentJob] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(null);
-  const [toastMsg,setToastMsg] = useState(null);
+  const [toastMsg, setToastMsg] = useState(null);
 
   const fields = {
-    studentName,
-    studentEmail,
-    studentPhone,
-    studentCollege,
-    studentReference,
-    studentJob
+    name,
+    email,
+    phone,
+    college,
+    reference,
+    studentJob,
   };
 
   const allFieldsFilled = Object.values(fields).every(Boolean);
-  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const hasErrors = Object.values(fieldErrors).some((error) => error);
   const disableButton = !allFieldsFilled || hasErrors || loading;
 
   const resetForm = () => {
-    setStudentName("");
-    setStudentEmail("");
-    setStudentPhone("");
-    setStudentCollege("");
-    setStudentReference("");
+    setname("");
+    setemail("");
+    setphone("");
+    setcollege("");
+    setreference("");
     setStudentJob("");
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors(prevErrors => ({
+    setFieldErrors((prevErrors) => ({
       ...prevErrors,
       [fieldName]: error,
     }));
@@ -63,7 +63,7 @@ const StudentRegistrationForm = () => {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
-      setToastMsg("Something went wrong!")
+      setToastMsg("Something went wrong!");
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       console.error("Error:", error);
@@ -87,45 +87,45 @@ const StudentRegistrationForm = () => {
                 label="Name"
                 placeholder="Full Name"
                 type="text"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
-                setError={(error) => handleFieldError('name', error)}
+                value={name}
+                onChange={(e) => setname(e.target.value)}
+                setError={(error) => handleFieldError("name", error)}
               />
               <InputField
                 name="email"
                 label="Email"
                 placeholder="Email"
                 type="email"
-                value={studentEmail}
-                onChange={(e) => setStudentEmail(e.target.value)}
-                setError={(error) => handleFieldError('email', error)}
+                value={email}
+                onChange={(e) => setemail(e.target.value)}
+                setError={(error) => handleFieldError("email", error)}
               />
               <InputField
                 name="phone"
                 label="Phone"
                 placeholder="Phone"
                 type="tel"
-                value={studentPhone}
-                onChange={(e) => setStudentPhone(e.target.value)}
-                setError={(error) => handleFieldError('phone', error)}
+                value={phone}
+                onChange={(e) => setphone(e.target.value)}
+                setError={(error) => handleFieldError("phone", error)}
               />
               <InputField
                 name="college"
                 label="College"
                 placeholder="College"
                 type="text"
-                value={studentCollege}
-                onChange={(e) => setStudentCollege(e.target.value)}
-                setError={(error) => handleFieldError('college', error)}
+                value={college}
+                onChange={(e) => setcollege(e.target.value)}
+                setError={(error) => handleFieldError("college", error)}
               />
               <InputField
                 name="reference"
                 label="Referred by"
                 placeholder="Referrer Name"
                 type="text"
-                value={studentReference}
-                onChange={(e) => setStudentReference(e.target.value)}
-                setError={(error) => handleFieldError('reference', error)}
+                value={reference}
+                onChange={(e) => setreference(e.target.value)}
+                setError={(error) => handleFieldError("reference", error)}
               />
               <div className="d-md-flex my-3 gap-5">
                 <label className="">Job Type</label>
@@ -149,16 +149,26 @@ const StudentRegistrationForm = () => {
                 </div>
               </div>
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
+                <button
+                  type="submit"
+                  className="btn btn-warning shadow w-100"
+                  disabled={disableButton}
+                >
                   {loading ? "loading..." : "Submit"}
                 </button>
-                {submissionError && <p className="text-danger mt-3">{submissionError}</p>}
+                {submissionError && (
+                  <p className="text-danger mt-3">{submissionError}</p>
+                )}
               </div>
             </form>
           </div>
         </div>
       </div>
-      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
+      <Toast
+        show={showToast}
+        message={toastMsg}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };
