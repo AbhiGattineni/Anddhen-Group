@@ -1,8 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { logout } from "../../services/Authentication/Logout";
 
-function Navbar() {
+function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = useState(false);
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        console.log("logout success");
+      })
+      .catch((error) => {
+        console.log("logout fail");
+      });
+  };
 
   const handleLinkClick = () => {
     setNavbarOpen(false);
@@ -29,9 +39,8 @@ function Navbar() {
                   <span className="navbar-toggler-icon"></span>
                 </button>
                 <div
-                  className={`collapse navbar-collapse ${
-                    navbarOpen ? "show" : ""
-                  }`}
+                  className={`collapse navbar-collapse ${navbarOpen ? "show" : ""
+                    }`}
                   id="navbarSupportedContent"
                 >
                   <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -145,6 +154,11 @@ function Navbar() {
                         Contact
                       </Link>
                     </li>
+                    {props.logout ?
+                      <li className="nav-item">
+                        <button onClick={handleLogout} className="btn btn-warning md-mx-2">Logout</button>
+                      </li>
+                      : null}
                   </ul>
                 </div>
               </div>

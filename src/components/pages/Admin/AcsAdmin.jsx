@@ -118,15 +118,7 @@ export const AcsAdmin = () => {
       setShowCalendar(!showCalendar);
     }
   };
-  const handleLogout = () => {
-    logout()
-      .then(() => {
-        console.log("logout success");
-      })
-      .catch((error) => {
-        console.log("logout fail");
-      });
-  };
+  console.log(empName?"visible":"hidden");
 
   return (
     <div className="">
@@ -136,7 +128,7 @@ export const AcsAdmin = () => {
           style={{ height: "90vh" }}
         >
           <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden"></span>
           </div>
         </div>
       ) : (
@@ -208,7 +200,7 @@ export const AcsAdmin = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
+                  {empName && empName!="All" ? <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
                     <input
                       className="form-check-input"
                       type="checkbox"
@@ -222,8 +214,7 @@ export const AcsAdmin = () => {
                     >
                       Calendar View
                     </label>
-                  </div>
-                  <button onClick={handleLogout}>Logout</button>
+                  </div> : null}
                 </div>
               </div>
             </div>
@@ -259,7 +250,7 @@ export const AcsAdmin = () => {
                             {(sheetName === "Manager Status" ||
                               sheetName === "Part Timer Status" ||
                               sheetName === "Intern Status") &&
-                            cellIndex == 0
+                              cellIndex == 0
                               ? new Date(cell).toLocaleDateString()
                               : cell}
                           </td>
