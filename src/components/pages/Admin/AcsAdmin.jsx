@@ -228,7 +228,6 @@ export const AcsAdmin = () => {
               </div>
             </div>
           </div>
-
           {showCalendar && empName && (
             <StatusCalendar data={getFilteredData()} empName={empName} />
           )}
@@ -259,7 +258,7 @@ export const AcsAdmin = () => {
                             {(sheetName === "Manager Status" ||
                               sheetName === "Part Timer Status" ||
                               sheetName === "Intern Status") &&
-                            cellIndex == 0
+                              cellIndex == 0
                               ? new Date(cell).toLocaleDateString()
                               : cell}
                           </td>
