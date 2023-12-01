@@ -29,10 +29,10 @@ import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
 import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
 import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
 
-function MainLayout({ children }) {
+function MainLayout({ children,logout }) {
   return (
     <div>
-      <Navbar />
+      <Navbar logout={logout ? true : false}/>
       {children}
       <Footer />
     </div>
@@ -193,7 +193,7 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <MainLayout>
+              <MainLayout logout={true}>
                 <AcsAdmin />
               </MainLayout>
             </ProtectedRoute>
