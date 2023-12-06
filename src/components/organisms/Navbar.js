@@ -156,7 +156,7 @@ function Navbar(props) {
                     </li>
                     {props.logout ?
                       <li className="nav-item">
-                        <button onClick={handleLogout} className="btn btn-warning md-mx-2">Logout</button>
+                        <button onClick={handleLogout} className="btn btn-warning md-mx-2 btn-sm mt-1 fw-bold">Logout</button>
                       </li>
                       : null}
                   </ul>

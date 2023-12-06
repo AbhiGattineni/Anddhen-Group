@@ -9,6 +9,7 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
     const [question, setQuestion] = useState(null);
     const [isFlipped, setIsFlipped] = useState(false);
     const [result, setResult] = useState([]);
+    const [btnDisable,setBtnDisable] = useState(false);
 
     useEffect(() => {
         // Replace with your Google Sheets API key and spreadsheet ID
@@ -42,6 +43,7 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
     }, []);
 
     function handleButton(btn) {
+        setBtnDisable(true)
         if (btn === 'yes') {
             setButton1(false);
             setButton2(true);
@@ -57,6 +59,7 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
             setIsFlipped(!isFlipped);
             setQuestionNo(questionNo + 1);
             setQuestion(partTimerQuestions[questionNo + 1][0]);
+            setBtnDisable(false);
         }, 500);
     }
     function handleSubmit() {
@@ -94,20 +97,24 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
                             <p className="card-text fs-5">{question}</p>
                         </div>
                         <div className="d-flex justify-content-between">
-                            <a
+                            <button
+                                type='button'
                                 onClick={() => handleButton('yes')}
-                                className={`border cursor-pointer text-nowrap border-2 rounded-3 px-2 py-1 w-25 text-center text-decoration-none fw-bold border-success text-success ${button1 ? 'bg-transparent' : 'bg-success text-white'
+                                disabled={btnDisable}
+                                className={`border cursor-pointer text-nowrap border-2 rounded-3 px-2 py-1 w-25 text-center text-decoration-none fw-bold border-success btn btn-outline-success ${button1 ? 'btn btn-outline-success' : 'btn btn-success'
                                     }`}
                             >
                                 Yes
-                            </a>
-                            <a
+                            </button>
+                            <button
+                                type='button'
                                 onClick={() => handleButton('no')}
-                                className={`border cursor-pointer text-nowrap border-2 rounded-3 px-2 py-1 w-25 text-center text-decoration-none fw-bold border-danger text-danger ${button2 ? 'bg-transparent' : 'bg-danger text-white'
+                                disabled={btnDisable}
+                                className={`border cursor-pointer text-nowrap border-2 rounded-3 px-2 py-1 w-25 text-center text-decoration-none fw-bold border-danger btn btn-outline-danger ${button2 ? 'btn btn-outline-danger' : 'btn btn-danger'
                                     }`}
                             >
                                 No
-                            </a>
+                            </button>
                         </div>
                     </div> :
                     <div className={`card-review ${isFlipped ? 'flip' : ''}`}>

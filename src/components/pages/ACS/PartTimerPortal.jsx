@@ -10,10 +10,10 @@ export const PartTimerPortal = () => {
   return (
     <div className="container mt-3">
       <Videos />
-      {/* <div className="col-md-12 mb-4 text-center">
-        <h3 className="main-heading my-3">Practice Test</h3>
+      <div className="col-md-12 mb-4 text-center">
+        <h3 className="main-heading my-3">Questionnaire for part timer job registration</h3>
         <div className="underline mx-auto"></div>
-      </div> */}
+      </div>
       {/* <div className="row">
         <div className="col-12">
           <h3>Job Application Video Checklist: Test Your Understanding</h3>
