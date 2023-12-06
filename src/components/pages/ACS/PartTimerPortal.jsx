@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Videos } from "../../organisms/Videos";
 import { Link } from "react-router-dom";
 import { PartTimerRegistrationForm } from "../../organisms/PartTimerRegistrationForm";
+import { QuestionCard } from "../../organisms/QuestionCard";
 
 export const PartTimerPortal = () => {
+  const [showForm, setShowForm] = useState(false);
+  const [message, setMessage] = useState("Take test to procced with registration");
   return (
     <div className="container mt-3">
       <Videos />
-      <div className="col-md-12 mb-4 text-center">
+      {/* <div className="col-md-12 mb-4 text-center">
         <h3 className="main-heading my-3">Practice Test</h3>
         <div className="underline mx-auto"></div>
-      </div>
-      <div className="row">
+      </div> */}
+      {/* <div className="row">
         <div className="col-12">
           <h3>Job Application Video Checklist: Test Your Understanding</h3>
           <p>
@@ -22,16 +25,27 @@ export const PartTimerPortal = () => {
             attempting. Good luck!
           </p>
         </div>
-      </div>
-      <div className="d-flex justify-content-center align-items-center mb-3">
-        {/* <Link
+      </div> */}
+      {/* <div className="d-flex justify-content-center align-items-center mb-3"> */}
+      {/* <Link
           to={"/test"}
           className="btn btn-warning shadow justify-content-center"
         >
           Take Test
         </Link> */}
+      {/* </div> */}
+      <div className="row align-items-center">
+        <div className="col"></div>
+        <div className="col">
+          <QuestionCard setShowForm={setShowForm} setMessage={setMessage} />
+        </div>
+        <div className="col"></div>
       </div>
-      <PartTimerRegistrationForm />
+      {showForm ? <PartTimerRegistrationForm /> :
+        <div className="alert alert-info" role="alert">
+          {message}
+        </div>
+      }
     </div>
   );
 };

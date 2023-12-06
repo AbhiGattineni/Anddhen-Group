@@ -29,10 +29,10 @@ import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
 import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
 import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
 
-function MainLayout({ children,logout }) {
+function MainLayout({ children, logout }) {
   return (
     <div>
-      <Navbar logout={logout ? true : false}/>
+      <Navbar logout={logout ? true : false} />
       {children}
       <Footer />
     </div>
@@ -151,9 +151,11 @@ function App() {
         <Route
           path="/acs/jobapplication/parttimerportal"
           element={
-            <MainLayout>
-              <PartTimerPortal />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <PartTimerPortal />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
 
