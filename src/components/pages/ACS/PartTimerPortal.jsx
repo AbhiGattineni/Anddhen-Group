@@ -34,12 +34,10 @@ export const PartTimerPortal = () => {
           Take Test
         </Link> */}
       {/* </div> */}
-      <div className="row align-items-center">
-        <div className="col"></div>
-        <div className="col">
+      <div className="d-flex justify-content-center">
+        <div className="">
           <QuestionCard setShowForm={setShowForm} setMessage={setMessage} />
         </div>
-        <div className="col"></div>
       </div>
       {showForm ? <PartTimerRegistrationForm /> :
         <div className="alert alert-info" role="alert">
