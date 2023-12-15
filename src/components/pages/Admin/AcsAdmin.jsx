@@ -65,6 +65,14 @@ export const AcsAdmin = () => {
       });
   }, [sheetName]);
 
+  useEffect(() => {
+    fetch("http://35.172.219.206:8000/person/2/")
+      .then((res) => {
+        console.log("res", res);
+      })
+      .catch((e) => console.log(e));
+  });
+
   const sortData = (sortKey) => {
     setSortConfig((currentSortConfig) => {
       if (
@@ -118,6 +126,7 @@ export const AcsAdmin = () => {
       setShowCalendar(!showCalendar);
     }
   };
+<<<<<<< Updated upstream
   const handleLogout = () => {
     logout()
       .then(() => {
@@ -127,6 +136,9 @@ export const AcsAdmin = () => {
         console.log("logout fail");
       });
   };
+=======
+  console.log(empName ? "visible" : "hidden");
+>>>>>>> Stashed changes
 
   return (
     <div className="">
@@ -208,6 +220,7 @@ export const AcsAdmin = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
+<<<<<<< Updated upstream
                   <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
                     <input
                       className="form-check-input"
@@ -224,6 +237,25 @@ export const AcsAdmin = () => {
                     </label>
                   </div>
                   <button onClick={handleLogout}>Logout</button>
+=======
+                  {empName && empName != "All" ? (
+                    <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="calendarToggle"
+                        checked={showCalendar}
+                        onChange={toggleCalendar}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="calendarToggle"
+                      >
+                        Calendar View
+                      </label>
+                    </div>
+                  ) : null}
+>>>>>>> Stashed changes
                 </div>
               </div>
             </div>
