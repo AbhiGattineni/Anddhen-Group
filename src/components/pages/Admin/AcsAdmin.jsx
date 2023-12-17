@@ -68,10 +68,30 @@ export const AcsAdmin = () => {
   useEffect(() => {
     fetch("http://35.172.219.206:8000/person/2/")
       .then((res) => {
-        console.log("res", res);
+        if (res.ok) {
+          return res.json(); // This returns a promise that resolves with the parsed JSON
+        }
+        throw new Error("Network response was not ok.");
       })
-      .catch((e) => console.log(e));
-  });
+      .then((data) => {
+        console.log("Data:", data); // This logs the actual JSON data
+      })
+      .catch((e) => console.log("Error fetching data:", e));
+  }, []);
+
+  useEffect(() => {
+    fetch("https://35.172.219.206:8000/person/2/")
+      .then((res) => {
+        if (res.ok) {
+          return res.json(); // This returns a promise that resolves with the parsed JSON
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .then((data) => {
+        console.log("Data:", data); // This logs the actual JSON data
+      })
+      .catch((e) => console.log("Error fetching data:", e));
+  }, []);
 
   const sortData = (sortKey) => {
     setSortConfig((currentSortConfig) => {
