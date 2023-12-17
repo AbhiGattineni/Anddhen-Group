@@ -80,7 +80,7 @@ export const AcsAdmin = () => {
   }, []);
 
   useEffect(() => {
-    fetch("https://35.172.219.206:8000/person/2/")
+    fetch("https://server.anddhengroup.com/person/2/")
       .then((res) => {
         if (res.ok) {
           return res.json(); // This returns a promise that resolves with the parsed JSON
