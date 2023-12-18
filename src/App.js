@@ -135,9 +135,11 @@ function App() {
         <Route
           path="/acs/educationconsulting"
           element={
-            <MainLayout>
-              <EducationConsultant />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <EducationConsultant />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
         <Route

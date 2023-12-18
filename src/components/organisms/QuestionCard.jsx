@@ -89,7 +89,7 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
 
     return (
         <div className={`card-container mb-3 ${isFlipped ? 'flip' : ''}`}>
-            <div className="card bg-card p-3 shadow shadow-sm" style={{ height: "300px", width: "300px" }}>
+            <div className="card bg-light p-3 shadow shadow-sm" style={{ height: "300px", width: "300px" }}>
                 {partTimerQuestions.length > result.length ?
                     <div className={`card-body d-flex flex-column justify-content-between ${isFlipped ? 'flip' : ''}`}>
                         <div className="">
