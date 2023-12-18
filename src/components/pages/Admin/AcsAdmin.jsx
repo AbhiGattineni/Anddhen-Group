@@ -65,6 +65,34 @@ export const AcsAdmin = () => {
       });
   }, [sheetName]);
 
+  useEffect(() => {
+    fetch("http://35.172.219.206:8000/person/2/")
+      .then((res) => {
+        if (res.ok) {
+          return res.json(); // This returns a promise that resolves with the parsed JSON
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .then((data) => {
+        console.log("Data:", data); // This logs the actual JSON data
+      })
+      .catch((e) => console.log("Error fetching data:", e));
+  }, []);
+
+  useEffect(() => {
+    fetch("https://server.anddhengroup.com/person/2/")
+      .then((res) => {
+        if (res.ok) {
+          return res.json(); // This returns a promise that resolves with the parsed JSON
+        }
+        throw new Error("Network response was not ok.");
+      })
+      .then((data) => {
+        console.log("Data:", data); // This logs the actual JSON data
+      })
+      .catch((e) => console.log("Error fetching data:", e));
+  }, []);
+
   const sortData = (sortKey) => {
     setSortConfig((currentSortConfig) => {
       if (
@@ -118,8 +146,15 @@ export const AcsAdmin = () => {
       setShowCalendar(!showCalendar);
     }
   };
-  console.log(empName?"visible":"hidden");
-
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        console.log("logout success");
+      })
+      .catch((error) => {
+        console.log("logout fail");
+      });
+  };
   return (
     <div className="">
       {loading ? (
@@ -200,21 +235,23 @@ export const AcsAdmin = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  {empName && empName!="All" ? <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="calendarToggle"
-                      checked={showCalendar}
-                      onChange={toggleCalendar}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="calendarToggle"
-                    >
-                      Calendar View
-                    </label>
-                  </div> : null}
+                  {empName && empName != "All" ? (
+                    <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="calendarToggle"
+                        checked={showCalendar}
+                        onChange={toggleCalendar}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="calendarToggle"
+                      >
+                        Calendar View
+                      </label>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -249,7 +286,7 @@ export const AcsAdmin = () => {
                             {(sheetName === "Manager Status" ||
                               sheetName === "Part Timer Status" ||
                               sheetName === "Intern Status") &&
-                              cellIndex == 0
+                            cellIndex == 0
                               ? new Date(cell).toLocaleDateString()
                               : cell}
                           </td>
