@@ -12,6 +12,7 @@ import vijetha from "./components/images/vijetha.jpg";
 import chandu from "./components/images/chandu.jpg";
 import neha from "./components/images/neha.jpg";
 import charan from "./components/images/charan.jpg";
+import { PartTimerPortal } from "./components/pages/ACS/PartTimerPortal";
 export const priceData = [
   {
     id: 1,
@@ -443,3 +444,16 @@ export const usStates = [
   { value: 'american_samoa', label: 'American Samoa' },
   { value: 'northern_mariana_islands', label: 'Northern Mariana Islands' },
 ];
+
+// export const PartTimerQuestions = [
+//   "Is the sky blue?",
+//   "Do cats meow?",
+//   "Is water wet?",
+//   "Are humans capable of flying without assistance?",
+//   "Does the sun rise in the west?",
+//   "Is the Earth flat?",
+//   "Can fish breathe underwater?",
+//   "Is the moon made of cheese?",
+//   "Do plants need sunlight to grow?",
+//   "Is 2 + 2 equal to 5?"
+// ];
