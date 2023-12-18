@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import InputField from '../../organisms/InputField';
-import { bTechBranches, indianStates } from '../../../dataconfig';
+import { bTechBranches, usStates } from '../../../dataconfig';
 import Toast from '../../organisms/Toast';
 import { Search } from '../../organisms/Search';
 
@@ -463,7 +463,7 @@ export const EducationConsultant = () => {
                         selectedOption={selectedState}
                         setSelectedOption={setSelectedState}
                         placeholder={"search states ..."}
-                        options={indianStates}
+                        options={usStates}
                         isMulti={true}
                     />
                     <div className="form-group py-3">

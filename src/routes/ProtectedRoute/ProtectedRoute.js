@@ -9,7 +9,7 @@ export const ProtectedRoute = ({ children }) => {
   if (loading) {
     return <div>Loading...</div>;
   }
-  console.log("user", user);
+
   if (error || !user) {
     sessionStorage.setItem("preLoginPath", location.pathname);
     return <Navigate to="/login" replace />;

@@ -29,10 +29,10 @@ import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
 import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
 import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
 
-function MainLayout({ children }) {
+function MainLayout({ children, logout }) {
   return (
     <div>
-      <Navbar />
+      <Navbar logout={logout ? true : false} />
       {children}
       <Footer />
     </div>
@@ -135,9 +135,11 @@ function App() {
         <Route
           path="/acs/educationconsulting"
           element={
-            <MainLayout>
-              <EducationConsultant />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <EducationConsultant />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
         <Route
@@ -151,9 +153,11 @@ function App() {
         <Route
           path="/acs/jobapplication/parttimerportal"
           element={
-            <MainLayout>
-              <PartTimerPortal />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <PartTimerPortal />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
 
@@ -193,7 +197,7 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <MainLayout>
+              <MainLayout logout={true}>
                 <AcsAdmin />
               </MainLayout>
             </ProtectedRoute>
