@@ -28,6 +28,8 @@ import { Register } from "./components/pages/Auth/Register";
 import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
 import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
 import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
+import SuperAdmin from "./components/SuperAdmin/SuperAdmin.jsx";
+import Consultants from "./components/SuperAdmin/ACS/Consultants.jsx";
 
 function MainLayout({ children, logout }) {
   return (
@@ -199,6 +201,26 @@ function App() {
             <ProtectedRoute>
               <MainLayout logout={true}>
                 <AcsAdmin />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin"
+          element={
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <SuperAdmin />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/acs_consultants"
+          element={
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <Consultants />
               </MainLayout>
             </ProtectedRoute>
           }
