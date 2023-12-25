@@ -18,6 +18,10 @@ export const updatesAndStatus = [
     child: "Anddhen Software Services",
     route: "interns/updates",
   },
+  {
+    child: "Anddhen Access Services",
+    route: "roleaccess",
+  },
 ];
 
 const SuperAdmin = () => {

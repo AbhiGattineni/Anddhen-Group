@@ -30,6 +30,7 @@ import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
 import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
 import SuperAdmin from "./components/SuperAdmin/SuperAdmin.jsx";
 import Consultants from "./components/SuperAdmin/ACS/Consultants.jsx";
+import RoleAccess from "./components/SuperAdmin/RoleAccess/RoleAccess.jsx";
 
 function MainLayout({ children, logout }) {
   return (
@@ -225,7 +226,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/superadmin/roleaccess"
+          element={
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <RoleAccess />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/resetpassword" element={<ForgotPassword />} />
