@@ -10,6 +10,7 @@ const RoleAccess = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     fetchRoles();
@@ -18,7 +19,7 @@ const RoleAccess = () => {
   const fetchRoles = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/roles/all/");
+      const response = await fetch(`${API_BASE_URL}/roles/all/`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -50,7 +51,7 @@ const RoleAccess = () => {
 
   const handleAddRole = async (roleName, accessRole) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/roles/add/", {
+      const response = await fetch(`${API_BASE_URL}/roles/add/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,19 +73,16 @@ const RoleAccess = () => {
 
   const handleUpdateRole = async (id, roleName, accessRole) => {
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/roles/update/${id}/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name_of_role: roleName, // Use the roleName parameter
-            admin_access_role: accessRole, // Use the accessRole parameter
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/roles/update/${id}/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name_of_role: roleName, // Use the roleName parameter
+          admin_access_role: accessRole, // Use the accessRole parameter
+        }),
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -100,7 +98,7 @@ const RoleAccess = () => {
     if (window.confirm("Are you sure you want to delete this role?")) {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/roles/delete/${roleId}/`,
+          `${API_BASE_URL}/roles/delete/${roleId}/`,
           {
             method: "DELETE",
           }
