@@ -29,7 +29,7 @@ import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
 import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
 import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
 import SuperAdmin from "./components/SuperAdmin/SuperAdmin.jsx";
-import Consultants from "./components/SuperAdmin/ACS/Consultants.jsx";
+import Consultants from "./components/SuperAdmin/ACS/Consultants/Consultants.jsx";
 import RoleAccess from "./components/SuperAdmin/RoleAccess/RoleAccess.jsx";
 import { AddColleges } from "./components/pages/ACS/AddColleges.jsx";
 import { EditColleges } from "./components/pages/ACS/EditColleges.jsx";
