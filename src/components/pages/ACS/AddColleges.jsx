@@ -4,15 +4,15 @@ import InputField from "../../organisms/InputField";
 
 export const AddColleges = () => {
   const [formData, setFormData] = useState({
-    college: "",
-    websiteLink: "",
+    college_name: "",
+    website_link: "",
     international_UG_link: "",
     international_graduation_link: "",
     application_UG_link: "",
     application_graduation_link: "",
-    application_UG_fee: "",
+    application_UG_fee: 0,
     application_UG_fee_link: "",
-    application_graduation_fee: "",
+    application_graduation_fee: 0,
     application_graduation_fee_link: "",
     gre_score: "",
     gre_score_link: "",
@@ -49,6 +49,19 @@ export const AddColleges = () => {
   const [toast, setToast] = useState({ show: false, message: "" });
 
   const handleChange = (field, value) => {
+    // Convert numeric values to decimals for specific fields
+    if (
+      field === "application_UG_fee" ||
+      field === "application_graduation_fee" ||
+      field === "gre_score" ||
+      field === "toefl_UG_score" ||
+      field === "toefl_graduation_score" ||
+      field === "ielts_ug_score" ||
+      field === "ielts_graduation_score"
+    ) {
+      value = parseFloat(value) || 0;
+    }
+
     setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
   };
 
@@ -62,10 +75,83 @@ export const AddColleges = () => {
       !Object.values(fieldErrors).some(Boolean)
     );
   };
+  console.log(fieldErrors);
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid()) return;
+    const jsonPayload = JSON.stringify(formData);
+    console.log(jsonPayload);
+
+    fetch(`http://127.0.0.1:8000/colleges/`, {
+      method: "POST",
+      body: jsonPayload,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((err) => {
+            setToast({
+              show: true,
+              message: `check the ${Object.keys(err)[0]} field`,
+            });
+            setTimeout(() => setToast({ show: false, message: "" }), 3000);
+            throw new Error("Server error");
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Success:", data);
+        setFormData({
+          college_name: "",
+          website_link: "",
+          international_UG_link: "",
+          international_graduation_link: "",
+          application_UG_link: "",
+          application_graduation_link: "",
+          application_UG_fee: 0,
+          application_UG_fee_link: "",
+          application_graduation_fee: 0,
+          application_graduation_fee_link: "",
+          gre_score: "",
+          gre_score_link: "",
+          toefl_UG_score: "",
+          toefl_UG_score_link: "",
+          toefl_graduation_score: "",
+          toefl_graduation_score_link: "",
+          ielts_ug_score: "",
+          ielts_ug_score_link: "",
+          ielts_graduation_score: "",
+          ielts_graduation_score_link: "",
+          fall_deadline_UG: "",
+          fall_deadline_UG_link: "",
+          fall_deadline_graduation: "",
+          fall_deadline_graduation_link: "",
+          spring_deadline_UG: "",
+          spring_deadline_UG_link: "",
+          spring_deadline_graduation: "",
+          spring_deadline_graduation_link: "",
+          college_email: "",
+          college_email_link: "",
+          college_phone: "",
+          college_phone_link: "",
+          international_person_email: "",
+          international_person_email_link: "",
+          public_private: "",
+          UG_courses: "",
+          UG_courses_link: "",
+          graduation_courses: "",
+          graduation_courses_link: "",
+        });
+        setFieldErrors({});
+        setToast({ show: true, message: "Data successfully submitted!" });
+        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+      })
+      .catch((error) => {
+        console.error("Error:", error.message);
+      });
   };
   return (
     <div className="container mt-2">
@@ -77,23 +163,23 @@ export const AddColleges = () => {
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 gy-2 gx-4 mb-3">
             <InputField
               className="col"
-              name="college"
+              name="college_name"
               label="College Name"
               placeholder="College Name"
               type="text"
-              value={formData.college}
-              onChange={(e) => handleChange("college", e.target.value)}
-              setError={(error) => handleFieldError("college", error)}
+              value={formData.college_name}
+              onChange={(e) => handleChange("college_name", e.target.value)}
+              setError={(error) => handleFieldError("college_name", error)}
             />
             <InputField
               className="col"
-              name="websiteLink"
+              name="website_link"
               label="Website Link"
               placeholder="Website Link"
               type="url"
-              value={formData.websiteLink}
-              onChange={(e) => handleChange("websiteLink", e.target.value)}
-              setError={(error) => handleFieldError("websiteLink", error)}
+              value={formData.website_link}
+              onChange={(e) => handleChange("website_link", e.target.value)}
+              setError={(error) => handleFieldError("website_link", error)}
             />
           </div>
           <h5>International Links</h5>
@@ -253,8 +339,12 @@ export const AddColleges = () => {
               placeholder="Toefl UG Score Link"
               type="url"
               value={formData.toefl_UG_score_link}
-              onChange={(e) => handleChange("toefl_UG_score_link", e.target.value)}
-              setError={(error) => handleFieldError("toefl_UG_score_link", error)}
+              onChange={(e) =>
+                handleChange("toefl_UG_score_link", e.target.value)
+              }
+              setError={(error) =>
+                handleFieldError("toefl_UG_score_link", error)
+              }
             />
             <InputField
               className="col"
@@ -301,8 +391,12 @@ export const AddColleges = () => {
               placeholder="IELTS UG score Link"
               type="url"
               value={formData.ielts_ug_score_link}
-              onChange={(e) => handleChange("ielts_ug_score_link", e.target.value)}
-              setError={(error) => handleFieldError("ielts_ug_score_link", error)}
+              onChange={(e) =>
+                handleChange("ielts_ug_score_link", e.target.value)
+              }
+              setError={(error) =>
+                handleFieldError("ielts_ug_score_link", error)
+              }
             />
             <InputField
               className="col"
@@ -350,8 +444,12 @@ export const AddColleges = () => {
               label="Fall Deadline UG Link"
               type="url"
               value={formData.fall_deadline_UG_link}
-              onChange={(e) => handleChange("fall_deadline_UG_link", e.target.value)}
-              setError={(error) => handleFieldError("fall_deadline_UG_link", error)}
+              onChange={(e) =>
+                handleChange("fall_deadline_UG_link", e.target.value)
+              }
+              setError={(error) =>
+                handleFieldError("fall_deadline_UG_link", error)
+              }
             />
             <InputField
               className="col"
@@ -451,8 +549,12 @@ export const AddColleges = () => {
               placeholder="College Email Link"
               type="url"
               value={formData.college_email_link}
-              onChange={(e) => handleChange("college_email_link", e.target.value)}
-              setError={(error) => handleFieldError("college_email_link", error)}
+              onChange={(e) =>
+                handleChange("college_email_link", e.target.value)
+              }
+              setError={(error) =>
+                handleFieldError("college_email_link", error)
+              }
             />
             <InputField
               className="col"
@@ -471,8 +573,12 @@ export const AddColleges = () => {
               placeholder="College phone link"
               type="url"
               value={formData.college_phone_link}
-              onChange={(e) => handleChange("college_phone_link", e.target.value)}
-              setError={(error) => handleFieldError("college_phone_link", error)}
+              onChange={(e) =>
+                handleChange("college_phone_link", e.target.value)
+              }
+              setError={(error) =>
+                handleFieldError("college_phone_link", error)
+              }
             />
             <InputField
               className="col"
