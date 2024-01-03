@@ -15,6 +15,22 @@ const InputField = (props) => {
     "international_graduation_link",
     "application_UG_link",
     "application_graduation_link",
+    "application_UG_fee_link",
+    "application_graduation_fee_link",
+    "toefl_UG_score_link",
+    "toefl_graduation_score_link",
+    "gre_score_link",
+    "ielts_ug_score_link",
+    "ielts_graduation_score_link",
+    "fall_deadline_UG_link",
+    "fall_deadline_graduation_link",
+    "spring_deadline_UG_link",
+    "spring_deadline_graduation_link",
+    "college_email_link",
+    "college_phone_link",
+    "international_person_email_link",
+    "UG_courses_link",
+    "graduation_courses_link"
   ];
   const scoreFields = [
     "score",
@@ -154,7 +170,7 @@ const InputField = (props) => {
   return (
     <div className={`form-group ${props.className}`}>
       <label className="mb-1">
-        {props.label} <span className="text-danger">*</span>
+        {props.label}<span className="text-danger" style={{userSelect:"none"}}> *</span>
       </label>
       <input
         ref={ref}
@@ -166,6 +182,7 @@ const InputField = (props) => {
         onChange={props.onChange}
         onBlur={handleBlur}
         onFocus={props.onFocus}
+        disabled={props.disabled}
         required
       />
       {error ? <span className="text-danger">{error}</span> : null}
