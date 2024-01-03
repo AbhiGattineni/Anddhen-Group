@@ -49,19 +49,6 @@ export const AddColleges = () => {
   const [toast, setToast] = useState({ show: false, message: "" });
 
   const handleChange = (field, value) => {
-    // Convert numeric values to decimals for specific fields
-    if (
-      field === "application_UG_fee" ||
-      field === "application_graduation_fee" ||
-      field === "gre_score" ||
-      field === "toefl_UG_score" ||
-      field === "toefl_graduation_score" ||
-      field === "ielts_ug_score" ||
-      field === "ielts_graduation_score"
-    ) {
-      value = parseFloat(value) || 0;
-    }
-
     setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
   };
 
@@ -82,7 +69,7 @@ export const AddColleges = () => {
     const jsonPayload = JSON.stringify(formData);
     console.log(jsonPayload);
 
-    fetch(`http://127.0.0.1:8000/colleges/`, {
+    fetch(`http://127.0.0.1:8000/colleges/create/`, {
       method: "POST",
       body: jsonPayload,
       headers: {
@@ -151,6 +138,8 @@ export const AddColleges = () => {
       })
       .catch((error) => {
         console.error("Error:", error.message);
+        setToast({ show: true, message: "Something went wrong!" });
+        setTimeout(() => setToast({ show: false, message: "" }), 3000);
       });
   };
   return (

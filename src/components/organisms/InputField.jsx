@@ -10,7 +10,7 @@ const InputField = (props) => {
   // const yearPattren = /^(19|20)[\d]{2,2}$/;
   const ref = useRef(null);
   const linkFields = [
-    "websiteLink",
+    "website_link",
     "international_UG_link",
     "international_graduation_link",
     "application_UG_link",
@@ -42,6 +42,8 @@ const InputField = (props) => {
   ];
   const inputFields = [
     "score",
+    "website_link",
+    "college_name",
     "toefl_UG_score",
     "toefl_graduation_score",
     "ielts_ug_score",
@@ -126,7 +128,7 @@ const InputField = (props) => {
       return "Enter valid phone number";
     }
 
-    if (["college"].includes(props.name) && props.value.length <= 3) {
+    if (["college_name"].includes(props.name) && props.value.length <= 3) {
       return "College name should contain more than 3 characters";
     }
 
