@@ -27,7 +27,7 @@ export const EditColleges = () => {
   const fetchColleges = () => {
     setLoading(true);
 
-    fetch("http://127.0.0.1:8000/colleges/all/")
+    fetch(`${API_BASE_URL}/colleges/all/`)
       .then((response) => response.json())
       .then((data) => {
         data.forEach((element) => {
@@ -86,7 +86,7 @@ export const EditColleges = () => {
 
     const jsonPayload = JSON.stringify(collegeData);
 
-    fetch(`http://127.0.0.1:8000/colleges/${selectedCollege.value}/update/`, {
+    fetch(`${API_BASE_URL}/colleges/${selectedCollege.value}/update/`, {
       method: "PUT",
       body: jsonPayload,
       headers: {
@@ -125,7 +125,7 @@ export const EditColleges = () => {
       });
   };
   const handleDelete = () => {
-    fetch(`http://127.0.0.1:8000/colleges/${selectedCollege.value}/delete/`, {
+    fetch(`${API_BASE_URL}/colleges/${selectedCollege.value}/delete/`, {
       method: "DELETE",
     })
       .then((response) => {
