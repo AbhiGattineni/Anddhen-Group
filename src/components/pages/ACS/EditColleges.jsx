@@ -12,8 +12,9 @@ export const EditColleges = () => {
   const [selectedCollege, setSelectedCollege] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: "" });
-  const [showButton,setShowButton] = useState(true)
+  const [showButton, setShowButton] = useState(true);
   const navigate = useNavigate();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     fetchColleges();
   }, []);
@@ -50,7 +51,7 @@ export const EditColleges = () => {
   const fetchCollege = () => {
     setLoading(true);
 
-    fetch(`http://127.0.0.1:8000/colleges/${selectedCollege.value}/`)
+    fetch(`${API_BASE_URL}/colleges/${selectedCollege.value}/`)
       .then((response) => response.json())
       .then((data) => {
         setCollegeData(data);
@@ -107,13 +108,15 @@ export const EditColleges = () => {
       })
       .then((data) => {
         console.log("Success:", data);
-        setToast({ show: true, message: "Data successfully updated!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        setToast({ show: true, message: "College successfully updated!" });
+        setTimeout(() => {
+          setToast({ show: false, message: "" })
+          navigate("/acs");
+        }, 3000);
         setCollegeData([]);
         setCollegesData([]);
         setSelectedCollege({});
         setEditField({});
-        navigate("/acs")
       })
       .catch((error) => {
         console.error("Error:", error.message);
@@ -129,13 +132,13 @@ export const EditColleges = () => {
         if (!response.ok) {
           throw new Error("Server error");
         }
-  
+
         // Check if the status is 204 No Content
         if (response.status === 204) {
           // No need to parse JSON, as there's no content
           return null;
         }
-  
+
         return response.json();
       })
       .then((data) => {
@@ -143,9 +146,11 @@ export const EditColleges = () => {
         setCollegeData([]);
         setCollegesData([]);
         setEditField({});
-        setToast({ show: true, message: "Data successfully deleted!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
-        navigate("/acs")
+        setToast({ show: true, message: "College successfully deleted!" });
+        setTimeout(() => {
+          setToast({ show: false, message: "" });
+          navigate("/acs");
+        }, 3000);
       })
       .catch((error) => {
         console.error("Error:", error.message);
@@ -153,7 +158,7 @@ export const EditColleges = () => {
         setTimeout(() => setToast({ show: false, message: "" }), 3000);
       });
   };
-  
+
   // console.log(Object.values(collegeData).every(clg => clg.length));
   return (
     <div className="container mt-2">
@@ -471,9 +476,10 @@ export const EditColleges = () => {
                       }
                     />
                     <button
-                      onClick={() =>
-                        setEditField("application_graduation_fee_link")
-                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setEditField("application_graduation_fee_link");
+                      }}
                       className="border-0 bg-primary rounded text-white"
                       style={{ height: "40px", marginTop: "25px" }}
                     >
@@ -970,9 +976,10 @@ export const EditColleges = () => {
                       }
                     />
                     <button
-                      onClick={() =>
-                        setEditField("spring_deadline_graduation_link")
-                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setEditField("spring_deadline_graduation_link");
+                      }}
                       className="border-0 bg-primary rounded text-white"
                       style={{ height: "40px", marginTop: "25px" }}
                     >
@@ -1143,9 +1150,10 @@ export const EditColleges = () => {
                       }
                     />
                     <button
-                      onClick={() =>
-                        setEditField("international_person_email_link")
-                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setEditField("international_person_email_link");
+                      }}
                       className="border-0 bg-primary rounded text-white"
                       style={{ height: "40px", marginTop: "25px" }}
                     >

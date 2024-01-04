@@ -47,6 +47,7 @@ export const AddColleges = () => {
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: "" });
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleChange = (field, value) => {
     setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
@@ -69,7 +70,7 @@ export const AddColleges = () => {
     const jsonPayload = JSON.stringify(formData);
     console.log(jsonPayload);
 
-    fetch(`http://127.0.0.1:8000/colleges/create/`, {
+    fetch(`${API_BASE_URL}/colleges/create/`, {
       method: "POST",
       body: jsonPayload,
       headers: {
