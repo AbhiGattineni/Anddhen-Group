@@ -28,6 +28,11 @@ import { Register } from "./components/pages/Auth/Register";
 import { ProtectedRoute } from "./routes/ProtectedRoute/ProtectedRoute";
 import { ForgotPassword } from "./components/pages/Auth/ForgotPassword";
 import { EducationConsultant } from "./components/pages/ACS/EducationConsultant";
+import SuperAdmin from "./components/SuperAdmin/SuperAdmin.jsx";
+import Consultants from "./components/SuperAdmin/ACS/Consultants/Consultants.jsx";
+import RoleAccess from "./components/SuperAdmin/RoleAccess/RoleAccess.jsx";
+import { AddColleges } from "./components/pages/ACS/AddColleges.jsx";
+import { EditColleges } from "./components/pages/ACS/EditColleges.jsx";
 
 function MainLayout({ children, logout }) {
   return (
@@ -151,6 +156,22 @@ function App() {
           }
         />
         <Route
+          path="/acs/educationconsulting/addcolleges"
+          element={
+            <MainLayout>
+              <AddColleges />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/acs/educationconsulting/editcolleges"
+          element={
+            <MainLayout>
+              <EditColleges />
+            </MainLayout>
+          }
+        />
+        <Route
           path="/acs/jobapplication/parttimerportal"
           element={
             <ProtectedRoute>
@@ -160,7 +181,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/aps"
           element={
@@ -203,7 +223,36 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/superadmin"
+          element={
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <SuperAdmin />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/acs_consultants"
+          element={
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <Consultants />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/roleaccess"
+          element={
+            <ProtectedRoute>
+              <MainLayout logout={true}>
+                <RoleAccess />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/resetpassword" element={<ForgotPassword />} />

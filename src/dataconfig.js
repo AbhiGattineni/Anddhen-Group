@@ -13,6 +13,8 @@ import chandu from "./components/images/chandu.jpg";
 import neha from "./components/images/neha.jpg";
 import charan from "./components/images/charan.jpg";
 import { PartTimerPortal } from "./components/pages/ACS/PartTimerPortal";
+import resgistration1 from "./components/images/resgistration1.png";
+import resgistration2 from "./components/images/registration2.png";
 export const priceData = [
   {
     id: 1,
@@ -445,15 +447,23 @@ export const usStates = [
   { value: 'northern_mariana_islands', label: 'Northern Mariana Islands' },
 ];
 
-// export const PartTimerQuestions = [
-//   "Is the sky blue?",
-//   "Do cats meow?",
-//   "Is water wet?",
-//   "Are humans capable of flying without assistance?",
-//   "Does the sun rise in the west?",
-//   "Is the Earth flat?",
-//   "Can fish breathe underwater?",
-//   "Is the moon made of cheese?",
-//   "Do plants need sunlight to grow?",
-//   "Is 2 + 2 equal to 5?"
-// ];
+export const acsCards = [
+  {
+    image : resgistration1,
+    path : "/acs/educationconsulting",
+    heading : "Higher education consulting",
+    description : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam."
+  },
+  {
+    image : resgistration2,
+    path : "jobapplication",
+    heading : "Job applications",
+    description : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam."
+  },
+  {
+    image : resgistration2,
+    path : "/",
+    heading : "Courses",
+    description : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam."
+  },
+]
