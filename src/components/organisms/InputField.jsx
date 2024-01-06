@@ -6,7 +6,7 @@ const InputField = (props) => {
   const phonePattern =
     /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
   const linkRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
-  const scoreRegex = /^\d*\.?\d*$/;
+  const scoreRegex = /^\d{1,3}(?:\.\d*)?$/;
   // const yearPattren = /^(19|20)[\d]{2,2}$/;
   const ref = useRef(null);
   const linkFields = [
@@ -144,13 +144,12 @@ const InputField = (props) => {
       return "Link should include with http/https";
     }
     if (scoreFields.includes(props.name) && !scoreRegex.test(props.value)) {
-      return "Score should be valid";
+      return "Score should not be greater that 3 digits";
     }
     if (
       ["application_UG_fee", "application_graduation_fee"].includes(
         props.name
-      ) &&
-      !scoreRegex.test(props.value)
+      ) && props.value.length <=0
     ) {
       return "Fee should be valid";
     }
