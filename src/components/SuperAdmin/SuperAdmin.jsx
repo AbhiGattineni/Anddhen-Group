@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export const updatesAndStatus = [
@@ -25,6 +25,9 @@ export const updatesAndStatus = [
 ];
 
 const SuperAdmin = () => {
+  useEffect(() => {
+    console.log("SuperAdmin");
+  }, []);
   return (
     <div className="row">
       {updatesAndStatus.map((data) => (
