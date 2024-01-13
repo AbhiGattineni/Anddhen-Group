@@ -2,7 +2,7 @@ import React from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { Navigate, useLocation } from "react-router-dom";
 
-export const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }) => {
   const { user, loading, error } = useAuth();
   const location = useLocation();
 
@@ -17,3 +17,5 @@ export const ProtectedRoute = ({ children }) => {
 
   return children;
 };
+
+export default ProtectedRoute;

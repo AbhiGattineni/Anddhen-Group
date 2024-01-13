@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+    "target": "es6",
+    "lib": ["es6", "dom"],
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "types": ["node", "jest", "babel__generator"],
+      "baseUrl": ".", 
+      "paths": {
+        "*": ["node_modules/*"] 
+      },
+      "allowSyntheticDefaultImports": true, 
+      "esModuleInterop": true 
+    },
+    "exclude": [
+      "node_modules", 
+      "**/node_modules/*"
+    ]
+}
+  

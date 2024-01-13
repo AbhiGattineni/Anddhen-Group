@@ -1,65 +1,12 @@
-import React, { useState, useEffect } from "react";
-import InputField from "../../organisms/InputField";
-import Toast from "../../organisms/Toast";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import {
-  signInWithGoogle,
-  auth,
-} from "../../../services/Authentication/firebase";
+import { handleGoogleSignIn, handleFormSubmit } from "./AuthFunctions";
+import LoginForm from "./LoginForm";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [focus, setFocus] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: "" });
 
-  const handleChange = (field, value) => {
-    setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
-  };
-
-  const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
-  };
-  const isFormValid = () => {
-    return (
-      Object.values(formData).every(Boolean) &&
-      !Object.values(fieldErrors).some(Boolean)
-    );
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid()) return;
-
-    try {
-      setFormData({
-        email: "",
-        password: "",
-      });
-      setToast({ show: true, message: "Login successfully" });
-      setTimeout(() => setToast({ show: false, message: "" }), 3000);
-    } catch (error) {
-      setToast({ show: true, message: "Something went wrong!" });
-      setTimeout(() => setToast({ show: false, message: "" }), 3000);
-      console.error("Error:", error);
-    }
-  };
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-      const preLoginPath = sessionStorage.getItem("preLoginPath") || "/";
-      navigate(preLoginPath);
-      sessionStorage.removeItem("preLoginPath");
-    } catch (error) {
-      console.error("Error during sign in with Google: ", error);
-    }
-  };
   return (
     <div className="bg-light">
       <div
@@ -75,7 +22,7 @@ export const Login = () => {
                   <i
                     className="fs-3 cursor-pointer bi bi-google"
                     style={{ color: "#4285F4" }}
-                    onClick={handleGoogleSignIn}
+                    onClick={() => handleGoogleSignIn(navigate)}
                   ></i>
                   <i
                     className="fs-3 cursor-pointer bi bi-facebook"
@@ -100,56 +47,7 @@ export const Login = () => {
                   <hr />
                 </div>
               </div>
-              <form onSubmit={handleSubmit}>
-                <InputField
-                  name="email"
-                  label="Email Address"
-                  placeholder="Enter valid email address"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  setError={(error) => handleFieldError("email", error)}
-                />
-                <div className="position-relative">
-                  <InputField
-                    name="password"
-                    label="Password"
-                    placeholder="Enter password"
-                    type={showPassword ? "text" : "password"}
-                    value={formData.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                    onFocus={() => setFocus(true)}
-                    setError={(error) => handleFieldError("password", error)}
-                  />
-                  {focus && formData.password.length ? (
-                    <i
-                      onClick={() => setShowPassword(!showPassword)}
-                      className={`bi ${
-                        showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"
-                      } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
-                      style={{ top: "35px" }}
-                    ></i>
-                  ) : null}
-                </div>
-                <div className="row">
-                  <div className="col"></div>
-                  <Link
-                    to="/resetpassword"
-                    className="col col-auto cursor-pointer m-0 text-decoration-none text-black"
-                  >
-                    Forget Password?
-                  </Link>
-                </div>
-                <div className={`form-group mb-2`}>
-                  <button
-                    type="submit"
-                    className="btn btn-warning shadow w-100 mt-2"
-                    disabled={!isFormValid()}
-                  >
-                    {loading ? "Loading..." : "Submit"}
-                  </button>
-                </div>
-              </form>
+              <LoginForm onSubmit={handleFormSubmit} />
               <div className="d-flex align-items-center gap-2">
                 <div>Don't have an account? </div>
                 <Link
@@ -188,11 +86,6 @@ export const Login = () => {
           </div>
         </div>
       </div>
-      <Toast
-        show={toast.show}
-        message={toast.message}
-        onClose={() => setToast({ show: false, message: "" })}
-      />
     </div>
   );
 };
