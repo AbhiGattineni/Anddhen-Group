@@ -1,12 +1,20 @@
 import React from "react";
 import Navbar from "src/components/organisms/Navbar";
 import Footer from "src/components/organisms/Footer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
-const Layout = ({ logout }) => {
+const Layout = () => {
+  const location = useLocation();
+  const isProtectedRoute =
+    location.pathname.includes("/acs/educationconsulting") ||
+    location.pathname.includes("/acs/jobapplication/parttimerportal") ||
+    location.pathname.includes("/superadmin") ||
+    location.pathname.includes("/superadmin/acs_consultants") ||
+    location.pathname.includes("/superadmin/roleaccess");
+
   return (
     <div>
-      <Navbar logout={logout ? true : false} />
+      <Navbar logout={isProtectedRoute} />
       <Outlet />
       <Footer />
     </div>

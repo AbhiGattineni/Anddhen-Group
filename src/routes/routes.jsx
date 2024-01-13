@@ -22,69 +22,102 @@ import { AddColleges } from "src/components/pages/ACS/AddColleges";
 import { EditColleges } from "src/components/pages/ACS/EditColleges";
 import { PartTimerPortal } from "src/components/pages/ACS/PartTimerPortal";
 import Layout from "./Layout";
+import ErrorPage from "src/components/pages/ErrorPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Home /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+      { path: "/resetpassword", element: <ForgotPassword /> },
     ],
   },
-  // {
-  //   path: "/",
-  //   element: (
-  //     <MainLayout>
-  //       <Home />
-  //     </MainLayout>
-  //   ),
-  // },
-  // {
-  //   path: "/about",
-  //   element: (
-  //     <MainLayout>
-  //       <About />
-  //     </MainLayout>
-  //   ),
-  // },
-
-  // {
-  //   path: "/contact",
-  //   element: (
-  //     <MainLayout>
-  //       <Contact />
-  //     </MainLayout>
-  //   ),
-  // },
 
   {
     path: "/ass",
-    element: (
-      <MainLayout>
-        <Ass />
-      </MainLayout>
-    ),
+    element: <Layout />,
+    children: [{ index: true, element: <Ass /> }],
   },
 
   {
     path: "/ams",
-    element: (
-      <MainLayout>
-        <Ams />
-      </MainLayout>
-    ),
+    element: <Layout />,
+    children: [{ index: true, element: <Ams /> }],
   },
 
   {
-    path: "/acs",
-    element: (
-      <MainLayout>
-        <Acs />
-      </MainLayout>
-    ),
+    path: "/aps",
+    element: <Layout />,
+    children: [{ index: true, element: <Aps /> }],
   },
+
+  {
+    path: "/ati",
+    element: <Layout />,
+    children: [{ index: true, element: <Ati /> }],
+  },
+  {
+    path: "/acs",
+    element: <Layout />,
+    children: [
+      { index: true, element: <Acs /> },
+      { path: "jobapplication", element: <JobApplicationRegistration /> },
+      { path: "jobapplication/studentportal", element: <StudentPortal /> },
+      {
+        path: "educationconsulting",
+        element: (
+          <ProtectedRoute>
+            <EducationConsultant />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "jobapplication/parttimerportal",
+        element: (
+          <ProtectedRoute>
+            <PartTimerPortal />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/superadmin",
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <SuperAdmin /> },
+      { path: "acs_consultants", element: <Consultants /> },
+      { path: "roleaccess", element: <RoleAccess /> },
+    ],
+  },
+
+  // {
+  //   path: "/acs/educationconsulting/addcolleges",
+  //   element: (
+  //     <MainLayout>
+  //       <AddColleges />
+  //     </MainLayout>
+  //   ),
+  // },
+
+  // {
+  //   path: "/acs/educationconsulting/editcolleges",
+  //   element: (
+  //     <MainLayout>
+  //       <EditColleges />
+  //     </MainLayout>
+  //   ),
+  // },
 
   {
     /* {
@@ -122,82 +155,6 @@ const router = createBrowserRouter([
         */
   },
   {
-    path: "/acs/jobapplication",
-    element: (
-      <MainLayout>
-        <JobApplicationRegistration />
-      </MainLayout>
-    ),
-  },
-
-  {
-    path: "/acs/educationconsulting",
-    element: (
-      <ProtectedRoute>
-        <MainLayout logout={true}>
-          <EducationConsultant />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-
-  {
-    path: "/acs/jobapplication/studentportal",
-    element: (
-      <MainLayout>
-        <StudentPortal />
-      </MainLayout>
-    ),
-  },
-
-  {
-    path: "/acs/educationconsulting/addcolleges",
-    element: (
-      <MainLayout>
-        <AddColleges />
-      </MainLayout>
-    ),
-  },
-
-  {
-    path: "/acs/educationconsulting/editcolleges",
-    element: (
-      <MainLayout>
-        <EditColleges />
-      </MainLayout>
-    ),
-  },
-
-  {
-    path: "/acs/jobapplication/parttimerportal",
-    element: (
-      <ProtectedRoute>
-        <MainLayout logout={true}>
-          <PartTimerPortal />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-
-  {
-    path: "/aps",
-    element: (
-      <MainLayout>
-        <Aps />
-      </MainLayout>
-    ),
-  },
-
-  {
-    path: "/ati",
-    element: (
-      <MainLayout>
-        <Ati />
-      </MainLayout>
-    ),
-  },
-
-  {
     /* {
            path:"/test"
           ,element:
@@ -227,43 +184,6 @@ const router = createBrowserRouter([
   //     </ProtectedRoute>
   //   ),
   // },
-
-  {
-    path: "/superadmin",
-    element: (
-      <ProtectedRoute>
-        <MainLayout logout={true}>
-          <SuperAdmin />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-
-  {
-    path: "/superadmin/acs_consultants",
-    element: (
-      <ProtectedRoute>
-        <MainLayout logout={true}>
-          <Consultants />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-
-  {
-    path: "/superadmin/roleaccess",
-    element: (
-      <ProtectedRoute>
-        <MainLayout logout={true}>
-          <RoleAccess />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
-  { path: "/resetpassword", element: <ForgotPassword /> },
   {
     /* {  path:"/quiz" ,element:<Quiz /> }, /> */
   },
