@@ -10,7 +10,8 @@ const Layout = () => {
     location.pathname.includes("/acs/jobapplication/parttimerportal") ||
     location.pathname.includes("/superadmin") ||
     location.pathname.includes("/superadmin/acs_consultants") ||
-    location.pathname.includes("/superadmin/roleaccess");
+    location.pathname.includes("/superadmin/roleaccess") ||
+    location.pathname.includes("/admin");
 
   return (
     <div>

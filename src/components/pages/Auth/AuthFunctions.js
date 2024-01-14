@@ -1,7 +1,7 @@
 import { signInWithGoogle } from "../../../services/Authentication/firebase";
 
 export const handleGoogleSignIn = (navigate) => {
-  signInWithGoogle()
+  return signInWithGoogle() // Return the promise here
     .then(() => {
       const preLoginPath = sessionStorage.getItem("preLoginPath") || "/";
       navigate(preLoginPath);

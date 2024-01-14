@@ -23,6 +23,8 @@ import { EditColleges } from "src/components/pages/ACS/EditColleges";
 import { PartTimerPortal } from "src/components/pages/ACS/PartTimerPortal";
 import Layout from "./Layout";
 import ErrorPage from "src/components/pages/ErrorPage";
+import { AcsAdmin } from "src/components/pages/Admin/AcsAdmin";
+import AdminPage from "src/components/pages/Admin/AdminPage";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +84,20 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PartTimerPortal />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <ProtectedRoute>
+            <AdminPage />
           </ProtectedRoute>
         ),
       },
