@@ -1,28 +1,6 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-
-export const updatesAndStatus = [
-  {
-    child: "Anddhen Consulting Services",
-    route: "acs_consultants",
-  },
-  {
-    child: "Anddhen Consulting Services",
-    route: "managers/updates",
-  },
-  {
-    child: "Anddhen Consulting Services",
-    route: "parttimers/updates",
-  },
-  {
-    child: "Anddhen Software Services",
-    route: "interns/updates",
-  },
-  {
-    child: "Anddhen Access Services",
-    route: "roleaccess",
-  },
-];
+import { adminPlates } from "../../dataconfig";
 
 const SuperAdmin = () => {
   useEffect(() => {
@@ -30,7 +8,7 @@ const SuperAdmin = () => {
   }, []);
   return (
     <div className="row">
-      {updatesAndStatus.map((data) => (
+      {adminPlates.map((data) => (
         <div className="col-md-6 my-3">
           <Link to={data.route} className="text-decoration-none">
             <div className="card shadow-lg">

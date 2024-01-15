@@ -25,6 +25,7 @@ import Layout from "./Layout";
 import ErrorPage from "src/components/pages/ErrorPage";
 import { AcsAdmin } from "src/components/pages/Admin/AcsAdmin";
 import AdminPage from "src/components/pages/Admin/AdminPage";
+import RolesAndAccess from "src/components/SuperAdmin/RoleAccess/RolesAndAccess";
 
 const router = createBrowserRouter([
   {
@@ -113,7 +114,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <SuperAdmin /> },
       { path: "acs_consultants", element: <Consultants /> },
-      { path: "roleaccess", element: <RoleAccess /> },
+      { path: "roleaccess", element: <RolesAndAccess /> },
     ],
   },
 
