@@ -18,12 +18,12 @@ export const PriceCard = ({ data }) => {
             }
           >
             <h4>
-              {data.package} : {data.categery}
+              {data.package_name}
             </h4>
           </div>
           <div className="text-start p-3">
-            {data.features.map((feature) => (
-              <div className="d-flex align-items-start" key={feature.id}>
+            {data.includes.map((feature, index) => (
+              <div className="d-flex align-items-start" key={index}>
                 <span className="mx-3 text-success">
                   <i className="bi bi-check-circle-fill"></i>
                 </span>
@@ -32,18 +32,17 @@ export const PriceCard = ({ data }) => {
             ))}
           </div>
 
-          {data?.nonFeatures?.length && (
-            <div className="text-start p-3">
-              {data?.nonFeatures?.map((feature) => (
-                <div className="d-flex align-items-start" key={feature.id}>
-                  <span className="mx-3 text-danger">
-                    <i className="bi bi-x-circle-fill"></i>
-                  </span>
-                  <span className="flex-grow-1">{feature}</span>
-                </div>
-              ))}
-            </div>
-          )}
+
+          <div className="text-start p-3">
+            {data?.excludes?.map((feature, index) => (
+              <div className="d-flex align-items-start" key={index}>
+                <span className="mx-3 text-danger">
+                  <i className="bi bi-x-circle-fill"></i>
+                </span>
+                <span className="flex-grow-1">{feature}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

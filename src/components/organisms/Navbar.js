@@ -16,6 +16,7 @@ function Navbar(props) {
       })
       .catch((error) => {
       });
+    setNavbarOpen(false);
   };
 
   const handleLinkClick = () => {
