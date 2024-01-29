@@ -10,7 +10,8 @@
         "*": ["node_modules/*"] 
       },
       "allowSyntheticDefaultImports": true, 
-      "esModuleInterop": true 
+      "esModuleInterop": true,
+      "noUnusedLocals": true
     },
     "exclude": [
       "node_modules", 

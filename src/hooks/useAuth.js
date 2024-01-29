@@ -11,7 +11,6 @@ export const useAuth = () => {
     onIdTokenChanged(auth, async (user) => {
       if (user) {
         const idTokenResult = await user.getIdTokenResult();
-        console.log("role", idTokenResult.claims.role); // 'role' is the custom claim
       }
     });
     const unsubscribe = onAuthStateChanged(

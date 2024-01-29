@@ -2,9 +2,7 @@ const { useQuery } = require("react-query");
 
 const useUserData = (isNewUser, googleUserData) => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  console.log("fetchUserDataOutside", isNewUser, googleUserData);
   const fetchUserData = async () => {
-    console.log("fetchUserData", isNewUser, googleUserData);
     if (isNewUser && googleUserData) {
       const response = await fetch(`${API_BASE_URL}/user/log-first-time/`, {
         method: "POST",

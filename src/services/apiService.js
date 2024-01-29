@@ -2,7 +2,6 @@ const API_BASE_URL =
   "https://script.google.com/macros/s/AKfycbxVOG0xdYGY_3nGOc_6kwqDP7rYlaHi02-mRXMnJDmHS0VJHebJzxsvHRRtC8MBMUJL_Q/exec";
 
 export const submitFormData = async (formData) => {
-  console.log("form", formData);
   try {
     const response = await fetch(API_BASE_URL, {
       method: "POST",

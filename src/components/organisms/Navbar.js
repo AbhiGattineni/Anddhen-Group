@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { logout } from "../../services/Authentication/Logout";
+import useAuthStore from "../../services/store/globalStore";
+
+
 
 function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = useState(false);
+
+  const setNewUser = useAuthStore((state) => state.setParttimer_consent);
   const handleLogout = () => {
     logout()
       .then(() => {
-        console.log("logout success");
+        setNewUser(false);
       })
       .catch((error) => {
-        console.log("logout fail");
       });
   };
 
