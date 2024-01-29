@@ -7,6 +7,7 @@ import { PartTimerRegistrationForm } from "../../organisms/PartTimerRegistration
 import { auth } from "src/services/Authentication/firebase";
 import { usePartTimerQuery } from "../../../react-query/useFetchPartTimerData";
 import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
+import ParttimerDashboard from "src/components/generalComponents/ACS/ParttimerDashbaord";
 
 export const PartTimerPortal = () => {
   const newUser = useAuthStore((state) => state.newUser);
@@ -45,8 +46,7 @@ export const PartTimerPortal = () => {
   }
   return (
     <div className="container mt-3">
-      {newUser || !parttimer_consent ? <NewParttimer /> : <><Videos />
-      </>}
+      {newUser || !parttimer_consent ? <NewParttimer /> : <ParttimerDashboard />}
     </div>
   );
 };
