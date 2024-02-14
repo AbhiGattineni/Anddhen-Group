@@ -314,6 +314,11 @@ export const videoLinks = [
     title: "Update & Status format in whatsapp group and excel sheet:",
     description: "Update & Status format in whatsapp group and excel sheet:",
   },
+  {
+    link: "https://www.youtube.com/watch?v=ZnquQ5Cv2mc",
+    title: "How to apply Saved Jobs",
+    description: "How to apply Saved Jobs",
+  },
 ];
 
 export const adminPlates = [
