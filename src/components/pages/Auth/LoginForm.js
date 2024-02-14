@@ -29,7 +29,7 @@ const LoginForm = ({ onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid()) return;
-    onSubmit(formData);
+    onSubmit(formData.email, formData.password);
   };
 
   return (
@@ -57,9 +57,8 @@ const LoginForm = ({ onSubmit }) => {
         {focus && formData.password.length ? (
           <i
             onClick={() => setShowPassword(!showPassword)}
-            className={`bi ${
-              showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"
-            } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
+            className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"
+              } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
             style={{ top: "35px" }}
           ></i>
         ) : null}

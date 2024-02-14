@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getAuth, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider, GithubAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -16,17 +16,24 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-getAnalytics(app); // Initialize Firebase Analytics if needed
-
-// Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 
-// Google Authentication
+// Google Auth
 const googleAuthProvider = new GoogleAuthProvider();
 googleAuthProvider.setCustomParameters({ prompt: "select_account" });
 
-export const signInWithGoogle = () => {
-  return signInWithPopup(auth, googleAuthProvider);
-};
+// Facebook Auth
+const facebookAuthProvider = new FacebookAuthProvider();
+facebookAuthProvider.setCustomParameters({ 'display': 'popup' });
+
+// GitHub Auth
+const githubAuthProvider = new GithubAuthProvider();
+githubAuthProvider.addScope('read:user');
+
+// Exported sign-in methods
+export const signInWithGoogle = () => signInWithPopup(auth, googleAuthProvider);
+export const signInWithFacebook = () => signInWithPopup(auth, facebookAuthProvider);
+export const signInWithGitHub = () => signInWithPopup(auth, githubAuthProvider);
+export const signInWithEmailPassword = (email, password) => signInWithEmailAndPassword(auth, email, password);
 
 export { auth, app };

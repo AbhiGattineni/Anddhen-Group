@@ -1,33 +1,23 @@
-// useErrorHandling.js
+const errorConfig = {
+    "ECONNABORTED": { code: "ACS001", title: "Timeout", message: "The request timed out. Please try again later." },
+    "NETWORK_ERROR": { code: "ACS002", title: "Network Error", message: "Network Error. Please check your connection." },
+    "auth/invalid-value-(email)": { code: "ACS501", title: "Invalid Value", message: "The email address is not valid. Please check and try again." },
+    "auth/invalid-login-credentials": { code: "ACS502", title: "Invalid Credentials", message: "The email address/password is not valid. Please check and try again." },
+    // Add more error configurations as needed
+};
+
 const useErrorHandling = (error) => {
-    // Initialize default error details
-    let errorCode = "ACSXXX";
-    let title = "Unexpected Error";
-    let message = "An unexpected error occurred. Please try again later.";
-
-    if (error) {
-        if (error.response) {
-            // Error from server response
-            errorCode = error.response.status.toString();
-            title = "Server Error";
-            message = `Server responded with status code ${error.response.status}.`;
-        } else if (error.request) {
-            // Request made but no response received
-            title = "Network Issue";
-            message = "No response was received from the server. Please check your internet connection.";
-        } else if (error.message && error.message.includes("Network Error")) {
-            // Network error
-            title = "Network Error";
-            message = "Network Error. Please check your connection.";
-        } else if (error.code === "ECONNABORTED") {
-            // Timeout error
-            title = "Timeout";
-            message = "The request timed out. Please try again later.";
-        }
-        // Add other error types as needed
+    let errorCode = error?.code || "ACS999"; // Default error code if not found in config
+    if (errorCode === "auth/invalid-value-(email),-starting-an-object-on-a-scalar-field") {
+        errorCode = "auth/invalid-value-(email)";
     }
+    let config = errorConfig[errorCode] || {
+        code: "ACS999",
+        title: "Unexpected Error",
+        message: "An unexpected error occurred. Please try again later."
+    };
 
-    return { errorCode, title, message };
+    return { errorCode: config.code, title: config.title, message: config.message };
 };
 
 export default useErrorHandling;

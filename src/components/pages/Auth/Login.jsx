@@ -1,33 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { handleFormSubmit } from "./AuthFunctions";
 import LoginForm from "./LoginForm";
-import { signInWithGoogle } from "../../../services/Authentication/firebase";
-import usePostUserData from "../../../hooks/usePostUserData";
+import useUnifiedAuth from "src/hooks/useUnifiedAuth";
+import Toast from "src/components/organisms/Toast";
+import useErrorHandling from "src/hooks/useErrorHandling";
 
 export const Login = () => {
-  const navigate = useNavigate();
+  const { onGoogleSignIn, onFacebookSignIn, onEmailPasswordSignIn } = useUnifiedAuth();
+  const [error, setError] = useState(null); // Use state to manage the raw error
 
-  const { postUserData } = usePostUserData();
+  // Use the useErrorHandling hook with the current error state
+  const { errorCode, title, message } = useErrorHandling(error);
 
-  const onGoogleSignIn = () => {
-    signInWithGoogle()
-      .then(async (data) => {
-        await postUserData(data.user);
-        proceedToNextStep();
-
-      })
-      .catch((error) => {
-        console.error("Error during sign in with Google: ", error);
-      });
+  const handleSignIn = async (signInMethod) => {
+    const result = await signInMethod();
+    if (result && !result.success) {
+      setError(result.error); // Set the raw error for processing
+    } else {
+      setError(null); // Clear error on successful authentication or if result is unexpectedly null/undefined
+    }
   };
 
-  const proceedToNextStep = () => {
-    const preLoginPath = sessionStorage.getItem("preLoginPath") || "/";
-    navigate(preLoginPath);
-    sessionStorage.removeItem("preLoginPath");
-  };
+  // Wrapper functions for each sign-in method
+  const handleGoogleSignIn = () => handleSignIn(onGoogleSignIn);
+  const handleFacebookSignIn = () => handleSignIn(onFacebookSignIn);
+  const handleEmailPasswordSignIn = (email, password) => handleSignIn(() => onEmailPasswordSignIn(email, password));
+
 
   return (
     <div className="bg-light min-vh-100 d-flex align-items-center">
@@ -39,20 +37,20 @@ export const Login = () => {
           <div className="d-flex align-items-center mb-3">
             <div>Sign in with</div>
             <div className="ms-3 d-flex gap-3">
-              <i className="bi bi-google fs-4 cursor-pointer" onClick={onGoogleSignIn} style={{ transition: 'transform 0.2s', color: "#4285F4" }}></i>
-              <i className="bi bi-facebook fs-4 cursor-pointer" style={{ transition: 'transform 0.2s', color: "#3b5998" }}></i>
+              <i className="bi bi-google fs-4 cursor-pointer" onClick={handleGoogleSignIn} style={{ transition: 'transform 0.2s', color: "#4285F4" }}></i>
+              <i className="bi bi-facebook fs-4 cursor-pointer" onClick={handleFacebookSignIn} style={{ transition: 'transform 0.2s', color: "#3b5998" }}></i>
               <i className="bi bi-twitter fs-4 cursor-pointer" style={{ transition: 'transform 0.2s', color: "#1DA1F2" }}></i>
               <i className="bi bi-linkedin fs-4 cursor-pointer" style={{ transition: 'transform 0.2s', color: "#0A66C2" }}></i>
               {/* Add other social icons here */}
             </div>
           </div>
-          <div className="d-flex align-items-center justify-content-center my-4">
+          <div className="d-flex align-items-center justify-content-center mb-4">
             <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d3d3d3" }}></div>
             <span className="px-2" style={{ backgroundColor: "#fff", position: "relative", zIndex: 1 }}>or</span>
             <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d3d3d3" }}></div>
           </div>
-
-          <LoginForm onSubmit={handleFormSubmit} />
+          {error && <p className="text-danger">{errorCode}-{message}</p>}
+          <LoginForm onSubmit={handleEmailPasswordSignIn} />
           <div className="d-flex justify-content-center mt-3">
             <span>Don't have an account? </span>
             <Link to="/register" className="text-primary fw-bold text-decoration-none ms-1">
@@ -62,6 +60,8 @@ export const Login = () => {
 
         </div>
       </div>
+      {error && <Toast show={true} message={`Error: ${errorCode}-${title}`} onClose={() => setError(null)} />}
+
     </div>
   );
 };
