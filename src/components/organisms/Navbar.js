@@ -30,7 +30,7 @@ function Navbar(props) {
           <div className="col-md-12">
             <nav className="navbar navbar-expand-lg ">
               <div className="container-fluid">
-                <Link to="/" className="navbar-brand">
+                <Link to="/" className="navbar-brand nav-link-highlight">
                   Anddhen Group
                 </Link>
                 <button
@@ -53,7 +53,7 @@ function Navbar(props) {
                       <Link
                         to="/"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Home
                       </Link>
@@ -62,14 +62,14 @@ function Navbar(props) {
                       <Link
                         to="/about"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         About
                       </Link>
                     </li>
                     <li className="nav-item dropdown d-none d-lg-block">
                       <a
-                        className="nav-link dropdown-toggle active custom-dropdown"
+                        className="nav-link dropdown-toggle active custom-dropdown nav-link-highlight"
                         href="#"
                         role="button"
                         data-bs-toggle="dropdown"
@@ -79,27 +79,27 @@ function Navbar(props) {
                       </a>
                       <ul className="dropdown-menu">
                         <li>
-                          <Link to="/ams" className="dropdown-item">
+                          <Link to="/ams" className="dropdown-item nav-link-highlight">
                             Anddhen Marketing Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/acs" className="dropdown-item">
+                          <Link to="/acs" className="dropdown-item nav-link-highlight">
                             Anddhen Consulting Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/ass" className="dropdown-item">
+                          <Link to="/ass" className="dropdown-item nav-link-highlight">
                             Anddhen Software Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/aps" className="dropdown-item">
+                          <Link to="/aps" className="dropdown-item nav-link-highlight">
                             Anddhen Philanthropy Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/ati" className="dropdown-item">
+                          <Link to="/ati" className="dropdown-item nav-link-highlight">
                             Anddhen Trading & Investiment
                           </Link>
                         </li>
@@ -109,7 +109,7 @@ function Navbar(props) {
                       <Link
                         to="/ams"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Marketing Services
                       </Link>
@@ -118,7 +118,7 @@ function Navbar(props) {
                       <Link
                         to="/acs"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Consulting Services
                       </Link>
@@ -127,7 +127,7 @@ function Navbar(props) {
                       <Link
                         to="/ass"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Software Services
                       </Link>
@@ -136,7 +136,7 @@ function Navbar(props) {
                       <Link
                         to="/aps"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Philanthropy Services
                       </Link>
@@ -145,7 +145,7 @@ function Navbar(props) {
                       <Link
                         to="/ati"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Trading & Investiment
                       </Link>
@@ -154,7 +154,7 @@ function Navbar(props) {
                       <Link
                         to="/contact"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Contact
                       </Link>

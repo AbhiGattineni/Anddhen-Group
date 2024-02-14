@@ -126,21 +126,26 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .modal-content {
+}
+
+.modal-content {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
     position: relative;
-  }
-  
-  .close-button {
+}
+
+.close-button {
     position: absolute;
     top: 10px;
     right: 10px;
     border: none;
     background: none;
     font-size: 1.5rem;
-  }
-  
+}
+
+.nav-link-highlight {
+    color: white !important;
+    /* Override other styles */
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
