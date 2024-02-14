@@ -48,31 +48,27 @@ export const Register = () => {
         }
     };
     return (
-        <div className='bg-light'>
-            <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "90vh", padding: "10px" }}>
-                <div className="bg-white w-100 rounded shadow">
-                    <div className="row p-3">
-                        <div className="col w-50 d-none d-md-block d-lg-block">
-                            image
-                        </div>
-                        <div className="col w-50">
+        <div className='bg-light min-vh-100 d-flex justify-content-center align-items-center'>
+            <div className="bg-white rounded shadow p-4" style={{ maxWidth: "800px", width: "100%" }}>
+                <div className="row g-0">
+                    <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center">
+                        <img src="/loginImage.png" alt="Sign Up" className="img-fluid rounded-start" /> {/* Placeholder for your image */}
+                    </div>
+                    <div className="col-md-6">
+                        <div className="p-4">
                             <div className="d-flex align-items-center mb-3">
                                 <div>Sign up with </div>
                                 <div className="ms-3 d-flex gap-3">
-                                    <i className="fs-3 cursor-pointer bi bi-google" style={{ color: "#4285F4" }}></i>
-                                    <i className="fs-3 cursor-pointer bi bi-facebook" style={{ color: "#3b5998" }}></i>
-                                    <i className="fs-3 cursor-pointer bi bi-twitter" style={{ color: "#1DA1F2" }}></i>
-                                    <i className="fs-3 cursor-pointer bi bi-linkedin" style={{ color: "#0A66C2" }}></i>
+                                    <i className="bi bi-google fs-4 cursor-pointer" style={{ color: "#4285F4" }}></i>
+                                    <i className="bi bi-facebook fs-4 cursor-pointer" style={{ color: "#3b5998" }}></i>
+                                    <i className="bi bi-twitter fs-4 cursor-pointer" style={{ color: "#1DA1F2" }}></i>
+                                    <i className="bi bi-linkedin fs-4 cursor-pointer" style={{ color: "#0A66C2" }}></i>
                                 </div>
                             </div>
-                            <div className="row justify-content-center align-items-center">
-                                <div className="col">
-                                    <hr />
-                                </div>
-                                <div className='col col-auto mb-1 fw-bold'>or</div>
-                                <div className="col">
-                                    <hr />
-                                </div>
+                            <div className="d-flex justify-content-between align-items-center my-3">
+                                <hr className="flex-fill" />
+                                <span className="px-3 bg-white">or</span>
+                                <hr className="flex-fill" />
                             </div>
                             <form onSubmit={handleSubmit}>
                                 <InputField
@@ -134,33 +130,10 @@ export const Register = () => {
                                     </button>
                                 </div>
                             </form>
-                            <div className="d-flex align-items-center gap-2">
-                                <div>Already have an account? </div>
-                                <Link to="/login" className="text-primary fw-bold text-decoration-none">login</Link>
+                            <div className="d-flex justify-content-center align-items-center gap-2 mt-3">
+                                <div>Already have an account?</div>
+                                <Link to="/login" className="text-primary fw-bold text-decoration-none">Login</Link>
                             </div>
-                        </div>
-                    </div>
-                    <div className="row bg-dark m-1 p-2 align-items-center">
-                        <div className='col text-white text-center text-md-start'>Copyright &copy; 2023. All rights reserved.</div>
-                        <div className="socials col-12 col-md-auto p-0">
-                            <a href="/">
-                                <i className="bi bi-facebook"></i>
-                            </a>
-                            <a href="/">
-                                <i className="bi bi-linkedin"></i>
-                            </a>
-                            <a href="/">
-                                <i className="bi bi-github"></i>
-                            </a>
-                            <a href="/">
-                                <i className="bi bi-twitter"></i>
-                            </a>
-                            <a href="/">
-                                <i className="bi bi-instagram"></i>
-                            </a>
-                            <a href="/">
-                                <i className="bi bi-youtube"></i>
-                            </a>
                         </div>
                     </div>
                 </div>

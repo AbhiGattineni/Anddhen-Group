@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import useFetchQuestions from '../../react-query/useFetchQuestions';
 import LoadingSpinner from '../atoms/LoadingSpinner/LoadingSpinner';
+import ErrorPage from '../pages/ErrorPage';
+import useErrorHandling from 'src/hooks/useErrorHandling';
 
 export const QuestionCard = ({ setShowForm, setMessage }) => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -8,15 +10,11 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
     const [btnDisable, setBtnDisable] = useState(false);
 
     const { data: questions, isLoading, isError, error } = useFetchQuestions();
+    const { errorCode, title, message } = useErrorHandling(error);
 
-    if (isLoading) {
-        return <LoadingSpinner />;
-    }
+    if (isLoading) return <LoadingSpinner />;
 
-    if (isError) {
-        console.error("Error fetching questions:", error);
-        return <div>Failed to load questions.</div>;
-    }
+    if (isError) return <ErrorPage errorCode={errorCode} title={title} message={message} />;
 
     const handleAnswer = (selectedAnswer) => {
         setBtnDisable(true);

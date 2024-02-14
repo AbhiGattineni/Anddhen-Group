@@ -41,7 +41,7 @@ function Navbar(props) {
                   aria-expanded={navbarOpen}
                   aria-label="Toggle navigation"
                 >
-                  <span className="navbar-toggler-icon"></span>
+                  <span className="navbar-toggler-icon nav-link-highlight"></span>
                 </button>
                 <div
                   className={`collapse navbar-collapse ${navbarOpen ? "show" : ""
@@ -79,27 +79,27 @@ function Navbar(props) {
                       </a>
                       <ul className="dropdown-menu">
                         <li>
-                          <Link to="/ams" className="dropdown-item nav-link-highlight">
+                          <Link to="/ams" className="dropdown-item">
                             Anddhen Marketing Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/acs" className="dropdown-item nav-link-highlight">
+                          <Link to="/acs" className="dropdown-item">
                             Anddhen Consulting Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/ass" className="dropdown-item nav-link-highlight">
+                          <Link to="/ass" className="dropdown-item">
                             Anddhen Software Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/aps" className="dropdown-item nav-link-highlight">
+                          <Link to="/aps" className="dropdown-item">
                             Anddhen Philanthropy Services
                           </Link>
                         </li>
                         <li>
-                          <Link to="/ati" className="dropdown-item nav-link-highlight">
+                          <Link to="/ati" className="dropdown-item">
                             Anddhen Trading & Investiment
                           </Link>
                         </li>

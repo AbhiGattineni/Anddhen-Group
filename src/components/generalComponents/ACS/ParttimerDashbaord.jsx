@@ -1,5 +1,4 @@
 import { Videos } from "../../organisms/Videos";
-import { StatusCalendar } from "../../templates/StatusCalender";
 import StatusUpdates from "../StatusUpdates";
 
 
