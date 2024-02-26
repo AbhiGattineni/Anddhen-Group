@@ -39,8 +39,8 @@ export const Login = () => {
             <div className="ms-3 d-flex gap-3">
               <i className="bi bi-google fs-4 cursor-pointer" onClick={handleGoogleSignIn} style={{ transition: 'transform 0.2s', color: "#4285F4" }}></i>
               <i className="bi bi-facebook fs-4 cursor-pointer" onClick={handleFacebookSignIn} style={{ transition: 'transform 0.2s', color: "#3b5998" }}></i>
-              <i className="bi bi-twitter fs-4 cursor-pointer" style={{ transition: 'transform 0.2s', color: "#1DA1F2" }}></i>
-              <i className="bi bi-linkedin fs-4 cursor-pointer" style={{ transition: 'transform 0.2s', color: "#0A66C2" }}></i>
+              <i className="bi bi-twitter fs-4 cursor-pointer" style={{ transition: 'transform 0.2s', color: "#1DA1F2", pointerEvents: "none", cursor: "default" }}></i>
+              <i className="bi bi-linkedin fs-4 cursor-pointer" style={{ transition: 'transform 0.2s', color: "#0A66C2", pointerEvents: "none", cursor: "default" }}></i>
               {/* Add other social icons here */}
             </div>
           </div>

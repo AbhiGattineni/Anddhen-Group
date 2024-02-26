@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { signInWithGoogle, signInWithFacebook, signInWithGitHub, signInWithEmailPassword } from "../services/Authentication/firebase";
+import { signInWithGoogle, signInWithFacebook, signInWithGitHub, signInWithEmailPassword, createUserWithEmailPassword } from "../services/Authentication/firebase";
 import usePostUserData from "../hooks/usePostUserData";
 
 const useUnifiedAuth = () => {
@@ -8,6 +8,7 @@ const useUnifiedAuth = () => {
 
     const handleAuth = async (authPromise) => {
         try {
+            console.log("3.handleAuth");
             const data = await authPromise;
             navigate(sessionStorage.getItem("preLoginPath") || "/");
             await postUserData(data.user);
@@ -23,8 +24,9 @@ const useUnifiedAuth = () => {
     const onFacebookSignIn = () => handleAuth(signInWithFacebook());
     const onGitHubSignIn = () => handleAuth(signInWithGitHub());
     const onEmailPasswordSignIn = (email, password) => handleAuth(signInWithEmailPassword(email, password));
+    const onEmailPasswordUserCreation = (email, password) => handleAuth(createUserWithEmailPassword(email, password));
 
-    return { onGoogleSignIn, onFacebookSignIn, onGitHubSignIn, onEmailPasswordSignIn };
+    return { onGoogleSignIn, onFacebookSignIn, onGitHubSignIn, onEmailPasswordSignIn, onEmailPasswordUserCreation };
 };
 
 export default useUnifiedAuth;

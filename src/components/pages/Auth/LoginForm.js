@@ -66,7 +66,7 @@ const LoginForm = ({ onSubmit }) => {
       <div className="row">
         <div className="col"></div>
         <Link
-          to="/resetpassword"
+          to="#"
           className="col col-auto cursor-pointer m-0 text-decoration-none text-black"
         >
           Forget Password?

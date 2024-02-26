@@ -3,6 +3,7 @@ const errorConfig = {
     "NETWORK_ERROR": { code: "ACS002", title: "Network Error", message: "Network Error. Please check your connection." },
     "auth/invalid-value-(email)": { code: "ACS501", title: "Invalid Value", message: "The email address is not valid. Please check and try again." },
     "auth/invalid-login-credentials": { code: "ACS502", title: "Invalid Credentials", message: "The email address/password is not valid. Please check and try again." },
+    "auth/email-already-in-use": { code: "ACS503", title: "Email exists", message: "The email already registered" },
     // Add more error configurations as needed
 };
 
