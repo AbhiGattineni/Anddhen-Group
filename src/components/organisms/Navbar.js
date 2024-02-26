@@ -1,17 +1,22 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { logout } from "../../services/Authentication/Logout";
+import useAuthStore from "../../services/store/globalStore";
+
+
 
 function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = useState(false);
+
+  const setNewUser = useAuthStore((state) => state.setParttimer_consent);
   const handleLogout = () => {
     logout()
       .then(() => {
-        console.log("logout success");
+        setNewUser(false);
       })
       .catch((error) => {
-        console.log("logout fail");
       });
+    setNavbarOpen(false);
   };
 
   const handleLinkClick = () => {
@@ -25,7 +30,7 @@ function Navbar(props) {
           <div className="col-md-12">
             <nav className="navbar navbar-expand-lg ">
               <div className="container-fluid">
-                <Link to="/" className="navbar-brand">
+                <Link to="/" className="navbar-brand nav-link-highlight">
                   Anddhen Group
                 </Link>
                 <button
@@ -36,7 +41,7 @@ function Navbar(props) {
                   aria-expanded={navbarOpen}
                   aria-label="Toggle navigation"
                 >
-                  <span className="navbar-toggler-icon"></span>
+                  <span className="navbar-toggler-icon nav-link-highlight"></span>
                 </button>
                 <div
                   className={`collapse navbar-collapse ${navbarOpen ? "show" : ""
@@ -48,7 +53,7 @@ function Navbar(props) {
                       <Link
                         to="/"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Home
                       </Link>
@@ -57,14 +62,14 @@ function Navbar(props) {
                       <Link
                         to="/about"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         About
                       </Link>
                     </li>
                     <li className="nav-item dropdown d-none d-lg-block">
                       <a
-                        className="nav-link dropdown-toggle active custom-dropdown"
+                        className="nav-link dropdown-toggle active custom-dropdown nav-link-highlight"
                         href="#"
                         role="button"
                         data-bs-toggle="dropdown"
@@ -104,7 +109,7 @@ function Navbar(props) {
                       <Link
                         to="/ams"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Marketing Services
                       </Link>
@@ -113,7 +118,7 @@ function Navbar(props) {
                       <Link
                         to="/acs"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Consulting Services
                       </Link>
@@ -122,7 +127,7 @@ function Navbar(props) {
                       <Link
                         to="/ass"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Software Services
                       </Link>
@@ -131,7 +136,7 @@ function Navbar(props) {
                       <Link
                         to="/aps"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Philanthropy Services
                       </Link>
@@ -140,7 +145,7 @@ function Navbar(props) {
                       <Link
                         to="/ati"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Anddhen Trading & Investiment
                       </Link>
@@ -149,16 +154,17 @@ function Navbar(props) {
                       <Link
                         to="/contact"
                         onClick={handleLinkClick}
-                        className="nav-link active"
+                        className="nav-link active nav-link-highlight"
                       >
                         Contact
                       </Link>
                     </li>
                     {props.logout ?
-                      <li className="nav-item">
-                        <button onClick={handleLogout} className="btn btn-warning md-mx-2 btn-sm mt-1 fw-bold">Logout</button>
+                      <li className="nav-item d-flex justify-content-center align-items-center">
+                        <button onClick={handleLogout} className="btn btn-warning mx-2 btn-sm fw-bold">Logout</button>
                       </li>
                       : null}
+
                   </ul>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
 
 export const AdminPortal = () => {
   const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
@@ -26,7 +27,7 @@ export const AdminPortal = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error) {

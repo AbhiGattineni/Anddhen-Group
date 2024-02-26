@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddRoleModal from "./AddRoleModal";
+import Button from "../../atoms/Button/Button";
 
 const RoleAccess = () => {
   const [roles, setRoles] = useState([]);
@@ -120,16 +121,12 @@ const RoleAccess = () => {
 
   return (
     <div className="container">
-      <h1 className="my-4">IAM</h1>
-      <button
-        className="btn btn-success mb-3"
-        onClick={() => {
-          setShowModal(true);
-          setEditingRole({ id: null, name: "", admin_access_role: "" }); // Reset editing role
-        }}
-      >
-        Add Role
-      </button>
+      <h1 className="my-4"> </h1>
+      <Button
+        setShowModal={setShowModal}
+        setEditingRole={setEditingRole}
+        buttonText="Add Role"
+      />
       <AddRoleModal
         show={showModal}
         handleClose={handleCloseModal}

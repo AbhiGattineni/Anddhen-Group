@@ -7,7 +7,7 @@ function Company() {
       <div className="container">
         <div className="row">
           <div className="col-md-12 text-center">
-            <h3 className="main-heading">Our Compan</h3>
+            <h3 className="main-heading">Our Company</h3>
             <div className="underline mx-auto"></div>
             <p>
               Anddhen is a startup company that offers leading consultancy and

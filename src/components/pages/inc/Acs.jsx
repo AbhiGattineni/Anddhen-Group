@@ -66,14 +66,19 @@ export const Acs = () => {
       </div>
       <h4>Contact Us</h4>
       <div className="underline"></div>
-      <div className="">
+      <div>
         <p>
-          <i className="bi bi-envelope me-3"></i>email@domain.com
+          <i className="bi bi-envelope me-3"></i>anddhenconsulting@gmail.com
         </p>
-        <p>
-          <i className="bi bi-telephone-fill me-3"></i>+91 8801043608
+        <p style={{ marginBottom: 0 }}>
+          <i className="bi bi-telephone-fill me-3"></i>+91 9110736115
         </p>
+        <a href="https://wa.me/919110736115" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <i className="bi bi-whatsapp" style={{ fontSize: '18px', color: 'green', marginRight: "8px" }}></i>
+          <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>+91 9110736115</span>
+        </a>
       </div>
+
     </div>
   );
 };

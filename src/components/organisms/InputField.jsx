@@ -89,17 +89,18 @@ const InputField = (props) => {
 
   const validateInput = () => {
     const today = new Date();
-    const inputValue = new Date(props.value);
+    const value = props.value || '';
+    const inputValue = new Date(value);
     today.setHours(0, 0, 0, 0);
     inputValue.setHours(0, 0, 0, 0);
 
-    if (inputFields.includes(props.name) && props.value.length <= 0) {
+    if (inputFields.includes(props.name) && value.length <= 0) {
       return "This field should not be empty";
     }
 
     if (
       ["name", "reference", "managerName", "newStudent"].includes(props.name) &&
-      props.value.length <= 3
+      value.length <= 3
     ) {
       return `${props.label} should be more than 3 characters`;
     }
@@ -108,48 +109,48 @@ const InputField = (props) => {
       ["email", "international_person_email", "college_email"].includes(
         props.name
       ) &&
-      !emailPattern.test(props.value)
+      !emailPattern.test(value)
     ) {
       return "Enter a valid email address";
     }
 
-    if (props.name === "password" && props.value.length <= 0) {
+    if (props.name === "password" && value.length <= 0) {
       return "Password should not be empty";
     }
 
-    if (props.name === "confirmpassword" && props.value !== props.data) {
+    if (props.name === "confirmpassword" && value !== props.data) {
       return "Password is not matching";
     }
 
     if (
       ["phone", "college_phone"].includes(props.name) &&
-      !phonePattern.test(props.value)
+      !phonePattern.test(value)
     ) {
       return "Enter valid phone number";
     }
 
-    if (["college_name"].includes(props.name) && props.value.length <= 3) {
+    if (["college_name"].includes(props.name) && value.length <= 3) {
       return "College name should contain more than 3 characters";
     }
 
     if (
       props.name === "studyYear" &&
-      (props.value.length !== 4 ||
-        Number(props.value) > new Date().getFullYear() + 50)
+      (value.length !== 4 ||
+        Number(value) > new Date().getFullYear() + 50)
     ) {
       return "Enter valid year";
     }
 
-    if (linkFields.includes(props.name) && !linkRegex.test(props.value)) {
+    if (linkFields.includes(props.name) && !linkRegex.test(value)) {
       return "Link should include with http/https";
     }
-    if (scoreFields.includes(props.name) && !scoreRegex.test(props.value)) {
+    if (scoreFields.includes(props.name) && !scoreRegex.test(value)) {
       return "Score should not be greater that 3 digits";
     }
     if (
       ["application_UG_fee", "application_graduation_fee"].includes(
         props.name
-      ) && props.value.length <=0
+      ) && value.length <= 0
     ) {
       return "Fee should be valid";
     }
@@ -157,7 +158,7 @@ const InputField = (props) => {
     if (props.name === "date" && inputValue > today) {
       return "Date cannot be in the future";
     }
-    if (props.name === "year" && props.value.length != 4) {
+    if (props.name === "year" && value.length !== 4) {
       return "Enter valid year";
     }
     return null;
@@ -171,7 +172,7 @@ const InputField = (props) => {
   return (
     <div className={`form-group ${props.className}`}>
       <label className="mb-1">
-        {props.label}<span className="text-danger" style={{userSelect:"none"}}> *</span>
+        {props.label}<span className="text-danger" style={{ userSelect: "none" }}> *</span>
       </label>
       <input
         ref={ref}

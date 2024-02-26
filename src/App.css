@@ -126,21 +126,43 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .modal-content {
+}
+
+.modal-content {
     background-color: white;
     padding: 20px;
     border-radius: 5px;
     position: relative;
-  }
-  
-  .close-button {
+}
+
+.close-button {
     position: absolute;
     top: 10px;
     right: 10px;
     border: none;
     background: none;
     font-size: 1.5rem;
-  }
-  
+}
+
+.nav-link-highlight {
+    color: white !important;
+    /* Override other styles */
+    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* This styles the button itself, if needed */
+.navbar-toggler {
+    border-color: white;
+    /* Change border color to white */
+}
+
+/* This targets the icon within the button */
+.navbar-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Alternatively, if using a custom class on the icon span */
+.nav-link-highlight {
+    color: white;
+    /* Ensure this targets the icon's color if applicable */
+}
