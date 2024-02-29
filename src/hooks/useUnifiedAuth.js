@@ -1,17 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import { signInWithGoogle, signInWithFacebook, signInWithGitHub, signInWithEmailPassword, createUserWithEmailPassword } from "../services/Authentication/firebase";
 import usePostUserData from "../hooks/usePostUserData";
+import useAuthStore from 'src/services/store/globalStore';
 
 const useUnifiedAuth = () => {
     const navigate = useNavigate();
     const { postUserData } = usePostUserData();
 
+    const{loading,setLoading}=useAuthStore();
+
     const handleAuth = async (authPromise) => {
         try {
-            console.log("3.handleAuth");
             const data = await authPromise;
+            setLoading(true);
+            const userData = await postUserData(data.user).then((d) => console.log(d));
+            console.log("userData", userData);
+            setLoading(false);
             navigate(sessionStorage.getItem("preLoginPath") || "/");
-            await postUserData(data.user);
+
 
             return null; // Indicates success
         } catch (error) {
