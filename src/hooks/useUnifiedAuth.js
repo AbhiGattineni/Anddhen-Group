@@ -12,8 +12,9 @@ const useUnifiedAuth = () => {
     const handleAuth = async (authPromise) => {
         try {
             const data = await authPromise;
+            console.log("data",data.user);
             setLoading(true);
-            const userData = await postUserData(data.user).then((d) => console.log(d));
+            const userData = await postUserData(data.user);
             console.log("userData", userData);
             setLoading(false);
             navigate(sessionStorage.getItem("preLoginPath") || "/");

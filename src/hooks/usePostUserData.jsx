@@ -40,8 +40,9 @@ const usePostUserData = () => {
           `Error posting new user to backend: ${response.statusText}`
         );
       }
-
+      console.log("response",response);
       const responseData = await response.json();
+      console.log("response data",responseData);
       setResponse(responseData);
     } catch (error) {
       setError(error);

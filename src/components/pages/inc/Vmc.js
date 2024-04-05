@@ -12,19 +12,25 @@ function Vmc() {
                     <div className='col-md-4 text-center'>
                         <h6>Our Vision</h6>
                         <p>
-                        Our vision at Anddhen is to empower businesses by providing innovative technology solutions that redefine their potential in the modern landscape. We envision a future where organizations can harness the full power of technology to drive growth, efficiency, and success.
+                        To be a beacon of innovation and integrity in the global marketplace, transforming businesses and communities through cutting-edge technology, strategic investment, and dedicated philanthropy. We envision a world where our conglomerate not only leads in providing comprehensive solutions across various sectors but also makes a substantial impact on societal advancement and sustainability.
                         </p>
                     </div>
                     <div className='col-md-4 text-center'>
                         <h6>Our Mission</h6>
                         <p>
-                        Our mission is to be the catalyst for business advancement. Through our top-tier consultancy and implementation services, we aim to propel organizations towards their goals, leveraging the latest technological breakthroughs to unlock new levels of achievement.
+                        Our mission is to empower our clients and communities by delivering exceptional services across software development, staffing and consulting, trading and investment, and marketing. We are committed to fostering growth, efficiency, and success for our partners while upholding our commitment to social responsibility. Through our expertise and philanthropic initiatives, we strive to create opportunities that drive positive change and contribute to a better future.
                         </p>
                     </div>
                     <div className='col-md-4 text-center'>
                         <h6>Our Values</h6>
                         <p>
-                        Our values drive us. We prioritize innovation, collaboration, and excellence. Unwavering integrity and client-centricity define our approach. Adaptability and empowerment are our strengths. Sustainability guides our solutions. With these values, we propel businesses towards a promising future.
+                        <ul>
+  <strong>Innovation:</strong> Leading with creativity.<br/>
+  <strong>Integrity:</strong> Upholding honesty.<br/>
+  <strong>Inclusion:</strong> Embracing diversity.<br/>
+  <strong>Responsibility:</strong> Positive impact.<br/>
+  <strong>Collaboration:</strong> Building partnerships.
+</ul>
                         </p>
                     </div>
                 </div>

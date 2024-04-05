@@ -10,20 +10,18 @@ function Company() {
             <h3 className="main-heading">Our Company</h3>
             <div className="underline mx-auto"></div>
             <p>
-              Anddhen is a startup company that offers leading consultancy and
-              implementation expertise to help drive value across your business.
-              We can deliver both out-of-the box and proprietary solutions and
-              be a trustworthy, long-term technology partner that aligns with
-              your goals and helps you achieve the results you require.
+            At Anddhen, we pride ourselves on being more than just a business; we are a conglomerate with a heart, deeply invested in the fabric of India's dynamic market and beyond. With a diverse portfolio that spans software development, staffing and consulting, trading and investment, and comprehensive marketing services, we are dedicated to offering bespoke solutions tailored to your unique needs.
             </p>
             <p>
-              Whether you require complete digital transformation, a new cloud
-              solution, a platform for gathering intelligence on markets,
-              customers, suppliers, or employees; better run sales, teams,
-              operations, practices and processes; manage customer
-              communications; drive efficiencies; or build new solutions to meet
-              market, business and real-world requirements, Anddhen can help
-              deliver the right technological solution.
+            Our expertise is not confined to delivering exceptional services; we are also committed to making a difference through our philanthropic endeavors. We believe in the power of giving back and are actively involved in various initiatives that contribute to the betterment of communities and foster sustainable development.
+            </p>
+            <p>
+            Whether you are seeking cutting-edge software solutions, expert consulting, strategic investment opportunities, or innovative marketing strategies, Anddhen is your go-to partner. Our approach is holistic, ensuring that every service we provide is aligned with our clients' aspirations, delivering results that matter.
+            </p>
+            <p>
+            <b>
+            Choose Anddhen, where our services meet your ambition, and together, we create not just success, but a legacy of positive impact.
+            </b>
             </p>
             <Link to="/about" className="btn btn-warning shadow">
               Read More
