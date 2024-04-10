@@ -34,16 +34,17 @@ export const PartTimerPortal = () => {
           Take Test
         </Link> */}
       {/* </div> */}
-      <div className="d-flex justify-content-center">
+      {/* <div className="d-flex justify-content-center">
         <div className="">
           <QuestionCard setShowForm={setShowForm} setMessage={setMessage} />
         </div>
-      </div>
-      {showForm ? <PartTimerRegistrationForm /> :
-        <div className="alert alert-info" role="alert">
+      </div> */}
+      {/* {showForm ?  */}
+      <PartTimerRegistrationForm /> :
+        {/* <div className="alert alert-info" role="alert">
           {message}
         </div>
-      }
+      } */}
     </div>
   );
 };
