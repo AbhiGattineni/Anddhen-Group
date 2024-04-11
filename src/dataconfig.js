@@ -314,9 +314,14 @@ export const videoLinks = [
     title: "Update & Status format in whatsapp group and excel sheet:",
     description: "Update & Status format in whatsapp group and excel sheet:",
   },
+  {
+    link: "https://www.youtube.com/watch?v=ZnquQ5Cv2mc",
+    title: "How to apply Saved Jobs",
+    description: "How to apply Saved Jobs",
+  },
 ];
 
-export const updatesAndStatus = [
+export const adminPlates = [
   {
     child: "Anddhen Consulting Services",
     route: "managers/updates",
@@ -328,6 +333,14 @@ export const updatesAndStatus = [
   {
     child: "Anddhen Software Services",
     route: "interns/updates",
+  },
+  {
+    child: "Anddhen Consulting Services",
+    route: "acs_consultants",
+  },
+  {
+    child: "Anddhen Access Services",
+    route: "roleaccess",
   },
 ];
 
@@ -342,11 +355,16 @@ export const adminPortal = [
   },
 ];
 
-export const sheetNames = ["Part Timers Registrations", "Student Registration", "Manager Status", "Part Timer Status", "Intern Status"];
+export const sheetNames = [
+  "Part Timers Registrations",
+  "Student Registration",
+  "Manager Status",
+  "Part Timer Status",
+  "Intern Status",
+];
 
 export const emailJs_email = "trinathgundla@gmail.com";
 export const recipients = ["anddhenconsulting@gmail.com","abhishekgattineni@gmail.com","trinathgundla@gmail.com"];
-
 
 export const bTechBranches = [
   "Agricultural Engineering",
@@ -387,84 +405,87 @@ export const bTechBranches = [
   "Artificial Intelligence and Data Science",
   "Bio Medical Engineering",
   "Computational Mathematics",
-]
+];
 
 export const usStates = [
-  { value: 'alabama', label: 'Alabama' },
-  { value: 'alaska', label: 'Alaska' },
-  { value: 'arizona', label: 'Arizona' },
-  { value: 'arkansas', label: 'Arkansas' },
-  { value: 'california', label: 'California' },
-  { value: 'colorado', label: 'Colorado' },
-  { value: 'connecticut', label: 'Connecticut' },
-  { value: 'delaware', label: 'Delaware' },
-  { value: 'florida', label: 'Florida' },
-  { value: 'georgia', label: 'Georgia' },
-  { value: 'hawaii', label: 'Hawaii' },
-  { value: 'idaho', label: 'Idaho' },
-  { value: 'illinois', label: 'Illinois' },
-  { value: 'indiana', label: 'Indiana' },
-  { value: 'iowa', label: 'Iowa' },
-  { value: 'kansas', label: 'Kansas' },
-  { value: 'kentucky', label: 'Kentucky' },
-  { value: 'louisiana', label: 'Louisiana' },
-  { value: 'maine', label: 'Maine' },
-  { value: 'maryland', label: 'Maryland' },
-  { value: 'massachusetts', label: 'Massachusetts' },
-  { value: 'michigan', label: 'Michigan' },
-  { value: 'minnesota', label: 'Minnesota' },
-  { value: 'mississippi', label: 'Mississippi' },
-  { value: 'missouri', label: 'Missouri' },
-  { value: 'montana', label: 'Montana' },
-  { value: 'nebraska', label: 'Nebraska' },
-  { value: 'nevada', label: 'Nevada' },
-  { value: 'new_hampshire', label: 'New Hampshire' },
-  { value: 'new_jersey', label: 'New Jersey' },
-  { value: 'new_mexico', label: 'New Mexico' },
-  { value: 'new_york', label: 'New York' },
-  { value: 'north_carolina', label: 'North Carolina' },
-  { value: 'north_dakota', label: 'North Dakota' },
-  { value: 'ohio', label: 'Ohio' },
-  { value: 'oklahoma', label: 'Oklahoma' },
-  { value: 'oregon', label: 'Oregon' },
-  { value: 'pennsylvania', label: 'Pennsylvania' },
-  { value: 'rhode_island', label: 'Rhode Island' },
-  { value: 'south_carolina', label: 'South Carolina' },
-  { value: 'south_dakota', label: 'South Dakota' },
-  { value: 'tennessee', label: 'Tennessee' },
-  { value: 'texas', label: 'Texas' },
-  { value: 'utah', label: 'Utah' },
-  { value: 'vermont', label: 'Vermont' },
-  { value: 'virginia', label: 'Virginia' },
-  { value: 'washington', label: 'Washington' },
-  { value: 'west_virginia', label: 'West Virginia' },
-  { value: 'wisconsin', label: 'Wisconsin' },
-  { value: 'wyoming', label: 'Wyoming' },
-  { value: 'washington_dc', label: 'Washington, D.C.' },
-  { value: 'puerto_rico', label: 'Puerto Rico' },
-  { value: 'guam', label: 'Guam' },
-  { value: 'us_virgin_islands', label: 'U.S. Virgin Islands' },
-  { value: 'american_samoa', label: 'American Samoa' },
-  { value: 'northern_mariana_islands', label: 'Northern Mariana Islands' },
+  { value: "alabama", label: "Alabama" },
+  { value: "alaska", label: "Alaska" },
+  { value: "arizona", label: "Arizona" },
+  { value: "arkansas", label: "Arkansas" },
+  { value: "california", label: "California" },
+  { value: "colorado", label: "Colorado" },
+  { value: "connecticut", label: "Connecticut" },
+  { value: "delaware", label: "Delaware" },
+  { value: "florida", label: "Florida" },
+  { value: "georgia", label: "Georgia" },
+  { value: "hawaii", label: "Hawaii" },
+  { value: "idaho", label: "Idaho" },
+  { value: "illinois", label: "Illinois" },
+  { value: "indiana", label: "Indiana" },
+  { value: "iowa", label: "Iowa" },
+  { value: "kansas", label: "Kansas" },
+  { value: "kentucky", label: "Kentucky" },
+  { value: "louisiana", label: "Louisiana" },
+  { value: "maine", label: "Maine" },
+  { value: "maryland", label: "Maryland" },
+  { value: "massachusetts", label: "Massachusetts" },
+  { value: "michigan", label: "Michigan" },
+  { value: "minnesota", label: "Minnesota" },
+  { value: "mississippi", label: "Mississippi" },
+  { value: "missouri", label: "Missouri" },
+  { value: "montana", label: "Montana" },
+  { value: "nebraska", label: "Nebraska" },
+  { value: "nevada", label: "Nevada" },
+  { value: "new_hampshire", label: "New Hampshire" },
+  { value: "new_jersey", label: "New Jersey" },
+  { value: "new_mexico", label: "New Mexico" },
+  { value: "new_york", label: "New York" },
+  { value: "north_carolina", label: "North Carolina" },
+  { value: "north_dakota", label: "North Dakota" },
+  { value: "ohio", label: "Ohio" },
+  { value: "oklahoma", label: "Oklahoma" },
+  { value: "oregon", label: "Oregon" },
+  { value: "pennsylvania", label: "Pennsylvania" },
+  { value: "rhode_island", label: "Rhode Island" },
+  { value: "south_carolina", label: "South Carolina" },
+  { value: "south_dakota", label: "South Dakota" },
+  { value: "tennessee", label: "Tennessee" },
+  { value: "texas", label: "Texas" },
+  { value: "utah", label: "Utah" },
+  { value: "vermont", label: "Vermont" },
+  { value: "virginia", label: "Virginia" },
+  { value: "washington", label: "Washington" },
+  { value: "west_virginia", label: "West Virginia" },
+  { value: "wisconsin", label: "Wisconsin" },
+  { value: "wyoming", label: "Wyoming" },
+  { value: "washington_dc", label: "Washington, D.C." },
+  { value: "puerto_rico", label: "Puerto Rico" },
+  { value: "guam", label: "Guam" },
+  { value: "us_virgin_islands", label: "U.S. Virgin Islands" },
+  { value: "american_samoa", label: "American Samoa" },
+  { value: "northern_mariana_islands", label: "Northern Mariana Islands" },
 ];
 
 export const acsCards = [
   {
-    image : resgistration1,
-    path : "/acs/educationconsulting",
-    heading : "Higher education consulting",
-    description : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam."
+    image: resgistration1,
+    path: "/acs/educationconsulting",
+    heading: "Higher education consulting",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam.",
   },
   {
-    image : resgistration2,
-    path : "jobapplication",
-    heading : "Job applications",
-    description : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam."
+    image: resgistration2,
+    path: "jobapplication",
+    heading: "Job applications",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam.",
   },
   {
-    image : resgistration2,
-    path : "/",
-    heading : "Courses",
-    description : "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam."
+    image: resgistration2,
+    path: "/",
+    heading: "Courses",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam.",
   },
-]
+];

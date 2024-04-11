@@ -1,13 +1,14 @@
 import React from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { Navigate, useLocation } from "react-router-dom";
+import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
 
-export const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }) => {
   const { user, loading, error } = useAuth();
   const location = useLocation();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error || !user) {
@@ -17,3 +18,5 @@ export const ProtectedRoute = ({ children }) => {
 
   return children;
 };
+
+export default ProtectedRoute;
