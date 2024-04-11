@@ -56,7 +56,7 @@ export const PartTimerRegistrationForm = () => {
 
     try {
       await callApi(constructFormData());
-      sendEmail("parttimer");
+      sendEmail("parttimer",formData);
       setFormData({
         name: "",
         email: "",

@@ -57,7 +57,14 @@ const StudentRegistrationForm = () => {
     }
     try {
       await callApi(formData);
-      sendEmail("student");
+      sendEmail("student", {
+        name: name,
+        email: email,
+        phone: phone,
+        college: college,
+        reference: reference,
+        studentJob: studentJob
+    });    
       resetForm();
       setToastMsg("Data successfully submitted!");
       setShowToast(true);
