@@ -71,7 +71,14 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Acs /> },
       { path: "jobapplication", element: <JobApplicationRegistration /> },
-      { path: "jobapplication/studentportal", element: <StudentPortal /> },
+      {
+        path: "jobapplication/studentportal",
+        element: (
+          <ProtectedRoute>
+            <StudentPortal />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "educationconsulting",
         element: (

@@ -16,7 +16,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-console.log("env ",process.env.REACT_APP_FIREBASE_APP_KEY)
 getAnalytics(app); // Initialize Firebase Analytics if needed
 
 // Initialize Firebase Authentication and get a reference to the service

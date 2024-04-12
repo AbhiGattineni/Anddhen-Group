@@ -8,6 +8,7 @@ const Layout = () => {
   const isProtectedRoute =
     location.pathname.includes("/acs/educationconsulting") ||
     location.pathname.includes("/acs/jobapplication/parttimerportal") ||
+    location.pathname.includes("/acs/jobapplication/studentportal") ||
     location.pathname.includes("/superadmin") ||
     location.pathname.includes("/superadmin/acs_consultants") ||
     location.pathname.includes("/superadmin/roleaccess") ||
