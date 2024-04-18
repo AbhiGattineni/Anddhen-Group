@@ -166,3 +166,7 @@ p {
     color: white;
     /* Ensure this targets the icon's color if applicable */
 }
+
+.carousel-image{
+    height: calc(100vh - 50px);
+}
