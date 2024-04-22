@@ -114,6 +114,7 @@ export const details = [
     Photo: rushil,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "CEO",
     Facebook: "https://www.facebook.com/abhi.gattineni/",
     LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
@@ -124,6 +125,7 @@ export const details = [
     Photo: stephen,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "CTO",
     Facebook: "https://www.facebook.com/gundla.trinath",
     LinkedIn: "https://www.linkedin.com/in/trinath-gundla-298828210/",
@@ -134,6 +136,7 @@ export const details = [
     Photo: saiteja,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "Senior Architech",
     Facebook: "https://www.facebook.com/abhi.gattineni/",
     LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
@@ -144,6 +147,7 @@ export const details = [
     Photo: vijetha,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "CFO",
     Facebook: "https://www.facebook.com/abhi.gattineni/",
     LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
@@ -154,6 +158,7 @@ export const details = [
     Photo: chandu,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "Junior most Senior Developer",
     Facebook: "https://www.facebook.com/abhi.gattineni/",
     LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
@@ -164,6 +169,7 @@ export const details = [
     Photo: neha,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "Senior Software Developer",
     Facebook: "https://www.facebook.com/abhi.gattineni/",
     LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
@@ -174,6 +180,7 @@ export const details = [
     Photo: image1,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "Founder",
     Facebook: "https://www.facebook.com/abhi.gattineni/",
     LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
@@ -184,6 +191,7 @@ export const details = [
     Photo: charan,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "Software Developer",
     Facebook: "https://www.facebook.com/abhi.gattineni/",
     LinkedIn: "https://www.linkedin.com/in/abhishek-gattineni-05937088/",
@@ -194,6 +202,7 @@ export const details = [
     Photo: image2,
     Start_date: "10/10/2022",
     End_date: "10/10/2022",
+    Description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?",
     Role: "Software Intern",
     Facebook: "https://www.facebook.com/gundla.trinath",
     LinkedIn: "https://www.linkedin.com/in/trinath-gundla-298828210/",
@@ -208,6 +217,7 @@ export const myworks = [
     description:
       "Anddhen is a startup company that offers leading consultancy and implementation expertise to help drive value across your business. We can deliver both out-of-the box and proprietary solutions and be a trustworthy, long-term technology partner that aligns with your goals and helps you achieve the results you require.",
     link: "https://www.anddhengroup.com/",
+    timeline: "2021 - 2023",
   },
   {
     name: "Satya sreeman Engineering & Constructions",
@@ -216,6 +226,7 @@ export const myworks = [
     description:
       "We believe that fundamental role of leadership is to create and maintain a culture that strengthens the company's core values, encourages employees to do the right thing, and helps drive the company's long-term strategy. All delivered with humility and compassion.",
     link: "http://www.satyasreeman.com",
+    timeline: "2021 - 2023",
   },
   {
     name: "Hyderabad Trekking Company",
@@ -224,6 +235,7 @@ export const myworks = [
     description:
       "HTC preserves and cherishes these amazing leads. It is a fact that HTC is the only one keeping up the ideals of a trek free from cigarettes, alcohol and substance abuse. We are proud of the fact that our events went 100 percent safe for all trekkers, including numerous women, elderly, introverts, specially-abled, and children.",
     link: "http://www.thehtc.in/",
+    timeline: "2021 - 2023",
   },
   {
     name: "Aroma Restaurant & Bar",
@@ -232,38 +244,7 @@ export const myworks = [
     description:
       " We will be more than happy to cater your event, host you at our restaurant, or deliver food to your doorstep. Should you be interested in our services, don’t wait to get in touch with us. Give us a call today to set up an event or stop by the restaurant for quality dining services.",
     link: "http://www.aromarestaurant.com/",
-  },
-  {
-    name: "Anddhen Group",
-    image:
-      "https://www.anddhengroup.com/static/media/web.8be0ea3c0799cfab269f.jpg",
-    description:
-      "Anddhen is a startup company that offers leading consultancy and implementation expertise to help drive value across your business. We can deliver both out-of-the box and proprietary solutions and be a trustworthy, long-term technology partner that aligns with your goals and helps you achieve the results you require.",
-    link: "https://www.anddhengroup.com/",
-  },
-  {
-    name: "Satya sreeman Engineering & Constructions",
-    image:
-      "https://www.satyasreeman.com/static/media/image1.3aa18de420eceb523489.jpg",
-    description:
-      "We believe that fundamental role of leadership is to create and maintain a culture that strengthens the company's core values, encourages employees to do the right thing, and helps drive the company's long-term strategy. All delivered with humility and compassion.",
-    link: "http://www.satyasreeman.com",
-  },
-  {
-    name: "Hyderabad Trekking Company",
-    image:
-      "https://www.thehtc.in/wp-content/uploads/2021/07/HyderabadTrekkingCompany.jpg",
-    description:
-      "HTC preserves and cherishes these amazing leads. It is a fact that HTC is the only one keeping up the ideals of a trek free from cigarettes, alcohol and substance abuse. We are proud of the fact that our events went 100 percent safe for all trekkers, including numerous women, elderly, introverts, specially-abled, and children.",
-    link: "http://www.thehtc.in/",
-  },
-  {
-    name: "Aroma Restaurant & Bar",
-    image:
-      "https://static.wixstatic.com/media/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg/v1/fill/w_655,h_449,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/2bd880_bd224f268ad24abc8c1ba3e72e927e35~mv2.jpg",
-    description:
-      " We will be more than happy to cater your event, host you at our restaurant, or deliver food to your doorstep. Should you be interested in our services, don’t wait to get in touch with us. Give us a call today to set up an event or stop by the restaurant for quality dining services.",
-    link: "http://www.aromarestaurant.com/",
+    timeline: "2021 - 2023",
   },
 ];
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Card } from "../organisms/Card";
 import { myworks } from "../../dataconfig";
+import { AssProjectModal } from "./Modal/AssProjectModal";
 
 const Myworks = (props) => {
   return (
@@ -13,6 +14,7 @@ const Myworks = (props) => {
             title={work.name}
             description={work.description}
             link={work.link}
+            timeline={work.timeline}
           />
         ))}
       </div>

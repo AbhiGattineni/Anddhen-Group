@@ -170,3 +170,13 @@ p {
 .carousel-image{
     height: calc(100vh - 50px);
 }
+
+.modal-background{
+    height: 200px;
+    background-position: center;
+    background-size: cover;
+}
+
+.modal-background h2{
+    text-shadow: 3px 2px black;
+}
