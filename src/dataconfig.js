@@ -19,8 +19,8 @@ export const priceData = [
   {
     id: 1,
     categery: "Full Time",
-    package: "Package 1",
-    features: [
+    package_name: "Package 1",
+    includes: [
       "Student need to save/send the job links",
       "Daily tracking",
       "11 Applications - $1",
@@ -28,13 +28,13 @@ export const priceData = [
       "20 Recruiter Connect Messages - $1",
       "16 Direct Messages - $1",
     ],
-    nonFeatures: ["No monitoring", "part timer will not search for jobs"],
+    excludes: ["No monitoring", "part timer will not search for jobs"],
   },
   {
     id: 2,
     categery: "Full Time",
-    package: "Package 2",
-    features: [
+    package_name: "Package 2",
+    includes: [
       "Part timer will search for full time jobs",
       "Part timer will apply for full time jobs",
       "Daily tracking",
@@ -44,12 +44,13 @@ export const priceData = [
       "20 Recruiter Connect Messages - $1",
       "16 Direct Messages - $1",
     ],
+    popularity: true,
   },
   {
     id: 3,
     categery: "Internships",
-    package: "Package 3",
-    features: [
+    package_name: "Package 3",
+    includes: [
       "Student need to save/send the job links",
       "Daily tracking",
       "8 Applications - $1",
@@ -57,13 +58,13 @@ export const priceData = [
       "20 Recruiter Connect Messages - $1",
       "16 Direct Messages - $1",
     ],
-    nonFeatures: ["No monitoring", "part timer will not search for jobs"],
+    excludes: ["No monitoring", "part timer will not search for jobs"],
   },
   {
     id: 4,
     categery: "Internships",
-    package: "Package 4",
-    features: [
+    package_name: "Package 4",
+    includes: [
       "Part timer will search for internships",
       "Part timer will apply for internships",
       "Daily tracking",
