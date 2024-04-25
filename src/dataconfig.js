@@ -257,27 +257,21 @@ export const videoLinks = [
       "Some quick example text to build on the card title and make up the bulk of the card's content.",
   },
   {
-    link: "https://www.youtube.com/embed/NAMvdbS4lk4",
-    title: "Video for applying Easy Apply and Recruiter Connect Messages",
-    description:
-      "Some quick example text to build on the card title and make up the bulk of the card's content.",
-  },
-  {
     link: "https://www.youtube.com/embed/l_EaQ0_kmbE?si=OwIqpaf5Iij-cwuE",
-    title: "Video for filtering unnecessary Job Applications",
+    title: "How to filter out unnecessary applications",
     description:
       "Some quick example text to build on the card title and make up the bulk of the card's content.",
   },
   {
     link: "https://www.youtube.com/embed/1X9-BYFx9_k?si=V19wlivDq6eXQPXj",
-    title: "Video for filtering Staffing and Consulting jobs",
+    title: "How to avoid Staffing & Consulting jobs.",
     description:
       "Some quick example text to build on the card title and make up the bulk of the card's content.",
   },
   {
     link: "https://www.youtube.com/embed/Wk_p1JYFA8Y?si=lViZVlVt7Ld2xz_Y",
     title:
-      "Video to filter out sponsorship, active clearance, citizen or resident jobs",
+      "filter SPONSORSHIP, ACTIVE CLEARENCE, RESIDENT or CITIZEN applications. Add H1bfy chrome extension.",
     description:
       "Some quick example text to build on the card title and make up the bulk of the card's content.",
   },
@@ -300,6 +294,36 @@ export const videoLinks = [
     link: "https://www.youtube.com/watch?v=ZnquQ5Cv2mc",
     title: "How to apply Saved Jobs",
     description: "How to apply Saved Jobs",
+  },
+  {
+    link: "https://youtu.be/bkaglpSi2hk",
+    title: "Avoid same job links and How to check reposted jobs",
+    description: "Avoid same job links and How to check reposted jobs",
+  },
+  {
+    link: "https://youtu.be/nLWmNMtxAYU",
+    title: "How to use Simplify Chrome extension for applying a job.",
+    description: "How to use Simplify Chrome extension for applying a job.",
+  },
+  {
+    link: "https://youtu.be/q7iPergpPdY",
+    title: "Direct messages, Connect messages and saved jobs.",
+    description: "Direct messages, Connect messages and saved jobs.",
+  },
+  {
+    link: "https://youtu.be/DBZ7-iCCJDQ",
+    title: "How to use Highlight this chrome extension.",
+    description: "To find precise job applications use this chrome extension.",
+  },
+  {
+    link: "https://youtu.be/IacfXe_N6Gw",
+    title: "Searching jobs from Careers page",
+    description: "Searching jobs from Careers page",
+  },
+  {
+    link: "https://youtu.be/uwuBixRDFrU",
+    title: "Video to apply jobs in careers portal",
+    description: "Video to apply jobs in careers portal",
   },
 ];
 
