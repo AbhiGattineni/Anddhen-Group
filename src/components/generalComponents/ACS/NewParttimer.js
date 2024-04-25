@@ -12,7 +12,8 @@ const NewParttimer = () => {
     <div>
       <div className="justify-content-center ">
         {showForm ? <PartTimerRegistrationForm /> :
-    <QuestionCard setShowForm={setShowForm} setMessage={setMessage} />
+    // <QuestionCard setShowForm={setShowForm} setMessage={setMessage} />
+    "This is the new parttimer page."
   }
   </div>
   </div>
