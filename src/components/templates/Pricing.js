@@ -5,11 +5,11 @@ import useGetPackages from "src/react-query/Packages/useGetPackages";
 import LoadingSpinner from "../atoms/LoadingSpinner/LoadingSpinner";
 
 export const Pricing = () => {
-  const { data, isLoading, isError } = useGetPackages('ACS');
+  // const { data, isLoading, isError } = useGetPackages('ACS');
 
-  if (isLoading) return <LoadingSpinner />;
+  // if (isLoading) return <LoadingSpinner />;
 
-  if (isError) return <div>Something went wrong ...</div>;
+  // if (isError) return <div>Something went wrong ...</div>;
 
   return (
     <div className="container my-5">
@@ -18,7 +18,7 @@ export const Pricing = () => {
         <div className="underline mx-auto"></div>
       </div>
       <div className="row gap-lg-0 gap-4 mt-3 align-items-center">
-        {data.map((data) => (
+        {priceData.map((data) => (
           <div key={data.id} className="col-12 col-lg-4 p-2">
             <PriceCard data={data} />
           </div>
