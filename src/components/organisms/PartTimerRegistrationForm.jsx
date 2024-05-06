@@ -56,9 +56,6 @@ export const PartTimerRegistrationForm = () => {
     return requiredFieldsFilled && studentFieldsValid && noFieldErrors && !loading;
   };
 
-
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid()) return;
@@ -87,7 +84,7 @@ export const PartTimerRegistrationForm = () => {
 
   // Render the form fields based on the current occupation
   const renderOccupationSpecificFields = () => {
-    if (formData.current_occupation === 'student') {
+    if (formData.current_occupation.toLowerCase() === 'student') {
       return (
         <>
           <InputField
