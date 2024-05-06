@@ -1,100 +1,125 @@
-import React, { useState } from 'react';
-import InputField from './InputField';
-import Toast from './Toast';
-import { useApi } from '../../hooks/useApi';
-import Button from '../atoms/Button/Button';
-import { useSubmitPartTimer } from '../../react-query/useSubmitPartTimer';
-import { auth } from 'src/services/Authentication/firebase';
-import { Navigate } from 'react-router-dom';
-import useAuthStore from '../../services/store/globalStore';
+import React, { useEffect, useState } from "react";
+import InputField from "./InputField";
+import Toast from "../organisms/Toast";
+import { useApi } from "../../hooks/useApi";
+import Button from "../atoms/Button/Button";
+import { useSubmitPartTimer } from "../../react-query/useSubmitPartTimer";
+import { auth } from "src/services/Authentication/firebase";
+import { Navigate } from "react-router-dom";
+import useAuthStore from "../../services/store/globalStore";
+import { sendEmail } from "../templates/emailService";
 
 export const PartTimerRegistrationForm = () => {
-  const { loading, callApi } = useApi();
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    current_occupation: '',
-    year_of_study: '',
-    referred_by: '',
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    current_occupation: "",
+    studyYear: "",
+    course_name: "",
+    reference: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
-  const [toast, setToast] = useState({ show: false, message: '' });
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
+  const [loading,setLoading] = useState(false)
+  const [disableButton, setDisableButton] = useState(true);
+  const fields = {
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    current_occupation: "",
+    studyYear: "",
+    course_name: "",
+    reference: "",
+  };
+  useEffect(() => {
+    // Check if all required fields are filled
+    const allFieldsFilled = Object.entries(formData).every(([key, value]) => {
+      // If current occupation is student, make sure studyYear and course_name are filled
+      if (formData.current_occupation.toLowerCase() !== "student") {
+        if (key === "studyYear" || key === "course_name") {
+          return true;
+        }
+      }
+      // For other occupations, check all fields
+      return !!value;
+    });
+    // Check for field errors
+    const hasErrors = Object.values(fieldErrors).some((error) => error);
+    // Update disableButton state
+    setDisableButton(!allFieldsFilled || hasErrors);
+  }, [formData, fieldErrors]);
 
-  const { mutate, isLoading, isError, error } = useSubmitPartTimer();
-  const setParttimer_consent = useAuthStore((state) => state.setParttimer_consent);
+  const setParttimer_consent = useAuthStore(
+    (state) => state.setParttimer_consent
+  );
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors(prev => ({ ...prev, [fieldName]: error }));
+    setFieldErrors((prevErrors) => ({
+      ...prevErrors,
+      [fieldName]: error,
+    }));
   };
 
-  const isFormValid = () => {
-    // Check if all required fields are filled and not just whitespace
-    const requiredFieldsFilled =
-      formData.first_name.trim() !== '' &&
-      formData.last_name.trim() !== '' &&
-      formData.email.trim() !== '' &&
-      formData.phone.trim() !== '' &&
-      formData.current_occupation !== null && // Add a check for null here
-      formData.current_occupation.trim() !== '';
-
-    // Additional check for 'year_of_study' if 'current_occupation' is 'student'
-    const isStudent = formData.current_occupation === 'student';
-    const studentFieldsValid = !isStudent || (isStudent && formData.year_of_study.trim() !== '');
-
-    // Check if there are no field errors
-    const noFieldErrors = Object.keys(fieldErrors).every(
-      key => !fieldErrors[key]
-    );
-
-    // Form is valid if all conditions are true
-    return requiredFieldsFilled && studentFieldsValid && noFieldErrors && !loading;
+  const resetForm = () => {
+    setFormData({
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      current_occupation: "",
+      studyYear: "",
+      course_name: "",
+      reference: "",
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isFormValid()) return;
-    formData.user_id = auth.currentUser.uid;
-    formData.answered_questions = true;
-    mutate(formData, {
-      onSuccess: () => {
-        // Handle success
-        setFormData({
-          first_name: '',
-          last_name: '',
-          email: '',
-          phone: '',
-          current_occupation: '',
-          year_of_study: '',
-          referred_by: '',
-        });
-        setToast({ show: true, message: 'Data successfully submitted!' });
-        setParttimer_consent(true);
-      },
-      onError: (error) => {
-        setToast({ show: true, message: 'Something went wrong!' });
-      },
-    });
+    try {
+      sendEmail("parttimer", {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone: formData.phone,
+        current_occupation: formData.current_occupation,
+        studyYear: formData.studyYear,
+        course_name: formData.course_name,
+        reference: formData.reference,
+      });
+      resetForm();
+      // setParttimer_consent(true);
+      setToastMsg("Data successfully submitted!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (error) {
+      setToastMsg("Something went wrong!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      console.error("Error:", error);
+    }
   };
 
   // Render the form fields based on the current occupation
   const renderOccupationSpecificFields = () => {
-    if (formData.current_occupation.toLowerCase() === 'student') {
+    if (formData.current_occupation.toLowerCase() === "student") {
       return (
         <>
           <InputField
-            name="year_of_study"
+            name="studyYear"
             label="Year of Study"
             placeholder="Year of Study"
             type="text"
-            value={formData.year_of_study}
-            onChange={(e) => handleChange('year_of_study', e.target.value)}
-            setError={(error) => handleFieldError('year_of_study', error)}
+            value={formData.studyYear}
+            onChange={(e) => handleChange("studyYear", e.target.value)}
+            setError={(error) => handleFieldError("studyYear", error)}
           />
           <InputField
             name="course_name"
@@ -102,19 +127,22 @@ export const PartTimerRegistrationForm = () => {
             placeholder="Course Name"
             type="text"
             value={formData.course_name}
-            onChange={(e) => handleChange('course_name', e.target.value)}
-            setError={(error) => handleFieldError('course_name', error)}
+            onChange={(e) => handleChange("course_name", e.target.value)}
+            setError={(error) => handleFieldError("course_name", error)}
           />
         </>
       );
     }
     return null;
   };
-
   return (
     <div className="py-3">
       <form onSubmit={handleSubmit}>
-        <h1 className="h3 mb-3 fw-normal">Part Timer Registration Form</h1>
+        <div className="col-md-12 mb-4 text-center">
+          <h3 className="main-heading">Part Timer Registration Form</h3>
+          <div className="underline mx-auto"></div>
+        </div>
+        {/* <h1 className="h3 mb-3 fw-normal"></h1> */}
 
         <InputField
           name="first_name"
@@ -122,8 +150,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="First Name"
           type="text"
           value={formData.first_name}
-          onChange={(e) => handleChange('first_name', e.target.value)}
-          setError={(error) => handleFieldError('first_name', error)}
+          onChange={(e) => handleChange("first_name", e.target.value)}
+          setError={(error) => handleFieldError("first_name", error)}
         />
 
         <InputField
@@ -132,8 +160,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Last Name"
           type="text"
           value={formData.last_name}
-          onChange={(e) => handleChange('last_name', e.target.value)}
-          setError={(error) => handleFieldError('last_name', error)}
+          onChange={(e) => handleChange("last_name", e.target.value)}
+          setError={(error) => handleFieldError("last_name", error)}
         />
 
         <InputField
@@ -142,8 +170,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Email"
           type="email"
           value={formData.email}
-          onChange={(e) => handleChange('email', e.target.value)}
-          setError={(error) => handleFieldError('email', error)}
+          onChange={(e) => handleChange("email", e.target.value)}
+          setError={(error) => handleFieldError("email", error)}
         />
 
         <InputField
@@ -152,8 +180,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Phone Number"
           type="tel"
           value={formData.phone}
-          onChange={(e) => handleChange('phone', e.target.value)}
-          setError={(error) => handleFieldError('phone', error)}
+          onChange={(e) => handleChange("phone", e.target.value)}
+          setError={(error) => handleFieldError("phone", error)}
         />
 
         <InputField
@@ -162,24 +190,37 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Current Occupation"
           type="text"
           value={formData.current_occupation}
-          onChange={(e) => handleChange('current_occupation', e.target.value)}
-          setError={(error) => handleFieldError('current_occupation', error)}
+          onChange={(e) => handleChange("current_occupation", e.target.value)}
+          setError={(error) => handleFieldError("current_occupation", error)}
         />
 
         {renderOccupationSpecificFields()}
 
         <InputField
-          name="referred_by"
+          name="reference"
           label="Referred By"
           placeholder="Referrer Name"
           type="text"
-          value={formData.referred_by}
-          onChange={(e) => handleChange('referred_by', e.target.value)}
-          setError={(error) => handleFieldError('referred_by', error)}
+          value={formData.reference}
+          onChange={(e) => handleChange("reference", e.target.value)}
+          setError={(error) => handleFieldError("reference", error)}
         />
 
-        <button className="w-100 btn btn-lg btn-primary" type="submit" disabled={!isFormValid()} >Submit</button>
+        <div className="form-group py-3 w-100 d-flex justify-content-center">
+          <button
+            type="submit"
+            className="btn btn-warning shadow px-5"
+            disabled={disableButton}
+          >
+            {loading ? "loading..." : "Submit"}
+          </button>
+        </div>
       </form>
+      <Toast
+        show={showToast}
+        message={toastMsg}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };
