@@ -3,13 +3,9 @@ import { StatusCalendar } from "../templates/StatusCalender";
 import { auth } from "../../services/Authentication/firebase";
 import { useCalendarData } from "../../react-query/useCalenderData";
 import { usePostStatus } from "../../react-query/usePostStatus";
-
-const mockData = [
-  ["2024-01-10", "John"],
-  ["2024-01-15", "Alice"],
-  ["2024-01-20", "Bob"],
-  // Add more data as needed
-];
+import { useStatusMutation } from "src/react-query/useStatusMutation";
+import useAuthStore from "src/services/store/globalStore";
+import { useQueryClient } from "react-query";
 
 const empName = "";
 
@@ -19,8 +15,8 @@ const StatusUpdates = () => {
     parttimerName: "",
     studentName: "",
     date: "",
-    sharedApplications: "",
-    searchedApplications: "",
+    applicationsAppliedSaved: "",
+    applicationsAppliedSearched: "",
     easyApply: "",
     connectMessages: "",
     recruiterMessages: "",
@@ -28,14 +24,23 @@ const StatusUpdates = () => {
     description: "",
   });
   const { data, isLoading, isError } = useCalendarData(auth.currentUser.uid);
-  const { mutate } = usePostStatus();
+  const selectedAcsStatusDate = useAuthStore(
+    (state) => state.selectedAcsStatusDate
+  );
+  // console.log("calender : ",data);
+  const [msgResponse, setMsgResponse] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [disableInputs, setDisableInputs] = useState(false);
+  const queryClient = useQueryClient();
+  // const { mutate } = usePostStatus();
+  const { statusMutation, updateMutation } = useStatusMutation();
 
   const [fieldsToShow, setFieldsToShow] = useState({
     parttimerName: true,
     studentName: true,
     date: true,
-    sharedApplications: false,
-    searchedApplications: false,
+    applicationsAppliedSaved: false,
+    applicationsAppliedSearched: false,
     easyApply: false,
     connectMessages: false,
     recruiterMessages: false,
@@ -60,6 +65,61 @@ const StatusUpdates = () => {
       });
     }
   }, []);
+  useEffect(() => {
+    const formattedSelectedDate = formatDate(selectedAcsStatusDate);
+    setMsgResponse(null);
+    if (data && selectedAcsStatusDate) {
+      let found = false; // Flag to indicate if a match is found
+      data.forEach((status) => {
+        if (formattedSelectedDate === status.date) {
+          found = true; // Set flag to true if a match is found
+          setDisableInputs(true);
+          setFormValues({
+            parttimerName: status.parttimerName,
+            studentName: status.studentName,
+            date: status.date,
+            applicationsAppliedSaved: status.applicationsAppliedSaved,
+            applicationsAppliedSearched: status.applicationsAppliedSearched,
+            easyApply: status.easyApply,
+            connectMessages: status.connectMessages,
+            recruiterMessages: status.recruiterDirectMessages,
+            reason: status.reason,
+            description: status.description,
+          });
+          return; // Exit the loop once a match is found
+        }
+      });
+      if (!found) {
+        setDisableInputs(false);
+        setFormValues({
+          parttimerName: auth.currentUser.displayName,
+          studentName: "",
+          date: "",
+          applicationsAppliedSaved: "",
+          applicationsAppliedSearched: "",
+          easyApply: "",
+          connectMessages: "",
+          recruiterMessages: "",
+          reason: "",
+          description: "",
+        });
+      }
+    }
+
+    var currentDate = new Date().toISOString().split("T")[0];
+    var isSelectedDateCurrent = formattedSelectedDate === currentDate;
+    if (
+      data &&
+      isSelectedDateCurrent &&
+      data.some(function (obj) {
+        return obj.date === currentDate;
+      })
+    ) {
+      setShowEdit(true);
+    } else {
+      setShowEdit(false);
+    }
+  }, [selectedAcsStatusDate, data]);
 
   const updateFieldsToShow = (currentDepartment) => {
     if (currentDepartment === "ACS") {
@@ -68,8 +128,8 @@ const StatusUpdates = () => {
         parttimerName: true,
         studentName: true,
         date: true,
-        sharedApplications: true,
-        searchedApplications: true,
+        applicationsAppliedSaved: true,
+        applicationsAppliedSearched: true,
         easyApply: true,
         connectMessages: true,
         recruiterMessages: true,
@@ -82,8 +142,8 @@ const StatusUpdates = () => {
         parttimerName: true,
         studentName: true,
         date: true,
-        sharedApplications: false,
-        searchedApplications: false,
+        applicationsAppliedSaved: false,
+        applicationsAppliedSearched: false,
         easyApply: false,
         connectMessages: false,
         recruiterMessages: false,
@@ -101,17 +161,67 @@ const StatusUpdates = () => {
     });
   };
   const formattedData = data ? data.map((item) => [item.date, item.name]) : [];
+  const formatDate = (date) => {
+    const inputDate = new Date(date);
+    const year = inputDate.getFullYear();
+    const month = String(inputDate.getMonth() + 1).padStart(2, "0");
+    const day = String(inputDate.getDate()).padStart(2, "0");
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate;
+  };
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    setDisableInputs(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
+      const requiredFields = [
+        "parttimerName",
+        "studentName",
+        "date",
+        "applicationsAppliedSaved",
+        "applicationsAppliedSearched",
+        "easyApply",
+        "connectMessages",
+        "recruiterMessages",
+      ];
+      const missingField = requiredFields.find((field) => !formValues[field]);
+
+      if (missingField) {
+        // Convert field ID to a user-friendly name (if needed)
+        // You can customize this mapping according to your field IDs
+        let missingFieldName = missingField;
+        switch (missingField) {
+          case "studentName":
+            missingFieldName = "Student Name";
+            break;
+          case "date":
+            missingFieldName = "Date";
+            break;
+          case "reason":
+            missingFieldName = "Reason";
+            break;
+          case "description":
+            missingFieldName = "Description";
+            break;
+          // Add more cases as needed
+          default:
+            break;
+        }
+        const errorMessage = `Please fill in the required field: ${missingFieldName}`;
+        setMsgResponse(errorMessage);
+        return; // Stop form submission if a required field is missing
+      }
+
       // Combine all form field values into a single string
       let combinedStatus = formValues.status; // Start with the existing status
 
       // Loop through formValues and concatenate all non-empty fields
       for (const key in formValues) {
-        if ((key !== "reason" || key!=="description") && formValues[key]) {
+        if ((key !== "reason" || key !== "description") && formValues[key]) {
           combinedStatus += ` ${formValues[key]}`;
         }
       }
@@ -120,22 +230,56 @@ const StatusUpdates = () => {
         firebase_id: auth.currentUser.uid,
         status: combinedStatus,
       };
-      const response = await mutate(newStatus); // Call the mutation function with form data
+      const postStatus = {
+        parttimerName: formValues.parttimerName,
+        parttimerId: auth.currentUser.uid,
+        studentName: formValues.studentName,
+        studentId: "ST001",
+        date: formValues.date,
+        applicationsAppliedSearched: formValues.applicationsAppliedSearched,
+        applicationsAppliedSaved: formValues.applicationsAppliedSaved,
+        easyApply: formValues.easyApply,
+        recruiterDirectMessages: formValues.recruiterMessages,
+        connectMessages: formValues.connectMessages,
+        reason: formValues.reason,
+        description: formValues.description,
+      };
+      // console.log(JSON.stringify(postStatus));
+      // const response = await mutate(newStatus); // Call the mutation function with form data
+      // Perform mutation based on whether it's an update or a new post
+      setMsgResponse("Loading...");
+      let response;
+      if (!showEdit) {
+        response = await statusMutation.mutate(postStatus);
+      } else {
+        response = await updateMutation.mutate(postStatus);
+      }
 
-      console.log("Status posted successfully:", response);
+      // Handle response
+      if (response) {
+        setMsgResponse("Status updated successfully");
+        // Invalidate calendar data query to trigger a refetch
+        queryClient.invalidateQueries(["calendarData", auth.currentUser.uid]);
+      } else {
+        queryClient.invalidateQueries(["calendarData", auth.currentUser.uid]);
+        setMsgResponse("Status updated successfully");
+      }
 
-      setFormValues({
-        parttimerName: "",
-        studentName: "",
-        date: "",
-        sharedApplications: "",
-        searchedApplications: "",
-        easyApply: "",
-        connectMessages: "",
-        recruiterMessages: "",
-        reason: "",
-        description: "",
-      });
+      // console.log(response.message);
+      if (!showEdit) {
+        setFormValues({
+          parttimerName: auth.currentUser.displayName,
+          studentName: "",
+          date: "",
+          applicationsAppliedSaved: "",
+          applicationsAppliedSearched: "",
+          easyApply: "",
+          connectMessages: "",
+          recruiterMessages: "",
+          reason: "",
+          description: "",
+        });
+      }
     } catch (error) {
       console.error("Error posting status:", error);
     }
@@ -150,10 +294,21 @@ const StatusUpdates = () => {
   }
 
   return (
-    <div>
+    <div className="mb-5">
       {/* Form Section */}
-      <form className="form" onSubmit={handleSubmit}>
+      <form className="form">
         <h2>Status Update Form</h2>
+        {/* Calendar Section */}
+        <div className="row">
+          <div className="col-12">
+            <StatusCalendar data={formattedData} empName={empName} />
+          </div>
+        </div>
+        {msgResponse && (
+          <div className="alert alert-info" role="alert">
+            {msgResponse}
+          </div>
+        )}
         <div className="row">
           {fieldsToShow.parttimerName && (
             <div className="col-12 col-md-6 col-lg-4">
@@ -180,6 +335,7 @@ const StatusUpdates = () => {
                   placeholder="Student Name"
                   value={formValues.studentName}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
@@ -194,6 +350,7 @@ const StatusUpdates = () => {
                   placeholder="Date"
                   value={formValues.date}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                   max={getMaxDate()}
                 />
               </div>
@@ -209,34 +366,37 @@ const StatusUpdates = () => {
                   placeholder="Student Group (Number)"
                   value={formValues.studentGroup}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
           )}
-          {fieldsToShow.sharedApplications && (
+          {fieldsToShow.applicationsAppliedSaved && (
             <div className="col-12 col-md-6 col-lg-4">
               <div className="mb-3">
                 <input
                   type="number"
                   className="form-control"
-                  id="sharedApplications"
+                  id="applicationsAppliedSaved"
                   placeholder="No. of Student Shared Applications"
-                  value={formValues.sharedApplications}
+                  value={formValues.applicationsAppliedSaved}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
           )}
-          {fieldsToShow.searchedApplications && (
+          {fieldsToShow.applicationsAppliedSearched && (
             <div className="col-12 col-md-6 col-lg-4">
               <div className="mb-3">
                 <input
                   type="number"
                   className="form-control"
-                  id="searchedApplications"
+                  id="applicationsAppliedSearched"
                   placeholder="No. of Searched Applications"
-                  value={formValues.searchedApplications}
+                  value={formValues.applicationsAppliedSearched}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
@@ -251,6 +411,7 @@ const StatusUpdates = () => {
                   placeholder="No. of Easy Apply"
                   value={formValues.easyApply}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
@@ -265,6 +426,7 @@ const StatusUpdates = () => {
                   placeholder="No. of Connect Messages"
                   value={formValues.connectMessages}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
@@ -279,6 +441,7 @@ const StatusUpdates = () => {
                   placeholder="No. of Recruiter Messages"
                   value={formValues.recruiterMessages}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
@@ -293,6 +456,7 @@ const StatusUpdates = () => {
                   placeholder="Reason"
                   value={formValues.reason}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 />
               </div>
             </div>
@@ -307,24 +471,31 @@ const StatusUpdates = () => {
                   rows="3"
                   value={formValues.description}
                   onChange={handleInputChange}
+                  disabled={disableInputs}
                 ></textarea>
               </div>
             </div>
           )}
         </div>
-        <div className="col-12 d-flex justify-content-center">
-          <button type="submit" className="btn btn-primary">
+        <div className="col-12 d-flex justify-content-center gap-3">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            onClick={handleSubmit}
+          >
             Submit
           </button>
+          {showEdit && (
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={handleEdit}
+            >
+              Edit
+            </button>
+          )}
         </div>
       </form>
-
-      {/* Calendar Section */}
-      <div className="row">
-        <div className="col-12">
-          <StatusCalendar data={formattedData} empName={empName} />
-        </div>
-      </div>
     </div>
   );
 };
