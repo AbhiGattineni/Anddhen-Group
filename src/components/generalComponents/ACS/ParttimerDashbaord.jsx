@@ -7,7 +7,7 @@ const ParttimerDashboard = () => {
     return (
         <div>
             <StatusUpdates />
-            <Videos />
+            {/* <Videos /> */}
         </div>
     );
 };

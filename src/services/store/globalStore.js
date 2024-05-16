@@ -11,7 +11,9 @@ const useAuthStore = create((set) => ({
   myWorkData: null,
   setMyWorkData: (work) => set({myWorkData: work}),
   teamDetails: null,
-  setTeamDetails: (team) => set({teamDetails: team})
+  setTeamDetails: (team) => set({teamDetails: team}),
+  selectedAcsStatusDate: null,
+  setSelectedAcsStatusDate: (date) => set({selectedAcsStatusDate: date}),
 }));
 
 export default useAuthStore;

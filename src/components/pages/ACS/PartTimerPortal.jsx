@@ -58,9 +58,9 @@ export const PartTimerPortal = () => {
   }
   return (
     <div className="container mt-3">
-      {newUser || !parttimer_consent ? <NewParttimer /> : <ParttimerDashboard />}
+      {/* {newUser || !parttimer_consent ? <NewParttimer /> : <ParttimerDashboard />} */}
       <ParttimerDashboard/>
-      {/* <Videos /> */}
+      <Videos />
       <PartTimerRegistrationForm />
     </div>
   );

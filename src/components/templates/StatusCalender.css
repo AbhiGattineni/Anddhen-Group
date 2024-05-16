@@ -1,49 +1,57 @@
 .calendar-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.react-calendar {
+  width: 100%;
+  max-width: 600px;
+  /* Adjust the max width as per your design */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.status-update {
+  margin: 5px;
+  padding: 3px 5px;
+  background-color: #e3f2fd;
+  /* Light blue background */
+  border-radius: 5px;
+  font-size: 0.8em;
+  text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .react-calendar {
+    width: 90%;
   }
-  
+}
+
+@media (max-width: 480px) {
   .react-calendar {
     width: 100%;
-    max-width: 600px; /* Adjust the max width as per your design */
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 0.75em;
   }
-  
+
   .status-update {
-    margin: 5px;
-    padding: 3px 5px;
-    background-color: #e3f2fd; /* Light blue background */
-    border-radius: 5px;
-    font-size: 0.8em;
-    text-align: center;
+    padding: 2px;
   }
-  
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .react-calendar {
-      width: 90%;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .react-calendar {
-      width: 100%;
-      font-size: 0.75em;
-    }
-    
-    .status-update {
-      padding: 2px;
-    }
-  }
-  .green-day {
-    background-color: #a5d6a7; /* or any green shade you prefer */
-  }
-  
-  .red-day {
-    background-color: #ef9a9a; /* or any red shade you prefer */
-  }
-    
+}
+
+.green-day {
+  background-color: #a5d6a7;
+  /* or any green shade you prefer */
+}
+
+.red-day {
+  background-color: #ef9a9a;
+  /* or any red shade you prefer */
+}
+
+.react-calendar .react-calendar__tile--active {
+  background-color: rgb(91, 137, 255) !important;
+}

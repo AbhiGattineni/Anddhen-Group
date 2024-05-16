@@ -85,6 +85,8 @@ const InputField = (props) => {
     "email",
     "international_person_email",
     "college_email",
+    "current_occupation",
+    "course_name",
   ];
 
   const validateInput = () => {
@@ -99,7 +101,7 @@ const InputField = (props) => {
     }
 
     if (
-      ["name", "reference", "managerName", "newStudent"].includes(props.name) &&
+      ["name", "reference", "managerName", "newStudent", "first_name","last_name"].includes(props.name) &&
       value.length <= 3
     ) {
       return `${props.label} should be more than 3 characters`;
