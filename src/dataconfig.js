@@ -348,6 +348,10 @@ export const adminPlates = [
     child: "Anddhen Access Services",
     route: "roleaccess",
   },
+  {
+    child: "Anddhen Transactions",
+    route: "transactions",
+  },
 ];
 
 export const adminPortal = [

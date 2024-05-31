@@ -87,6 +87,8 @@ const InputField = (props) => {
     "college_email",
     "current_occupation",
     "course_name",
+    "amount",
+    "description",
   ];
 
   const validateInput = () => {
@@ -101,7 +103,7 @@ const InputField = (props) => {
     }
 
     if (
-      ["name", "reference", "managerName", "newStudent", "first_name","last_name"].includes(props.name) &&
+      ["name", "reference", "managerName", "newStudent", "first_name","last_name","receiver_name","sender_name"].includes(props.name) &&
       value.length <= 3
     ) {
       return `${props.label} should be more than 3 characters`;
@@ -157,7 +159,7 @@ const InputField = (props) => {
       return "Fee should be valid";
     }
 
-    if (props.name === "date" && inputValue > today) {
+    if ((props.name === "date" || props.name === "transaction_datetime") && inputValue > today) {
       return "Date cannot be in the future";
     }
     if (props.name === "year" && value.length !== 4) {
