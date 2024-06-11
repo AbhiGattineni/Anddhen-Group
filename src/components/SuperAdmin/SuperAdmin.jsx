@@ -8,7 +8,7 @@ const SuperAdmin = () => {
   }, []);
   return (
     <div className="row">
-      {adminPlates.map((data) => (
+      {adminPlates.map((data) => ( 
         <div className="col-md-6 my-3">
           <Link to={data.route} className="text-decoration-none">
             <div className="card shadow-lg">
