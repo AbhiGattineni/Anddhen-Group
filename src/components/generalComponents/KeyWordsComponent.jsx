@@ -1,5 +1,6 @@
 import React from "react";
 import { STAFFING, CONSULTING, Filter } from '../../dataconfig';
+import '../generalComponents/keyWordsComponent.css';
 
 export const KeyWordsComponent = () => {
     return (
