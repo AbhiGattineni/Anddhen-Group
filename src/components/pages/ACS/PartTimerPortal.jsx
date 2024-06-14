@@ -11,6 +11,8 @@ import ParttimerDashboard from "src/components/generalComponents/ACS/ParttimerDa
 import useErrorHandling from "src/hooks/useErrorHandling";
 import ErrorPage from "../ErrorPage";
 
+import { KeyWordsComponent } from "src/components/generalComponents/KeyWordsComponent";
+
 export const PartTimerPortal = () => {
   const newUser = useAuthStore((state) => state.newUser);
   const parttimer_consent = useAuthStore((state) => state.parttimer_consent);
@@ -59,7 +61,9 @@ export const PartTimerPortal = () => {
   return (
     <div className="container mt-3">
       {/* {newUser || !parttimer_consent ? <NewParttimer /> : <ParttimerDashboard />} */}
-      <ParttimerDashboard/>
+      <ParttimerDashboard />
+
+      <KeyWordsComponent />
       <Videos />
       <PartTimerRegistrationForm />
     </div>
