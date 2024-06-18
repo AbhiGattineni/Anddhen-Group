@@ -352,6 +352,10 @@ export const adminPlates = [
     child: "Anddhen Transactions",
     route: "transactions",
   },
+  {
+    child: "Anddhen Consulting Services",
+    route: "acs/colleges",
+  },
 ];
 
 export const adminPortal = [

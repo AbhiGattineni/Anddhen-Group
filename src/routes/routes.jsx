@@ -28,6 +28,7 @@ import AdminPage from "src/components/pages/Admin/AdminPage";
 import RolesAndAccess from "src/components/SuperAdmin/RoleAccess/RolesAndAccess";
 import { Transaction } from "src/components/SuperAdmin/transactions/Transaction";
 import { EmployeeDashboard } from "src/components/pages/Admin/EmployeeDashboard";
+import { Colleges } from "src/components/SuperAdmin/ACS/Colleges/Colleges";
 
 const router = createBrowserRouter([
   {
@@ -126,6 +127,7 @@ const router = createBrowserRouter([
       { path: "acs_consultants", element: <Consultants /> },
       { path: "roleaccess", element: <RolesAndAccess /> },
       { path: "transactions", element: <Transaction /> },
+      { path: "acs/colleges", element: <Colleges /> },
     ],
   },
 
