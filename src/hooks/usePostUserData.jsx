@@ -12,18 +12,20 @@ const usePostUserData = () => {
       const requiredUserData = {
         user_id: userData.uid,
         full_name: userData.displayName,
-        first_name: userData.displayName.split(" ")[0],
-        last_name: userData.displayName.split(" ").slice(-1).join(" "),
+        first_name: "",
+        last_name: "",
         email_id: userData.email,
         enrolled_services: sessionStorage.getItem("preLoginPath")
       };
 
-      const names = requiredUserData.full_name.split(" ");
-
-      if (names.length > 0) {
-        requiredUserData.first_name = names[0];
-        if (names.length > 1) {
-          requiredUserData.last_name = names[names.length - 1];
+      if(requiredUserData.full_name){
+        const names = requiredUserData.full_name.split(" ");
+  
+        if (names.length > 0) {
+          requiredUserData.first_name = names[0];
+          if (names.length > 1) {
+            requiredUserData.last_name = names[names.length - 1];
+          }
         }
       }
 
