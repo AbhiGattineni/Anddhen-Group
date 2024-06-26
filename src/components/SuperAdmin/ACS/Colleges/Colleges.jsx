@@ -1,10 +1,11 @@
 import React from "react";
 import { AddColleges } from "./AddColleges";
+import { ViewColleges } from "./ViewColleges";
 
 export const Colleges = () => {
   return (
     <div className="container my-3">
-      <h2 className='main-heading my-4'>ACS Colleges</h2>
+      <h2 className="main-heading my-4">ACS Colleges</h2>
       <ul className="nav nav-tabs" id="myTab" role="tablist">
         <li className="nav-item" role="presentation">
           <button
@@ -50,7 +51,7 @@ export const Colleges = () => {
           role="tabpanel"
           aria-labelledby="profile-tab"
         >
-          {/* <AssignRole /> */}
+          <ViewColleges />
         </div>
       </div>
     </div>

@@ -42,6 +42,14 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/resetpassword", element: <ForgotPassword /> },
+      {
+        path: "/employeedashboard",
+        element: (
+          <ProtectedRoute>
+            <EmployeeDashboard />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 
@@ -112,7 +120,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: "employeedashboard", element: <EmployeeDashboard /> },
     ],
   },
   {

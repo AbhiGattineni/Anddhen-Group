@@ -40,6 +40,7 @@ export const Register = () => {
 
     const handleSignUp = async (signUpMethod, ...args) => {
         const result = await signUpMethod(...args);
+        console.log("result : ",result);
         if (result && !result.success) {
             setError(result.error); // Use setError for dynamic error handling
         } else {
@@ -59,11 +60,11 @@ export const Register = () => {
         handleEmailPasswordSignUp(formData.email, formData.password);
     };
     return (
-        <div className='bg-light min-vh-100 d-flex justify-content-center align-items-center'>
+        <div className='bg-light min-vh-100 d-flex justify-content-center align-items-center user-select-none'>
             <div className="bg-white rounded shadow p-4" style={{ maxWidth: "800px", width: "100%" }}>
                 <div className="row g-0">
                     <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center">
-                        <img src="/loginImage.png" alt="Sign Up" className="img-fluid rounded-start" />
+                        <img draggable="false" src="/loginImage.png" alt="Sign Up" className="img-fluid rounded-start user-select-none" />
                     </div>
                     <div className="col-md-6">
                         <div className="p-4">
@@ -71,9 +72,9 @@ export const Register = () => {
                                 <div>Sign up with </div>
                                 <div className="ms-3 d-flex gap-3">
                                     <i className="bi bi-google fs-4 cursor-pointer" style={{ color: "#4285F4" }} onClick={handleGoogleSignIn}></i>
-                                    <i className="bi bi-facebook fs-4 cursor-pointer" style={{ color: "#3b5998" }} onClick={handleFacebookSignIn}></i>
-                                    <i className="bi bi-twitter fs-4 cursor-pointer" style={{ color: "#1DA1F2", pointerEvents: "none", cursor: "default" }}></i>
-                                    <i className="bi bi-linkedin fs-4 cursor-pointer" style={{ color: "#0A66C2", pointerEvents: "none", cursor: "default" }}></i>
+                                    <i className="bi bi-facebook fs-4" style={{ color: "#3b5998", cursor: "not-allowed" }} onClick={handleFacebookSignIn}></i>
+                                    <i className="bi bi-twitter fs-4" style={{ color: "#1DA1F2", cursor: "not-allowed" }}></i>
+                                    <i className="bi bi-linkedin fs-4" style={{ color: "#0A66C2", cursor: "not-allowed" }}></i>
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center my-3">

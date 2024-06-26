@@ -15,7 +15,11 @@ export const AddColleges = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
   const [inputDisabled, setInputDisabled] = useState(false);
-  const [toast, setToast] = useState({ show: false, message: "" });
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    color: undefined,
+  });
   const [formData, setFormData] = useState({
     college_name: "",
     website_link: "",
@@ -255,13 +259,27 @@ export const AddColleges = () => {
       onSuccess: () => {
         queryClient.invalidateQueries("colleges");
         resetForm();
-        setToast({ show: true, message: "College added successfully!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        setToast({
+          show: true,
+          message: "College added successfully!",
+          color: "#82DD55",
+        });
+        setTimeout(
+          () => setToast({ show: false, message: "", color: undefined }),
+          3000
+        );
       },
       onError: (error) => {
         console.error("An error occurred:", error);
-        setToast({ show: true, message: "Something went wrong!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        setToast({
+          show: true,
+          message: "Something went wrong!",
+          color: "#E23636",
+        });
+        setTimeout(
+          () => setToast({ show: false, message: "", color: undefined }),
+          3000
+        );
         // Handle error state or display error message
       },
     }
@@ -291,13 +309,27 @@ export const AddColleges = () => {
       onSuccess: () => {
         queryClient.invalidateQueries("colleges");
         resetForm();
-        setToast({ show: true, message: "College updated successfully!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        setToast({
+          show: true,
+          message: "College updated successfully!",
+          color: "#82DD55",
+        });
+        setTimeout(
+          () => setToast({ show: false, message: "", color: undefined }),
+          3000
+        );
       },
       onError: (error) => {
         console.error("An error occurred:", error);
-        setToast({ show: true, message: "Something went wrong!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        setToast({
+          show: true,
+          message: "Something went wrong!",
+          color: "#E23636",
+        });
+        setTimeout(
+          () => setToast({ show: false, message: "", color: undefined }),
+          3000
+        );
         // Handle error state or display error message
       },
     }
@@ -324,24 +356,50 @@ export const AddColleges = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("colleges");
-        resetForm()
-        setSelectedcollege(null)
-        setInputDisabled(false)
-        setToast({ show: true, message: "College deleted successfully!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        resetForm();
+        setSelectedcollege(null);
+        setInputDisabled(false);
+        setToast({
+          show: true,
+          message: "College deleted successfully!",
+          color: "#82DD55",
+        });
+        setTimeout(
+          () => setToast({ show: false, message: "", color: undefined }),
+          3000
+        );
         setIsEdit(false);
       },
       onError: (error) => {
         console.error("An error occurred:", error);
-        setToast({ show: true, message: "Something went wrong!" });
-        setTimeout(() => setToast({ show: false, message: "" }), 3000);
+        setToast({
+          show: true,
+          message: "Something went wrong!",
+          color: "#E23636",
+        });
+        setTimeout(
+          () => setToast({ show: false, message: "", color: undefined }),
+          3000
+        );
       },
     }
   );
 
   const handleDelete = (e) => {
     e.preventDefault();
-    deleteCollege(selectedcollege?.value);
+    // eslint-disable-next-line no-restricted-globals
+    let confirmation = confirm("Are you sure you want to delete?");
+    if (confirmation) {
+      deleteCollege(selectedcollege?.value);
+    }
+  };
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    resetForm();
+    setSelectedcollege(null);
+    setInputDisabled(false);
+    setIsEdit(false);
   };
 
   return (
@@ -457,6 +515,7 @@ export const AddColleges = () => {
                     id="public_private"
                     className="form-select"
                     value={formData.public_private}
+                    disabled={inputDisabled}
                     onChange={(e) =>
                       handleChange("public_private", e.target.value)
                     }
@@ -972,6 +1031,13 @@ export const AddColleges = () => {
                 </button>
               ) : (
                 <>
+                  <button
+                    type="submit"
+                    className="btn btn-primary shadow px-5"
+                    onClick={handleAdd}
+                  >
+                    {"Add College"}
+                  </button>
                   {inputDisabled ? (
                     <button
                       type="submit"
@@ -1003,7 +1069,10 @@ export const AddColleges = () => {
           <Toast
             show={toast.show}
             message={toast.message}
-            onClose={() => setToast({ show: false, message: "" })}
+            color={toast.color}
+            onClose={() =>
+              setToast({ show: false, message: "", color: undefined })
+            }
           />
         </>
       )}
