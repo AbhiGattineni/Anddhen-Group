@@ -1,9 +1,14 @@
 import React from 'react';
-import Slider1 from '../images/slider-1.png';
-import Slider2 from '../images/slider-2.jpg';
-import Slider3 from '../images/fullstack.png';
-import Slider4 from '../images/slider-4.jpg';
-import Slider5 from '../images/slider-5.jpg';
+//import Slider1 from '../images/slider-1.png';
+import Slider1 from '../images/marketing.png';
+//import Slider2 from '../images/slider-2.jpg';
+import Slider2 from '../images/consulting.webp';
+//import Slider3 from '../images/fullstack.png';
+import Slider3 from '../images/webdew.png'
+//import Slider4 from '../images/slider-4.jpg';
+import Slider4 from '../images/philo1.jpg';
+//import Slider5 from '../images/slider-5.jpg';
+import Slider5 from '../images/swing.jpg';
 // import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
@@ -20,7 +25,7 @@ function Slider() {
             <div className="carousel-inner">
                 <div className="carousel-item active">
                     <img src={Slider1} className="d-block w-100 carousel-image" alt="Slide 1" />
-                    <div className="carousel-caption d-none d-md-block text-black">
+                    <div className="carousel-caption d-none d-md-block text-white">
                         <h5>Anddhen Marketing Services</h5>
                         <p>Empowering your brand's online presence through strategic social media marketing solutions with Anddhen Marketing Services.</p>
                     </div>
@@ -41,14 +46,14 @@ function Slider() {
                 </div>
                 <div className="carousel-item">
                     <img src={Slider4} className="d-block w-100 carousel-image" alt="Slide 4" />
-                    <div className="carousel-caption d-none d-md-block">
+                    <div className="carousel-caption d-none d-md-block text-black">
                         <h5>Anddhen Philanthropy Services</h5>
                         <p className=' text-white'>Empowering positive change and social impact through strategic philanthropic initiatives, Anddhen Philanthropy Services champions meaningful causes worldwide.</p>
                     </div>
                 </div>
                 <div className="carousel-item">
                     <img src={Slider5} className="d-block w-100 carousel-image" alt="Slide 5" />
-                    <div className="carousel-caption d-none d-md-block">
+                    <div className="carousel-caption d-none d-md-block text-black">
                         <h5>Anddhen Trading & Investiment</h5>
                         <p className=' text-white'>Unlocking financial opportunities and maximizing returns through expert trading and investment strategies, Anddhen Trading & Investment leads the way in wealth management.</p>
                     </div>
