@@ -1,7 +1,6 @@
 import React from "react";
 
 const Toast = ({ show, onClose, color, message }) => {
-  console.log(color);
   return (
     <div
       className={`toast ${show ? "show" : ""} .bg-body-secondary`}
