@@ -466,10 +466,10 @@ export const EducationConsultant = () => {
                         options={usStates}
                         isMulti={true}
                     />
-                    <div className="form-group py-3">
+                    <div className="form-group py-3 d-flex justify-content-center">
                         <button
                             type="submit"
-                            className="btn btn-warning shadow w-100"
+                            className="btn btn-warning shadow"
                             disabled={!isFormValid()}
                         >
                             {loading ? "Loading..." : "Submit"}

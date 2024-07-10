@@ -33,7 +33,7 @@ const LoginForm = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <InputField
         name="email"
         label="Email Address"
@@ -66,7 +66,7 @@ const LoginForm = ({ onSubmit }) => {
       <div className="row">
         <div className="col"></div>
         <Link
-          to="#"
+          to="/resetpassword"
           className="col col-auto cursor-pointer m-0 text-decoration-none text-black"
         >
           Forget Password?
@@ -74,6 +74,7 @@ const LoginForm = ({ onSubmit }) => {
       </div>
       <div className={`form-group mb-2`}>
         <button
+          onClick={handleSubmit}
           type="submit"
           className="btn btn-warning shadow w-100 mt-2"
           disabled={!isFormValid()}

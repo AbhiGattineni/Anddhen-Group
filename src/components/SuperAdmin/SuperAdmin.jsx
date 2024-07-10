@@ -11,7 +11,7 @@ const SuperAdmin = () => {
       {adminPlates.map((data) => ( 
         <div className="col-md-6 my-3">
           <Link to={data.route} className="text-decoration-none">
-            <div className="card shadow-lg">
+            <div className="card shadow">
               <div className="card-body">
                 <div className="d-flex justify-content-center mb-3">
                   <p className=" font-weight-bold">{data.child}</p>
