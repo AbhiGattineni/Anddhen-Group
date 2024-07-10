@@ -5,9 +5,15 @@ import InputField from "src/components/organisms/InputField";
 import { Search } from "src/components/organisms/Search";
 import Toast from "src/components/organisms/Toast";
 import { usStates } from "src/dataconfig";
+import { useUpdateData } from "src/react-query/useFetchApis";
+import { useDeleteData } from "src/react-query/useFetchApis";
+import { useAddData } from "src/react-query/useFetchApis";
+import { useFetchData } from "src/react-query/useFetchApis";
+import useAuthStore from "src/services/store/globalStore";
 
 export const AddColleges = () => {
   const queryClient = useQueryClient();
+  const collegesList = useAuthStore((state) => state.collegesList);
   const [selectedcollege, setSelectedcollege] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -107,30 +113,26 @@ export const AddColleges = () => {
   };
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const fetchColleges = async () => {
-    const response = await fetch(`${API_BASE_URL}/colleges/all/`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
-  };
 
   const {
-    data: colleges = [], // Provide a default value of an empty array
+    data = [], // Provide a default value of an empty array
     error,
-  } = useQuery("colleges", fetchColleges);
+  } = useFetchData("colleges", `/colleges/all/`);
+  useEffect(()=>{
+    useAuthStore.setState({collegesList : data})
+  },[data])
   useEffect(() => {
     setAddedColleges(() => {
-      const collegeNames = colleges.map((college) => ({
+      const collegeNames = collegesList.map((college) => ({
         value: college.id,
         label: college.college_name,
       }));
       return collegeNames;
     });
-  }, [colleges]);
+  }, [collegesList]);
 
   useEffect(() => {
-    const selectedCollegeData = colleges.find(
+    const selectedCollegeData = collegesList.find(
       (college) => college.id === selectedcollege?.value
     );
 
@@ -221,7 +223,7 @@ export const AddColleges = () => {
       setIsEdit(true);
       setInputDisabled(true);
     }
-  }, [selectedcollege, colleges]);
+  }, [selectedcollege, collegesList]);
 
   // Extracting keys from formData
   useEffect(() => {
@@ -246,16 +248,14 @@ export const AddColleges = () => {
     }));
   };
 
-  const { mutate: addCollege, isLoading } = useMutation(
-    (formData) =>
-      fetch(`${API_BASE_URL}/colleges/create/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }).then((res) => res.json()),
-    {
+  const { mutate: addCollege, isLoading } = useAddData(
+    "colleges",
+    `/colleges/create/`
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addCollege(formData, {
       onSuccess: () => {
         queryClient.invalidateQueries("colleges");
         resetForm();
@@ -282,12 +282,7 @@ export const AddColleges = () => {
         );
         // Handle error state or display error message
       },
-    }
-  );
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    addCollege(formData);
+    });
     resetForm();
   };
 
@@ -296,93 +291,60 @@ export const AddColleges = () => {
     setInputDisabled(false);
   };
 
-  const { mutate: updateCollege, isLoading: isUpdating } = useMutation(
-    ({ id, formData }) =>
-      fetch(`${API_BASE_URL}/colleges/${id}/update/`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }).then((res) => res.json()),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("colleges");
-        resetForm();
-        setToast({
-          show: true,
-          message: "College updated successfully!",
-          color: "#82DD55",
-        });
-        setTimeout(
-          () => setToast({ show: false, message: "", color: undefined }),
-          3000
-        );
-      },
-      onError: (error) => {
-        console.error("An error occurred:", error);
-        setToast({
-          show: true,
-          message: "Something went wrong!",
-          color: "#E23636",
-        });
-        setTimeout(
-          () => setToast({ show: false, message: "", color: undefined }),
-          3000
-        );
-        // Handle error state or display error message
-      },
-    }
+  // Using the custom hook for updating college
+  const { mutate: updateCollege, isLoading: isUpdating } = useUpdateData(
+    "colleges",
+    `/colleges/${selectedcollege?.value}/update/`
   );
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    updateCollege({ id: selectedcollege?.value, formData });
+    try {
+      await updateCollege(formData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries("colleges");
+          resetForm();
+          setToast({
+            show: true,
+            message: "College updated successfully!",
+            color: "#82DD55",
+          });
+          setTimeout(
+            () => setToast({ show: false, message: "", color: undefined }),
+            3000
+          );
+        },
+        onError: (error) => {
+          console.error("An error occurred:", error);
+          setToast({
+            show: true,
+            message: "Something went wrong!",
+            color: "#E23636",
+          });
+          setTimeout(
+            () => setToast({ show: false, message: "", color: undefined }),
+            3000
+          );
+        },
+      });
+    } catch (error) {
+      console.error("Update error:", error.message);
+      setToast({
+        show: true,
+        message: `Update failed: ${error.message}`,
+        color: "#E23636",
+      });
+      setTimeout(
+        () => setToast({ show: false, message: "", color: undefined }),
+        3000
+      );
+    }
   };
 
-  const { mutate: deleteCollege, isLoading: isDeleting } = useMutation(
-    (id) =>
-      fetch(`${API_BASE_URL}/colleges/${id}/delete/`, {
-        method: "DELETE",
-      }).then((res) => {
-        // Only attempt to parse JSON if the response is not 204 No Content
-        if (res.ok && res.status !== 204) {
-          return res.json();
-        } else {
-          // Handle no content response or other HTTP status codes as needed
-          return res;
-        }
-      }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries("colleges");
-        resetForm();
-        setSelectedcollege(null);
-        setInputDisabled(false);
-        setToast({
-          show: true,
-          message: "College deleted successfully!",
-          color: "#82DD55",
-        });
-        setTimeout(
-          () => setToast({ show: false, message: "", color: undefined }),
-          3000
-        );
-        setIsEdit(false);
-      },
-      onError: (error) => {
-        console.error("An error occurred:", error);
-        setToast({
-          show: true,
-          message: "Something went wrong!",
-          color: "#E23636",
-        });
-        setTimeout(
-          () => setToast({ show: false, message: "", color: undefined }),
-          3000
-        );
-      },
-    }
+  // Using the custom hook for deleting college
+  const { mutate: deleteCollege, isLoading: isDeleting } = useDeleteData(
+    "colleges",
+    `/colleges/${selectedcollege?.value}/delete/`
   );
 
   const handleDelete = (e) => {
@@ -390,7 +352,36 @@ export const AddColleges = () => {
     // eslint-disable-next-line no-restricted-globals
     let confirmation = confirm("Are you sure you want to delete?");
     if (confirmation) {
-      deleteCollege(selectedcollege?.value);
+      deleteCollege(null, {
+        onSuccess: () => {
+          queryClient.invalidateQueries("colleges");
+          resetForm();
+          setSelectedcollege(null);
+          setInputDisabled(false);
+          setToast({
+            show: true,
+            message: "College deleted successfully!",
+            color: "#82DD55",
+          });
+          setTimeout(
+            () => setToast({ show: false, message: "", color: undefined }),
+            3000
+          );
+          setIsEdit(false);
+        },
+        onError: (error) => {
+          console.error("An error occurred:", error);
+          setToast({
+            show: true,
+            message: "Something went wrong!",
+            color: "#E23636",
+          });
+          setTimeout(
+            () => setToast({ show: false, message: "", color: undefined }),
+            3000
+          );
+        },
+      });
     }
   };
 

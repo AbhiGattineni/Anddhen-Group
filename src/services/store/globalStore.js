@@ -16,6 +16,8 @@ const useAuthStore = create((set) => ({
   setSelectedAcsStatusDate: (date) => set({selectedAcsStatusDate: date}),
   selectedUpdateStatusDate: null,
   setSelectedUpdateStatusDate: (date) => set({selectedUpdateStatusDate: date}),
+  collegesList: [],
+  setcollegesList: (colleges) => set({collegesList: colleges}),
 }));
 
 export default useAuthStore;
