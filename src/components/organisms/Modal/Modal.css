@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Ensure it's above other elements */
+    z-index: 1000; 
   }
   
   .modal-content {
@@ -16,7 +16,7 @@
     padding: 20px;
     border-radius: 5px;
     position: relative;
-    z-index: 1001; /* Above the overlay */
+    z-index: 1001;
   }
   
   .close-button {
@@ -27,4 +27,17 @@
     background: none;
     font-size: 1.5rem;
   }
-  
+  @media (max-width: 576px) {
+    .ass-team-modal {
+      width: 90vw;
+      height: 90vh;
+    }
+  }
+ 
+.ass-team-modal {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent gray */
+}
+
+.modal-content {
+  background-color: #fff; /* White background for modal content */
+}
