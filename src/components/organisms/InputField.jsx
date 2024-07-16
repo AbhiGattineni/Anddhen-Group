@@ -30,7 +30,7 @@ const InputField = (props) => {
     "college_phone_link",
     "international_person_email_link",
     "UG_courses_link",
-    "graduation_courses_link"
+    "graduation_courses_link",
   ];
   const scoreFields = [
     "score",
@@ -93,7 +93,7 @@ const InputField = (props) => {
 
   const validateInput = () => {
     const today = new Date();
-    const value = props.value || '';
+    const value = props.value || "";
     const inputValue = new Date(value);
     today.setHours(0, 0, 0, 0);
     inputValue.setHours(0, 0, 0, 0);
@@ -103,7 +103,16 @@ const InputField = (props) => {
     }
 
     if (
-      ["name", "reference", "managerName", "newStudent", "first_name","last_name","receiver_name","sender_name"].includes(props.name) &&
+      [
+        "name",
+        "reference",
+        "managerName",
+        "newStudent",
+        "first_name",
+        "last_name",
+        "receiver_name",
+        "sender_name",
+      ].includes(props.name) &&
       value.length <= 3
     ) {
       return `${props.label} should be more than 3 characters`;
@@ -139,8 +148,7 @@ const InputField = (props) => {
 
     if (
       props.name === "studyYear" &&
-      (value.length !== 4 ||
-        Number(value) > new Date().getFullYear() + 50)
+      (value.length !== 4 || Number(value) > new Date().getFullYear() + 50)
     ) {
       return "Enter valid year";
     }
@@ -154,12 +162,16 @@ const InputField = (props) => {
     if (
       ["application_UG_fee", "application_graduation_fee"].includes(
         props.name
-      ) && value.length <= 0
+      ) &&
+      value.length <= 0
     ) {
       return "Fee should be valid";
     }
 
-    if ((props.name === "date" || props.name === "transaction_datetime") && inputValue > today) {
+    if (
+      (props.name === "date" || props.name === "transaction_datetime") &&
+      inputValue > today
+    ) {
       return "Date cannot be in the future";
     }
     if (props.name === "year" && value.length !== 4) {
@@ -176,7 +188,13 @@ const InputField = (props) => {
   return (
     <div className={`form-group ${props.className}`}>
       <label className="mb-1">
-        {props.label}<span className="text-danger" style={{ userSelect: "none" }}> *</span>
+        {props.label}
+        {props.notRequired ? null : (
+          <span className="text-danger" style={{ userSelect: "none" }}>
+            {" "}
+            *
+          </span>
+        )}
       </label>
       <input
         ref={ref}
@@ -186,10 +204,12 @@ const InputField = (props) => {
         name={props.name}
         value={props.value}
         onChange={props.onChange}
-        onBlur={handleBlur}
+        onBlur={
+          props.notRequired && !props.value ? null : handleBlur
+        }
         onFocus={props.onFocus}
         disabled={props.disabled}
-        required
+        required={props.notRequired ? false : true}
       />
       {error ? <span className="text-danger">{error}</span> : null}
     </div>

@@ -2,19 +2,24 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithGoogle, signInWithFacebook, signInWithGitHub, signInWithEmailPassword, createUserWithEmailPassword } from "../services/Authentication/firebase";
 import usePostUserData from "../hooks/usePostUserData";
 import useAuthStore from 'src/services/store/globalStore';
+import { useFetchData } from 'src/react-query/useFetchApis';
 
 const useUnifiedAuth = () => {
     const navigate = useNavigate();
     const { postUserData } = usePostUserData();
 
-    const{loading,setLoading}=useAuthStore();
+    const { loading, setLoading } = useAuthStore();
+    const { data = null, error } = useFetchData(
+        "user",
+        "/api/user_and_role_overview/"
+    );
 
-    const handleAuth = async (authPromise) => {
+    const handleAuth = async (authPromise, first_name, last_name) => {
         try {
-            const data = await authPromise;
-            console.log("data",data.user);
+            const usersData = await authPromise;
             setLoading(true);
-            const userData = await postUserData(data.user);
+            console.log("usersData", usersData.user);
+            const userData = await postUserData(usersData.user, first_name, last_name);
             console.log("userData", userData);
             setLoading(false);
             navigate(sessionStorage.getItem("preLoginPath") || "/");
@@ -31,7 +36,7 @@ const useUnifiedAuth = () => {
     const onFacebookSignIn = () => handleAuth(signInWithFacebook());
     const onGitHubSignIn = () => handleAuth(signInWithGitHub());
     const onEmailPasswordSignIn = (email, password) => handleAuth(signInWithEmailPassword(email, password));
-    const onEmailPasswordUserCreation = (email, password) => handleAuth(createUserWithEmailPassword(email, password));
+    const onEmailPasswordUserCreation = (email, password, first_name, last_name) => handleAuth(createUserWithEmailPassword(email, password), first_name, last_name);
 
     return { onGoogleSignIn, onFacebookSignIn, onGitHubSignIn, onEmailPasswordSignIn, onEmailPasswordUserCreation };
 };

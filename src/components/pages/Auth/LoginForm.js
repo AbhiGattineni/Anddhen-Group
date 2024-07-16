@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import InputField from "../../organisms/InputField";
 import { Link } from "react-router-dom";
+import useAuthStore from "src/services/store/globalStore";
 
 const LoginForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const LoginForm = ({ onSubmit }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [focus, setFocus] = useState(false);
+  const loading = useAuthStore((state) => state.loading);
 
   const handleChange = (field, value) => {
     setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
@@ -79,7 +81,7 @@ const LoginForm = ({ onSubmit }) => {
           className="btn btn-warning shadow w-100 mt-2"
           disabled={!isFormValid()}
         >
-          Submit
+          {loading ? "loading..." : "Submit"}
         </button>
       </div>
     </form>
