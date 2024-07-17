@@ -54,13 +54,14 @@ export const Login = () => {
                     className="bi bi-google fs-4 cursor-pointer"
                     onClick={handleGoogleSignIn}
                     style={{ transition: "transform 0.2s", color: "#4285F4" }}
-                  ></i>
-                  <i
+                    ></i>
+                  {/* <i
                     className="bi bi-facebook fs-4"
+                    onClick={handleFacebookSignIn}
                     style={{
                       transition: "transform 0.2s",
                       color: "#3b5998",
-                      cursor: "not-allowed",
+                      cursor: "pointer",
                     }}
                   ></i>
                   <i
@@ -68,7 +69,7 @@ export const Login = () => {
                     style={{
                       transition: "transform 0.2s",
                       color: "#1DA1F2",
-                      cursor: "not-allowed",
+                      // cursor: "not-allowed",
                     }}
                   ></i>
                   <i
@@ -76,9 +77,9 @@ export const Login = () => {
                     style={{
                       transition: "transform 0.2s",
                       color: "#0A66C2",
-                      cursor: "not-allowed",
+                      // cursor: "not-allowed",
                     }}
-                  ></i>
+                  ></i> */}
                   {/* Add other social icons here */}
                 </div>
               </div>
