@@ -12,8 +12,8 @@ const usePostUserData = () => {
       const requiredUserData = {
         user_id: userData.uid,
         full_name: userData.displayName,
-        first_name: first_name || "",
-        last_name: last_name || "",
+        first_name: first_name || null,
+        last_name: last_name || null,
         email_id: userData.email,
         enrolled_services: sessionStorage.getItem("preLoginPath"),
       };
