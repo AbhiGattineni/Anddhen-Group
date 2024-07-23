@@ -12,3 +12,22 @@ code {
     monospace;
 }
 
+.wd-50 {
+  width: 80%;
+}
+
+.icon_color {
+  font-size: 20px;
+  padding: 10px;
+  color: rgb(204, 18, 18);
+}
+
+.icon_color_edit {
+  font-size: 20px;
+  padding: 10px;
+  color: #f76c2f;
+}
+
+.icon-400 {
+  font-size: 30px;
+}
