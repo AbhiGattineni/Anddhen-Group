@@ -131,7 +131,7 @@ export const Ats = () => {
                     <div className="underline mx-auto"></div>
                     <Row className="justify-content-center mt-5">
                         <Col xs={12} md={2} className="text-center mb-4">
-                            <Card className="border-0 shadow-sm">
+                            <Card className="border-0 shadow-lg">
                                 <Card.Body>
                                     <div className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: '60px', height: '60px' }}>
                                         <i className="bi bi-geo-alt" style={{ fontSize: '1.5rem' }}></i>
@@ -142,7 +142,7 @@ export const Ats = () => {
                             </Card>
                         </Col>
                         <Col xs={12} md={2} className="text-center mb-4">
-                            <Card className="border-0 shadow-sm">
+                            <Card className="border-0 shadow-lg">
                                 <Card.Body>
                                     <div className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: '60px', height: '60px' }}>
                                         <i className="bi bi-envelope" style={{ fontSize: '1.5rem' }}></i>
@@ -153,7 +153,7 @@ export const Ats = () => {
                             </Card>
                         </Col>
                         <Col xs={12} md={2} className="text-center mb-4">
-                            <Card className="border-0 shadow-sm">
+                            <Card className="border-0 shadow-lg">
                                 <Card.Body>
                                     <div className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: '60px', height: '60px' }}>
                                         <i className="bi bi-phone" style={{ fontSize: '1.5rem' }}></i>
@@ -164,7 +164,7 @@ export const Ats = () => {
                             </Card>
                         </Col>
                         <Col xs={12} md={2} className="text-center mb-4">
-                            <Card className="border-0 shadow-sm">
+                            <Card className="border-0 shadow-lg">
                                 <Card.Body>
                                     <div className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: '60px', height: '60px' }}>
                                         <i className="bi bi-pencil-square" style={{ fontSize: '1.5rem' }}></i>
@@ -175,7 +175,7 @@ export const Ats = () => {
                             </Card>
                         </Col>
                         <Col xs={12} md={2} className="text-center mb-4">
-                            <Card className="border-0 shadow-sm">
+                            <Card className="border-0 shadow-lg">
                                 <Card.Body>
                                     <div className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style={{ width: '60px', height: '60px' }}>
                                         <i className="bi bi-send" style={{ fontSize: '1.5rem' }}></i>
