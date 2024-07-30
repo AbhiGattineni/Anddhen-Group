@@ -29,6 +29,7 @@ import RolesAndAccess from "src/components/SuperAdmin/RoleAccess/RolesAndAccess"
 import { Transaction } from "src/components/SuperAdmin/transactions/Transaction";
 import { EmployeeDashboard } from "src/components/pages/Admin/EmployeeDashboard";
 import { Colleges } from "src/components/SuperAdmin/ACS/Colleges/Colleges";
+import { Profile } from "src/components/pages/Auth/Profile";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/resetpassword", element: <ForgotPassword /> },
+      { path: "/profile", element: <Profile /> },
       {
         path: "/employeedashboard",
         element: (

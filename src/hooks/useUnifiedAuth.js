@@ -20,9 +20,15 @@ const useUnifiedAuth = () => {
             setLoading(true);
             console.log("usersData", usersData.user);
             const userData = await postUserData(usersData.user, first_name, last_name);
-            console.log("userData", userData);
+            // console.log("userData", userData);
             setLoading(false);
-            navigate(sessionStorage.getItem("preLoginPath") || "/");
+            if (userData.empty_fields.length > 0) {
+                sessionStorage.setItem("empty_fields", userData.empty_fields);
+                navigate("/profile")
+            }
+            else {
+                navigate(sessionStorage.getItem("preLoginPath") || "/");
+            }
 
 
             return null; // Indicates success
