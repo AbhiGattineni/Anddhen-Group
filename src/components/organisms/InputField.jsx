@@ -31,6 +31,7 @@ const InputField = (props) => {
     "international_person_email_link",
     "UG_courses_link",
     "graduation_courses_link",
+    "link"
   ];
   const scoreFields = [
     "score",
@@ -89,7 +90,9 @@ const InputField = (props) => {
     "course_name",
     "amount",
     "description",
-    "phone_country_code"
+    "phone_country_code",
+    "link",
+    "college_label"
   ];
 
   const validateInput = () => {
