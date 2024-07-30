@@ -30,6 +30,7 @@ import { Transaction } from "src/components/SuperAdmin/transactions/Transaction"
 import { EmployeeDashboard } from "src/components/pages/Admin/EmployeeDashboard";
 import { Colleges } from "src/components/SuperAdmin/ACS/Colleges/Colleges";
 import { Profile } from "src/components/pages/Auth/Profile";
+import { Ats } from "src/components/pages/inc/Ats";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,11 @@ const router = createBrowserRouter([
     path: "/ati",
     element: <Layout />,
     children: [{ index: true, element: <Ati /> }],
+  },
+  {
+    path: "/ats",
+    element: <Layout />,
+    children: [{ index: true, element: <Ats/> }],
   },
   {
     path: "/acs",

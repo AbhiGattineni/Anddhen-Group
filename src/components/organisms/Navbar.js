@@ -103,6 +103,11 @@ function Navbar(props) {
                             Anddhen Trading & Investiment
                           </Link>
                         </li>
+                        <li>
+                          <Link to="/ats" className="dropdown-item">
+                            Anddhen Travel Services
+                          </Link>
+                        </li>
                       </ul>
                     </li>
                     <li className="nav-item d-lg-none">
@@ -148,6 +153,15 @@ function Navbar(props) {
                         className="nav-link active nav-link-highlight"
                       >
                         Anddhen Trading & Investiment
+                      </Link>
+                    </li>
+                    <li className="nav-item d-lg-none">
+                      <Link
+                        to="/ats"
+                        onClick={handleLinkClick}
+                        className="nav-link active nav-link-highlight"
+                      >
+                        Anddhen Travel Services
                       </Link>
                     </li>
                     <li className="nav-item">
