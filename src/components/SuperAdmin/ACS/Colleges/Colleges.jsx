@@ -1,6 +1,7 @@
 import React from "react";
 import { AddColleges } from "./AddColleges";
 import { ViewColleges } from "./ViewColleges";
+import { AddLinks } from "./AddLinks";
 
 export const Colleges = () => {
   return (
@@ -19,6 +20,20 @@ export const Colleges = () => {
             aria-selected="true"
           >
             Add Colleges
+          </button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button
+            className="nav-link"
+            id="link-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#link"
+            type="button"
+            role="tab"
+            aria-controls="link"
+            aria-selected="false"
+          >
+            Add Links
           </button>
         </li>
         <li className="nav-item" role="presentation">
@@ -44,6 +59,14 @@ export const Colleges = () => {
           aria-labelledby="home-tab"
         >
           <AddColleges />
+        </div>
+        <div
+          className="tab-pane fade"
+          id="link"
+          role="tabpanel"
+          aria-labelledby="link-tab"
+        >
+          <AddLinks />
         </div>
         <div
           className="tab-pane fade"

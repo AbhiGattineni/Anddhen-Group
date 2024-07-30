@@ -1,57 +1,38 @@
 import React from 'react';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import logo from './../../images/photo-1594708767771-a7502209ff51.avif';
-import './Aps.css'; // Import your custom CSS file
+// import './Aps.css'; // Import your custom CSS file
 
 export const Aps = () => {
     return (
-        <div className="">
-            <div className='m-4 p-4 text-center'>
-                <LazyLoadImage
-                    effect="blur"
-                    className="custom-image-width img-fluid rounded"
-                    src={logo}
-                    alt="Card image cap"
-                />
+        <div className="" style={{height:"100%",width:"100%"}}>
+            <h5 className='py-3 text-center' style={{ fontWeight: 'bold' }}>ANDDHEN - JAYA LAKSHMI FOUNDATION</h5>
+            <div className='pb-3 text-center' style={{width:"100%"}}>
+            <LazyLoadImage
+            effect="blur"
+            className="rounded"
+            src={logo}
+            alt="Card image cap"
+            style={{ height: '60vh', width: '60vw' }} //change this for image height and width
+        />
             </div>
+            
             <section className='p-2 bg-c-light border-top'>
                 <div className='container'>
                     <h5 className='pt-5 main-heading text-center'>Education</h5>
                     <div className="underline mx-auto"></div>
-                    <p className='p-2 text-center'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur ipsa hic rerum explicabo aspernatur tempora, aliquid cum nam, voluptas ad, dolorem totam porro perferendis? Ullam distinctio nesciunt tempore vitae consectetur?
-                        Voluptates, consequuntur! Minus quidem, repudiandae sequi nemo et possimus, blanditiis vitae animi aspernatur culpa quas? Optio, quia. Illo sapiente corporis quia unde. Magnam eaque quam quas. Exercitationem doloremque dolores corrupti.
-                        Officia vitae, impedit fuga natus quasi eveniet dolor. Beatae dolorem perspiciatis dolor eaque dolorum? Facilis soluta laudantium, dolor, nostrum fuga atque velit nesciunt cumque enim omnis ipsa hic nobis laboriosam.
-                        Ullam eius repellat enim hic earum nostrum perspiciatis deleniti aut ut tenetur saepe, quo dicta, sunt ducimus est. Error, tempora. Illo saepe voluptatum optio tempora autem animi facere, sint ipsa.
-                        Qui harum expedita iusto? Dolore accusamus suscipit nulla eius non aliquid inventore, consequatur est deleniti ex at autem dolores dolor temporibus voluptatibus facere illum veniam distinctio maxime iusto, aliquam dolorem?
-                    </p>
-                    <p className='p-2 text-center'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur ipsa hic rerum explicabo aspernatur tempora, aliquid cum nam, voluptas ad, dolorem totam porro perferendis? Ullam distinctio nesciunt tempore vitae consectetur?
-                        Voluptates, consequuntur! Minus quidem, repudiandae sequi nemo et possimus, blanditiis vitae animi aspernatur culpa quas? Optio, quia. Illo sapiente corporis quia unde. Magnam eaque quam quas. Exercitationem doloremque dolores corrupti.
-                        Officia vitae, impedit fuga natus quasi eveniet dolor. Beatae dolorem perspiciatis dolor eaque dolorum? Facilis soluta laudantium, dolor, nostrum fuga atque velit nesciunt cumque enim omnis ipsa hic nobis laboriosam.
-                        Ullam eius repellat enim hic earum nostrum perspiciatis deleniti aut ut tenetur saepe, quo dicta, sunt ducimus est. Error, tempora. Illo saepe voluptatum optio tempora autem animi facere, sint ipsa.
-                        Qui harum expedita iusto? Dolore accusamus suscipit nulla eius non aliquid inventore, consequatur est deleniti ex at autem dolores dolor temporibus voluptatibus facere illum veniam distinctio maxime iusto, aliquam dolorem?
-                    </p>
-                </div>
-            </section>
-            <section className='p-2 border-top'>
-                <div className='container'>
-                    <h5 className='pt-5 main-heading text-center'>Food</h5>
-                    <div className="underline mx-auto"></div>
-                    <p className='p-2 text-center'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur ipsa hic rerum explicabo aspernatur tempora, aliquid cum nam, voluptas ad, dolorem totam porro perferendis? Ullam distinctio nesciunt tempore vitae consectetur?
-                        Voluptates, consequuntur! Minus quidem, repudiandae sequi nemo et possimus, blanditiis vitae animi aspernatur culpa quas? Optio, quia. Illo sapiente corporis quia unde. Magnam eaque quam quas. Exercitationem doloremque dolores corrupti.
-                        Officia vitae, impedit fuga natus quasi eveniet dolor. Beatae dolorem perspiciatis dolor eaque dolorum? Facilis soluta laudantium, dolor, nostrum fuga atque velit nesciunt cumque enim omnis ipsa hic nobis laboriosam.
-                        Ullam eius repellat enim hic earum nostrum perspiciatis deleniti aut ut tenetur saepe, quo dicta, sunt ducimus est. Error, tempora. Illo saepe voluptatum optio tempora autem animi facere, sint ipsa.
-                        Qui harum expedita iusto? Dolore accusamus suscipit nulla eius non aliquid inventore, consequatur est deleniti ex at autem dolores dolor temporibus voluptatibus facere illum veniam distinctio maxime iusto, aliquam dolorem?
-                    </p>
-                    <p className='p-2 text-center'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur ipsa hic rerum explicabo aspernatur tempora, aliquid cum nam, voluptas ad, dolorem totam porro perferendis? Ullam distinctio nesciunt tempore vitae consectetur?
-                        Voluptates, consequuntur! Minus quidem, repudiandae sequi nemo et possimus, blanditiis vitae animi aspernatur culpa quas? Optio, quia. Illo sapiente corporis quia unde. Magnam eaque quam quas. Exercitationem doloremque dolores corrupti.
-                        Officia vitae, impedit fuga natus quasi eveniet dolor. Beatae dolorem perspiciatis dolor eaque dolorum? Facilis soluta laudantium, dolor, nostrum fuga atque velit nesciunt cumque enim omnis ipsa hic nobis laboriosam.
-                        Ullam eius repellat enim hic earum nostrum perspiciatis deleniti aut ut tenetur saepe, quo dicta, sunt ducimus est. Error, tempora. Illo saepe voluptatum optio tempora autem animi facere, sint ipsa.
-                        Qui harum expedita iusto? Dolore accusamus suscipit nulla eius non aliquid inventore, consequatur est deleniti ex at autem dolores dolor temporibus voluptatibus facere illum veniam distinctio maxime iusto, aliquam dolorem?
-                    </p>
+                    <p className='p-2' style={{ textAlign: 'justify' }}>
+            The <strong>ANDDHEN - JAYA LAKSHMI FOUNDATION</strong> is a labor of love, a profound homage to my cherished grandmother, <strong>Jaya Lakshmi</strong>, who is alive and continues to inspire us. As a devoted government school headmistress, she dedicated her life to nurturing and educating countless children, instilling in them the values of knowledge, integrity, and compassion. Her relentless commitment to education and her selfless care for others have profoundly influenced my life, guiding me with her wisdom and unwavering support. Now, in her honor, we have established this foundation to continue her life's work, to reach out to those children whose dreams are hindered by financial constraints, and to light the path to a brighter future through education.
+        </p>
+        <p className='p-2' style={{ textAlign: 'justify' }}>
+            Education is the most powerful tool we can offer to uplift lives and break the cycle of poverty. The <strong>ANDDHEN - JAYA LAKSHMI FOUNDATION</strong> is dedicated to this noble cause, striving to ensure that no child is deprived of the opportunity to learn and grow due to financial hardship. By providing scholarships, resources, and support, we aim to transform the lives of these young learners, giving them the chance to achieve their fullest potential and contribute positively to society. We are not just funding education; we are nurturing dreams, fostering hope, and building a foundation for a brighter tomorrow.
+        </p>
+        <p className='p-2' style={{ textAlign: 'justify' }}>
+            The impact of <strong>Jaya Lakshmi</strong>'s teachings goes beyond the classroom. Her lessons of kindness, resilience, and dedication resonate deeply within me and countless others who had the privilege of knowing her. Through the <strong>ANDDHEN - JAYA LAKSHMI FOUNDATION</strong>, we aspire to extend her legacy of compassion and generosity to children who need it the most. Each contribution to this foundation is a step toward creating a world where every child has access to the education they deserve, enabling them to rise above their circumstances and thrive.
+        </p>
+        <p className='p-2' style={{ textAlign: 'justify' }}>
+            We invite you to join us on this heartfelt journey. Your generosity can change the course of a child's life, offering them hope, possibilities, and a future filled with promise. If you feel moved to support our mission or wish to learn more about how you can make a difference, please contact us. Together, we can keep <strong>Jaya Lakshmi</strong>'s legacy alive and create a world where every child's educational aspirations are within reach.
+        </p>
                 </div>
             </section>
         </div>

@@ -1,7 +1,6 @@
 /* ImageComponent.css */
 .custom-image-width {
-    width: 500px; /* Set your desired width */
-    max-width: 100%; /* Ensures the image is responsive */
+    width: auto; /* Set your desired width */
     height: auto; /* Maintains aspect ratio */
   }
   
