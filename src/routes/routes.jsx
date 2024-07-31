@@ -44,7 +44,14 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/resetpassword", element: <ForgotPassword /> },
-      { path: "/profile", element: <Profile /> },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "/employeedashboard",
         element: (
@@ -82,7 +89,7 @@ const router = createBrowserRouter([
   {
     path: "/ats",
     element: <Layout />,
-    children: [{ index: true, element: <Ats/> }],
+    children: [{ index: true, element: <Ats /> }],
   },
   {
     path: "/acs",

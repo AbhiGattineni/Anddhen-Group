@@ -23,11 +23,11 @@ const useUnifiedAuth = () => {
             // console.log("userData", userData);
             setLoading(false);
             if (userData.empty_fields.length > 0) {
-                sessionStorage.setItem("empty_fields", userData.empty_fields);
+                localStorage.setItem("empty_fields", userData.empty_fields);
                 navigate("/profile")
             }
             else {
-                navigate(sessionStorage.getItem("preLoginPath") || "/");
+                navigate(localStorage.getItem("preLoginPath") || "/");
             }
 
 

@@ -17,7 +17,7 @@ const usePostUserData = () => {
         phone_country_code: userData.phone_country_code || null,
         phone_number: userData.phone_number || null,
         email_id: userData.email,
-        enrolled_services: sessionStorage.getItem("preLoginPath"),
+        enrolled_services: localStorage.getItem("preLoginPath"),
       };
       
       if (requiredUserData.full_name) {

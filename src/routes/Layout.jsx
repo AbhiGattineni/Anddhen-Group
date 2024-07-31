@@ -13,6 +13,7 @@ const Layout = () => {
     location.pathname.includes("/superadmin/acs_consultants") ||
     location.pathname.includes("/superadmin/roleaccess") ||
     location.pathname.includes("/admin") ||
+    location.pathname.includes("/profile") ||
     location.pathname.includes("/employeedashboard");
 
   return (

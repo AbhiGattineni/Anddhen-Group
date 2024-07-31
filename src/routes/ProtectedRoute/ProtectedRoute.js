@@ -12,7 +12,9 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (error || !user) {
-    sessionStorage.setItem("preLoginPath", location.pathname);
+    if(location.pathname !== '/profile'){
+      localStorage.setItem("preLoginPath", location.pathname);
+    }
     return <Navigate to="/login" replace />;
   }
 

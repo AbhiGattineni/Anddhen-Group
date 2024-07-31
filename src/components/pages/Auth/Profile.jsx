@@ -8,7 +8,7 @@ import usePostUserData from "src/hooks/usePostUserData";
 import { auth } from "src/services/Authentication/firebase";
 
 export const Profile = () => {
-  const { loading } = useAuthStore();
+  const [ loading, setLoading ] = useState(false);
   const navigate = useNavigate();
   const [emptyFields, setEmptyFields] = useState([]);
   const [formData, setFormData] = useState({});
@@ -17,7 +17,7 @@ export const Profile = () => {
   const { postUserData } = usePostUserData();
 
   useEffect(() => {
-    const storedEmptyFields = sessionStorage.getItem("empty_fields");
+    const storedEmptyFields = localStorage.getItem("empty_fields");
     if (storedEmptyFields) {
       const parsedEmptyFields = storedEmptyFields.split(",");
       setEmptyFields(parsedEmptyFields);
@@ -52,6 +52,7 @@ export const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const userData = {
         ...formData,
@@ -60,16 +61,17 @@ export const Profile = () => {
       };
       const response = await postUserData(userData);
       if (response.empty_fields.length > 0) {
-        sessionStorage.setItem("empty_fields", response.empty_fields);
+        localStorage.setItem("empty_fields", response.empty_fields);
         window.location.reload();
       } else {
-        sessionStorage.removeItem("empty_fields");
-        sessionStorage.setItem("roles", userData.roles);
-        navigate(sessionStorage.getItem("preLoginPath") || "/");
+        localStorage.setItem("empty_fields", response.empty_fields);
+        localStorage.setItem("roles", userData.roles);
+        navigate(localStorage.getItem("preLoginPath") || "/");
       }
     } catch (error) {
       console.error(error);
     }
+    setLoading(false);
   };
 
   return (
@@ -105,7 +107,7 @@ export const Profile = () => {
                       type="submit"
                       className="btn btn-warning shadow w-auto"
                       onClick={handleSubmit}
-                      disabled={!isFormValid()}
+                      disabled={!isFormValid() || loading}
                     >
                       {loading ? "Loading..." : "Submit"}
                     </button>
