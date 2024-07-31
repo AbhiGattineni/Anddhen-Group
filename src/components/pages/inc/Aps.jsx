@@ -1,9 +1,12 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import logo from './../../images/photo-1594708767771-a7502209ff51.avif';
-// import './Aps.css'; // Import your custom CSS file
+import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
+import CustomToast from 'src/components/atoms/Toast/CustomToast';
 
 export const Aps = () => {
+    const [showToast, setShowToast] = useState(false);
+    const [toastMsg, setToastMsg] = useState('');
     return (
         <div className="" style={{height:"100%",width:"100%"}}>
             <h5 className='py-3 text-center' style={{ fontWeight: 'bold' }}>ANDDHEN - JAYA LAKSHMI FOUNDATION</h5>
@@ -13,7 +16,7 @@ export const Aps = () => {
             className="rounded"
             src={logo}
             alt="Card image cap"
-            style={{ height: '50vh', width: '60vw' }} //change this for image height and width
+            style={{ height: '50vh', width: '60vw', objectFit: 'cover' }} //change this for image height and width
         />
             </div>
             
@@ -55,6 +58,21 @@ export const Aps = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Contact Form */}
+<section className='py-4 border-top'>
+    <div className='text-center'>
+        <p className='row justify-content-center'>
+            <dt className='justify-content-center'>If you want to support us, please submit your enquiries here.</dt>
+        </p>
+    </div>
+    <EnquiryForm 
+        title="APS: Anddhen Philanthropy Services" 
+        setShowToast={setShowToast}
+        setToastMsg={setToastMsg}
+    />
+    <CustomToast showToast={showToast} setShowToast={setShowToast} toastMsg={toastMsg} />
+</section>
 
         </div>
     )
