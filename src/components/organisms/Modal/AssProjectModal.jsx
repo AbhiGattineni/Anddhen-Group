@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import useAuthStore from "src/services/store/globalStore";
+import React, { useCallback, useEffect, useState } from 'react';
+import useAuthStore from 'src/services/store/globalStore';
 
 export const AssProjectModal = () => {
   const [showModal, setShowModal] = useState(false);
@@ -7,33 +7,33 @@ export const AssProjectModal = () => {
 
   const toggleModal = useCallback(() => {
     useAuthStore.setState({ myWorkData: null });
-    document.body.style.overflow = "auto"; // Restore body overflow
+    document.body.style.overflow = 'auto'; // Restore body overflow
     setShowModal(false);
   }, []);
 
   useEffect(() => {
     const handleBodyOverflow = () => {
-      document.body.style.overflow = showModal ? "hidden" : "auto";
+      document.body.style.overflow = showModal ? 'hidden' : 'auto';
     };
 
     handleBodyOverflow();
 
     return () => {
-      document.body.style.overflow = "auto"; // Ensure body overflow is restored when unmounting
+      document.body.style.overflow = 'auto'; // Ensure body overflow is restored when unmounting
     };
   }, [showModal]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showModal && !event.target.closest(".modal-content")) {
+      if (showModal && !event.target.closest('.modal-content')) {
         toggleModal();
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, [showModal, toggleModal]);
 
@@ -44,9 +44,9 @@ export const AssProjectModal = () => {
   return (
     <div
       className={`position-fixed top-50 start-50 translate-middle bg-white rounded shadow overflow-hidden modal-dialog-centered ${
-        showModal ? "d-block" : "d-none"
+        showModal ? 'd-block' : 'd-none'
       }`}
-      style={{ maxHeight: "90vh", maxWidth: "90vw" }} // Limiting modal height and width
+      style={{ maxHeight: '90vh', maxWidth: '90vw' }} // Limiting modal height and width
     >
       {workData && (
         <div className="modal-content p-0 h-100">
@@ -62,7 +62,7 @@ export const AssProjectModal = () => {
           </div>
           <div
             className="modal-body p-0 h-100 overflow-auto"
-            style={{ maxHeight: "calc(90vh - 90px)" }}
+            style={{ maxHeight: 'calc(90vh - 90px)' }}
           >
             {/* Adjust maxHeight based on header height */}
             <div
@@ -75,16 +75,17 @@ export const AssProjectModal = () => {
             </div>
             <div className="p-4">
               <p className="fw-bold">
-                checkout here :{" "}
+                checkout here :{' '}
                 <a href={workData.link} className="fw-normal">
                   {workData.link}
                 </a>
               </p>
-              {workData.description && 
-              <div className="">
-                <h5>Description</h5>
-                <p>{workData.description}</p>
-              </div>}
+              {workData.description && (
+                <div className="">
+                  <h5>Description</h5>
+                  <p>{workData.description}</p>
+                </div>
+              )}
               <i className="text-secondary">{workData.timeline}</i>
             </div>
           </div>

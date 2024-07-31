@@ -1,8 +1,8 @@
-import React from "react";
-import { PriceCard } from "../organisms/PriceCard";
-import { priceData } from "../../dataconfig";
-import useGetPackages from "src/react-query/Packages/useGetPackages";
-import LoadingSpinner from "../atoms/LoadingSpinner/LoadingSpinner";
+import React from 'react';
+import { PriceCard } from '../organisms/PriceCard';
+import { priceData } from '../../dataconfig';
+import useGetPackages from 'src/react-query/Packages/useGetPackages';
+import LoadingSpinner from '../atoms/LoadingSpinner/LoadingSpinner';
 
 export const Pricing = () => {
   // const { data, isLoading, isError } = useGetPackages('ACS');

@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
@@ -10,7 +10,10 @@ function Footer() {
             <h6>Company Information</h6>
             <hr />
             <p className="text-white">
-            Anddhen is a conglomerate specializing in consulting, trading, travel, marketing, philanthropy, and software services. We provide top-notch consultancy and implementation expertise to enhance the value of your business.
+              Anddhen is a conglomerate specializing in consulting, trading,
+              travel, marketing, philanthropy, and software services. We provide
+              top-notch consultancy and implementation expertise to enhance the
+              value of your business.
             </p>
             <div className="socials">
               <a href="/">
@@ -54,7 +57,8 @@ function Footer() {
             <hr />
             <div>
               <p className="text-white mb-1">
-                <i className="bi bi-geo-alt-fill me-3"></i>Jaggaiahpet, Andhra Pradesh, India
+                <i className="bi bi-geo-alt-fill me-3"></i>Jaggaiahpet, Andhra
+                Pradesh, India
               </p>
             </div>
             <div>
@@ -64,7 +68,8 @@ function Footer() {
             </div>
             <div>
               <p className="text-white mb-1">
-                <i className="bi bi-envelope me-3"></i>anddhenconsulting@gmail.com
+                <i className="bi bi-envelope me-3"></i>
+                anddhenconsulting@gmail.com
               </p>
             </div>
             {/* <div>

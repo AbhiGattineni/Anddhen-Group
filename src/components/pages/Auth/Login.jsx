@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import LoginForm from "./LoginForm";
-import useUnifiedAuth from "src/hooks/useUnifiedAuth";
-import Toast from "src/components/organisms/Toast";
-import useErrorHandling from "src/hooks/useErrorHandling";
-import useAuthStore from "src/services/store/globalStore";
-import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import LoginForm from './LoginForm';
+import useUnifiedAuth from 'src/hooks/useUnifiedAuth';
+import Toast from 'src/components/organisms/Toast';
+import useErrorHandling from 'src/hooks/useErrorHandling';
+import useAuthStore from 'src/services/store/globalStore';
+import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 
 export const Login = () => {
   const { onGoogleSignIn, onFacebookSignIn, onEmailPasswordSignIn } =
@@ -19,7 +19,7 @@ export const Login = () => {
 
   const handleSignIn = async (signInMethod) => {
     const result = await signInMethod();
-    console.log("result : ",result)
+    console.log('result : ', result);
     if (result && !result.success) {
       setError(result.error); // Set the raw error for processing
     } else {
@@ -42,7 +42,7 @@ export const Login = () => {
           <div className="container">
             <div
               className="card shadow-lg rounded p-4 mx-auto"
-              style={{ maxWidth: "600px" }}
+              style={{ maxWidth: '600px' }}
             >
               <div className="text-center mb-4">
                 <h2>Sign In</h2>
@@ -53,8 +53,8 @@ export const Login = () => {
                   <i
                     className="bi bi-google fs-4 cursor-pointer"
                     onClick={handleGoogleSignIn}
-                    style={{ transition: "transform 0.2s", color: "#4285F4" }}
-                    ></i>
+                    style={{ transition: 'transform 0.2s', color: '#4285F4' }}
+                  ></i>
                   {/* <i
                     className="bi bi-facebook fs-4"
                     onClick={handleFacebookSignIn}
@@ -87,15 +87,15 @@ export const Login = () => {
                 <div
                   style={{
                     flexGrow: 1,
-                    height: "1px",
-                    backgroundColor: "#d3d3d3",
+                    height: '1px',
+                    backgroundColor: '#d3d3d3',
                   }}
                 ></div>
                 <span
                   className="px-2"
                   style={{
-                    backgroundColor: "#fff",
-                    position: "relative",
+                    backgroundColor: '#fff',
+                    position: 'relative',
                     zIndex: 1,
                   }}
                 >
@@ -104,8 +104,8 @@ export const Login = () => {
                 <div
                   style={{
                     flexGrow: 1,
-                    height: "1px",
-                    backgroundColor: "#d3d3d3",
+                    height: '1px',
+                    backgroundColor: '#d3d3d3',
                   }}
                 ></div>
               </div>

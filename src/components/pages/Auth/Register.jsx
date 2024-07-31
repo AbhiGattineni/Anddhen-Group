@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import Toast from "../../organisms/Toast";
-import InputField from "../../organisms/InputField";
-import { Link } from "react-router-dom";
-import useUnifiedAuth from "src/hooks/useUnifiedAuth";
-import useErrorHandling from "src/hooks/useErrorHandling";
-import useAuthStore from "src/services/store/globalStore";
+import React, { useState } from 'react';
+import Toast from '../../organisms/Toast';
+import InputField from '../../organisms/InputField';
+import { Link } from 'react-router-dom';
+import useUnifiedAuth from 'src/hooks/useUnifiedAuth';
+import useErrorHandling from 'src/hooks/useErrorHandling';
+import useAuthStore from 'src/services/store/globalStore';
 
 export const Register = () => {
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    confirmpassword: "",
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    confirmpassword: '',
   });
   // const [loading, setLoading] = useState(false);
   const loading = useAuthStore((state) => state.loading);
@@ -36,8 +36,16 @@ export const Register = () => {
   };
 
   const isFormValid = () => {
-    const requiredFields = (({ first_name, email, password, confirmpassword }) => ({
-      first_name, email, password, confirmpassword
+    const requiredFields = (({
+      first_name,
+      email,
+      password,
+      confirmpassword,
+    }) => ({
+      first_name,
+      email,
+      password,
+      confirmpassword,
     }))(formData);
 
     const requiredFieldsFilled = Object.values(requiredFields).every(Boolean);
@@ -47,7 +55,7 @@ export const Register = () => {
 
   const handleSignUp = async (signUpMethod, ...args) => {
     const result = await signUpMethod(...args);
-    console.log("result : ", result);
+    console.log('result : ', result);
     if (result && !result.success) {
       setError(result.error); // Use setError for dynamic error handling
     } else {
@@ -57,7 +65,9 @@ export const Register = () => {
 
   // Wrapper functions for sign-up methods
   const handleEmailPasswordSignUp = (email, password, first_name, last_name) =>
-    handleSignUp(() => onEmailPasswordUserCreation(email, password, first_name, last_name));
+    handleSignUp(() =>
+      onEmailPasswordUserCreation(email, password, first_name, last_name)
+    );
 
   const handleGoogleSignIn = () => handleSignUp(onGoogleSignIn);
   const handleFacebookSignIn = () => handleSignUp(onFacebookSignIn);
@@ -65,13 +75,18 @@ export const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid()) return;
-    handleEmailPasswordSignUp(formData.email, formData.password, formData.first_name, formData.last_name);
+    handleEmailPasswordSignUp(
+      formData.email,
+      formData.password,
+      formData.first_name,
+      formData.last_name
+    );
   };
   return (
     <div className="bg-light min-vh-100 d-flex justify-content-center align-items-center user-select-none">
       <div
         className="bg-white rounded shadow p-4"
-        style={{ maxWidth: "800px", width: "100%" }}
+        style={{ maxWidth: '800px', width: '100%' }}
       >
         <div className="row g-0">
           <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center">
@@ -124,17 +139,17 @@ export const Register = () => {
                   placeholder="First Name"
                   type="text"
                   value={formData.first_name}
-                  onChange={(e) => handleChange("first_name", e.target.value)}
-                  setError={(error) => handleFieldError("first_name", error)}
-                  />
+                  onChange={(e) => handleChange('first_name', e.target.value)}
+                  setError={(error) => handleFieldError('first_name', error)}
+                />
                 <InputField
                   name="last_name"
                   label="Last Name"
                   placeholder="Last Name"
                   type="text"
                   value={formData.last_name}
-                  onChange={(e) => handleChange("last_name", e.target.value)}
-                  setError={(error) => handleFieldError("last_name", error)}
+                  onChange={(e) => handleChange('last_name', e.target.value)}
+                  setError={(error) => handleFieldError('last_name', error)}
                   notRequired={true}
                 />
                 <InputField
@@ -143,27 +158,27 @@ export const Register = () => {
                   placeholder="Enter valid email address"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  setError={(error) => handleFieldError("email", error)}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                  setError={(error) => handleFieldError('email', error)}
                 />
                 <div className="position-relative">
                   <InputField
                     name="password"
                     label="Password"
                     placeholder="Enter password"
-                    type={showPassword1 ? "text" : "password"}
+                    type={showPassword1 ? 'text' : 'password'}
                     value={formData.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
+                    onChange={(e) => handleChange('password', e.target.value)}
                     onFocus={() => setFocus(true)}
-                    setError={(error) => handleFieldError("password", error)}
+                    setError={(error) => handleFieldError('password', error)}
                   />
                   {focus && formData.password.length ? (
                     <i
                       onClick={() => setShowPassword1(!showPassword1)}
                       className={`bi ${
-                        showPassword1 ? "bi-eye-slash-fill" : "bi-eye-fill"
+                        showPassword1 ? 'bi-eye-slash-fill' : 'bi-eye-fill'
                       } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
-                      style={{ top: "35px" }}
+                      style={{ top: '35px' }}
                     ></i>
                   ) : null}
                 </div>
@@ -172,14 +187,14 @@ export const Register = () => {
                     name="confirmpassword"
                     label="Confirm Password"
                     placeholder="Enter password"
-                    type={showPassword2 ? "text" : "password"}
+                    type={showPassword2 ? 'text' : 'password'}
                     value={formData.confirmpassword}
                     onChange={(e) =>
-                      handleChange("confirmpassword", e.target.value)
+                      handleChange('confirmpassword', e.target.value)
                     }
                     onFocus={() => setFocus(true)}
                     setError={(error) =>
-                      handleFieldError("confirmpassword", error)
+                      handleFieldError('confirmpassword', error)
                     }
                     data={formData.password}
                   />
@@ -187,9 +202,9 @@ export const Register = () => {
                     <i
                       onClick={() => setShowPassword2(!showPassword2)}
                       className={`bi ${
-                        showPassword2 ? "bi-eye-slash-fill" : "bi-eye-fill"
+                        showPassword2 ? 'bi-eye-slash-fill' : 'bi-eye-fill'
                       } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
-                      style={{ top: "35px" }}
+                      style={{ top: '35px' }}
                     ></i>
                   ) : null}
                 </div>
@@ -199,7 +214,7 @@ export const Register = () => {
                     className="btn btn-warning shadow w-100 mt-2"
                     disabled={!isFormValid()}
                   >
-                    {loading ? "loading..." : "Submit"}
+                    {loading ? 'loading...' : 'Submit'}
                   </button>
                 </div>
               </form>

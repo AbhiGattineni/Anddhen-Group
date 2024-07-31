@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { adminPlates } from "../../dataconfig";
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { adminPlates } from '../../dataconfig';
 
 const SuperAdmin = () => {
   useEffect(() => {
-    console.log("SuperAdmin");
+    console.log('SuperAdmin');
   }, []);
   return (
     <div className="row">
-      {adminPlates.map((data) => ( 
+      {adminPlates.map((data) => (
         <div className="col-md-6 my-3">
           <Link to={data.route} className="text-decoration-none">
             <div className="card shadow">

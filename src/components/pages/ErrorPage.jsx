@@ -1,6 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
-const ErrorPage = ({ errorCode = '404', title = 'Oops! Page not found.', message = 'The page you’re looking for doesn’t exist.' }) => {
+const ErrorPage = ({
+  errorCode = '404',
+  title = 'Oops! Page not found.',
+  message = 'The page you’re looking for doesn’t exist.',
+}) => {
   const navigate = useNavigate();
 
   const goBack = () => {

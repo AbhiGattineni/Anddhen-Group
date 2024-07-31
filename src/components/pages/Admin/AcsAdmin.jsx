@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { sheetNames } from "../../../dataconfig";
-import { StatusCalendar } from "../../templates/StatusCalender";
-import { logout } from "../../../services/Authentication/Logout";
+import React, { useState, useEffect } from 'react';
+import { sheetNames } from '../../../dataconfig';
+import { StatusCalendar } from '../../templates/StatusCalender';
+import { logout } from '../../../services/Authentication/Logout';
 
 export const AcsAdmin = () => {
   const [headers, setHeaders] = useState([]);
@@ -14,20 +14,20 @@ export const AcsAdmin = () => {
   const [empName, setEmpName] = useState(null);
   const [sortConfig, setSortConfig] = useState({
     key: null,
-    direction: "ascending",
+    direction: 'ascending',
   });
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [showCalendar, setShowCalendar] = useState(false);
 
   function handleTab(details) {
     if (
-      sheetName === "Manager Status" ||
-      sheetName === "Part Timer Status" ||
-      sheetName === "Intern Status"
+      sheetName === 'Manager Status' ||
+      sheetName === 'Part Timer Status' ||
+      sheetName === 'Intern Status'
     ) {
       let emp = [];
-      emp.push("All");
+      emp.push('All');
       for (let i = 1; i < details.length; i++) {
         emp.push(details[i][1]); // Assuming that the name is in the second column
       }
@@ -42,14 +42,14 @@ export const AcsAdmin = () => {
     }
   }
   const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbxZ-hHTGjg8RWzqAcYk5nBXIdfQxLqYY78mcJotWU5XAMnQ_uBZyhZ3QVeQYJZ33VE4HQ/exec";
+    'https://script.google.com/macros/s/AKfycbxZ-hHTGjg8RWzqAcYk5nBXIdfQxLqYY78mcJotWU5XAMnQ_uBZyhZ3QVeQYJZ33VE4HQ/exec';
 
   useEffect(() => {
     setLoading(true);
     fetch(`${GOOGLE_SCRIPT_URL}?sheetName=${encodeURIComponent(sheetName)}`)
       .then((response) => response.json())
       .then((result) => {
-        if (result.status === "success") {
+        if (result.status === 'success') {
           // Separate the headers from the data
           setHeaders(result.data[0]);
           setData(result.data.slice(1));
@@ -66,42 +66,42 @@ export const AcsAdmin = () => {
   }, [sheetName]);
 
   useEffect(() => {
-    fetch("http://35.172.219.206:8000/person/2/")
+    fetch('http://35.172.219.206:8000/person/2/')
       .then((res) => {
         if (res.ok) {
           return res.json(); // This returns a promise that resolves with the parsed JSON
         }
-        throw new Error("Network response was not ok.");
+        throw new Error('Network response was not ok.');
       })
       .then((data) => {
-        console.log("Data:", data); // This logs the actual JSON data
+        console.log('Data:', data); // This logs the actual JSON data
       })
-      .catch((e) => console.log("Error fetching data:", e));
+      .catch((e) => console.log('Error fetching data:', e));
   }, []);
 
   useEffect(() => {
-    fetch("https://server.anddhengroup.com/person/2/")
+    fetch('https://server.anddhengroup.com/person/2/')
       .then((res) => {
         if (res.ok) {
           return res.json(); // This returns a promise that resolves with the parsed JSON
         }
-        throw new Error("Network response was not ok.");
+        throw new Error('Network response was not ok.');
       })
       .then((data) => {
-        console.log("Data:", data); // This logs the actual JSON data
+        console.log('Data:', data); // This logs the actual JSON data
       })
-      .catch((e) => console.log("Error fetching data:", e));
+      .catch((e) => console.log('Error fetching data:', e));
   }, []);
 
   const sortData = (sortKey) => {
     setSortConfig((currentSortConfig) => {
       if (
         currentSortConfig.key === sortKey &&
-        currentSortConfig.direction === "ascending"
+        currentSortConfig.direction === 'ascending'
       ) {
-        return { key: sortKey, direction: "descending" };
+        return { key: sortKey, direction: 'descending' };
       }
-      return { key: sortKey, direction: "ascending" };
+      return { key: sortKey, direction: 'ascending' };
     });
   };
 
@@ -110,10 +110,10 @@ export const AcsAdmin = () => {
       setData((data) =>
         [...data].sort((a, b) => {
           if (a[sortConfig.key] < b[sortConfig.key]) {
-            return sortConfig.direction === "ascending" ? -1 : 1;
+            return sortConfig.direction === 'ascending' ? -1 : 1;
           }
           if (a[sortConfig.key] > b[sortConfig.key]) {
-            return sortConfig.direction === "ascending" ? 1 : -1;
+            return sortConfig.direction === 'ascending' ? 1 : -1;
           }
           return 0;
         })
@@ -124,7 +124,7 @@ export const AcsAdmin = () => {
   const getFilteredData = () => {
     let filteredData = data;
 
-    if (empName && empName !== "All") {
+    if (empName && empName !== 'All') {
       filteredData = filteredData.filter((row) => row.includes(empName));
     }
 
@@ -140,8 +140,8 @@ export const AcsAdmin = () => {
   };
   const toggleCalendar = () => {
     if (
-      sheetName !== "Part Timers Registrations" &&
-      sheetName !== "Student Registration"
+      sheetName !== 'Part Timers Registrations' &&
+      sheetName !== 'Student Registration'
     ) {
       setShowCalendar(!showCalendar);
     }
@@ -149,10 +149,10 @@ export const AcsAdmin = () => {
   const handleLogout = () => {
     logout()
       .then(() => {
-        console.log("logout success");
+        console.log('logout success');
       })
       .catch((error) => {
-        console.log("logout fail");
+        console.log('logout fail');
       });
   };
   return (
@@ -160,7 +160,7 @@ export const AcsAdmin = () => {
       {loading ? (
         <div
           className="d-flex justify-content-center align-items-center"
-          style={{ height: "90vh" }}
+          style={{ height: '90vh' }}
         >
           <div className="spinner-border" role="status">
             <span className="visually-hidden"></span>
@@ -203,7 +203,7 @@ export const AcsAdmin = () => {
                       aria-expanded="false"
                       disabled={!data.length}
                     >
-                      {empName ? empName : "Name"}
+                      {empName ? empName : 'Name'}
                     </button>
                     {data.length ? (
                       <ul className="dropdown-menu">
@@ -235,7 +235,7 @@ export const AcsAdmin = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  {empName && empName != "All" ? (
+                  {empName && empName != 'All' ? (
                     <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
                       <input
                         className="form-check-input"
@@ -267,9 +267,9 @@ export const AcsAdmin = () => {
                     <th key={index} onClick={() => sortData(index)}>
                       {header}
                       {sortConfig.key === index
-                        ? sortConfig.direction === "ascending"
-                          ? " 🔼"
-                          : " 🔽"
+                        ? sortConfig.direction === 'ascending'
+                          ? ' 🔼'
+                          : ' 🔽'
                         : null}
                     </th>
                   ))}
@@ -283,9 +283,9 @@ export const AcsAdmin = () => {
                       <tr key={rowIndex}>
                         {row.map((cell, cellIndex) => (
                           <td key={cellIndex}>
-                            {(sheetName === "Manager Status" ||
-                              sheetName === "Part Timer Status" ||
-                              sheetName === "Intern Status") &&
+                            {(sheetName === 'Manager Status' ||
+                              sheetName === 'Part Timer Status' ||
+                              sheetName === 'Intern Status') &&
                             cellIndex == 0
                               ? new Date(cell).toLocaleDateString()
                               : cell}

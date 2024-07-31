@@ -1,5 +1,5 @@
-import React from "react";
-import { videoLinks } from "../../dataconfig";
+import React from 'react';
+import { videoLinks } from '../../dataconfig';
 
 export const Videos = () => {
   return (
@@ -9,7 +9,7 @@ export const Videos = () => {
         <div className="underline mx-auto"></div>
       </div>
       <div className="row">
-        {videoLinks.map((videoData,index) => (
+        {videoLinks.map((videoData, index) => (
           <div key={index} className="col-12 col-lg-4 col-md-6 p-2">
             <div className="card h-100">
               <div className="ratio ratio-16x9">

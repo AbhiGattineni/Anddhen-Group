@@ -1,7 +1,7 @@
-import React from "react";
-import { Card } from "../organisms/Card";
-import { myworks } from "../../dataconfig";
-import { AssProjectModal } from "./Modal/AssProjectModal";
+import React from 'react';
+import { Card } from '../organisms/Card';
+import { myworks } from '../../dataconfig';
+import { AssProjectModal } from './Modal/AssProjectModal';
 
 const Myworks = (props) => {
   return (

@@ -1,10 +1,10 @@
-import React from "react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
-import resgistration1 from "../../images/resgistration1.png";
-import resgistration2 from "../../images/registration2.png";
-import { Link } from "react-router-dom";
-import { acsCards } from "../../../dataconfig";
+import React from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import resgistration1 from '../../images/resgistration1.png';
+import resgistration2 from '../../images/registration2.png';
+import { Link } from 'react-router-dom';
+import { acsCards } from '../../../dataconfig';
 
 export const Acs = () => {
   return (
@@ -73,12 +73,25 @@ export const Acs = () => {
         <p style={{ marginBottom: 0 }}>
           <i className="bi bi-telephone-fill me-3"></i>+91 9110736115
         </p>
-        <a href="https://wa.me/919110736115" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <i className="bi bi-whatsapp" style={{ fontSize: '18px', color: 'green', marginRight: "8px" }}></i>
-          <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>+91 9110736115</span>
+        <a
+          href="https://wa.me/919110736115"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+          }}
+        >
+          <i
+            className="bi bi-whatsapp"
+            style={{ fontSize: '18px', color: 'green', marginRight: '8px' }}
+          ></i>
+          <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+            +91 9110736115
+          </span>
         </a>
       </div>
-
     </div>
   );
 };

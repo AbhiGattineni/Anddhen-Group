@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import AddConsultantForm from "./AddConsultantForm";
-import ViewConsultants from "./ViewConsultants";
-import "bootstrap/dist/css/bootstrap.min.css"; // Make sure to import Bootstrap CSS
+import React, { useState } from 'react';
+import AddConsultantForm from './AddConsultantForm';
+import ViewConsultants from './ViewConsultants';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure to import Bootstrap CSS
 
 const Consultants = () => {
-  const [activeView, setActiveView] = useState("add");
+  const [activeView, setActiveView] = useState('add');
 
   const getNavLinkClass = (path) => {
-    return activeView === path ? "nav-link active" : "nav-link";
+    return activeView === path ? 'nav-link active' : 'nav-link';
   };
 
   return (
@@ -31,18 +31,18 @@ const Consultants = () => {
           <ul className="navbar-nav ml-auto">
             <li className="nav-item">
               <a
-                className={getNavLinkClass("add")}
+                className={getNavLinkClass('add')}
                 href="#"
-                onClick={() => setActiveView("add")}
+                onClick={() => setActiveView('add')}
               >
                 <i className="bi bi-plus-circle-fill"></i> Add Consultant
               </a>
             </li>
             <li className="nav-item">
               <a
-                className={getNavLinkClass("view")}
+                className={getNavLinkClass('view')}
                 href="#"
-                onClick={() => setActiveView("view")}
+                onClick={() => setActiveView('view')}
               >
                 <i className="bi bi-card-list"></i> View Consultants
               </a>
@@ -51,8 +51,8 @@ const Consultants = () => {
         </div>
       </nav>
 
-      {activeView === "add" && <AddConsultantForm />}
-      {activeView === "view" && <ViewConsultants />}
+      {activeView === 'add' && <AddConsultantForm />}
+      {activeView === 'view' && <ViewConsultants />}
     </div>
   );
 };

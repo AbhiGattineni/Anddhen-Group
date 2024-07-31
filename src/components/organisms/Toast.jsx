@@ -1,13 +1,19 @@
-import React from "react";
+import React from 'react';
 
 const Toast = ({ show, onClose, color, message }) => {
   return (
     <div
-      className={`toast ${show ? "show" : ""} .bg-body-secondary`}
+      className={`toast ${show ? 'show' : ''} .bg-body-secondary`}
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-      style={{ position: "fixed", left: "10px", bottom: "10px", zIndex: 1050, backgroundColor: color ? color : undefined }}
+      style={{
+        position: 'fixed',
+        left: '10px',
+        bottom: '10px',
+        zIndex: 1050,
+        backgroundColor: color ? color : undefined,
+      }}
     >
       <div className="toast-body d-flex justify-content-between fw-bold">
         {message}

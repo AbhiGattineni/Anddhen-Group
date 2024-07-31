@@ -1,6 +1,6 @@
-import React from "react";
-import RoleAccess from "./RoleAccess";
-import AssignRole from "./AssignRole";
+import React from 'react';
+import RoleAccess from './RoleAccess';
+import AssignRole from './AssignRole';
 
 const RolesAndAccess = () => {
   return (

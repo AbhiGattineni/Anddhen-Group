@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const SearchableTable = ({ data, searchTerm, setSearchTerm, renderRow }) => {
   const filteredData = data.filter((item) =>

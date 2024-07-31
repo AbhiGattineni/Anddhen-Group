@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import Services from "../../organisms/Services";
-import Myworks from "../../organisms/Myworks";
-import Cards from "../../organisms/Cards";
-import { AssProjectModal } from "src/components/organisms/Modal/AssProjectModal";
-import { AssTeamModal } from "src/components/organisms/Modal/AssTeamModel";
-import useAuthStore from "src/services/store/globalStore";
+import React, { useState } from 'react';
+import Services from '../../organisms/Services';
+import Myworks from '../../organisms/Myworks';
+import Cards from '../../organisms/Cards';
+import { AssProjectModal } from 'src/components/organisms/Modal/AssProjectModal';
+import { AssTeamModal } from 'src/components/organisms/Modal/AssTeamModel';
+import useAuthStore from 'src/services/store/globalStore';
 
 export const Ass = () => {
   return (

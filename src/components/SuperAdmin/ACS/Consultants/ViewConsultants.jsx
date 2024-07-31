@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import ConsultantCard from "../../../organisms/Card/ConsultantCard";
-import ConsultantDetailsModal from "../../../organisms/Modal/ConsultantDetailsModal";
+import React, { useState, useEffect } from 'react';
+import ConsultantCard from '../../../organisms/Card/ConsultantCard';
+import ConsultantDetailsModal from '../../../organisms/Modal/ConsultantDetailsModal';
 
 function ViewConsultants() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({});
   const [consultants, setConsultants] = useState([]);
@@ -26,7 +26,7 @@ function ViewConsultants() {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching data: ", error);
+        console.error('Error fetching data: ', error);
         setIsLoading(false);
       });
   };
@@ -39,7 +39,7 @@ function ViewConsultants() {
 
   const applyFilters = (consultant) => {
     return Object.keys(filters).every((key) => {
-      if (filters[key] === "") return true;
+      if (filters[key] === '') return true;
       return consultant[key] === filters[key];
     });
   };
@@ -50,25 +50,25 @@ function ViewConsultants() {
   };
   const handleDeleteConsultant = (consultantId) => {
     fetch(`${API_BASE_URL}/consultants/delete/${consultantId}/`, {
-      method: "DELETE",
+      method: 'DELETE',
     })
       .then((response) => {
         if (response.ok) {
-          console.log("Consultant deleted successfully");
+          console.log('Consultant deleted successfully');
           fetchConsultants();
         } else {
-          console.error("Failed to delete consultant");
+          console.error('Failed to delete consultant');
         }
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error('Error:', error);
       });
   };
 
   const handleSaveChanges = (updatedConsultant) => {
     fetch(`${API_BASE_URL}/api/consultants/${updatedConsultant.id}/`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedConsultant),
     })
       .then((response) => response.json())
@@ -77,7 +77,7 @@ function ViewConsultants() {
         fetchConsultants();
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error('Error:', error);
       });
   };
 
@@ -108,7 +108,7 @@ function ViewConsultants() {
               <select
                 className="form-select"
                 onChange={(e) =>
-                  handleFilterChange("visa_status", e.target.value)
+                  handleFilterChange('visa_status', e.target.value)
                 }
               >
                 <option value="">All</option>
@@ -122,7 +122,7 @@ function ViewConsultants() {
               <select
                 className="form-select"
                 onChange={(e) =>
-                  handleFilterChange("full_name_verified", e.target.value)
+                  handleFilterChange('full_name_verified', e.target.value)
                 }
               >
                 <option value="">All</option>
@@ -135,7 +135,7 @@ function ViewConsultants() {
               <select
                 className="form-select"
                 onChange={(e) =>
-                  handleFilterChange("relocation", e.target.value)
+                  handleFilterChange('relocation', e.target.value)
                 }
               >
                 <option value="">All</option>
@@ -150,7 +150,7 @@ function ViewConsultants() {
                 className="form-control"
                 placeholder="Experience in US"
                 onChange={(e) =>
-                  handleFilterChange("experience_in_us", e.target.value)
+                  handleFilterChange('experience_in_us', e.target.value)
                 }
               />
             </div>
@@ -161,7 +161,7 @@ function ViewConsultants() {
                 className="form-control"
                 placeholder="Current Location"
                 onChange={(e) =>
-                  handleFilterChange("current_location", e.target.value)
+                  handleFilterChange('current_location', e.target.value)
                 }
               />
             </div>
@@ -172,7 +172,7 @@ function ViewConsultants() {
       {isLoading ? (
         <div
           className="d-flex justify-content-center align-items-center"
-          style={{ minHeight: "200px" }}
+          style={{ minHeight: '200px' }}
         >
           <div className="d-flex align-items-center">
             <div className="spinner-border text-primary" role="status">

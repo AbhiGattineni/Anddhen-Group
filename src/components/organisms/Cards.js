@@ -1,8 +1,8 @@
-import React from "react";
-import "./Card.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import { details } from "../../dataconfig";
-import useAuthStore from "src/services/store/globalStore";
+import React from 'react';
+import './Card.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import { details } from '../../dataconfig';
+import useAuthStore from 'src/services/store/globalStore';
 
 const Cards = () => {
   function handleClick(details) {
@@ -20,7 +20,10 @@ const Cards = () => {
           <div className="border rounded row">
             {details.map((detail) => (
               <div className="col-lg-3 col-md-4 col-sm-6 mb-5">
-                <div className="card shadow mt-2 p-1 border border-1 cursor-pointer" onClick={() => handleClick(detail)}>
+                <div
+                  className="card shadow mt-2 p-1 border border-1 cursor-pointer"
+                  onClick={() => handleClick(detail)}
+                >
                   <div className="image">
                     <img src={detail.Photo} alt="" />
                   </div>

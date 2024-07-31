@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import AddRoleModal from "./AddRoleModal";
-import Button from "../../atoms/Button/Button";
+import React, { useState, useEffect } from 'react';
+import AddRoleModal from './AddRoleModal';
+import Button from '../../atoms/Button/Button';
 
 const RoleAccess = () => {
   const [roles, setRoles] = useState([]);
   const [editingRole, setEditingRole] = useState({
     id: null,
-    name_of_role: "",
-    admin_access_role: "",
+    name_of_role: '',
+    admin_access_role: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -22,12 +22,12 @@ const RoleAccess = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/roles/all/`);
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
       const data = await response.json();
       setRoles(data);
     } catch (error) {
-      console.error("Error fetching roles:", error);
+      console.error('Error fetching roles:', error);
     } finally {
       setIsLoading(false);
     }
@@ -53,9 +53,9 @@ const RoleAccess = () => {
   const handleAddRole = async (roleName, accessRole) => {
     try {
       const response = await fetch(`${API_BASE_URL}/roles/add/`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name_of_role: roleName,
@@ -63,21 +63,21 @@ const RoleAccess = () => {
         }),
       });
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
       setShowModal(false);
       fetchRoles(); // Refetch roles after adding
     } catch (error) {
-      console.error("Error adding role:", error);
+      console.error('Error adding role:', error);
     }
   };
 
   const handleUpdateRole = async (id, roleName, accessRole) => {
     try {
       const response = await fetch(`${API_BASE_URL}/roles/update/${id}/`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name_of_role: roleName, // Use the roleName parameter
@@ -85,38 +85,38 @@ const RoleAccess = () => {
         }),
       });
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
       // You may also want to reset the editingRole state here if necessary
-      setEditingRole({ id: null, name_of_role: "", admin_access_role: "" });
+      setEditingRole({ id: null, name_of_role: '', admin_access_role: '' });
       fetchRoles(); // Refetch roles after updating
     } catch (error) {
-      console.error("Error updating role:", error);
+      console.error('Error updating role:', error);
     }
   };
 
   const handleDeleteRole = async (roleId) => {
-    if (window.confirm("Are you sure you want to delete this role?")) {
+    if (window.confirm('Are you sure you want to delete this role?')) {
       try {
         const response = await fetch(
           `${API_BASE_URL}/roles/delete/${roleId}/`,
           {
-            method: "DELETE",
+            method: 'DELETE',
           }
         );
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
         fetchRoles(); // Refetch roles after deleting
       } catch (error) {
-        console.error("Error deleting role:", error);
+        console.error('Error deleting role:', error);
       }
     }
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setEditingRole({ id: null, name: "", admin_access_role: "" }); // Reset editing role
+    setEditingRole({ id: null, name: '', admin_access_role: '' }); // Reset editing role
   };
 
   return (

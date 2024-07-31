@@ -1,27 +1,27 @@
-import React from "react";
-import { useQuery } from "react-query";
-import axios from "axios";
+import React from 'react';
+import { useQuery } from 'react-query';
+import axios from 'axios';
 import {
   useTable,
   usePagination,
   useExpanded,
   useGlobalFilter,
-} from "react-table";
+} from 'react-table';
 
 const fetchColleges = async () => {
-  const { data } = await axios.get("http://127.0.0.1:8000/colleges/all/");
+  const { data } = await axios.get('http://127.0.0.1:8000/colleges/all/');
   return data;
 };
 
 const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
   <span>
-    Search:{" "}
+    Search:{' '}
     <input
-      value={globalFilter || ""}
+      value={globalFilter || ''}
       onChange={(e) => setGlobalFilter(e.target.value)}
       className="form-control"
       placeholder="search college . . ."
-      style={{ display: "inline", width: "auto", marginLeft: "10px" }}
+      style={{ display: 'inline', width: 'auto', marginLeft: '10px' }}
     />
   </span>
 );
@@ -60,7 +60,7 @@ const Table = ({ columns, data }) => {
           setGlobalFilter={setGlobalFilter}
         />
         <div>
-          Page{" "}
+          Page{' '}
           <strong>
             {pageIndex + 1} of {pageOptions.length}
           </strong>
@@ -84,11 +84,8 @@ const Table = ({ columns, data }) => {
                 <tr {...row.getRowProps()}>
                   <div className="p-4 w-100 d-flex align-item-center justify-content-between border rounded bg-grey mt-2">
                     {row.cells.map((cell) => (
-                      <td
-                        className="fw-bold"
-                        {...cell.getCellProps()}
-                      >
-                        {cell.render("Cell")}
+                      <td className="fw-bold" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
                       </td>
                     ))}
                   </div>
@@ -99,10 +96,10 @@ const Table = ({ columns, data }) => {
                       <div
                         className="border bg-light rounded"
                         style={{
-                          maxHeight: "300px",
-                          overflowY: "scroll",
-                          overflowX: "hidden",
-                          padding: "10px",
+                          maxHeight: '300px',
+                          overflowY: 'scroll',
+                          overflowX: 'hidden',
+                          padding: '10px',
                         }}
                       >
                         <div className="row">
@@ -117,13 +114,13 @@ const Table = ({ columns, data }) => {
                                 )
                                 .map(
                                   ([key, value]) =>
-                                    key !== "id" &&
-                                    key !== "college_name" && (
+                                    key !== 'id' &&
+                                    key !== 'college_name' && (
                                       <li key={key} className="list-group-item">
                                         <strong>
-                                          {key.replace(/_/g, " ")}:
-                                        </strong>{" "}
-                                        {value.toString().includes("http") ? (
+                                          {key.replace(/_/g, ' ')}:
+                                        </strong>{' '}
+                                        {value.toString().includes('http') ? (
                                           <a
                                             href={value}
                                             target="_blank"
@@ -149,13 +146,13 @@ const Table = ({ columns, data }) => {
                                 )
                                 .map(
                                   ([key, value]) =>
-                                    key !== "id" &&
-                                    key !== "college_name" && (
+                                    key !== 'id' &&
+                                    key !== 'college_name' && (
                                       <li key={key} className="list-group-item">
                                         <strong>
-                                          {key.replace(/_/g, " ")}:
-                                        </strong>{" "}
-                                        {value.toString().includes("http") ? (
+                                          {key.replace(/_/g, ' ')}:
+                                        </strong>{' '}
+                                        {value.toString().includes('http') ? (
                                           <a
                                             href={value}
                                             target="_blank"
@@ -188,16 +185,16 @@ const Table = ({ columns, data }) => {
           disabled={!canPreviousPage}
         >
           Previous
-        </button>{" "}
+        </button>{' '}
         <button
           className="btn btn-primary"
           onClick={() => nextPage()}
           disabled={!canNextPage}
         >
           Next
-        </button>{" "}
+        </button>{' '}
         <span>
-          Page{" "}
+          Page{' '}
           <strong>
             {pageIndex + 1} of {pageOptions.length}
           </strong>
@@ -208,18 +205,18 @@ const Table = ({ columns, data }) => {
 };
 
 export const ViewColleges = () => {
-  const { data, error, isLoading } = useQuery("colleges", fetchColleges);
+  const { data, error, isLoading } = useQuery('colleges', fetchColleges);
 
   const columns = React.useMemo(
     () => [
       {
-        Header: "College Name",
-        accessor: "college_name",
+        Header: 'College Name',
+        accessor: 'college_name',
       },
       {
         // Add a column for the expandable rows
         Header: () => null,
-        id: "expander",
+        id: 'expander',
         Cell: ({ row }) => (
           <span className="p-1" {...row.getToggleRowExpandedProps()}>
             {row.isExpanded ? (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
   const [isEditable, setIsEditable] = useState(false);
@@ -10,7 +10,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
 
   const handleEditChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
+    if (type === 'checkbox') {
       setEditedConsultant((prevState) => ({ ...prevState, [name]: checked }));
     } else {
       setEditedConsultant((prevState) => ({ ...prevState, [name]: value }));
@@ -26,10 +26,10 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
 
   return (
     <div
-      className={`modal ${show ? "d-block" : ""}`}
+      className={`modal ${show ? 'd-block' : ''}`}
       tabIndex="-1"
       role="dialog"
-      style={{ display: show ? "block" : "none" }}
+      style={{ display: show ? 'block' : 'none' }}
     >
       <div className="modal-dialog" role="document">
         <div className="modal-content">
@@ -309,7 +309,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={1}
                   checked={editedConsultant.full_name_verified === true}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 Yes
                 <input
                   type="radio"
@@ -317,7 +317,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={0}
                   checked={editedConsultant.full_name_verified === false}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 No
               </div>
             </div>
@@ -330,7 +330,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={1}
                   checked={editedConsultant.visa_status_verified === true}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 Yes
                 <input
                   type="radio"
@@ -338,7 +338,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={0}
                   checked={editedConsultant.visa_status_verified === false}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 No
               </div>
             </div>
@@ -351,7 +351,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={1}
                   checked={editedConsultant.visa_validity_verified === true}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 Yes
                 <input
                   type="radio"
@@ -359,7 +359,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={0}
                   checked={editedConsultant.visa_validity_verified === false}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 No
               </div>
             </div>
@@ -372,7 +372,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={1}
                   checked={editedConsultant.relocation === true}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 Yes
                 <input
                   type="radio"
@@ -380,7 +380,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={0}
                   checked={editedConsultant.relocation === false}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 No
               </div>
             </div>
@@ -393,7 +393,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={1}
                   checked={editedConsultant.experience_in_us_verified === true}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 Yes
                 <input
                   type="radio"
@@ -401,7 +401,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={0}
                   checked={editedConsultant.experience_in_us_verified === false}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 No
               </div>
             </div>
@@ -414,7 +414,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={1}
                   checked={editedConsultant.passport_number_verified === true}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 Yes
                 <input
                   type="radio"
@@ -422,7 +422,7 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                   value={0}
                   checked={editedConsultant.passport_number_verified === false}
                   onChange={handleEditChange}
-                />{" "}
+                />{' '}
                 No
               </div>
             </div>

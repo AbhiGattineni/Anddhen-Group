@@ -1,8 +1,8 @@
-import React from "react";
-import Slider from "../organisms/Slider";
-import Vmc from "./inc/Vmc";
-import Company from "../organisms/Company";
-import Subsidiaries from "../organisms/Subsidiaries";
+import React from 'react';
+import Slider from '../organisms/Slider';
+import Vmc from './inc/Vmc';
+import Company from '../organisms/Company';
+import Subsidiaries from '../organisms/Subsidiaries';
 
 function Home() {
   return (

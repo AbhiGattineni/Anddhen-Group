@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import InputField from "../organisms/InputField";
-import Toast from "../organisms/Toast";
-import { useApi } from "../../hooks/useApi";
-import { sendEmail } from "../templates/emailService";
+import React, { useState } from 'react';
+import InputField from '../organisms/InputField';
+import Toast from '../organisms/Toast';
+import { useApi } from '../../hooks/useApi';
+import { sendEmail } from '../templates/emailService';
 
 const StudentRegistrationForm = () => {
   const [showToast, setShowToast] = useState(false);
   const { loading, callApi } = useApi();
 
-  const [name, setname] = useState("");
-  const [email, setemail] = useState("");
-  const [phone, setphone] = useState("");
-  const [college, setcollege] = useState("");
-  const [reference, setreference] = useState("");
-  const [studentJob, setStudentJob] = useState("");
+  const [name, setname] = useState('');
+  const [email, setemail] = useState('');
+  const [phone, setphone] = useState('');
+  const [college, setcollege] = useState('');
+  const [reference, setreference] = useState('');
+  const [studentJob, setStudentJob] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [submissionError, setSubmissionError] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
@@ -32,12 +32,12 @@ const StudentRegistrationForm = () => {
   const disableButton = !allFieldsFilled || hasErrors || loading;
 
   const resetForm = () => {
-    setname("");
-    setemail("");
-    setphone("");
-    setcollege("");
-    setreference("");
-    setStudentJob("");
+    setname('');
+    setemail('');
+    setphone('');
+    setcollege('');
+    setreference('');
+    setStudentJob('');
   };
 
   const handleFieldError = (fieldName, error) => {
@@ -50,30 +50,30 @@ const StudentRegistrationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    formData.append("sheetName", "Student Registration");
+    formData.append('sheetName', 'Student Registration');
 
     if (!allFieldsFilled || hasErrors) {
       return;
     }
     try {
       await callApi(formData);
-      sendEmail("student", {
+      sendEmail('student', {
         name: name,
         email: email,
         phone: phone,
         college: college,
         reference: reference,
-        studentJob: studentJob
-    });    
+        studentJob: studentJob,
+      });
       resetForm();
-      setToastMsg("Data successfully submitted!");
+      setToastMsg('Data successfully submitted!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
-      setToastMsg("Something went wrong!");
+      setToastMsg('Something went wrong!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
   };
 
@@ -96,7 +96,7 @@ const StudentRegistrationForm = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setname(e.target.value)}
-                setError={(error) => handleFieldError("name", error)}
+                setError={(error) => handleFieldError('name', error)}
               />
               <InputField
                 name="email"
@@ -105,7 +105,7 @@ const StudentRegistrationForm = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setemail(e.target.value)}
-                setError={(error) => handleFieldError("email", error)}
+                setError={(error) => handleFieldError('email', error)}
               />
               <InputField
                 name="phone"
@@ -114,7 +114,7 @@ const StudentRegistrationForm = () => {
                 type="tel"
                 value={phone}
                 onChange={(e) => setphone(e.target.value)}
-                setError={(error) => handleFieldError("phone", error)}
+                setError={(error) => handleFieldError('phone', error)}
               />
               <InputField
                 name="college"
@@ -123,7 +123,7 @@ const StudentRegistrationForm = () => {
                 type="text"
                 value={college}
                 onChange={(e) => setcollege(e.target.value)}
-                setError={(error) => handleFieldError("college", error)}
+                setError={(error) => handleFieldError('college', error)}
               />
               <InputField
                 name="reference"
@@ -132,7 +132,7 @@ const StudentRegistrationForm = () => {
                 type="text"
                 value={reference}
                 onChange={(e) => setreference(e.target.value)}
-                setError={(error) => handleFieldError("reference", error)}
+                setError={(error) => handleFieldError('reference', error)}
               />
               <div className="d-md-flex my-3 gap-5">
                 <label className="">Job Type</label>
@@ -141,16 +141,16 @@ const StudentRegistrationForm = () => {
                     type="radio"
                     name="job"
                     value="Internship"
-                    checked={studentJob === "Internship"}
-                    onChange={() => setStudentJob("Internship")}
+                    checked={studentJob === 'Internship'}
+                    onChange={() => setStudentJob('Internship')}
                   />
                   Internship
                   <input
                     type="radio"
                     name="job"
                     value="Full Time"
-                    checked={studentJob === "Full Time"}
-                    onChange={() => setStudentJob("Full Time")}
+                    checked={studentJob === 'Full Time'}
+                    onChange={() => setStudentJob('Full Time')}
                   />
                   Full Time
                 </div>
@@ -161,7 +161,7 @@ const StudentRegistrationForm = () => {
                   className="btn btn-warning shadow w-100"
                   disabled={disableButton}
                 >
-                  {loading ? "loading..." : "Submit"}
+                  {loading ? 'loading...' : 'Submit'}
                 </button>
                 {submissionError && (
                   <p className="text-danger mt-3">{submissionError}</p>
