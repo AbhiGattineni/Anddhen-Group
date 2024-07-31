@@ -44,7 +44,7 @@ export const Aps = () => {
               </p>
               <p className="p-2" style={{ textAlign: 'justify' }}>
                 Now, in her honor, we have established this foundation to
-                continue her life's work, to reach out to those children whose
+                continue her life&rsquo;s work, to reach out to those children
                 dreams are hindered by financial constraints, and to light the
                 path to a brighter future through education. Education is the
                 most powerful tool we can offer to uplift lives and break the
@@ -63,7 +63,7 @@ export const Aps = () => {
                 a brighter tomorrow.
               </p>
               <p className="p-2" style={{ textAlign: 'justify' }}>
-                The impact of <strong>Jaya Lakshmi</strong>'s teachings goes
+                The impact of <strong>Jaya Lakshmi</strong>&rsquo;s teachings
                 beyond the classroom. Her lessons of kindness, resilience, and
                 dedication resonate deeply within me and countless others who
                 had the privilege of knowing her. Through the{' '}
@@ -76,15 +76,13 @@ export const Aps = () => {
                 world where every child has access to the education they
                 deserve, enabling them to rise above their circumstances and
                 thrive. We invite you to join us on this heartfelt journey. Your
-                generosity can change the course of a child's life, offering
+                generosity can change the course of a child&rsquo;s life, giving
                 them hope, possibilities, and a future filled with promise.
               </p>
               <p className="p-2" style={{ textAlign: 'justify' }}>
                 If you feel moved to support our mission or wish to learn more
                 about how you can make a difference, please contact us.
-                Together, we can keep <strong>Jaya Lakshmi</strong>'s legacy
-                alive and create a world where every child's educational
-                aspirations are within reach.
+                Together.
               </p>
               <p className="px-2" style={{ textAlign: 'justify' }}>
                 With heartfelt gratitude,
