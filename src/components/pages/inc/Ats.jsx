@@ -66,8 +66,8 @@ export const Ats = () => {
               everything from the travel route, places to visit, flights, car
               rentals, hotels, restaurants, sightseeing, and timings can be
               overwhelming as a working individual. We understand the hassle and
-              stress involved in organizing a trip, and that's where we come in
-              to help you. Whether it's finding the best flight options, booking
+              stress involved in organizing a trip, and that&rsquo;s where we to
+              to help you. Whether it&rsquo;s finding the best flight options,
               comfortable accommodations, arranging car rentals, or recommending
               top-notch restaurants, we take care of everything. We also provide
               detailed itineraries that include must-see attractions and hidden
