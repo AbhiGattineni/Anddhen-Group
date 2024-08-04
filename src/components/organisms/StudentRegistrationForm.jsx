@@ -15,7 +15,7 @@ const StudentRegistrationForm = () => {
   const [reference, setreference] = useState('');
   const [studentJob, setStudentJob] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const [submissionError, setSubmissionError] = useState(null);
+  const [submissionError] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
 
   const fields = {

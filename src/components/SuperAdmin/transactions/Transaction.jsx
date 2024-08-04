@@ -14,7 +14,6 @@ export const Transaction = () => {
   const [endDate, setEndDate] = useState(null);
   const [filteredTransactions, setFilteredTransactions] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const fetchTransactions = async () => {
@@ -27,7 +26,6 @@ export const Transaction = () => {
 
   const {
     data: transactions = [], // Provide a default value of an empty array
-    error,
     isLoading,
   } = useQuery('transactions', fetchTransactions);
 
@@ -186,12 +184,13 @@ export const Transaction = () => {
         <div className="table-responsive">
           <table {...getTableProps()} className="table table-hover m-0">
             <thead className="thead-dark">
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
+              {headerGroups.map((headerGroup, index) => (
+                <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+                  {headerGroup.headers.map((column, index) => (
                     <th
                       className="bg-info text-white"
                       {...column.getHeaderProps(column.getSortByToggleProps())}
+                      key={index}
                     >
                       {column.render('Header')}
                       <span>
@@ -210,11 +209,11 @@ export const Transaction = () => {
               <p className="p-3 fw-bold">loading...</p>
             ) : (
               <tbody {...getTableBodyProps()}>
-                {page.map((row) => {
+                {page.map((row, index) => {
                   prepareRow(row);
                   return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
+                    <tr {...row.getRowProps()} key={index}>
+                      {row.cells.map((cell, index) => {
                         const columnId = cell.column.id;
                         const isTransactionType =
                           columnId === 'transaction_type';
@@ -229,7 +228,7 @@ export const Transaction = () => {
                               : 'text-danger fw-bold'
                             : '';
                         return (
-                          <td {...cell.getCellProps()}>
+                          <td {...cell.getCellProps()} key={index}>
                             <div
                               className={`${className} text-center p-1 rounded-pill`}
                             >

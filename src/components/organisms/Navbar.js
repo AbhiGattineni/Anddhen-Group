@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { logout } from '../../services/Authentication/Logout';
 import useAuthStore from '../../services/store/globalStore';
+import PropTypes from 'prop-types';
 
 function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -191,5 +192,9 @@ function Navbar(props) {
     </div>
   );
 }
+
+Navbar.propTypes = {
+  logout: PropTypes.bool,
+};
 
 export default Navbar;

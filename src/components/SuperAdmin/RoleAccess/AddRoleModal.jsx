@@ -1,4 +1,6 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const AddRoleModal = ({
   show,
@@ -88,6 +90,17 @@ const AddRoleModal = ({
       </div>
     </div>
   );
+};
+AddRoleModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  editingRole: PropTypes.shape({
+    id: PropTypes.number,
+    name_of_role: PropTypes.string,
+    admin_access_role: PropTypes.string,
+  }),
+  handleEditRole: PropTypes.func,
 };
 
 export default AddRoleModal;

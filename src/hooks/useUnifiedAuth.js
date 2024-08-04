@@ -7,23 +7,14 @@ import {
   createUserWithEmailPassword,
 } from '../services/Authentication/firebase';
 import usePostUserData from '../hooks/usePostUserData';
-import useAuthStore from 'src/services/store/globalStore';
-import { useFetchData } from 'src/react-query/useFetchApis';
 
 const useUnifiedAuth = () => {
   const navigate = useNavigate();
   const { postUserData } = usePostUserData();
 
-  const { loading, setLoading } = useAuthStore();
-  const { data = null, error } = useFetchData(
-    'user',
-    '/api/user_and_role_overview/'
-  );
-
   const handleAuth = async (authPromise, first_name, last_name) => {
     try {
       const usersData = await authPromise;
-      setLoading(true);
       console.log('usersData', usersData.user);
       const userData = await postUserData(
         usersData.user,
@@ -31,7 +22,6 @@ const useUnifiedAuth = () => {
         last_name
       );
       console.log('userData', userData);
-      setLoading(false);
       navigate(sessionStorage.getItem('preLoginPath') || '/');
 
       return null; // Indicates success

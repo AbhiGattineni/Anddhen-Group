@@ -29,7 +29,7 @@ export const EducationConsultant = () => {
     ieltsValue: '',
     tofelValue: '',
   });
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [selectedState, setSelectedState] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: '' });

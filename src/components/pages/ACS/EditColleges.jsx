@@ -12,7 +12,7 @@ export const EditColleges = () => {
   const [selectedCollege, setSelectedCollege] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: '' });
-  const [showButton, setShowButton] = useState(true);
+  const [showButton] = useState(true);
   const navigate = useNavigate();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {

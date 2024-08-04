@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import InputField from './InputField';
 import Toast from '../organisms/Toast';
-import { useApi } from '../../hooks/useApi';
-import Button from '../atoms/Button/Button';
-import { useSubmitPartTimer } from '../../react-query/useSubmitPartTimer';
-import { auth } from 'src/services/Authentication/firebase';
-import { Navigate } from 'react-router-dom';
-import useAuthStore from '../../services/store/globalStore';
 import { sendEmail } from '../templates/emailService';
 
 export const PartTimerRegistrationForm = () => {
@@ -23,18 +17,9 @@ export const PartTimerRegistrationForm = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
-  const fields = {
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    current_occupation: '',
-    studyYear: '',
-    course_name: '',
-    reference: '',
-  };
+
   useEffect(() => {
     // Check if all required fields are filled
     const allFieldsFilled = Object.entries(formData).every(([key, value]) => {
@@ -52,10 +37,6 @@ export const PartTimerRegistrationForm = () => {
     // Update disableButton state
     setDisableButton(!allFieldsFilled || hasErrors);
   }, [formData, fieldErrors]);
-
-  const setParttimer_consent = useAuthStore(
-    (state) => state.setParttimer_consent
-  );
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

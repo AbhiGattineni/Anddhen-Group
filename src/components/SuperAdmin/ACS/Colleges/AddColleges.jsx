@@ -1,10 +1,8 @@
-import { isDisabled } from '@testing-library/user-event/dist/utils';
 import React, { useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useQueryClient } from 'react-query';
 import InputField from 'src/components/organisms/InputField';
 import { Search } from 'src/components/organisms/Search';
 import Toast from 'src/components/organisms/Toast';
-import { usStates } from 'src/dataconfig';
 import { useUpdateData } from 'src/react-query/useFetchApis';
 import { useDeleteData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
@@ -16,7 +14,7 @@ export const AddColleges = () => {
   const collegesList = useAuthStore((state) => state.collegesList);
   const [selectedcollege, setSelectedcollege] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [addedColleges, setAddedColleges] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
@@ -112,11 +110,8 @@ export const AddColleges = () => {
     });
   };
 
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
   const {
     data = [], // Provide a default value of an empty array
-    error,
   } = useFetchData('colleges', `/colleges/all/`);
   useEffect(() => {
     useAuthStore.setState({ collegesList: data });

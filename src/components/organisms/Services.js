@@ -38,8 +38,8 @@ const Services = () => {
             <h3 className="main-heading">Our Services</h3>
             <div className="underline mx-auto"></div>
           </div>
-          {services.map((service) => (
-            <div className="col-md-4 mb-3">
+          {services.map((service, index) => (
+            <div className="col-md-4 mb-3" key={index}>
               <div className="card">
                 <LazyLoadImage
                   effect="blur"

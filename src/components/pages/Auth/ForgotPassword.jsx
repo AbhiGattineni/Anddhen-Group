@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import InputField from '../../organisms/InputField';
 import Toast from '../../organisms/Toast';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from 'src/services/Authentication/firebase';
-import { useFetchData } from 'src/react-query/useFetchApis';
 
 export const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);

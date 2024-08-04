@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
   const [isEditable, setIsEditable] = useState(false);
@@ -462,5 +463,12 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
     </div>
   );
 }
+
+ConsultantDetailsModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onHide: PropTypes.func.isRequired,
+  consultant: PropTypes.object.isRequired,
+  onSave: PropTypes.func.isRequired,
+};
 
 export default ConsultantDetailsModal;

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import InputField from '../InputField';
 import { auth } from 'src/services/Authentication/firebase';
 import { useMutation, useQueryClient } from 'react-query';
+import PropTypes from 'prop-types';
 
 export const TransactionModal = ({ showModal, setShowModal }) => {
   const queryClient = useQueryClient();
@@ -352,4 +353,9 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
       </div>
     </div>
   );
+};
+
+TransactionModal.propTypes = {
+  showModal: PropTypes.bool.isRequired,
+  setShowModal: PropTypes.func.isRequired,
 };

@@ -8,8 +8,7 @@ import useAuthStore from 'src/services/store/globalStore';
 import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 
 export const Login = () => {
-  const { onGoogleSignIn, onFacebookSignIn, onEmailPasswordSignIn } =
-    useUnifiedAuth();
+  const { onGoogleSignIn, onEmailPasswordSignIn } = useUnifiedAuth();
   const [error, setError] = useState(null); // Use state to manage the raw error
 
   // Use the useErrorHandling hook with the current error state
@@ -29,7 +28,6 @@ export const Login = () => {
 
   // Wrapper functions for each sign-in method
   const handleGoogleSignIn = () => handleSignIn(onGoogleSignIn);
-  const handleFacebookSignIn = () => handleSignIn(onFacebookSignIn);
   const handleEmailPasswordSignIn = (email, password) =>
     handleSignIn(() => onEmailPasswordSignIn(email, password));
 
@@ -116,7 +114,7 @@ export const Login = () => {
               )}
               <LoginForm onSubmit={handleEmailPasswordSignIn} />
               <div className="d-flex justify-content-center mt-3">
-                <span>Don't have an account? </span>
+                <span>Don&apos;t have an account? </span>
                 <Link
                   to="/register"
                   className="text-primary fw-bold text-decoration-none ms-1"

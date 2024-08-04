@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 // Button Component
 const Button = ({ setShowModal, setEditingRole, buttonText }) => {
@@ -13,6 +14,12 @@ const Button = ({ setShowModal, setEditingRole, buttonText }) => {
       {buttonText}
     </button>
   );
+};
+
+Button.propTypes = {
+  setShowModal: PropTypes.func.isRequired,
+  setEditingRole: PropTypes.func.isRequired,
+  buttonText: PropTypes.string.isRequired,
 };
 
 export default Button;

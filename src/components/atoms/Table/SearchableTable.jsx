@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const SearchableTable = ({ data, searchTerm, setSearchTerm, renderRow }) => {
   const filteredData = data.filter((item) =>
@@ -34,6 +35,13 @@ const SearchableTable = ({ data, searchTerm, setSearchTerm, renderRow }) => {
       </table>
     </div>
   );
+};
+
+SearchableTable.propTypes = {
+  data: PropTypes.array.isRequired,
+  searchTerm: PropTypes.string.isRequired,
+  setSearchTerm: PropTypes.func.isRequired,
+  renderRow: PropTypes.func.isRequired,
 };
 
 export default SearchableTable;

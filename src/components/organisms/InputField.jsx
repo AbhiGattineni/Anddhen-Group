@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 
-const InputField = (props) => {
+const InputField = ({ value, ...props }) => {
   const [error, setError] = useState(null);
   const emailPattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
   const phonePattern =
-    /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+    /^[+]?[(]?[0-9]{3}[)]?[-\s.?]?[0-9]{3}[-\s.?]?[0-9]{4,6}$/im;
   const linkRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
   const scoreRegex = /^\d{1,3}(?:\.\d*)?$/;
   // const yearPattren = /^(19|20)[\d]{2,2}$/;
@@ -215,6 +216,21 @@ const InputField = (props) => {
       {error ? <span className="text-danger">{error}</span> : null}
     </div>
   );
+};
+
+InputField.propTypes = {
+  value: PropTypes.any.isRequired,
+  name: PropTypes.string.isRequired,
+  data: PropTypes.any,
+  type: PropTypes.string.isRequired,
+  placeholder: PropTypes.string, // Add placeholder prop validation
+  onChange: PropTypes.func.isRequired, // Add onChange prop validation
+  onFocus: PropTypes.func, // Add onFocus prop validation
+  notRequired: PropTypes.bool, // Add notRequired prop validation
+  disabled: PropTypes.bool, // Add disabled prop validation
+  setError: PropTypes.func, // Add setError prop validation
+  className: PropTypes.string, // Add className prop validation
+  label: PropTypes.string.isRequired, // Add label prop validation
 };
 
 export default InputField;

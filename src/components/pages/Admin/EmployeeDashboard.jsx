@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { StatusCalendar } from 'src/components/templates/StatusCalender';
-import { useCalendarData } from 'src/react-query/useCalenderData';
 import { auth } from '../../../services/Authentication/firebase';
 import { useStatusCalendar } from 'src/react-query/useStatusCalender';
 import { useStatusUpdateMutation } from 'src/react-query/useStatusUpdateMutation';
@@ -21,7 +20,7 @@ export const EmployeeDashboard = () => {
   const { statusMutation, updateMutation } = useStatusUpdateMutation();
 
   // const userId = auth.currentUser ? auth.currentUser.uid : null;
-  const { data, isLoading, isError } = useStatusCalendar(auth.currentUser?.uid);
+  const { data } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate
   );

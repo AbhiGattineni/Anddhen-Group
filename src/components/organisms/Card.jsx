@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // Import prop-types library
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import useAuthStore from 'src/services/store/globalStore';
@@ -26,4 +27,11 @@ export const Card = (props) => {
       </div>
     </div>
   );
+};
+
+// Add prop types validation
+Card.propTypes = {
+  image: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
 };

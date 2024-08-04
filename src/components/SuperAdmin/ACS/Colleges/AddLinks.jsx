@@ -11,8 +11,8 @@ export const AddLinks = () => {
   const collegesList = useAuthStore((state) => state.collegesList);
   const [selectedcollege, setSelectedcollege] = useState(null);
   const [listColleges, setListColleges] = useState([]);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [inputDisabled, setInputDisabled] = useState(false);
+  const [setFieldErrors] = useState({});
+  const [inputDisabled] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
   const [toast, setToast] = useState({
     show: false,
@@ -70,7 +70,6 @@ export const AddLinks = () => {
   };
 
   const handleDelete = (index) => {
-    const collegeIdToDelete = selectedListLink[index].id;
     fetch(
       'http://127.0.0.1:8000/college_details/${collegeIdToDelete}/delete/',
       { method: 'DELETE' }
@@ -329,7 +328,7 @@ export const AddLinks = () => {
                       onClick={() => handleSaveEdit(item.id)}
                     ></i>
                     <i
-                      class="bi bi-x icon_color pt-4 icon-400"
+                      className="bi bi-x icon_color pt-4 icon-400"
                       onClick={() => handleCancelEdit()}
                     ></i>
                     {/* <button className="" >X</button> */}

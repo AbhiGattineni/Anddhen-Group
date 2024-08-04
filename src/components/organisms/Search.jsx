@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
 
+import PropTypes from 'prop-types';
+
 export const Search = ({
   setSelectedOption,
   selectedOption,
@@ -31,4 +33,12 @@ export const Search = ({
       />
     </div>
   );
+};
+
+Search.propTypes = {
+  setSelectedOption: PropTypes.func.isRequired,
+  selectedOption: PropTypes.object,
+  placeholder: PropTypes.string,
+  options: PropTypes.array,
+  isMulti: PropTypes.bool,
 };

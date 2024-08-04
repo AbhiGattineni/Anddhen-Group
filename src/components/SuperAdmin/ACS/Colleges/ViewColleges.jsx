@@ -7,6 +7,7 @@ import {
   useExpanded,
   useGlobalFilter,
 } from 'react-table';
+import PropTypes from 'prop-types';
 
 const fetchColleges = async () => {
   const { data } = await axios.get('http://127.0.0.1:8000/colleges/all/');
@@ -26,17 +27,38 @@ const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
   </span>
 );
 
+GlobalFilter.propTypes = {
+  globalFilter: PropTypes.string,
+  setGlobalFilter: PropTypes.func.isRequired,
+};
+
+// Separate Cell component for handling row expansion
+const ExpanderCell = ({ row }) => (
+  <span className="p-1" {...row.getToggleRowExpandedProps()}>
+    {row.isExpanded ? (
+      <i className="bi bi-chevron-up"></i>
+    ) : (
+      <i className="bi bi-chevron-down"></i>
+    )}
+  </span>
+);
+
+ExpanderCell.propTypes = {
+  row: PropTypes.shape({
+    getToggleRowExpandedProps: PropTypes.func.isRequired,
+    isExpanded: PropTypes.bool.isRequired,
+  }).isRequired,
+};
+
 const Table = ({ columns, data }) => {
   const {
     getTableProps,
     getTableBodyProps,
-    headerGroups,
     prepareRow,
     page,
     canPreviousPage,
     canNextPage,
     pageOptions,
-    gotoPage,
     nextPage,
     previousPage,
     setGlobalFilter,
@@ -67,15 +89,6 @@ const Table = ({ columns, data }) => {
         </div>
       </div>
       <table {...getTableProps()} className="w-100 my-2">
-        {/* <thead className="thead-dark">
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-              ))}
-            </tr>
-          ))}
-        </thead> */}
         <tbody {...getTableBodyProps()}>
           {page.map((row) => {
             prepareRow(row);
@@ -83,8 +96,12 @@ const Table = ({ columns, data }) => {
               <React.Fragment key={row.id}>
                 <tr {...row.getRowProps()}>
                   <div className="p-4 w-100 d-flex align-item-center justify-content-between border rounded bg-grey mt-2">
-                    {row.cells.map((cell) => (
-                      <td className="fw-bold" {...cell.getCellProps()}>
+                    {row.cells.map((cell, index) => (
+                      <td
+                        className="fw-bold"
+                        {...cell.getCellProps()}
+                        key={index}
+                      >
                         {cell.render('Cell')}
                       </td>
                     ))}
@@ -204,6 +221,11 @@ const Table = ({ columns, data }) => {
   );
 };
 
+Table.propTypes = {
+  columns: PropTypes.array.isRequired,
+  data: PropTypes.array.isRequired,
+};
+
 export const ViewColleges = () => {
   const { data, error, isLoading } = useQuery('colleges', fetchColleges);
 
@@ -217,15 +239,7 @@ export const ViewColleges = () => {
         // Add a column for the expandable rows
         Header: () => null,
         id: 'expander',
-        Cell: ({ row }) => (
-          <span className="p-1" {...row.getToggleRowExpandedProps()}>
-            {row.isExpanded ? (
-              <i className="bi bi-chevron-up"></i>
-            ) : (
-              <i className="bi bi-chevron-down"></i>
-            )}
-          </span>
-        ),
+        Cell: ExpanderCell,
       },
     ],
     []

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StatusCalendar } from '../templates/StatusCalender';
 import { auth } from '../../services/Authentication/firebase';
 import { useCalendarData } from '../../react-query/useCalenderData';
-import { usePostStatus } from '../../react-query/usePostStatus';
 import { useStatusMutation } from 'src/react-query/useStatusMutation';
 import useAuthStore from 'src/services/store/globalStore';
 import { useQueryClient } from 'react-query';
@@ -10,7 +9,6 @@ import { useQueryClient } from 'react-query';
 const empName = '';
 
 const StatusUpdates = () => {
-  const [department, setDepartment] = useState('');
   const [formValues, setFormValues] = useState({
     parttimerName: '',
     studentName: '',
@@ -23,7 +21,7 @@ const StatusUpdates = () => {
     reason: '',
     description: '',
   });
-  const { data, isLoading, isError } = useCalendarData(auth.currentUser.uid);
+  const { data } = useCalendarData(auth.currentUser.uid);
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate
   );
@@ -55,7 +53,6 @@ const StatusUpdates = () => {
     )
       ? 'ACS'
       : '';
-    setDepartment(currentDepartment);
     updateFieldsToShow(currentDepartment);
 
     if (auth.currentUser.displayName) {
@@ -216,20 +213,6 @@ const StatusUpdates = () => {
         return; // Stop form submission if a required field is missing
       }
 
-      // Combine all form field values into a single string
-      let combinedStatus = formValues.status; // Start with the existing status
-
-      // Loop through formValues and concatenate all non-empty fields
-      for (const key in formValues) {
-        if ((key !== 'reason' || key !== 'description') && formValues[key]) {
-          combinedStatus += ` ${formValues[key]}`;
-        }
-      }
-      const newStatus = {
-        ...formValues,
-        firebase_id: auth.currentUser.uid,
-        status: combinedStatus,
-      };
       const postStatus = {
         parttimerName: formValues.parttimerName,
         parttimerId: auth.currentUser.uid,

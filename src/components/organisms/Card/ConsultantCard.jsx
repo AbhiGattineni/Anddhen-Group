@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 function ConsultantCard({ consultant, onViewDetails, onDelete }) {
   // Function to render verification badge
@@ -85,5 +86,10 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
     </div>
   );
 }
+ConsultantCard.propTypes = {
+  consultant: PropTypes.object.isRequired,
+  onViewDetails: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
 
 export default ConsultantCard;

@@ -1,4 +1,5 @@
-import { MainLayout } from 'src/App';
+import React from 'react';
+
 import { createBrowserRouter } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
 import Home from 'src/components/pages/Home';
@@ -13,17 +14,13 @@ import { Login } from 'src/components/pages/Auth/Login';
 import { Register } from 'src/components/pages/Auth/Register';
 import { ForgotPassword } from 'src/components/pages/Auth/ForgotPassword';
 import Consultants from 'src/components/SuperAdmin/ACS/Consultants/Consultants';
-import RoleAccess from 'src/components/SuperAdmin/RoleAccess/RoleAccess';
 import SuperAdmin from 'src/components/SuperAdmin/SuperAdmin';
 import { Aps } from 'src/components/pages/inc/Aps';
 import { Ati } from 'src/components/pages/inc/Ati';
 import { StudentPortal } from 'src/components/pages/ACS/StudentPortal';
-import { AddColleges } from 'src/components/pages/ACS/AddColleges';
-import { EditColleges } from 'src/components/pages/ACS/EditColleges';
 import { PartTimerPortal } from 'src/components/pages/ACS/PartTimerPortal';
 import Layout from './Layout';
 import ErrorPage from 'src/components/pages/ErrorPage';
-import { AcsAdmin } from 'src/components/pages/Admin/AcsAdmin';
 import AdminPage from 'src/components/pages/Admin/AdminPage';
 import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess';
 import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';

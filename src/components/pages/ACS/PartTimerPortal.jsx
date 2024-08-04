@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Videos } from '../../organisms/Videos';
 import useAuthStore from '../../../services/store/globalStore';
-import NewParttimer from 'src/components/generalComponents/ACS/NewParttimer';
-import { QuestionCard } from 'src/components/organisms/QuestionCard';
 import { PartTimerRegistrationForm } from '../../organisms/PartTimerRegistrationForm';
 import { auth } from 'src/services/Authentication/firebase';
-import { usePartTimerQuery } from '../../../react-query/useFetchPartTimerData';
 import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 import ParttimerDashboard from 'src/components/generalComponents/ACS/ParttimerDashbaord';
 import useErrorHandling from 'src/hooks/useErrorHandling';
@@ -14,13 +11,8 @@ import ErrorPage from '../ErrorPage';
 import { KeyWordsComponent } from 'src/components/generalComponents/KeyWordsComponent';
 
 export const PartTimerPortal = () => {
-  const newUser = useAuthStore((state) => state.newUser);
-  const parttimer_consent = useAuthStore((state) => state.parttimer_consent);
-  const [showForm, setShowForm] = useState(false);
-  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const setNewUser = useAuthStore((state) => state.setParttimer_consent);
   const setParttimer_consent = useAuthStore(
     (state) => state.setParttimer_consent
   );

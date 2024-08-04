@@ -3,6 +3,8 @@ import InputField from '../../organisms/InputField';
 import { Link } from 'react-router-dom';
 import useAuthStore from 'src/services/store/globalStore';
 
+import PropTypes from 'prop-types';
+
 const LoginForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     email: '',
@@ -87,6 +89,10 @@ const LoginForm = ({ onSubmit }) => {
       </div>
     </form>
   );
+};
+
+LoginForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default LoginForm;

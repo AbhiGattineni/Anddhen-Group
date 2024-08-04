@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Toast = ({ show, onClose, color, message }) => {
   return (
@@ -29,6 +30,13 @@ const Toast = ({ show, onClose, color, message }) => {
       </div>
     </div>
   );
+};
+
+Toast.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  color: PropTypes.string,
+  message: PropTypes.string.isRequired,
 };
 
 export default Toast;

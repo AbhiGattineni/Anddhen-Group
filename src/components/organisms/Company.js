@@ -48,11 +48,10 @@ function Company() {
             <p>
               At Anddhen, we pride ourselves on being more than just a business;
               we are a conglomerate with a heart, deeply invested in the fabric
-              of India's dynamic market and beyond. With a diverse portfolio
-              that spans software development, staffing and consulting, trading
-              and investment, and comprehensive marketing services, we are
-              dedicated to offering bespoke solutions tailored to your unique
-              needs.
+              of India&apos;s dynamic market and beyond. that spans software
+              development, staffing and consulting, trading and investment, and
+              comprehensive marketing services, we are dedicated to offering
+              bespoke solutions tailored to your unique needs.
             </p>
             <p>
               Our expertise is not confined to delivering exceptional services;
@@ -67,7 +66,7 @@ function Company() {
               consulting, strategic investment opportunities, or innovative
               marketing strategies, Anddhen is your go-to partner. Our approach
               is holistic, ensuring that every service we provide is aligned
-              with our clients' aspirations, delivering results that matter.
+              with our client aspirations, delivering results that matter.
             </p>
             <p>
               <b>

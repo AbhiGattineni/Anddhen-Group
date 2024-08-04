@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export const PriceCard = ({ data }) => {
   return (
@@ -44,4 +45,8 @@ export const PriceCard = ({ data }) => {
       </div>
     </div>
   );
+};
+
+PriceCard.propTypes = {
+  data: PropTypes.object.isRequired,
 };

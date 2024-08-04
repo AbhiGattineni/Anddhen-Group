@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import PropTypes from 'prop-types'; // Import prop-types library
 import { sendEmail } from '../../templates/emailService';
 
 const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
@@ -171,6 +172,12 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
       </Row>
     </Container>
   );
+};
+
+EnquiryForm.propTypes = {
+  title: PropTypes.string.isRequired,
+  setShowToast: PropTypes.func.isRequired,
+  setToastMsg: PropTypes.func.isRequired,
 };
 
 export default EnquiryForm;

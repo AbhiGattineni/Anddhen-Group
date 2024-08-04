@@ -44,7 +44,7 @@ export const AddColleges = () => {
     graduation_courses: '',
     graduation_courses_link: '',
   });
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: '' });
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;

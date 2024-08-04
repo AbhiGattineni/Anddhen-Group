@@ -4,6 +4,8 @@ import LoadingSpinner from '../atoms/LoadingSpinner/LoadingSpinner';
 import ErrorPage from '../pages/ErrorPage';
 import useErrorHandling from 'src/hooks/useErrorHandling';
 
+import PropTypes from 'prop-types';
+
 export const QuestionCard = ({ setShowForm, setMessage }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
@@ -103,4 +105,9 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
       </div>
     </div>
   );
+};
+
+QuestionCard.propTypes = {
+  setShowForm: PropTypes.func.isRequired,
+  setMessage: PropTypes.func.isRequired,
 };

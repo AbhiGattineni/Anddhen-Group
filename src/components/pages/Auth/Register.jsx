@@ -23,8 +23,7 @@ export const Register = () => {
   const [error, setError] = useState(null); // Use for raw error handling
 
   // Use the same unified auth and error handling hooks
-  const { onGoogleSignIn, onFacebookSignIn, onEmailPasswordUserCreation } =
-    useUnifiedAuth();
+  const { onEmailPasswordUserCreation } = useUnifiedAuth();
   const { errorCode, title, message } = useErrorHandling(error);
 
   const handleChange = (field, value) => {
@@ -68,9 +67,6 @@ export const Register = () => {
     handleSignUp(() =>
       onEmailPasswordUserCreation(email, password, first_name, last_name)
     );
-
-  const handleGoogleSignIn = () => handleSignUp(onGoogleSignIn);
-  const handleFacebookSignIn = () => handleSignUp(onFacebookSignIn);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

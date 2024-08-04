@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { sheetNames } from '../../../dataconfig';
 import { StatusCalendar } from '../../templates/StatusCalender';
-import { logout } from '../../../services/Authentication/Logout';
 
 export const AcsAdmin = () => {
   const [headers, setHeaders] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [sheetName, setSheetName] = useState(sheetNames[0]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [empDetails, setEmpDetails] = useState([]);
@@ -53,14 +51,11 @@ export const AcsAdmin = () => {
           // Separate the headers from the data
           setHeaders(result.data[0]);
           setData(result.data.slice(1));
-        } else {
-          setError(result.message);
         }
         handleTab(result.data);
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
         setLoading(false);
       });
   }, [sheetName]);
@@ -146,15 +141,6 @@ export const AcsAdmin = () => {
       setShowCalendar(!showCalendar);
     }
   };
-  const handleLogout = () => {
-    logout()
-      .then(() => {
-        console.log('logout success');
-      })
-      .catch((error) => {
-        console.log('logout fail');
-      });
-  };
   return (
     <div className="">
       {loading ? (
@@ -235,7 +221,7 @@ export const AcsAdmin = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  {empName && empName != 'All' ? (
+                  {empName && empName !== 'All' ? (
                     <div className="col-md-auto form-check form-switch gap-2 d-flex justify-content-end">
                       <input
                         className="form-check-input"
@@ -286,7 +272,7 @@ export const AcsAdmin = () => {
                             {(sheetName === 'Manager Status' ||
                               sheetName === 'Part Timer Status' ||
                               sheetName === 'Intern Status') &&
-                            cellIndex == 0
+                            cellIndex === 0
                               ? new Date(cell).toLocaleDateString()
                               : cell}
                           </td>

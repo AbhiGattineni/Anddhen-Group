@@ -12,7 +12,6 @@ import vijetha from './components/images/vijetha.jpg';
 import chandu from './components/images/chandu.jpg';
 import neha from './components/images/neha.jpg';
 import charan from './components/images/charan.jpg';
-import { PartTimerPortal } from './components/pages/ACS/PartTimerPortal';
 import resgistration1 from './components/images/resgistration1.png';
 import resgistration2 from './components/images/registration2.png';
 export const priceData = [
