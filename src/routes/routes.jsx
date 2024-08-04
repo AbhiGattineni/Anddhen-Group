@@ -27,6 +27,7 @@ import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction'
 import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard';
 import { Colleges } from 'src/components/SuperAdmin/ACS/Colleges/Colleges';
 import { Ats } from 'src/components/pages/inc/Ats';
+import Ans from 'src/components/pages/inc/Ans';
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,11 @@ const router = createBrowserRouter([
     path: '/ats',
     element: <Layout />,
     children: [{ index: true, element: <Ats /> }],
+  },
+  {
+    path: '/ans',
+    element: <Layout />,
+    children: [{ index: true, element: <Ans /> }],
   },
   {
     path: '/acs',
