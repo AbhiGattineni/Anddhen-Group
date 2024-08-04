@@ -169,7 +169,6 @@ export const AddLinks = () => {
     const handleCancelEdit = () =>{
         setDisableButton(true);
         setEditIndex(-1);  // Reset editIndex to exit edit mode
-        console.log("akshay")
     }
 
 

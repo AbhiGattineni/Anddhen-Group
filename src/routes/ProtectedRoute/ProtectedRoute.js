@@ -10,11 +10,11 @@ const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (storedEmptyFields?.length) {
+    if (storedEmptyFields?.length && location.pathname !== "/profile") {
+      localStorage.setItem("preLoginPath", location.pathname);
       navigate("/profile");
     }
-  }, [storedEmptyFields, navigate]);
-
+  }, [storedEmptyFields, navigate, location.pathname]);
   if (loading) {
     return <LoadingSpinner />;
   }

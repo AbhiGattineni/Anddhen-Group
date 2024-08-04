@@ -45,7 +45,6 @@ const usePostUserData = () => {
         );
       }
       const responseData = await response.json();
-      // console.log("response data", responseData);
       setResponse(responseData);
       return responseData;
     } catch (error) {

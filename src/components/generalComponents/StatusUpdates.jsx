@@ -27,12 +27,10 @@ const StatusUpdates = () => {
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate
   );
-  // console.log("calender : ",data);
   const [msgResponse, setMsgResponse] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [disableInputs, setDisableInputs] = useState(false);
   const queryClient = useQueryClient();
-  // const { mutate } = usePostStatus();
   const { statusMutation, updateMutation } = useStatusMutation();
 
   const [fieldsToShow, setFieldsToShow] = useState({
@@ -244,7 +242,6 @@ const StatusUpdates = () => {
         reason: formValues.reason,
         description: formValues.description,
       };
-      // console.log(JSON.stringify(postStatus));
       // const response = await mutate(newStatus); // Call the mutation function with form data
       // Perform mutation based on whether it's an update or a new post
       setMsgResponse("Loading...");
@@ -265,7 +262,6 @@ const StatusUpdates = () => {
         setMsgResponse("Status updated successfully");
       }
 
-      // console.log(response.message);
       if (!showEdit) {
         setFormValues({
           parttimerName: auth.currentUser.displayName,

@@ -73,9 +73,6 @@ export const AcsAdmin = () => {
         }
         throw new Error("Network response was not ok.");
       })
-      .then((data) => {
-        console.log("Data:", data); // This logs the actual JSON data
-      })
       .catch((e) => console.log("Error fetching data:", e));
   }, []);
 

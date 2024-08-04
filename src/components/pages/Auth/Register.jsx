@@ -47,7 +47,6 @@ export const Register = () => {
 
   const handleSignUp = async (signUpMethod, ...args) => {
     const result = await signUpMethod(...args);
-    console.log("result : ", result);
     if (result && !result.success) {
       setError(result.error); // Use setError for dynamic error handling
     } else {

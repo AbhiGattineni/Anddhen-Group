@@ -3,9 +3,6 @@ import { Link } from "react-router-dom";
 import { adminPlates } from "../../dataconfig";
 
 const SuperAdmin = () => {
-  useEffect(() => {
-    console.log("SuperAdmin");
-  }, []);
   return (
     <div className="row">
       {adminPlates.map((data) => ( 

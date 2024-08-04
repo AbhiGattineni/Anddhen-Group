@@ -18,7 +18,6 @@ const useUnifiedAuth = () => {
         try {
             const usersData = await authPromise;
             setLoading(true);
-            console.log("usersData", usersData.user);
             const userData = await postUserData(usersData.user, first_name, last_name);
             setLoading(false);
             if (userData.empty_fields.length > 0) {
