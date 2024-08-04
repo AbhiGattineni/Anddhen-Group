@@ -107,6 +107,11 @@ function Navbar(props) {
                             Anddhen Travel Services
                           </Link>
                         </li>
+                        <li>
+                          <Link to="/ans" className="dropdown-item">
+                            Anddhen NRI Services
+                          </Link>
+                        </li>
                       </ul>
                     </li>
                     <li className="nav-item d-lg-none">
@@ -161,6 +166,15 @@ function Navbar(props) {
                         className="nav-link active nav-link-highlight"
                       >
                         Anddhen Travel Services
+                      </Link>
+                    </li>
+                    <li className="nav-item d-lg-none">
+                      <Link
+                        to="/ans"
+                        onClick={handleLinkClick}
+                        className="nav-link active nav-link-highlight"
+                      >
+                        Anddhen NRI Services
                       </Link>
                     </li>
                     <li className="nav-item">
