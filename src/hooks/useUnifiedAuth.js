@@ -51,13 +51,11 @@ const useUnifiedAuth = () => {
   const handleAuth = async (authPromise, first_name, last_name) => {
     try {
       const usersData = await authPromise;
-      setLoading(true);
       const userData = await postUserData(
         usersData.user,
         first_name,
         last_name
       );
-      setLoading(false);
       if (userData.empty_fields.length > 0) {
         localStorage.setItem('empty_fields', userData.empty_fields);
         navigate('/profile');
