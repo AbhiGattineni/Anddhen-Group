@@ -17,13 +17,9 @@ const usePostUserData = () => {
         phone_country_code: userData.phone_country_code || null,
         phone_number: userData.phone_number || null,
         email_id: userData.email,
-<<<<<<< HEAD
-        enrolled_services: localStorage.getItem("preLoginPath"),
-=======
-        enrolled_services: sessionStorage.getItem('preLoginPath'),
->>>>>>> julyupdates
+        enrolled_services: localStorage.getItem('preLoginPath'),
       };
-      
+
       if (requiredUserData.full_name) {
         const names = requiredUserData.full_name.split(' ');
         requiredUserData.first_name = names[0];
@@ -48,10 +44,6 @@ const usePostUserData = () => {
         );
       }
       const responseData = await response.json();
-<<<<<<< HEAD
-=======
-      console.log('response data', responseData);
->>>>>>> julyupdates
       setResponse(responseData);
       return responseData;
     } catch (error) {

@@ -107,7 +107,7 @@ export const EditColleges = () => {
         return response.json();
       })
       .then((data) => {
-        setToast({ show: true, message: "College successfully updated!" });
+        setToast({ show: true, message: 'College successfully updated!' });
         setTimeout(() => {
           setToast({ show: false, message: '' });
           navigate('/acs');

@@ -1,34 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
-import useAuthStore from "src/services/store/globalStore";
-import LoginForm from "./LoginForm";
-import InputField from "src/components/organisms/InputField";
-import usePostUserData from "src/hooks/usePostUserData";
-import { auth } from "src/services/Authentication/firebase";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
+import InputField from 'src/components/organisms/InputField';
+import usePostUserData from 'src/hooks/usePostUserData';
+import { auth } from 'src/services/Authentication/firebase';
 
 export const Profile = () => {
-  const [ loading, setLoading ] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [emptyFields, setEmptyFields] = useState([]);
   const [formData, setFormData] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
-  const [disableButton, setDisableButton] = useState(true);
   const { postUserData } = usePostUserData();
 
   useEffect(() => {
-    const storedEmptyFields = localStorage.getItem("empty_fields");
+    const storedEmptyFields = localStorage.getItem('empty_fields');
     if (storedEmptyFields) {
-      const parsedEmptyFields = storedEmptyFields.split(",");
+      const parsedEmptyFields = storedEmptyFields.split(',');
       setEmptyFields(parsedEmptyFields);
       setFormData(
         parsedEmptyFields.reduce((acc, field) => {
-          acc[field] = "";
+          acc[field] = '';
           return acc;
         }, {})
       );
     } else {
-      navigate("/login");
+      navigate('/login');
     }
   }, [navigate]);
 
@@ -61,12 +58,12 @@ export const Profile = () => {
       };
       const response = await postUserData(userData);
       if (response.empty_fields.length > 0) {
-        localStorage.setItem("empty_fields", response.empty_fields);
+        localStorage.setItem('empty_fields', response.empty_fields);
         window.location.reload();
       } else {
-        localStorage.setItem("empty_fields", response.empty_fields);
-        localStorage.setItem("roles", userData.roles);
-        navigate(localStorage.getItem("preLoginPath") || "/");
+        localStorage.setItem('empty_fields', response.empty_fields);
+        localStorage.setItem('roles', userData.roles);
+        navigate(localStorage.getItem('preLoginPath') || '/');
       }
     } catch (error) {
       console.error(error);
@@ -83,7 +80,7 @@ export const Profile = () => {
           <div className="container">
             <div
               className="card shadow-lg rounded p-4 mx-auto"
-              style={{ maxWidth: "600px" }}
+              style={{ maxWidth: '600px' }}
             >
               <div className="text-center mb-4">
                 <h2>Profile</h2>
@@ -94,8 +91,8 @@ export const Profile = () => {
                     <InputField
                       key={index}
                       name={field}
-                      label={field.replace(/_/g, " ")}
-                      placeholder={field.replace(/_/g, " ")}
+                      label={field.replace(/_/g, ' ')}
+                      placeholder={field.replace(/_/g, ' ')}
                       type="text"
                       value={formData[field]}
                       onChange={(e) => handleChange(field, e.target.value)}
@@ -109,7 +106,7 @@ export const Profile = () => {
                       onClick={handleSubmit}
                       disabled={!isFormValid() || loading}
                     >
-                      {loading ? "Loading..." : "Submit"}
+                      {loading ? 'Loading...' : 'Submit'}
                     </button>
                   </div>
                 </form>

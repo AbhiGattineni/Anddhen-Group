@@ -43,59 +43,6 @@ const InputField = ({ value, ...props }) => {
     'gre_score',
   ];
   const inputFields = [
-<<<<<<< HEAD
-    "score",
-    "website_link",
-    "college_name",
-    "toefl_UG_score",
-    "toefl_graduation_score",
-    "ielts_ug_score",
-    "ielts_graduation_score",
-    "gre_score",
-    "websiteLink",
-    "international_UG_link",
-    "international_graduation_link",
-    "application_UG_link",
-    "application_graduation_link",
-    "application_UG_fee",
-    "application_graduation_fee",
-    "fall_deadline_UG",
-    "fall_deadline_graduation",
-    "spring_deadline_UG",
-    "spring_deadline_graduation",
-    "public_private",
-    "UG_courses",
-    "graduation_courses",
-    "otherStatus",
-    "needToUpdate",
-    "notUpdatedFrom3Days",
-    "applicationsBelow20From2Days",
-    "leave",
-    "needWeekendTime",
-    "holdByStudent",
-    "studentGroup",
-    "reason",
-    "activeParttimers",
-    "activeStudents",
-    "applications",
-    "easyApply",
-    "connectMessages",
-    "directMessages",
-    "name",
-    "reference",
-    "managerName",
-    "newStudent",
-    "email",
-    "international_person_email",
-    "college_email",
-    "current_occupation",
-    "course_name",
-    "amount",
-    "description",
-    "phone_country_code",
-    "link",
-    "college_label"
-=======
     'score',
     'website_link',
     'college_name',
@@ -144,9 +91,9 @@ const InputField = ({ value, ...props }) => {
     'course_name',
     'amount',
     'description',
+    'phone_country_code',
     'link',
     'college_label',
->>>>>>> julyupdates
   ];
 
   const validateInput = () => {
@@ -194,21 +141,14 @@ const InputField = ({ value, ...props }) => {
     }
 
     if (
-<<<<<<< HEAD
-      ["phone", "college_phone","phone_number"].includes(props.name) &&
-=======
-      ['phone', 'college_phone'].includes(props.name) &&
->>>>>>> julyupdates
+      ['phone', 'college_phone', 'phone_number'].includes(props.name) &&
       !phonePattern.test(value)
     ) {
       return 'Enter valid phone number';
     }
-    
-    if (
-      ["phone_number"].includes(props.name) &&
-      value.length !== 10
-    ) {
-      return "Enter 10 digit phone number";
+
+    if (['phone_number'].includes(props.name) && value.length !== 10) {
+      return 'Enter 10 digit phone number';
     }
 
     if (['college_name'].includes(props.name) && value.length <= 3) {

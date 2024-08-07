@@ -68,7 +68,7 @@ export const AcsAdmin = () => {
         }
         throw new Error('Network response was not ok.');
       })
-      .catch((e) => console.log("Error fetching data:", e));
+      .catch((e) => console.log('Error fetching data:', e));
   }, []);
 
   useEffect(() => {

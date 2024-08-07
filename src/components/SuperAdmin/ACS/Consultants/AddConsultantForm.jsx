@@ -55,7 +55,7 @@ function AddConsultantForm() {
       }));
     } else if (name === 'technologies') {
       // Convert the comma-separated values into a JSON array
-      const technologiesArray = value.split(",").map((item) => item.trim());
+      const technologiesArray = value.split(',').map((item) => item.trim());
       setFormData((prevState) => ({
         ...prevState,
         [name]: JSON.stringify(technologiesArray),

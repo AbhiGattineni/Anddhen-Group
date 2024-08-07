@@ -1,31 +1,31 @@
-import { createBrowserRouter } from "react-router-dom";
-import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
-import Home from "src/components/pages/Home";
-import About from "src/components/pages/About";
-import Contact from "src/components/pages/Contact";
-import { Acs } from "src/components/pages/inc/Acs";
-import { Ams } from "src/components/pages/inc/Ams";
-import { Ass } from "src/components/pages/inc/Ass";
-import { JobApplicationRegistration } from "src/components/pages/ACS/JobApplicationRegistration";
-import { EducationConsultant } from "src/components/pages/ACS/EducationConsultant";
-import { Login } from "src/components/pages/Auth/Login";
-import { Register } from "src/components/pages/Auth/Register";
-import { ForgotPassword } from "src/components/pages/Auth/ForgotPassword";
-import Consultants from "src/components/SuperAdmin/ACS/Consultants/Consultants";
-import SuperAdmin from "src/components/SuperAdmin/SuperAdmin";
-import { Aps } from "src/components/pages/inc/Aps";
-import { Ati } from "src/components/pages/inc/Ati";
-import { StudentPortal } from "src/components/pages/ACS/StudentPortal";
-import { PartTimerPortal } from "src/components/pages/ACS/PartTimerPortal";
-import Layout from "./Layout";
-import ErrorPage from "src/components/pages/ErrorPage";
-import AdminPage from "src/components/pages/Admin/AdminPage";
-import RolesAndAccess from "src/components/SuperAdmin/RoleAccess/RolesAndAccess";
-import { Transaction } from "src/components/SuperAdmin/transactions/Transaction";
-import { EmployeeDashboard } from "src/components/pages/Admin/EmployeeDashboard";
-import { Colleges } from "src/components/SuperAdmin/ACS/Colleges/Colleges";
-import { Profile } from "src/components/pages/Auth/Profile";
-import { Ats } from "src/components/pages/inc/Ats";
+import { createBrowserRouter } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
+import Home from 'src/components/pages/Home';
+import About from 'src/components/pages/About';
+import Contact from 'src/components/pages/Contact';
+import { Acs } from 'src/components/pages/inc/Acs';
+import { Ams } from 'src/components/pages/inc/Ams';
+import { Ass } from 'src/components/pages/inc/Ass';
+import { JobApplicationRegistration } from 'src/components/pages/ACS/JobApplicationRegistration';
+import { EducationConsultant } from 'src/components/pages/ACS/EducationConsultant';
+import { Login } from 'src/components/pages/Auth/Login';
+import { Register } from 'src/components/pages/Auth/Register';
+import { ForgotPassword } from 'src/components/pages/Auth/ForgotPassword';
+import Consultants from 'src/components/SuperAdmin/ACS/Consultants/Consultants';
+import SuperAdmin from 'src/components/SuperAdmin/SuperAdmin';
+import { Aps } from 'src/components/pages/inc/Aps';
+import { Ati } from 'src/components/pages/inc/Ati';
+import { StudentPortal } from 'src/components/pages/ACS/StudentPortal';
+import { PartTimerPortal } from 'src/components/pages/ACS/PartTimerPortal';
+import Layout from './Layout';
+import ErrorPage from 'src/components/pages/ErrorPage';
+import AdminPage from 'src/components/pages/Admin/AdminPage';
+import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess';
+import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';
+import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard';
+import { Colleges } from 'src/components/SuperAdmin/ACS/Colleges/Colleges';
+import { Profile } from 'src/components/pages/Auth/Profile';
+import { Ats } from 'src/components/pages/inc/Ats';
 
 const router = createBrowserRouter([
   {
@@ -40,7 +40,7 @@ const router = createBrowserRouter([
       { path: '/register', element: <Register /> },
       { path: '/resetpassword', element: <ForgotPassword /> },
       {
-        path: "/profile",
+        path: '/profile',
         element: (
           <ProtectedRoute>
             <Profile />
@@ -48,7 +48,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/employeedashboard",
+        path: '/employeedashboard',
         element: (
           <ProtectedRoute>
             <EmployeeDashboard />

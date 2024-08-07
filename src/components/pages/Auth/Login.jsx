@@ -18,10 +18,6 @@ export const Login = () => {
 
   const handleSignIn = async (signInMethod) => {
     const result = await signInMethod();
-<<<<<<< HEAD
-=======
-    console.log('result : ', result);
->>>>>>> julyupdates
     if (result && !result.success) {
       setError(result.error); // Set the raw error for processing
     } else {

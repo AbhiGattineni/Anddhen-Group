@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import { useAuth } from "../../hooks/useAuth";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
+import React, { useEffect } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading, error } = useAuth();
   const location = useLocation();
-  const storedEmptyFields = localStorage.getItem("empty_fields");
+  const storedEmptyFields = localStorage.getItem('empty_fields');
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (storedEmptyFields?.length && location.pathname !== "/profile") {
-      localStorage.setItem("preLoginPath", location.pathname);
-      navigate("/profile");
+    if (storedEmptyFields?.length && location.pathname !== '/profile') {
+      localStorage.setItem('preLoginPath', location.pathname);
+      navigate('/profile');
     }
   }, [storedEmptyFields, navigate, location.pathname]);
   if (loading) {
@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (error || !user) {
     if (location.pathname !== '/profile') {
-      localStorage.setItem("preLoginPath", location.pathname);
+      localStorage.setItem('preLoginPath', location.pathname);
     }
     return <Navigate to="/login" replace />;
   }

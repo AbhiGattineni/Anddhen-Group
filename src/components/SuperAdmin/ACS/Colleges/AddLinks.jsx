@@ -272,11 +272,10 @@ export const AddLinks = () => {
     setEditIndex(-1); // Ensure edit mode is exited
   };
 
-    const handleCancelEdit = () =>{
-        setDisableButton(true);
-        setEditIndex(-1);  // Reset editIndex to exit edit mode
-    }
-
+  const handleCancelEdit = () => {
+    setDisableButton(true);
+    setEditIndex(-1); // Reset editIndex to exit edit mode
+  };
 
   return (
     <div className="container py-3 border">
