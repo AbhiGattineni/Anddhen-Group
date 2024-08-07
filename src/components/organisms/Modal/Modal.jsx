@@ -1,7 +1,11 @@
-import "./Modal.css";
+import './Modal.css';
 
 const Modal = ({ show, onClose, children }) => {
   if (!show) {
+<<<<<<< HEAD
+=======
+    console.log('Modal is not visible');
+>>>>>>> julyupdates
     return null;
   }
 

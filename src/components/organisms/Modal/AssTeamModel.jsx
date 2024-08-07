@@ -172,8 +172,8 @@ export const AssTeamModal = () => {
   );
 };
 */
-import React, { useCallback, useEffect, useState } from "react";
-import useAuthStore from "src/services/store/globalStore";
+import React, { useCallback, useEffect, useState } from 'react';
+import useAuthStore from 'src/services/store/globalStore';
 import './Modal.css'; // Import your CSS file
 
 export const AssTeamModal = () => {
@@ -182,33 +182,33 @@ export const AssTeamModal = () => {
 
   const toggleModal = useCallback(() => {
     useAuthStore.setState({ teamDetails: null });
-    document.body.style.overflow = "auto"; // Restore body overflow
+    document.body.style.overflow = 'auto'; // Restore body overflow
     setShowModal(false);
   }, []);
 
   useEffect(() => {
     const handleBodyOverflow = () => {
-      document.body.style.overflow = showModal ? "hidden" : "auto";
+      document.body.style.overflow = showModal ? 'hidden' : 'auto';
     };
 
     handleBodyOverflow();
 
     return () => {
-      document.body.style.overflow = "auto"; // Ensure body overflow is restored when unmounting
+      document.body.style.overflow = 'auto'; // Ensure body overflow is restored when unmounting
     };
   }, [showModal]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showModal && !event.target.closest(".modal-content")) {
+      if (showModal && !event.target.closest('.modal-content')) {
         toggleModal();
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, [showModal, toggleModal]);
 
@@ -219,7 +219,7 @@ export const AssTeamModal = () => {
   return (
     <div
       className={`position-fixed top-50 start-50 translate-middle bg-white rounded shadow overflow-hidden modal-dialog-centered ${
-        showModal ? "d-block" : "d-none"
+        showModal ? 'd-block' : 'd-none'
       } ass-team-modal`}
     >
       {teamDetails && (
@@ -234,7 +234,10 @@ export const AssTeamModal = () => {
               onClick={toggleModal}
             ></button>
           </div>
-          <div className="p-0 h-100 overflow-auto" style={{ maxHeight: "calc(90vh - 90px)" }}>
+          <div
+            className="p-0 h-100 overflow-auto"
+            style={{ maxHeight: 'calc(90vh - 90px)' }}
+          >
             <div className="profile-photo d-flex flex-column w-100 justify-content-center align-items-center">
               <img
                 className="rounded-circle border border-3 m-2 p-1"
@@ -258,4 +261,3 @@ export const AssTeamModal = () => {
     </div>
   );
 };
-

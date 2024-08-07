@@ -1,46 +1,31 @@
-import React, { useEffect, useState } from "react";
-import InputField from "./InputField";
-import Toast from "../organisms/Toast";
-import { useApi } from "../../hooks/useApi";
-import Button from "../atoms/Button/Button";
-import { useSubmitPartTimer } from "../../react-query/useSubmitPartTimer";
-import { auth } from "src/services/Authentication/firebase";
-import { Navigate } from "react-router-dom";
-import useAuthStore from "../../services/store/globalStore";
-import { sendEmail } from "../templates/emailService";
+import React, { useEffect, useState } from 'react';
+import InputField from './InputField';
+import Toast from '../organisms/Toast';
+import { sendEmail } from '../templates/emailService';
 
 export const PartTimerRegistrationForm = () => {
   const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    current_occupation: "",
-    studyYear: "",
-    course_name: "",
-    reference: "",
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    current_occupation: '',
+    studyYear: '',
+    course_name: '',
+    reference: '',
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
-  const [loading,setLoading] = useState(false)
+  const [loading] = useState(false);
   const [disableButton, setDisableButton] = useState(true);
-  const fields = {
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    current_occupation: "",
-    studyYear: "",
-    course_name: "",
-    reference: "",
-  };
+
   useEffect(() => {
     // Check if all required fields are filled
     const allFieldsFilled = Object.entries(formData).every(([key, value]) => {
       // If current occupation is student, make sure studyYear and course_name are filled
-      if (formData.current_occupation.toLowerCase() !== "student") {
-        if (key === "studyYear" || key === "course_name") {
+      if (formData.current_occupation.toLowerCase() !== 'student') {
+        if (key === 'studyYear' || key === 'course_name') {
           return true;
         }
       }
@@ -52,10 +37,6 @@ export const PartTimerRegistrationForm = () => {
     // Update disableButton state
     setDisableButton(!allFieldsFilled || hasErrors);
   }, [formData, fieldErrors]);
-
-  const setParttimer_consent = useAuthStore(
-    (state) => state.setParttimer_consent
-  );
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -70,21 +51,21 @@ export const PartTimerRegistrationForm = () => {
 
   const resetForm = () => {
     setFormData({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      current_occupation: "",
-      studyYear: "",
-      course_name: "",
-      reference: "",
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      current_occupation: '',
+      studyYear: '',
+      course_name: '',
+      reference: '',
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      sendEmail("parttimer", {
+      sendEmail('parttimer', {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
@@ -96,20 +77,20 @@ export const PartTimerRegistrationForm = () => {
       });
       resetForm();
       // setParttimer_consent(true);
-      setToastMsg("Data successfully submitted!");
+      setToastMsg('Data successfully submitted!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
-      setToastMsg("Something went wrong!");
+      setToastMsg('Something went wrong!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
   };
 
   // Render the form fields based on the current occupation
   const renderOccupationSpecificFields = () => {
-    if (formData.current_occupation.toLowerCase() === "student") {
+    if (formData.current_occupation.toLowerCase() === 'student') {
       return (
         <>
           <InputField
@@ -118,8 +99,8 @@ export const PartTimerRegistrationForm = () => {
             placeholder="Year of Study"
             type="text"
             value={formData.studyYear}
-            onChange={(e) => handleChange("studyYear", e.target.value)}
-            setError={(error) => handleFieldError("studyYear", error)}
+            onChange={(e) => handleChange('studyYear', e.target.value)}
+            setError={(error) => handleFieldError('studyYear', error)}
           />
           <InputField
             name="course_name"
@@ -127,8 +108,8 @@ export const PartTimerRegistrationForm = () => {
             placeholder="Course Name"
             type="text"
             value={formData.course_name}
-            onChange={(e) => handleChange("course_name", e.target.value)}
-            setError={(error) => handleFieldError("course_name", error)}
+            onChange={(e) => handleChange('course_name', e.target.value)}
+            setError={(error) => handleFieldError('course_name', error)}
           />
         </>
       );
@@ -150,8 +131,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="First Name"
           type="text"
           value={formData.first_name}
-          onChange={(e) => handleChange("first_name", e.target.value)}
-          setError={(error) => handleFieldError("first_name", error)}
+          onChange={(e) => handleChange('first_name', e.target.value)}
+          setError={(error) => handleFieldError('first_name', error)}
         />
 
         <InputField
@@ -160,8 +141,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Last Name"
           type="text"
           value={formData.last_name}
-          onChange={(e) => handleChange("last_name", e.target.value)}
-          setError={(error) => handleFieldError("last_name", error)}
+          onChange={(e) => handleChange('last_name', e.target.value)}
+          setError={(error) => handleFieldError('last_name', error)}
         />
 
         <InputField
@@ -170,8 +151,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Email"
           type="email"
           value={formData.email}
-          onChange={(e) => handleChange("email", e.target.value)}
-          setError={(error) => handleFieldError("email", error)}
+          onChange={(e) => handleChange('email', e.target.value)}
+          setError={(error) => handleFieldError('email', error)}
         />
 
         <InputField
@@ -180,8 +161,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Phone Number"
           type="tel"
           value={formData.phone}
-          onChange={(e) => handleChange("phone", e.target.value)}
-          setError={(error) => handleFieldError("phone", error)}
+          onChange={(e) => handleChange('phone', e.target.value)}
+          setError={(error) => handleFieldError('phone', error)}
         />
 
         <InputField
@@ -190,8 +171,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Current Occupation"
           type="text"
           value={formData.current_occupation}
-          onChange={(e) => handleChange("current_occupation", e.target.value)}
-          setError={(error) => handleFieldError("current_occupation", error)}
+          onChange={(e) => handleChange('current_occupation', e.target.value)}
+          setError={(error) => handleFieldError('current_occupation', error)}
         />
 
         {renderOccupationSpecificFields()}
@@ -202,8 +183,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Referrer Name"
           type="text"
           value={formData.reference}
-          onChange={(e) => handleChange("reference", e.target.value)}
-          setError={(error) => handleFieldError("reference", error)}
+          onChange={(e) => handleChange('reference', e.target.value)}
+          setError={(error) => handleFieldError('reference', error)}
         />
 
         <div className="form-group py-3 w-100 d-flex justify-content-center">
@@ -212,7 +193,7 @@ export const PartTimerRegistrationForm = () => {
             className="btn btn-warning shadow px-5"
             disabled={disableButton}
           >
-            {loading ? "loading..." : "Submit"}
+            {loading ? 'loading...' : 'Submit'}
           </button>
         </div>
       </form>

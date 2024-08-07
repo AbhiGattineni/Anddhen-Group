@@ -1,7 +1,7 @@
-import React from "react";
-import { AddColleges } from "./AddColleges";
-import { ViewColleges } from "./ViewColleges";
-import { AddLinks } from "./AddLinks";
+import React from 'react';
+import { AddColleges } from './AddColleges';
+import { ViewColleges } from './ViewColleges';
+import { AddLinks } from './AddLinks';
 
 export const Colleges = () => {
   return (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 const usePostUserData = () => {
   const [response, setResponse] = useState(null);
@@ -17,24 +17,27 @@ const usePostUserData = () => {
         phone_country_code: userData.phone_country_code || null,
         phone_number: userData.phone_number || null,
         email_id: userData.email,
+<<<<<<< HEAD
         enrolled_services: localStorage.getItem("preLoginPath"),
+=======
+        enrolled_services: sessionStorage.getItem('preLoginPath'),
+>>>>>>> julyupdates
       };
       
       if (requiredUserData.full_name) {
-        const names = requiredUserData.full_name.split(" ");
+        const names = requiredUserData.full_name.split(' ');
         requiredUserData.first_name = names[0];
         if (names.length > 1) {
           requiredUserData.last_name = names[-1];
         }
-      }
-      else if (first_name) {
-        requiredUserData.full_name = first_name+" "+last_name
+      } else if (first_name) {
+        requiredUserData.full_name = first_name + ' ' + last_name;
       }
 
       const response = await fetch(`${API_BASE_URL}/user/log-first-time/`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(requiredUserData),
       });
@@ -45,11 +48,15 @@ const usePostUserData = () => {
         );
       }
       const responseData = await response.json();
+<<<<<<< HEAD
+=======
+      console.log('response data', responseData);
+>>>>>>> julyupdates
       setResponse(responseData);
       return responseData;
     } catch (error) {
       setError(error);
-      console.error("API call error:", error);
+      console.error('API call error:', error);
     } finally {
       setIsLoading(false);
     }

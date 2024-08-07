@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import InputField from "../../organisms/InputField";
-import TextAreaField from "../../atoms/TextAreaField";
-import Toast from "../../organisms/Toast";
-import { useApi } from "../../../hooks/useApi";
+import React, { useState } from 'react';
+import InputField from '../../organisms/InputField';
+import TextAreaField from '../../atoms/TextAreaField';
+import Toast from '../../organisms/Toast';
+import { useApi } from '../../../hooks/useApi';
 
 const AcsManagerUpdates = () => {
   const [showToast, setShowToast] = useState(false);
   const { loading, error, callApi } = useApi();
 
-  const [date, setDate] = useState("");
-  const [managerName, setManagerName] = useState("");
-  const [activeParttimers, setActiveParttimers] = useState("");
-  const [activeStudents, setActiveStudents] = useState("");
-  const [needToUpdate, setNeedToUpdate] = useState("");
-  const [notUpdatedFrom3Days, setNotUpdatedFrom3Days] = useState("");
+  const [date, setDate] = useState('');
+  const [managerName, setManagerName] = useState('');
+  const [activeParttimers, setActiveParttimers] = useState('');
+  const [activeStudents, setActiveStudents] = useState('');
+  const [needToUpdate, setNeedToUpdate] = useState('');
+  const [notUpdatedFrom3Days, setNotUpdatedFrom3Days] = useState('');
   const [applicationsBelow20From2Days, setApplicationsBelow20From2Days] =
-    useState("");
-  const [leave, setLeave] = useState("");
-  const [needWeekendTime, setNeedWeekendTime] = useState("");
-  const [holdByStudent, setHoldByStudent] = useState("");
-  const [newStudent, setNewStudent] = useState("");
-  const [status, setStatus] = useState("");
+    useState('');
+  const [leave, setLeave] = useState('');
+  const [needWeekendTime, setNeedWeekendTime] = useState('');
+  const [holdByStudent, setHoldByStudent] = useState('');
+  const [newStudent, setNewStudent] = useState('');
+  const [status, setStatus] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const [toastMsg,setToastMsg] = useState(null);
+  const [toastMsg, setToastMsg] = useState(null);
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors(prevErrors => ({
+    setFieldErrors((prevErrors) => ({
       ...prevErrors,
       [fieldName]: error,
     }));
@@ -40,46 +40,47 @@ const AcsManagerUpdates = () => {
     leave,
     needWeekendTime,
     holdByStudent,
-    newStudent
+    newStudent,
   };
   const allFieldsFilled = Object.values(fields).every(Boolean);
-  const hasErrors = Object.values(fieldErrors).some(error => error);
-  const disableButton = !allFieldsFilled || hasErrors || loading || status.length<=0;
+  const hasErrors = Object.values(fieldErrors).some((error) => error);
+  const disableButton =
+    !allFieldsFilled || hasErrors || loading || status.length <= 0;
 
   const resetForm = () => {
-    setDate("");
-    setManagerName("");
-    setActiveParttimers("");
-    setActiveStudents("");
-    setNeedToUpdate("");
-    setNotUpdatedFrom3Days("");
-    setApplicationsBelow20From2Days("");
-    setLeave("");
-    setNeedWeekendTime("");
-    setHoldByStudent("");
-    setNewStudent("");
-    setStatus(""); 
+    setDate('');
+    setManagerName('');
+    setActiveParttimers('');
+    setActiveStudents('');
+    setNeedToUpdate('');
+    setNotUpdatedFrom3Days('');
+    setApplicationsBelow20From2Days('');
+    setLeave('');
+    setNeedWeekendTime('');
+    setHoldByStudent('');
+    setNewStudent('');
+    setStatus('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!allFieldsFilled || hasErrors) return;
     const formData = new FormData(e.target);
-    formData.append("sheetName", "Manager Status");
+    formData.append('sheetName', 'Manager Status');
     try {
       await callApi(formData);
       resetForm();
-      setToastMsg("Data successfully submitted!");
+      setToastMsg('Data successfully submitted!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
-      setToastMsg("Something went wrong!")
+      setToastMsg('Something went wrong!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
   };
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="py-3">
@@ -116,7 +117,9 @@ const AcsManagerUpdates = () => {
                 type="number"
                 value={activeParttimers}
                 onChange={(e) => setActiveParttimers(e.target.value)}
-                setError={(error) => handleFieldError('activeParttimers', error)}
+                setError={(error) =>
+                  handleFieldError('activeParttimers', error)
+                }
               />
               <InputField
                 name="activeStudents"
@@ -138,7 +141,9 @@ const AcsManagerUpdates = () => {
                 label="Not Updated From 3 Days"
                 value={notUpdatedFrom3Days}
                 onChange={(e) => setNotUpdatedFrom3Days(e.target.value)}
-                setError={(error) => handleFieldError('notUpdatedFrom3Days', error)}
+                setError={(error) =>
+                  handleFieldError('notUpdatedFrom3Days', error)
+                }
               />
               <InputField
                 name="applicationsBelow20From2Days"
@@ -147,7 +152,9 @@ const AcsManagerUpdates = () => {
                 onChange={(e) =>
                   setApplicationsBelow20From2Days(e.target.value)
                 }
-                setError={(error) => handleFieldError('applicationsBelow20From2Days', error)}
+                setError={(error) =>
+                  handleFieldError('applicationsBelow20From2Days', error)
+                }
               />
               <InputField
                 name="leave"
@@ -188,15 +195,23 @@ const AcsManagerUpdates = () => {
                 onChange={(e) => setStatus(e.target.value)}
               />
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
-                  {loading ? "Loading..." : "Submit"}
+                <button
+                  type="submit"
+                  className="btn btn-warning shadow w-100"
+                  disabled={disableButton}
+                >
+                  {loading ? 'Loading...' : 'Submit'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
+      <Toast
+        show={showToast}
+        message={toastMsg}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };

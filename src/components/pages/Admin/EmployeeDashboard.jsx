@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { StatusCalendar } from "src/components/templates/StatusCalender";
-import { useCalendarData } from "src/react-query/useCalenderData";
-import { auth } from "../../../services/Authentication/firebase";
-import { useStatusCalendar } from "src/react-query/useStatusCalender";
-import { useStatusUpdateMutation } from "src/react-query/useStatusUpdateMutation";
-import { useQueryClient } from "react-query";
-import useAuthStore from "src/services/store/globalStore";
+import React, { useEffect, useState } from 'react';
+import { StatusCalendar } from 'src/components/templates/StatusCalender';
+import { auth } from '../../../services/Authentication/firebase';
+import { useStatusCalendar } from 'src/react-query/useStatusCalender';
+import { useStatusUpdateMutation } from 'src/react-query/useStatusUpdateMutation';
+import { useQueryClient } from 'react-query';
+import useAuthStore from 'src/services/store/globalStore';
 
 export const EmployeeDashboard = () => {
-  const empName = "";
+  const empName = '';
   const [formValues, setFormValues] = useState({
-    name: "",
-    date: "",
-    status: "",
+    name: '',
+    date: '',
+    status: '',
   });
   const [msgResponse, setMsgResponse] = useState(null);
   const [disableInputs, setDisableInputs] = useState(false);
@@ -21,7 +20,7 @@ export const EmployeeDashboard = () => {
   const { statusMutation, updateMutation } = useStatusUpdateMutation();
 
   // const userId = auth.currentUser ? auth.currentUser.uid : null;
-  const { data, isLoading, isError } = useStatusCalendar(auth.currentUser?.uid);
+  const { data } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate
   );
@@ -43,8 +42,8 @@ export const EmployeeDashboard = () => {
   const formatDate = (date) => {
     const inputDate = new Date(date);
     const year = inputDate.getFullYear();
-    const month = String(inputDate.getMonth() + 1).padStart(2, "0");
-    const day = String(inputDate.getDate()).padStart(2, "0");
+    const month = String(inputDate.getMonth() + 1).padStart(2, '0');
+    const day = String(inputDate.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
@@ -69,13 +68,13 @@ export const EmployeeDashboard = () => {
         setDisableInputs(false);
         setFormValues({
           name: auth.currentUser.displayName,
-          date: "",
-          status: "",
+          date: '',
+          status: '',
         });
       }
     }
 
-    var currentDate = new Date().toISOString().split("T")[0];
+    var currentDate = new Date().toISOString().split('T')[0];
     var isSelectedDateCurrent = formattedSelectedDate === currentDate;
     if (
       data &&
@@ -101,17 +100,17 @@ export const EmployeeDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const requiredFields = ["date", "status"];
+      const requiredFields = ['date', 'status'];
       const missingField = requiredFields.find((field) => !formValues[field]);
 
       if (missingField) {
         let missingFieldName = missingField;
         switch (missingField) {
-          case "date":
-            missingFieldName = "Date";
+          case 'date':
+            missingFieldName = 'Date';
             break;
-          case "status":
-            missingFieldName = "Status";
+          case 'status':
+            missingFieldName = 'Status';
             break;
           default:
             break;
@@ -140,29 +139,29 @@ export const EmployeeDashboard = () => {
           setMsgResponse(response.message);
         }
 
-        queryClient.invalidateQueries(["calendarData", postStatus]);
+        queryClient.invalidateQueries(['calendarData', postStatus]);
       } catch (error) {
-        setMsgResponse("Something went wrong");
-        console.error("Mutation error:", error);
+        setMsgResponse('Something went wrong');
+        console.error('Mutation error:', error);
       }
 
       if (!showEdit) {
         setFormValues({
           name: auth.currentUser.displayName,
-          date: "",
-          status: "",
+          date: '',
+          status: '',
         });
       }
     } catch (error) {
-      console.error("Error posting status:", error);
+      console.error('Error posting status:', error);
     }
   };
 
   function getMaxDate() {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 

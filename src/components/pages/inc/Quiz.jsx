@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Modal } from "../../organisms/Modal";
+import React, { useEffect, useState } from 'react';
+import { Modal } from '../../organisms/Modal';
 
 export const Quiz = () => {
   const [quiz, setQuiz] = useState([]);
@@ -11,7 +11,7 @@ export const Quiz = () => {
     // Replace with your Google Sheets API key and spreadsheet ID
     const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
     const SPREADSHEET_ID = process.env.REACT_APP_SPREAD_SHEET_ID;
-    const TAB_NAME = "Sheet3"; // or whatever your tab's name is
+    const TAB_NAME = 'Sheet3'; // or whatever your tab's name is
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -19,14 +19,15 @@ export const Quiz = () => {
           `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${TAB_NAME}!A1:F10?key=${API_KEY}`
         )
           .then((response) => response.json())
-          .then((data) => { setQuiz(data.values) })
-          .catch((error) => console.error("Error fetching data:", error));
+          .then((data) => {
+            setQuiz(data.values);
+          })
+          .catch((error) => console.error('Error fetching data:', error));
         setLoading(false);
-      }
-      catch (error) {
+      } catch (error) {
         console.log(error);
       }
-    }
+    };
     fetchData();
   }, []);
   const handleAnswerChange = (e, questionIndex) => {
@@ -49,30 +50,35 @@ export const Quiz = () => {
     setIsModalOpen(true);
 
     const data = {
-      sheetName: "Marks",
-      score: score
+      sheetName: 'Marks',
+      score: score,
     };
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwGMNYOC26_sohGkqU-vsPM9Za-GhzSMG9oHJHsEdTtqpY2sgqqJ_lpzyaOZoisIK-b/exec', {
-        method: "POST",
-        mode:"no-cors",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+      const response = await fetch(
+        'https://script.google.com/macros/s/AKfycbwGMNYOC26_sohGkqU-vsPM9Za-GhzSMG9oHJHsEdTtqpY2sgqqJ_lpzyaOZoisIK-b/exec',
+        {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       if (!response.ok) {
-        console.log("HTTP Status:", response.status, response.statusText);
-        throw new Error("Network response was not ok");
+        console.log('HTTP Status:', response.status, response.statusText);
+        throw new Error('Network response was not ok');
       }
 
       const responseBody = await response.json();
-      console.log("Fetch response:", responseBody);
-
+      console.log('Fetch response:', responseBody);
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error.message);
+      console.error(
+        'There was a problem with the fetch operation:',
+        error.message
+      );
     }
   };
 
@@ -81,7 +87,7 @@ export const Quiz = () => {
       {loading ? (
         <div
           className="d-flex align-items-center justify-content-center w-100"
-          style={{ height: "100vh" }}
+          style={{ height: '100vh' }}
         >
           <div className="spinner-border " role="status">
             <span className="visually-hidden">Loading...</span>
@@ -149,10 +155,7 @@ export const Quiz = () => {
                   </div>
                 </div>
               ))}
-              <button
-                className="btn btn-warning mb-3"
-                onClick={handleSubmit}
-              >
+              <button className="btn btn-warning mb-3" onClick={handleSubmit}>
                 Submit
               </button>
             </form>

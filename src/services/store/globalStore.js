@@ -6,18 +6,19 @@ const useAuthStore = create((set) => ({
   setNewUser: (user) => set({ newUser: user }),
   parttimer_consent: null,
   setParttimer_consent: (consent) => set({ parttimer_consent: consent }),
-  loading: false, 
-  setLoading: (isLoading) => set({ loading: isLoading }), 
+  loading: false,
+  setLoading: (isLoading) => set({ loading: isLoading }),
   myWorkData: null,
-  setMyWorkData: (work) => set({myWorkData: work}),
+  setMyWorkData: (work) => set({ myWorkData: work }),
   teamDetails: null,
-  setTeamDetails: (team) => set({teamDetails: team}),
+  setTeamDetails: (team) => set({ teamDetails: team }),
   selectedAcsStatusDate: null,
-  setSelectedAcsStatusDate: (date) => set({selectedAcsStatusDate: date}),
+  setSelectedAcsStatusDate: (date) => set({ selectedAcsStatusDate: date }),
   selectedUpdateStatusDate: null,
-  setSelectedUpdateStatusDate: (date) => set({selectedUpdateStatusDate: date}),
+  setSelectedUpdateStatusDate: (date) =>
+    set({ selectedUpdateStatusDate: date }),
   collegesList: [],
-  setcollegesList: (colleges) => set({collegesList: colleges}),
+  setcollegesList: (colleges) => set({ collegesList: colleges }),
 }));
 
 export default useAuthStore;

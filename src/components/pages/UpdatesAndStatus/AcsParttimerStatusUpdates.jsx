@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
-import InputField from "../../organisms/InputField";
-import Toast from "../../organisms/Toast";
-import { useApi } from "../../../hooks/useApi";
-import TextAreaField from "../../atoms/TextAreaField";
+import React, { useEffect, useState } from 'react';
+import InputField from '../../organisms/InputField';
+import Toast from '../../organisms/Toast';
+import { useApi } from '../../../hooks/useApi';
+import TextAreaField from '../../atoms/TextAreaField';
 
 const AcsParttimerStatusUpdates = () => {
   const [showToast, setShowToast] = useState(false);
 
-  const [date, setDate] = useState("");
-  const [name, setName] = useState("");
-  const [studentGroup, setStudentGroup] = useState("");
-  const [applications, setApplications] = useState("");
-  const [easyApply, setEasyApply] = useState("");
-  const [connectMessages, setConnectMessages] = useState("");
-  const [directMessages, setDirectMessages] = useState("");
-  const [reason, setReason] = useState("");
-  const [status, setStatus] = useState("");
+  const [date, setDate] = useState('');
+  const [name, setName] = useState('');
+  const [studentGroup, setStudentGroup] = useState('');
+  const [applications, setApplications] = useState('');
+  const [easyApply, setEasyApply] = useState('');
+  const [connectMessages, setConnectMessages] = useState('');
+  const [directMessages, setDirectMessages] = useState('');
+  const [reason, setReason] = useState('');
+  const [status, setStatus] = useState('');
 
   const { loading, callApi } = useApi();
   const [fieldErrors, setFieldErrors] = useState({});
-  const [toastMsg,setToastMsg] = useState(null);
+  const [toastMsg, setToastMsg] = useState(null);
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors(prevErrors => ({
+    setFieldErrors((prevErrors) => ({
       ...prevErrors,
       [fieldName]: error,
     }));
@@ -35,56 +35,57 @@ const AcsParttimerStatusUpdates = () => {
     connectMessages,
     directMessages,
     reason,
-    status
+    status,
   };
   useEffect(() => {
     if (parseInt(applications) >= 20) {
-      setReason("N/A");
+      setReason('N/A');
     }
-  },[applications])
+  }, [applications]);
   const allFieldsFilled = Object.values(fields).every(Boolean);
-  const hasErrors = Object.values(fieldErrors).some(error => error);
-  const disableButton = !allFieldsFilled || hasErrors || loading || status.length <= 0;
+  const hasErrors = Object.values(fieldErrors).some((error) => error);
+  const disableButton =
+    !allFieldsFilled || hasErrors || loading || status.length <= 0;
   const resetForm = () => {
-    setDate("");
-    setName("");
-    setStudentGroup("");
-    setApplications("");
-    setEasyApply("");
-    setConnectMessages("");
-    setDirectMessages("");
-    setReason("");
-    setStatus("");
+    setDate('');
+    setName('');
+    setStudentGroup('');
+    setApplications('');
+    setEasyApply('');
+    setConnectMessages('');
+    setDirectMessages('');
+    setReason('');
+    setStatus('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!allFieldsFilled || hasErrors) return;
     const formData = new FormData();
-    formData.append("date", date);
-    formData.append("name", name);
-    formData.append("studentGroup", studentGroup);
-    formData.append("applications", applications);
-    formData.append("easyApply", easyApply);
-    formData.append("connectMessages", connectMessages);
-    formData.append("directMessages", directMessages);
+    formData.append('date', date);
+    formData.append('name', name);
+    formData.append('studentGroup', studentGroup);
+    formData.append('applications', applications);
+    formData.append('easyApply', easyApply);
+    formData.append('connectMessages', connectMessages);
+    formData.append('directMessages', directMessages);
     if (parseInt(applications) < 20) {
-      formData.append("reason", reason);
+      formData.append('reason', reason);
     }
-    formData.append("status", status);
-    formData.append("sheetName", "Part Timer Status");
+    formData.append('status', status);
+    formData.append('sheetName', 'Part Timer Status');
 
     try {
       await callApi(formData);
       resetForm();
-      setToastMsg("Data successfully submitted!");
+      setToastMsg('Data successfully submitted!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
-      setToastMsg("Something went wrong!")
+      setToastMsg('Something went wrong!');
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
   };
 
@@ -175,15 +176,23 @@ const AcsParttimerStatusUpdates = () => {
                 onChange={(e) => setStatus(e.target.value)}
               />
               <div className="form-group py-3">
-                <button type="submit" className="btn btn-warning shadow w-100" disabled={disableButton}>
-                  {loading ? "Loading..." : "Submit"}
+                <button
+                  type="submit"
+                  className="btn btn-warning shadow w-100"
+                  disabled={disableButton}
+                >
+                  {loading ? 'Loading...' : 'Submit'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
+      <Toast
+        show={showToast}
+        message={toastMsg}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };

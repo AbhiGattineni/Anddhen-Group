@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
+import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading, error } = useAuth();
@@ -27,6 +28,10 @@ const ProtectedRoute = ({ children }) => {
   }
 
   return children;
+};
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default ProtectedRoute;

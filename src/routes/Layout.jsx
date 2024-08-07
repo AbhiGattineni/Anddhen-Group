@@ -1,7 +1,7 @@
-import React from "react";
-import Navbar from "src/components/organisms/Navbar";
-import Footer from "src/components/organisms/Footer";
-import { Outlet, useLocation } from "react-router-dom";
+import React from 'react';
+import Navbar from 'src/components/organisms/Navbar';
+import Footer from 'src/components/organisms/Footer';
+import { Outlet, useLocation } from 'react-router-dom';
 
 const Layout = () => {
   const location = useLocation();
