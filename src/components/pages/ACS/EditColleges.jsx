@@ -107,7 +107,6 @@ export const EditColleges = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('Success:', data);
         setToast({ show: true, message: 'College successfully updated!' });
         setTimeout(() => {
           setToast({ show: false, message: '' });
@@ -159,7 +158,6 @@ export const EditColleges = () => {
       });
   };
 
-  // console.log(Object.values(collegeData).every(clg => clg.length));
   return (
     <div className="container mt-2">
       {loading ? (

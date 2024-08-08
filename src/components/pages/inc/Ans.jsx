@@ -7,7 +7,7 @@ import service3 from '../../images/services3.jpg';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 
-export const AnddhenNriServices = () => {
+export const Ans = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
 
@@ -163,4 +163,4 @@ export const AnddhenNriServices = () => {
   );
 };
 
-export default AnddhenNriServices;
+export default Ans;

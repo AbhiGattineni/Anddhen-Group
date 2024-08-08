@@ -100,7 +100,6 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
       upload_data.debited_amount = parseFloat(amount);
     }
 
-    console.log(upload_data);
     createTransaction(upload_data);
     resetForm();
     toggleModal();

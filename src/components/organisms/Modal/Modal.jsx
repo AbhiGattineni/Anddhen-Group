@@ -2,7 +2,6 @@ import './Modal.css';
 
 const Modal = ({ show, onClose, children }) => {
   if (!show) {
-    console.log('Modal is not visible');
     return null;
   }
 

@@ -2,7 +2,6 @@ import { recipients } from '../../dataconfig';
 import emailjs from 'emailjs-com';
 
 export const sendEmail = (application, data) => {
-  console.log('data : ', data);
   recipients.forEach((emailJs_email) => {
     emailjs
       .send(

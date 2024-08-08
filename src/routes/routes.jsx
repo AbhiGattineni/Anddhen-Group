@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { createBrowserRouter } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
 import Home from 'src/components/pages/Home';
@@ -26,8 +25,9 @@ import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess'
 import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';
 import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard';
 import { Colleges } from 'src/components/SuperAdmin/ACS/Colleges/Colleges';
+import { Profile } from 'src/components/pages/Auth/Profile';
 import { Ats } from 'src/components/pages/inc/Ats';
-import Ans from 'src/components/pages/inc/Ans';
+import { Ans } from 'src/components/pages/inc/Ans';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +41,14 @@ const router = createBrowserRouter([
       { path: '/login', element: <Login /> },
       { path: '/register', element: <Register /> },
       { path: '/resetpassword', element: <ForgotPassword /> },
+      {
+        path: '/profile',
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: '/employeedashboard',
         element: (

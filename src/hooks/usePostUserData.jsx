@@ -11,11 +11,13 @@ const usePostUserData = () => {
       const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
       const requiredUserData = {
         user_id: userData.uid,
-        full_name: userData.displayName,
-        first_name: first_name || null,
-        last_name: last_name || null,
+        full_name: userData.displayName || userData.full_name || null,
+        first_name: first_name || userData.first_name || null,
+        last_name: last_name || userData.last_name || null,
+        phone_country_code: userData.phone_country_code || null,
+        phone_number: userData.phone_number || null,
         email_id: userData.email,
-        enrolled_services: sessionStorage.getItem('preLoginPath'),
+        enrolled_services: localStorage.getItem('preLoginPath'),
       };
 
       if (requiredUserData.full_name) {
@@ -42,8 +44,8 @@ const usePostUserData = () => {
         );
       }
       const responseData = await response.json();
-      console.log('response data', responseData);
       setResponse(responseData);
+      return responseData;
     } catch (error) {
       setError(error);
       console.error('API call error:', error);

@@ -63,12 +63,10 @@ export const AddColleges = () => {
       !Object.values(fieldErrors).some(Boolean)
     );
   };
-  console.log(fieldErrors);
   const handleSubmit = (event) => {
     event.preventDefault();
 
     const jsonPayload = JSON.stringify(formData);
-    console.log(jsonPayload);
 
     fetch(`${API_BASE_URL}/colleges/create/`, {
       method: 'POST',
@@ -91,7 +89,6 @@ export const AddColleges = () => {
         return response.json();
       })
       .then((data) => {
-        console.log('Success:', data);
         setFormData({
           college_name: '',
           website_link: '',

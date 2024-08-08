@@ -91,6 +91,7 @@ const InputField = ({ value, ...props }) => {
     'course_name',
     'amount',
     'description',
+    'phone_country_code',
     'link',
     'college_label',
   ];
@@ -140,10 +141,14 @@ const InputField = ({ value, ...props }) => {
     }
 
     if (
-      ['phone', 'college_phone'].includes(props.name) &&
+      ['phone', 'college_phone', 'phone_number'].includes(props.name) &&
       !phonePattern.test(value)
     ) {
       return 'Enter valid phone number';
+    }
+
+    if (['phone_number'].includes(props.name) && value.length !== 10) {
+      return 'Enter 10 digit phone number';
     }
 
     if (['college_name'].includes(props.name) && value.length <= 3) {
