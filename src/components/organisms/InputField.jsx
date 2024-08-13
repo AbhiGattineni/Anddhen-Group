@@ -8,7 +8,6 @@ const InputField = ({ value, ...props }) => {
     /^[+]?[(]?[0-9]{3}[)]?[-\s.?]?[0-9]{3}[-\s.?]?[0-9]{4,6}$/im;
   const linkRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
   const scoreRegex = /^\d{1,3}(?:\.\d*)?$/;
-  // const yearPattren = /^(19|20)[\d]{2,2}$/;
   const ref = useRef(null);
   const linkFields = [
     'website_link',
@@ -98,12 +97,9 @@ const InputField = ({ value, ...props }) => {
 
   const validateInput = () => {
     const today = new Date();
-    const value = props.value || '';
-    const inputValue = new Date(value);
     today.setHours(0, 0, 0, 0);
-    inputValue.setHours(0, 0, 0, 0);
 
-    if (inputFields.includes(props.name) && value.length <= 0) {
+    if (inputFields.includes(props.name) && !value) {
       return 'This field should not be empty';
     }
 
@@ -132,7 +128,7 @@ const InputField = ({ value, ...props }) => {
       return 'Enter a valid email address';
     }
 
-    if (props.name === 'password' && value.length <= 0) {
+    if (props.name === 'password' && !value) {
       return 'Password should not be empty';
     }
 
@@ -147,12 +143,8 @@ const InputField = ({ value, ...props }) => {
       return 'Enter valid phone number';
     }
 
-    if (['phone_number'].includes(props.name) && value.length !== 10) {
+    if (props.name === 'phone_number' && value.length !== 10) {
       return 'Enter 10 digit phone number';
-    }
-
-    if (['college_name'].includes(props.name) && value.length <= 3) {
-      return 'College name should contain more than 3 characters';
     }
 
     if (
@@ -165,35 +157,42 @@ const InputField = ({ value, ...props }) => {
     if (linkFields.includes(props.name) && !linkRegex.test(value)) {
       return 'Link should include with http/https';
     }
+
     if (scoreFields.includes(props.name) && !scoreRegex.test(value)) {
       return 'Score should not be greater that 3 digits';
     }
+
     if (
       ['application_UG_fee', 'application_graduation_fee'].includes(
         props.name
       ) &&
-      value.length <= 0
+      !value
     ) {
       return 'Fee should be valid';
     }
 
     if (
-      (props.name === 'date' || props.name === 'transaction_datetime') &&
-      inputValue > today
+      ['date', 'transaction_datetime'].includes(props.name) &&
+      new Date(value) > today
     ) {
       return 'Date cannot be in the future';
     }
+
     if (props.name === 'year' && value.length !== 4) {
       return 'Enter valid year';
     }
+
     return null;
   };
 
   const handleBlur = () => {
     const currentError = validateInput();
     setError(currentError);
-    props.setError(currentError);
+    if (props.setError) {
+      props.setError(currentError);
+    }
   };
+
   return (
     <div className={`form-group ${props.className}`}>
       <label className="mb-1">
@@ -211,14 +210,14 @@ const InputField = ({ value, ...props }) => {
         className="form-control"
         placeholder={props.placeholder}
         name={props.name}
-        value={props.value}
+        value={value}
         onChange={props.onChange}
-        onBlur={props.notRequired && !props.value ? null : handleBlur}
+        onBlur={handleBlur}
         onFocus={props.onFocus}
         disabled={props.disabled}
-        required={props.notRequired ? false : true}
+        required={!props.notRequired}
       />
-      {error ? <span className="text-danger">{error}</span> : null}
+      {error && <span className="text-danger">{error}</span>}
     </div>
   );
 };
@@ -228,14 +227,14 @@ InputField.propTypes = {
   name: PropTypes.string.isRequired,
   data: PropTypes.any,
   type: PropTypes.string.isRequired,
-  placeholder: PropTypes.string, // Add placeholder prop validation
-  onChange: PropTypes.func.isRequired, // Add onChange prop validation
-  onFocus: PropTypes.func, // Add onFocus prop validation
-  notRequired: PropTypes.bool, // Add notRequired prop validation
-  disabled: PropTypes.bool, // Add disabled prop validation
-  setError: PropTypes.func, // Add setError prop validation
-  className: PropTypes.string, // Add className prop validation
-  label: PropTypes.string.isRequired, // Add label prop validation
+  placeholder: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  onFocus: PropTypes.func,
+  notRequired: PropTypes.bool,
+  disabled: PropTypes.bool,
+  setError: PropTypes.func,
+  className: PropTypes.string,
+  label: PropTypes.string.isRequired,
 };
 
 export default InputField;
