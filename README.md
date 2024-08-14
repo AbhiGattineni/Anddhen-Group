@@ -22,23 +22,23 @@ This Github link [https://github.com/AbhiGattineni/Anddhen-Group](https://github
 
 **Click on the "Code" Button**
 
-![alt text](./READMEimages/image-4.png)
+![alt text](image-4.png)
 
 it will open a window
 
 **Copy the link From the Window**
 
-![alt text](./READMEimages/image-3.png)
+![alt text](image-3.png)
 
 **Create a new folder with Name Related to the Project(Ex:AnddhenGroup)**
 
-![alt text](./READMEimages/image-5.png)
+![alt text](image-5.png)
 
 **Now open Command prompt using cmd command and press Enter**
 
 ### `cmd`
 
-![alt text](./READMEimages/image-6.png)
+![alt text](image-6.png)
 
 it will take you to command prompt window
 
@@ -46,7 +46,7 @@ it will take you to command prompt window
 
 ### `git init`
 
-![alt text](./READMEimages/image-7.png)
+![alt text](image-7.png)
 
 wait for the command to exacute
 
@@ -54,13 +54,13 @@ wait for the command to exacute
 
 ### `git clone <copied link from git hub>`
 
-![alt text](./READMEimages/image-8.png)
+![alt text](image-8.png)
 
 **Enter command "code ." and press enter**
 
 ### `code .`
 
-![alt text](./READMEimages/image-9.png)
+![alt text](image-9.png)
 
 this command will take you to vscode
 
@@ -72,7 +72,7 @@ You can open vscode directly and open the folder ""Anddhen-group" which is prese
 
 ### `.env`
 
-![alt text](./READMEimages/image-12.png)
+![alt text](image-12.png)
 
 this file is used to maintain the credentials
 
@@ -84,7 +84,7 @@ after completing of the above steps
 
 **Open a new temrminal in vscode using this steps**
 
-![alt text](./READMEimages/image-11.png)
+![alt text](image-11.png)
 
 **OR**
 
@@ -92,13 +92,13 @@ after completing of the above steps
 
 **open a Git bash terminal**
 
-![alt text](./READMEimages/image-13.png)
+![alt text](image-13.png)
 
 **Enter the command npm install**
 
 ### `npm install`
 
-![alt text](./READMEimages/image-14.png)
+![alt text](image-14.png)
 
 this command is used to install all packages required
 
@@ -110,7 +110,7 @@ after the execution of the command
 
 ### `npm start`
 
-![alt text](./READMEimages/image-15.png)
+![alt text](image-15.png)
 
 This will Runs the app in the development mode.\
 
@@ -119,3 +119,103 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 
 You may also see any lint errors in the console.
+
+## Steps to downlod the Backend
+
+Follow the Steps correctly to download the Back end
+
+**Click the link given below**
+
+### `https://github.com/AbhiGattineni/Django_Backend`
+
+This Github link [https://github.com/AbhiGattineni/Django_Backend](https://github.com/AbhiGattineni/Django_Backend) will open the files of AnddhenGroup Back end.
+
+**Click on the Code Button**
+
+![alt text](image-16.png)
+
+it wil open an a window
+
+![alt text](image-17.png)
+
+**Copy the link From the Window**
+
+**Go to the folder which was created(Ex:AnddhenGroup)**
+
+![alt text](image-5.png)
+
+**Now open Command prompt using cmd command and press Enter**
+
+### `cmd`
+
+![alt text](image-6.png)
+
+**Enter command "git clone <copied link from git hub>" and press enter**
+
+### `git clone <link>`
+
+![alt text](image-19.png)
+
+wait till the command to exacute
+
+**Enter command "cd Django_Backend" and press enter**
+
+### `cd Django_Backend`
+
+![alt text](image-18.png)
+
+**Enter command "code ." and press enter**
+
+### `cd Django_Backend`
+
+![alt text](image-20.png)
+
+this command will take you to vs code
+
+**OR**
+
+You can open vs code directly and open the folder ""Anddhen-group" which is present in the Folder which You have created.
+
+**create a file in the Repositery with Name .env**
+
+### `.env`
+
+![alt text](image-12.png)
+
+this file is used to Maintain the credentials
+
+**Note: Create the file in the Anddhen-group folder not in any sub folders**
+
+**Ask the Credentials from the authorised person and paste them in the .env file and save the file**
+
+after completing of the above steps
+
+**Open a New temrminal in vscode using this steps**
+
+![alt text](image-11.png)
+
+**OR**
+
+**use short cut ctrl + shift + ` to open new terminal**
+
+**open a Git bash terminl**
+
+![alt text](image-13.png)
+
+**Enter the command "pip install -r requirements.txt"**
+
+### `pip install -r requirements.txt`
+
+![alt text](image-21.png)
+
+this command is used to install all packages required
+
+**Note: Make sure that all packages are installed without any errors**
+
+after the complete execution of the command
+
+**Enter the command "python manage.py runserver"**
+
+### `python manage.py runserver`
+
+this command will add backend functionality.
