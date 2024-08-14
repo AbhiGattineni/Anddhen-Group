@@ -23,224 +23,162 @@ import ErrorPage from 'src/components/pages/ErrorPage';
 import AdminPage from 'src/components/pages/Admin/AdminPage';
 import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess';
 import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';
-import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard';
 import { Colleges } from 'src/components/SuperAdmin/ACS/Colleges/Colleges';
 import { Profile } from 'src/components/pages/Auth/Profile';
 import { Ats } from 'src/components/pages/inc/Ats';
 import { Ans } from 'src/components/pages/inc/Ans';
+import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Layout />,
-    errorElement: <ErrorPage />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: 'about', element: <About /> },
-      { path: 'contact', element: <Contact /> },
-      { path: '/login', element: <Login /> },
-      { path: '/register', element: <Register /> },
-      { path: '/resetpassword', element: <ForgotPassword /> },
-      {
-        path: '/profile',
-        element: (
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: '/employeedashboard',
-        element: (
-          <ProtectedRoute>
-            <EmployeeDashboard />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-
-  {
-    path: '/ass',
-    element: <Layout />,
-    children: [{ index: true, element: <Ass /> }],
-  },
-
-  {
-    path: '/ams',
-    element: <Layout />,
-    children: [{ index: true, element: <Ams /> }],
-  },
-
-  {
-    path: '/aps',
-    element: <Layout />,
-    children: [{ index: true, element: <Aps /> }],
-  },
-
-  {
-    path: '/ati',
-    element: <Layout />,
-    children: [{ index: true, element: <Ati /> }],
-  },
-  {
-    path: '/ats',
-    element: <Layout />,
-    children: [{ index: true, element: <Ats /> }],
-  },
-  {
-    path: '/ans',
-    element: <Layout />,
-    children: [{ index: true, element: <Ans /> }],
-  },
-  {
-    path: '/acs',
-    element: <Layout />,
-    children: [
-      { index: true, element: <Acs /> },
-      { path: 'jobapplication', element: <JobApplicationRegistration /> },
-      {
-        path: 'jobapplication/studentportal',
-        element: (
-          <ProtectedRoute>
-            <StudentPortal />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'educationconsulting',
-        element: (
-          <ProtectedRoute>
-            <EducationConsultant />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'jobapplication/parttimerportal',
-        element: (
-          <ProtectedRoute>
-            <PartTimerPortal />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-  {
-    path: '/admin',
-    element: <Layout />,
-    children: [
-      {
-        index: true,
-        element: (
-          <ProtectedRoute>
-            <AdminPage />
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-  {
-    path: '/superadmin',
-    element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
-    ),
-    children: [
-      { index: true, element: <SuperAdmin /> },
-      { path: 'acs_consultants', element: <Consultants /> },
-      { path: 'roleaccess', element: <RolesAndAccess /> },
-      { path: 'transactions', element: <Transaction /> },
-      { path: 'acs/colleges', element: <Colleges /> },
-    ],
-  },
-
-  // {
-  //   path: "/acs/educationconsulting/addcolleges",
-  //   element: (
-  //     <MainLayout>
-  //       <AddColleges />
-  //     </MainLayout>
-  //   ),
-  // },
-
-  // {
-  //   path: "/acs/educationconsulting/editcolleges",
-  //   element: (
-  //     <MainLayout>
-  //       <EditColleges />
-  //     </MainLayout>
-  //   ),
-  // },
-
-  {
-    /* {
-           path:"/updatesandstatus"
-          ,element:
-            <MainLayout>
-              <UpdatesAndStatus />
-            </MainLayout>
-           },
-       
-
+const createRoutes = (currentRole, filteredRouteConfig) =>
+  createBrowserRouter([
+    {
+      path: '/',
+      element: <Layout />,
+      errorElement: <ErrorPage />,
+      children: [
+        { index: true, element: <Home /> },
+        { path: 'about', element: <About /> },
+        { path: 'contact', element: <Contact /> },
+        { path: '/login', element: <Login /> },
+        { path: '/register', element: <Register /> },
+        { path: '/resetpassword', element: <ForgotPassword /> },
         {
-           path:"/updatesandstatus/managers/updates"
-          ,element:
-            <MainLayout>
-              <AcsManagerUpdates />
-            </MainLayout>
-           },
-       
-        {
-           path:"/updatesandstatus/parttimers/updates"
-          ,element:
-            <MainLayout>
-              <AcsParttimerStatusUpdates />
-            </MainLayout>
-           },
-       
-        {
-           path:"/updatesandstatus/interns/updates"
-          ,element:
-            <MainLayout>
-              <AssInternUpdates />
-            </MainLayout>
-           },
-        */
-  },
-  {
-    /* {
-           path:"/test"
-          ,element:
-            <MainLayout>
-              <Exam />
-            </MainLayout>
-           },
-        */
-  },
-  {
-    /* {
-           path:"/admin_portal"
-          ,element:
-            <MainLayout>
-              <AdminPortal />
-            </MainLayout>
-           },
-        */
-  },
-  // {
-  //   path: "/admin",
-  //   element: (
-  //     <ProtectedRoute>
-  //       <MainLayout logout={true}>
-  //         <AcsAdmin />
-  //       </MainLayout>
-  //     </ProtectedRoute>
-  //   ),
-  // },
-  {
-    /* {  path:"/quiz" ,element:<Quiz /> }, /> */
-  },
-]);
+          path: '/profile',
+          element: (
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          ),
+        },
+        // {
+        //   path: '/employeedashboard',
+        //   element: (
+        //     <ProtectedRoute>
+        //       <EmployeeDashboard />
+        //     </ProtectedRoute>
+        //   ),
+        // },
+      ],
+    },
 
-export default router;
+    {
+      path: '/ass',
+      element: <Layout />,
+      children: [{ index: true, element: <Ass /> }],
+    },
+
+    {
+      path: '/ams',
+      element: <Layout />,
+      children: [{ index: true, element: <Ams /> }],
+    },
+
+    {
+      path: '/aps',
+      element: <Layout />,
+      children: [{ index: true, element: <Aps /> }],
+    },
+
+    {
+      path: '/ati',
+      element: <Layout />,
+      children: [{ index: true, element: <Ati /> }],
+    },
+    {
+      path: '/ats',
+      element: <Layout />,
+      children: [{ index: true, element: <Ats /> }],
+    },
+    {
+      path: '/ans',
+      element: <Layout />,
+      children: [{ index: true, element: <Ans /> }],
+    },
+    {
+      path: '/acs',
+      element: <Layout />,
+      children: [
+        { index: true, element: <Acs /> },
+        { path: 'jobapplication', element: <JobApplicationRegistration /> },
+        {
+          path: 'jobapplication/studentportal',
+          element: (
+            <ProtectedRoute>
+              <StudentPortal />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: 'educationconsulting',
+          element: (
+            <ProtectedRoute>
+              <EducationConsultant />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: 'jobapplication/parttimerportal',
+          element: (
+            <ProtectedRoute>
+              <PartTimerPortal />
+            </ProtectedRoute>
+          ),
+        },
+      ],
+    },
+    {
+      path: '/admin',
+      element: <Layout />,
+      children: [
+        {
+          index: true,
+          element: (
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          ),
+        },
+      ],
+    },
+    {
+      path: `/${currentRole}`,
+      element: (
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      ),
+      children: Object.entries(filteredRouteConfig).map(([path, element]) => ({
+        path: path === '/' ? '' : path,
+        element: element,
+      })),
+    },
+  ]);
+
+const DynamicRoutes = () => {
+  let fullRouteMap = {
+    '/': <SuperAdmin />,
+    'acs/consultants': <Consultants />,
+    roleaccess: <RolesAndAccess />,
+    transactions: <Transaction />,
+    'acs/colleges': <Colleges />,
+  };
+
+  const currentRole = localStorage.getItem('roles');
+  const current_roles = currentRole.split(',');
+
+  let roles = null;
+  if (current_roles.includes('superadmin')) {
+    roles = 'superadmin';
+  } else if (current_roles.includes('employeedashboard')) {
+    roles = 'employeedashboard';
+    fullRouteMap = Object.fromEntries(
+      Object.entries(fullRouteMap).filter(([path]) =>
+        current_roles.includes(path)
+      )
+    );
+    fullRouteMap['/'] = <EmployeeDashboard />;
+  }
+  return createRoutes(roles, fullRouteMap);
+};
+
+export default DynamicRoutes;
