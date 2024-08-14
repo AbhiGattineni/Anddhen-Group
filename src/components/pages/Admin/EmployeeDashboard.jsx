@@ -5,6 +5,8 @@ import { useStatusCalendar } from 'src/react-query/useStatusCalender';
 import { useStatusUpdateMutation } from 'src/react-query/useStatusUpdateMutation';
 import { useQueryClient } from 'react-query';
 import useAuthStore from 'src/services/store/globalStore';
+import AssignCards from './AssignCards';
+import { adminPlates } from 'src/dataconfig';
 
 export const EmployeeDashboard = () => {
   const empName = '';
@@ -25,6 +27,12 @@ export const EmployeeDashboard = () => {
     (state) => state.selectedAcsStatusDate
   );
   const formattedData = data ? data.map((item) => [item.date, item.name]) : [];
+
+  const currentRole = localStorage.getItem('roles');
+  const current_roles = currentRole.split(',');
+  const filteredPlates = adminPlates.filter((plate) =>
+    current_roles.includes(plate.route)
+  );
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -168,6 +176,7 @@ export const EmployeeDashboard = () => {
   return (
     <div className="container">
       <div className="my-3">
+        <AssignCards adminPlates={filteredPlates} />
         <form className="form">
           <h2>Status Update Form</h2>
           <div className="row">
