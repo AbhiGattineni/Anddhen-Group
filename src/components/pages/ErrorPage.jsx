@@ -18,7 +18,7 @@ const ErrorPage = ({
       <div className="text-center">
         <h1 className="display-1 fw-bold">{errorCode}</h1>
         <p className="fs-3">
-          <span className="text-danger">Oops!</span> {title}
+          <span className="text-danger"></span> {title}
         </p>
         <p className="lead">{message}</p>
         <Link to="/" className="btn btn-primary me-3">

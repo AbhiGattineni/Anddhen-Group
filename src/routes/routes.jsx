@@ -164,7 +164,7 @@ const DynamicRoutes = () => {
   };
 
   const currentRole = localStorage.getItem('roles');
-  const current_roles = currentRole.split(',');
+  const current_roles = currentRole ? currentRole.split(',') : [];
 
   let roles = null;
   if (current_roles.includes('superadmin')) {
