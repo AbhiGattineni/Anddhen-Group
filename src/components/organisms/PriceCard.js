@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 export const PriceCard = ({ data }) => {
   return (
@@ -13,13 +14,11 @@ export const PriceCard = ({ data }) => {
           <div
             className={
               window.innerWidth <= 768
-                ? ""
-                : "d-flex justify-content-center align-self-center"
+                ? ''
+                : 'd-flex justify-content-center align-self-center'
             }
           >
-            <h4>
-              {data.package_name}
-            </h4>
+            <h4>{data.package_name}</h4>
           </div>
           <div className="text-start p-3">
             {data.includes.map((feature, index) => (
@@ -31,7 +30,6 @@ export const PriceCard = ({ data }) => {
               </div>
             ))}
           </div>
-
 
           <div className="text-start p-3">
             {data?.excludes?.map((feature, index) => (
@@ -47,4 +45,8 @@ export const PriceCard = ({ data }) => {
       </div>
     </div>
   );
+};
+
+PriceCard.propTypes = {
+  data: PropTypes.object.isRequired,
 };

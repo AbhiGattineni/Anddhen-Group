@@ -1,5 +1,5 @@
 // DynamicForm.js
-import React from "react";
+import React from 'react';
 
 const BasicForm = ({ formData, onChange, onSubmit, errors }) => {
   return (
@@ -8,7 +8,7 @@ const BasicForm = ({ formData, onChange, onSubmit, errors }) => {
         <div className="form-group" key={key}>
           <label>{key.charAt(0).toUpperCase() + key.slice(1)}:</label>
           <input
-            type={key === "email" ? "email" : "text"}
+            type={key === 'email' ? 'email' : 'text'}
             className="form-control"
             name={key}
             value={value}

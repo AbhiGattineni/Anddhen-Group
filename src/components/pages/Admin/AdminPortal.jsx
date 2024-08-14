@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import LoadingSpinner from "src/components/atoms/LoadingSpinner/LoadingSpinner";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 
 export const AdminPortal = () => {
   const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
   const spreadsheetId = process.env.REACT_APP_SPREAD_SHEET_ID;
-  const name = "Manager Status";
+  const name = 'Manager Status';
 
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

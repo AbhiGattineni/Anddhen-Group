@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import InputField from "../../organisms/InputField";
-import { Link } from "react-router-dom";
-import useAuthStore from "src/services/store/globalStore";
+import React, { useState } from 'react';
+import InputField from '../../organisms/InputField';
+import { Link } from 'react-router-dom';
+import useAuthStore from 'src/services/store/globalStore';
+
+import PropTypes from 'prop-types';
 
 const LoginForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -42,26 +44,27 @@ const LoginForm = ({ onSubmit }) => {
         placeholder="Enter valid email address"
         type="email"
         value={formData.email}
-        onChange={(e) => handleChange("email", e.target.value)}
-        setError={(error) => handleFieldError("email", error)}
+        onChange={(e) => handleChange('email', e.target.value)}
+        setError={(error) => handleFieldError('email', error)}
       />
       <div className="position-relative">
         <InputField
           name="password"
           label="Password"
           placeholder="Enter password"
-          type={showPassword ? "text" : "password"}
+          type={showPassword ? 'text' : 'password'}
           value={formData.password}
-          onChange={(e) => handleChange("password", e.target.value)}
+          onChange={(e) => handleChange('password', e.target.value)}
           onFocus={() => setFocus(true)}
-          setError={(error) => handleFieldError("password", error)}
+          setError={(error) => handleFieldError('password', error)}
         />
         {focus && formData.password.length ? (
           <i
             onClick={() => setShowPassword(!showPassword)}
-            className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"
-              } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
-            style={{ top: "35px" }}
+            className={`bi ${
+              showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'
+            } position-absolute end-0 translate-middle-y me-3 mt-3 pb-2 cursor-pointer`}
+            style={{ top: '35px' }}
           ></i>
         ) : null}
       </div>
@@ -81,11 +84,15 @@ const LoginForm = ({ onSubmit }) => {
           className="btn btn-warning shadow w-100 mt-2"
           disabled={!isFormValid()}
         >
-          {loading ? "loading..." : "Submit"}
+          {loading ? 'loading...' : 'Submit'}
         </button>
       </div>
     </form>
   );
+};
+
+LoginForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default LoginForm;

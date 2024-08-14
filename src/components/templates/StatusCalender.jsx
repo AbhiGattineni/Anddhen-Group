@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; // default styling
-import "./StatusCalender.css"; // your custom styling
-import useAuthStore from "src/services/store/globalStore";
+import React, { useEffect, useState } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css'; // default styling
+import './StatusCalender.css'; // your custom styling
+import useAuthStore from 'src/services/store/globalStore';
+
+import PropTypes from 'prop-types';
 
 export const StatusCalendar = ({ data, empName }) => {
+  // Add prop validation for 'data'
+  StatusCalendar.propTypes = {
+    data: PropTypes.array.isRequired,
+    empName: PropTypes.string,
+  };
   const [selectedDate, setSelectedDate] = useState(new Date());
   useEffect(() => {
     useAuthStore.setState({ selectedAcsStatusDate: selectedDate });
@@ -28,11 +35,11 @@ export const StatusCalendar = ({ data, empName }) => {
   const tileClassName = ({ date, view }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (view === "month" && date <= today) {
+    if (view === 'month' && date <= today) {
       if (hasDataForDate(date)) {
-        return "green-day";
+        return 'green-day';
       } else {
-        return "red-day";
+        return 'red-day';
       }
     }
     return null;

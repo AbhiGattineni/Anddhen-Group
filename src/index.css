@@ -31,3 +31,186 @@ code {
 .icon-400 {
   font-size: 30px;
 }
+
+body {
+  overflow-x: hidden;
+}
+
+.section {
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.main-heading {
+  color: rgb(204, 18, 18);
+  font-size: 26px;
+}
+
+.underline {
+  height: 04px;
+  width: 4rem;
+  background-color: #f76c2f;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.bg-c-light {
+  background-color: #f2f2f2;
+}
+
+p {
+  font-size: 14px;
+  color: #262626;
+}
+
+.footer a {
+  color: #fff;
+  text-decoration: none !important;
+}
+
+.footer a:hover {
+  color: gray;
+  text-decoration: none !important;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 2px;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.custom-dropdown::after {
+  display: none !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* SwipeCards.css */
+.swipe-cards-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.swipe-card {
+  width: 300px;
+  margin: 16px;
+}
+
+.swipe-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  margin-top: 16px;
+}
+
+.card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-container.flip .card {
+  transform: rotateY(180deg);
+}
+
+/* .bg-card {
+    background-image: linear-gradient( 174.2deg,  rgba(255,244,228,1) 7.1%, rgba(240,246,238,1) 67.4% );
+} */
+
+.card-body.flip {
+  transform: rotateY(180deg);
+}
+
+.card-review {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: darkgrey lightgrey;
+}
+
+.card-review::-webkit-scrollbar {
+  width: 5px;
+}
+
+.card-review::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 6px;
+}
+
+.card-review::-webkit-scrollbar-track {
+  background-color: lightgrey;
+  border-radius: 6px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+}
+
+.nav-link-highlight {
+  color: white !important;
+  /* Override other styles */
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* This styles the button itself, if needed */
+.navbar-toggler {
+  border-color: white;
+  /* Change border color to white */
+}
+
+/* This targets the icon within the button */
+.navbar-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Alternatively, if using a custom class on the icon span */
+.nav-link-highlight {
+  color: white;
+  /* Ensure this targets the icon's color if applicable */
+}
+
+.carousel-image {
+  height: calc(100vh - 50px);
+}
+
+.modal-background {
+  height: 200px;
+  background-position: center;
+  background-size: cover;
+}
+
+.modal-background h2 {
+  text-shadow: 3px 2px black;
+}

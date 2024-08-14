@@ -1,5 +1,5 @@
 // DynamicTable.js
-import React from "react";
+import React from 'react';
 
 const BasicTable = ({ data, onEdit }) => {
   if (!data.length) return null;
@@ -23,7 +23,7 @@ const BasicTable = ({ data, onEdit }) => {
           <tr key={index}>
             {headers.map((header) => (
               <td key={`${header}-${index}`}>
-                {header === "originalResume" ? (
+                {header === 'originalResume' ? (
                   <a
                     href={item[header]}
                     target="_blank"

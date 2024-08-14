@@ -1,12 +1,12 @@
-import React, { useMemo, useState } from "react";
-import { useQuery } from "react-query";
+import React, { useMemo, useState } from 'react';
+import { useQuery } from 'react-query';
 import {
   useTable,
   useSortBy,
   usePagination,
   useGlobalFilter,
-} from "react-table";
-import { TransactionModal } from "src/components/organisms/Modal/TransactionModal";
+} from 'react-table';
+import { TransactionModal } from 'src/components/organisms/Modal/TransactionModal';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const Transaction = () => {
@@ -14,40 +14,38 @@ export const Transaction = () => {
   const [endDate, setEndDate] = useState(null);
   const [filteredTransactions, setFilteredTransactions] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const fetchTransactions = async () => {
     const response = await fetch(`${API_BASE_URL}/transactions/`);
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      throw new Error('Network response was not ok');
     }
     return response.json();
   };
 
   const {
     data: transactions = [], // Provide a default value of an empty array
-    error,
     isLoading,
-  } = useQuery("transactions", fetchTransactions);
+  } = useQuery('transactions', fetchTransactions);
 
   const columns = useMemo(
     () => [
-      { Header: "Sender", accessor: "sender_name" },
-      { Header: "Receiver", accessor: "receiver_name" },
-      { Header: "Transaction ID", accessor: "transaction_id" },
-      { Header: "Accountant Name", accessor: "accountant_name" },
-      { Header: "Transaction Date", accessor: "transaction_datetime" },
-      { Header: "Uploaded Date", accessor: "uploaded_datetime" },
-      { Header: "Credited Amount", accessor: "credited_amount" },
-      { Header: "Debited Amount", accessor: "debited_amount" },
-      { Header: "Payment Type", accessor: "payment_type" },
-      { Header: "Subsidiary", accessor: "subsidiary" },
-      { Header: "Currency", accessor: "currency" },
-      { Header: "Description", accessor: "description" },
+      { Header: 'Sender', accessor: 'sender_name' },
+      { Header: 'Receiver', accessor: 'receiver_name' },
+      { Header: 'Transaction ID', accessor: 'transaction_id' },
+      { Header: 'Accountant Name', accessor: 'accountant_name' },
+      { Header: 'Transaction Date', accessor: 'transaction_datetime' },
+      { Header: 'Uploaded Date', accessor: 'uploaded_datetime' },
+      { Header: 'Credited Amount', accessor: 'credited_amount' },
+      { Header: 'Debited Amount', accessor: 'debited_amount' },
+      { Header: 'Payment Type', accessor: 'payment_type' },
+      { Header: 'Subsidiary', accessor: 'subsidiary' },
+      { Header: 'Currency', accessor: 'currency' },
+      { Header: 'Description', accessor: 'description' },
       {
-        Header: "Total",
-        accessor: "total",
+        Header: 'Total',
+        accessor: 'total',
         Cell: ({ row }) => calculateRunningTotal(row.index),
       },
     ],
@@ -58,9 +56,9 @@ export const Transaction = () => {
     let total = 0;
     for (let i = 0; i <= index && i < transactions.length; i++) {
       const transaction = transactions[i];
-      if (transaction && transaction.transaction_type === "credit") {
+      if (transaction && transaction.transaction_type === 'credit') {
         total += parseFloat(transaction.credited_amount);
-      } else if (transaction && transaction.transaction_type === "debit") {
+      } else if (transaction && transaction.transaction_type === 'debit') {
         total -= parseFloat(transaction.debited_amount);
       }
     }
@@ -70,7 +68,7 @@ export const Transaction = () => {
   const total = useMemo(() => {
     let totalAmount = 0;
     transactions.forEach((transaction) => {
-      if (transaction.transaction_type === "credit") {
+      if (transaction.transaction_type === 'credit') {
         totalAmount += parseFloat(transaction.credited_amount);
       } else {
         totalAmount -= parseFloat(transaction.debited_amount);
@@ -141,7 +139,7 @@ export const Transaction = () => {
                 type="text"
                 className="w-50 form-control"
                 placeholder="Search..."
-                value={globalFilter || ""}
+                value={globalFilter || ''}
                 onChange={(e) => setGlobalFilter(e.target.value)}
               />
               <div className="d-flex flex-column flex-md-row justify-content-center align-items-center w-100 gap-2 gap-md-0">
@@ -152,7 +150,7 @@ export const Transaction = () => {
                     id="startDate"
                     className="form-control"
                     value={
-                      startDate ? startDate.toISOString().split("T")[0] : ""
+                      startDate ? startDate.toISOString().split('T')[0] : ''
                     }
                     onChange={(e) => setStartDate(new Date(e.target.value))}
                   />
@@ -163,7 +161,7 @@ export const Transaction = () => {
                     type="date"
                     id="endDate"
                     className="form-control w-100"
-                    value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                    value={endDate ? endDate.toISOString().split('T')[0] : ''}
                     onChange={(e) => setEndDate(new Date(e.target.value))}
                   />
                 </div>
@@ -186,20 +184,21 @@ export const Transaction = () => {
         <div className="table-responsive">
           <table {...getTableProps()} className="table table-hover m-0">
             <thead className="thead-dark">
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
+              {headerGroups.map((headerGroup, index) => (
+                <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+                  {headerGroup.headers.map((column, index) => (
                     <th
                       className="bg-info text-white"
                       {...column.getHeaderProps(column.getSortByToggleProps())}
+                      key={index}
                     >
-                      {column.render("Header")}
+                      {column.render('Header')}
                       <span>
                         {column.isSorted
                           ? column.isSortedDesc
-                            ? " 🔽"
-                            : " 🔼"
-                          : ""}
+                            ? ' 🔽'
+                            : ' 🔼'
+                          : ''}
                       </span>
                     </th>
                   ))}
@@ -210,29 +209,30 @@ export const Transaction = () => {
               <p className="p-3 fw-bold">loading...</p>
             ) : (
               <tbody {...getTableBodyProps()}>
-                {page.map((row) => {
+                {page.map((row, index) => {
                   prepareRow(row);
                   return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
+                    <tr {...row.getRowProps()} key={index}>
+                      {row.cells.map((cell, index) => {
                         const columnId = cell.column.id;
-                        const isTransactionType = columnId === "transaction_type";
-                        const isTotal = columnId === "total";
+                        const isTransactionType =
+                          columnId === 'transaction_type';
+                        const isTotal = columnId === 'total';
                         const className = isTransactionType
-                          ? row.original.transaction_type === "credit"
-                            ? "bg-success text-white"
-                            : "bg-danger text-white"
+                          ? row.original.transaction_type === 'credit'
+                            ? 'bg-success text-white'
+                            : 'bg-danger text-white'
                           : isTotal
-                          ? row.original.transaction_type === "credit"
-                            ? "text-success fw-bold"
-                            : "text-danger fw-bold"
-                          : "";
+                            ? row.original.transaction_type === 'credit'
+                              ? 'text-success fw-bold'
+                              : 'text-danger fw-bold'
+                            : '';
                         return (
-                          <td {...cell.getCellProps()}>
+                          <td {...cell.getCellProps()} key={index}>
                             <div
                               className={`${className} text-center p-1 rounded-pill`}
                             >
-                              {cell.render("Cell")}
+                              {cell.render('Cell')}
                             </div>
                           </td>
                         );
@@ -251,34 +251,34 @@ export const Transaction = () => {
               onClick={() => gotoPage(0)}
               disabled={!canPreviousPage}
             >
-              {"<<"}
+              {'<<'}
             </button>
             <button
               className="btn btn-outline-secondary mx-1"
               onClick={() => previousPage()}
               disabled={!canPreviousPage}
             >
-              {"<"}
+              {'<'}
             </button>
             <span>
-              Page{" "}
+              Page{' '}
               <strong>
                 {pageIndex + 1} of {pageOptions.length}
-              </strong>{" "}
+              </strong>{' '}
             </span>
             <button
               className="btn btn-outline-secondary mx-1"
               onClick={() => nextPage()}
               disabled={!canNextPage}
             >
-              {">"}
+              {'>'}
             </button>
             <button
               className="btn btn-outline-secondary"
               onClick={() => gotoPage(pageCount - 1)}
               disabled={!canNextPage}
             >
-              {">>"}
+              {'>>'}
             </button>
           </div>
           <div>

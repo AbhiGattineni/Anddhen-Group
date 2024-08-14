@@ -1,38 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { StatusCalendar } from "../templates/StatusCalender";
-import { auth } from "../../services/Authentication/firebase";
-import { useCalendarData } from "../../react-query/useCalenderData";
-import { usePostStatus } from "../../react-query/usePostStatus";
-import { useStatusMutation } from "src/react-query/useStatusMutation";
-import useAuthStore from "src/services/store/globalStore";
-import { useQueryClient } from "react-query";
+import React, { useState, useEffect } from 'react';
+import { StatusCalendar } from '../templates/StatusCalender';
+import { auth } from '../../services/Authentication/firebase';
+import { useCalendarData } from '../../react-query/useCalenderData';
+import { useStatusMutation } from 'src/react-query/useStatusMutation';
+import useAuthStore from 'src/services/store/globalStore';
+import { useQueryClient } from 'react-query';
 
-const empName = "";
+const empName = '';
 
 const StatusUpdates = () => {
-  const [department, setDepartment] = useState("");
   const [formValues, setFormValues] = useState({
-    parttimerName: "",
-    studentName: "",
-    date: "",
-    applicationsAppliedSaved: "",
-    applicationsAppliedSearched: "",
-    easyApply: "",
-    connectMessages: "",
-    recruiterMessages: "",
-    reason: "",
-    description: "",
+    parttimerName: '',
+    studentName: '',
+    date: '',
+    applicationsAppliedSaved: '',
+    applicationsAppliedSearched: '',
+    easyApply: '',
+    connectMessages: '',
+    recruiterMessages: '',
+    reason: '',
+    description: '',
   });
-  const { data, isLoading, isError } = useCalendarData(auth.currentUser.uid);
+  const { data } = useCalendarData(auth.currentUser.uid);
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate
   );
-  // console.log("calender : ",data);
   const [msgResponse, setMsgResponse] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [disableInputs, setDisableInputs] = useState(false);
   const queryClient = useQueryClient();
-  // const { mutate } = usePostStatus();
   const { statusMutation, updateMutation } = useStatusMutation();
 
   const [fieldsToShow, setFieldsToShow] = useState({
@@ -51,11 +47,10 @@ const StatusUpdates = () => {
   useEffect(() => {
     // Get the department from the URL (you can replace this with your actual logic)
     const currentDepartment = window.location.pathname.includes(
-      "/parttimerportal"
+      '/parttimerportal'
     )
-      ? "ACS"
-      : "";
-    setDepartment(currentDepartment);
+      ? 'ACS'
+      : '';
     updateFieldsToShow(currentDepartment);
 
     if (auth.currentUser.displayName) {
@@ -93,20 +88,20 @@ const StatusUpdates = () => {
         setDisableInputs(false);
         setFormValues({
           parttimerName: auth.currentUser.displayName,
-          studentName: "",
-          date: "",
-          applicationsAppliedSaved: "",
-          applicationsAppliedSearched: "",
-          easyApply: "",
-          connectMessages: "",
-          recruiterMessages: "",
-          reason: "",
-          description: "",
+          studentName: '',
+          date: '',
+          applicationsAppliedSaved: '',
+          applicationsAppliedSearched: '',
+          easyApply: '',
+          connectMessages: '',
+          recruiterMessages: '',
+          reason: '',
+          description: '',
         });
       }
     }
 
-    var currentDate = new Date().toISOString().split("T")[0];
+    var currentDate = new Date().toISOString().split('T')[0];
     var isSelectedDateCurrent = formattedSelectedDate === currentDate;
     if (
       data &&
@@ -122,7 +117,7 @@ const StatusUpdates = () => {
   }, [selectedAcsStatusDate, data]);
 
   const updateFieldsToShow = (currentDepartment) => {
-    if (currentDepartment === "ACS") {
+    if (currentDepartment === 'ACS') {
       // Show ACS-related fields
       setFieldsToShow({
         parttimerName: true,
@@ -164,8 +159,8 @@ const StatusUpdates = () => {
   const formatDate = (date) => {
     const inputDate = new Date(date);
     const year = inputDate.getFullYear();
-    const month = String(inputDate.getMonth() + 1).padStart(2, "0");
-    const day = String(inputDate.getDate()).padStart(2, "0");
+    const month = String(inputDate.getMonth() + 1).padStart(2, '0');
+    const day = String(inputDate.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
   };
@@ -179,14 +174,14 @@ const StatusUpdates = () => {
     e.preventDefault();
     try {
       const requiredFields = [
-        "parttimerName",
-        "studentName",
-        "date",
-        "applicationsAppliedSaved",
-        "applicationsAppliedSearched",
-        "easyApply",
-        "connectMessages",
-        "recruiterMessages",
+        'parttimerName',
+        'studentName',
+        'date',
+        'applicationsAppliedSaved',
+        'applicationsAppliedSearched',
+        'easyApply',
+        'connectMessages',
+        'recruiterMessages',
       ];
       const missingField = requiredFields.find((field) => !formValues[field]);
 
@@ -195,17 +190,17 @@ const StatusUpdates = () => {
         // You can customize this mapping according to your field IDs
         let missingFieldName = missingField;
         switch (missingField) {
-          case "studentName":
-            missingFieldName = "Student Name";
+          case 'studentName':
+            missingFieldName = 'Student Name';
             break;
-          case "date":
-            missingFieldName = "Date";
+          case 'date':
+            missingFieldName = 'Date';
             break;
-          case "reason":
-            missingFieldName = "Reason";
+          case 'reason':
+            missingFieldName = 'Reason';
             break;
-          case "description":
-            missingFieldName = "Description";
+          case 'description':
+            missingFieldName = 'Description';
             break;
           // Add more cases as needed
           default:
@@ -216,25 +211,11 @@ const StatusUpdates = () => {
         return; // Stop form submission if a required field is missing
       }
 
-      // Combine all form field values into a single string
-      let combinedStatus = formValues.status; // Start with the existing status
-
-      // Loop through formValues and concatenate all non-empty fields
-      for (const key in formValues) {
-        if ((key !== "reason" || key !== "description") && formValues[key]) {
-          combinedStatus += ` ${formValues[key]}`;
-        }
-      }
-      const newStatus = {
-        ...formValues,
-        firebase_id: auth.currentUser.uid,
-        status: combinedStatus,
-      };
       const postStatus = {
         parttimerName: formValues.parttimerName,
         parttimerId: auth.currentUser.uid,
         studentName: formValues.studentName,
-        studentId: "ST001",
+        studentId: 'ST001',
         date: formValues.date,
         applicationsAppliedSearched: formValues.applicationsAppliedSearched,
         applicationsAppliedSaved: formValues.applicationsAppliedSaved,
@@ -244,10 +225,9 @@ const StatusUpdates = () => {
         reason: formValues.reason,
         description: formValues.description,
       };
-      // console.log(JSON.stringify(postStatus));
       // const response = await mutate(newStatus); // Call the mutation function with form data
       // Perform mutation based on whether it's an update or a new post
-      setMsgResponse("Loading...");
+      setMsgResponse('Loading...');
       let response;
       if (!showEdit) {
         response = await statusMutation.mutate(postStatus);
@@ -257,39 +237,38 @@ const StatusUpdates = () => {
 
       // Handle response
       if (response) {
-        setMsgResponse("Status updated successfully");
+        setMsgResponse('Status updated successfully');
         // Invalidate calendar data query to trigger a refetch
-        queryClient.invalidateQueries(["calendarData", auth.currentUser.uid]);
+        queryClient.invalidateQueries(['calendarData', auth.currentUser.uid]);
       } else {
-        queryClient.invalidateQueries(["calendarData", auth.currentUser.uid]);
-        setMsgResponse("Status updated successfully");
+        queryClient.invalidateQueries(['calendarData', auth.currentUser.uid]);
+        setMsgResponse('Status updated successfully');
       }
 
-      // console.log(response.message);
       if (!showEdit) {
         setFormValues({
           parttimerName: auth.currentUser.displayName,
-          studentName: "",
-          date: "",
-          applicationsAppliedSaved: "",
-          applicationsAppliedSearched: "",
-          easyApply: "",
-          connectMessages: "",
-          recruiterMessages: "",
-          reason: "",
-          description: "",
+          studentName: '',
+          date: '',
+          applicationsAppliedSaved: '',
+          applicationsAppliedSearched: '',
+          easyApply: '',
+          connectMessages: '',
+          recruiterMessages: '',
+          reason: '',
+          description: '',
         });
       }
     } catch (error) {
-      console.error("Error posting status:", error);
+      console.error('Error posting status:', error);
     }
   };
 
   function getMaxDate() {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 

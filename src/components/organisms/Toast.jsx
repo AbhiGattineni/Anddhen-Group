@@ -1,13 +1,20 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const Toast = ({ show, onClose, color, message }) => {
   return (
     <div
-      className={`toast ${show ? "show" : ""} .bg-body-secondary`}
+      className={`toast ${show ? 'show' : ''} .bg-body-secondary`}
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-      style={{ position: "fixed", left: "10px", bottom: "10px", zIndex: 1050, backgroundColor: color ? color : undefined }}
+      style={{
+        position: 'fixed',
+        left: '10px',
+        bottom: '10px',
+        zIndex: 1050,
+        backgroundColor: color ? color : undefined,
+      }}
     >
       <div className="toast-body d-flex justify-content-between fw-bold">
         {message}
@@ -23,6 +30,13 @@ const Toast = ({ show, onClose, color, message }) => {
       </div>
     </div>
   );
+};
+
+Toast.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  color: PropTypes.string,
+  message: PropTypes.string.isRequired,
 };
 
 export default Toast;
