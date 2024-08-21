@@ -30,6 +30,32 @@ ReactDOM.render(
     <QueryClientProvider client={queryClient}>
       {/* <App /> */}
       <RouterProvider router={router} />
+      <a
+        href="https://wa.me/919110736115"
+        className="d-flex justify-content-center align-items-center"
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          backgroundColor: '#25d366',
+          color: '#fff',
+          borderRadius: '50%',
+          zIndex: 100,
+          width: 'calc(2rem + 2vw)', // Equal width and height for a perfect circle
+          height: 'calc(2rem + 2vw)', // Equal width and height for a perfect circle
+          boxShadow: '2px 2px 3px #999',
+        }}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <i
+          className="bi bi-whatsapp"
+          style={{
+            fontSize: 'calc(1.5rem + 1vw)', // Responsive font size
+          }}
+        ></i>
+      </a>
+
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>,
