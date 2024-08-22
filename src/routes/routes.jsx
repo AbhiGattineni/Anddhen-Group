@@ -25,11 +25,11 @@ import { PartTimerPortal } from 'src/components/pages/ACS/PartTimerPortal';
 import Layout from './Layout';
 import ErrorPage from 'src/components/pages/ErrorPage';
 // import { AcsAdmin } from 'src/components/pages/Admin/AcsAdmin';
-import AdminPage from 'src/components/pages/Admin/AdminPage';
 import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess';
-import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';
+// import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';
 import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard';
 import NotAuthorizedPage from 'src/components/pages/NotAuthorizedPage'; // Ensure this is imported correctly
+import { getSharedRoutes } from './getSharedRoutes';
 
 const router = createBrowserRouter([
   {
@@ -103,18 +103,18 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/admin',
+    path: '/employeedashboard',
     element: <Layout />,
     children: [
       {
         index: true,
         element: (
           <ProtectedRoute>
-            <AdminPage />
+            <EmployeeDashboard />
           </ProtectedRoute>
         ),
       },
-      { path: 'employeedashboard', element: <EmployeeDashboard /> },
+      ...getSharedRoutes(),
     ],
   },
   {
@@ -128,8 +128,9 @@ const router = createBrowserRouter([
       { index: true, element: <SuperAdmin /> },
       { path: 'acs_consultants', element: <Consultants /> },
       { path: 'roleaccess', element: <RolesAndAccess /> },
-      { path: 'transactions', element: <Transaction /> },
+      // { path: 'transactions', element: <Transaction /> },
       // { path: 'colleges', element: <Colleges /> },
+      ...getSharedRoutes(),
     ],
   },
 

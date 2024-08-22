@@ -251,6 +251,7 @@ export const EmployeeDashboard = () => {
           </div>
         </form>
       </div>
+      <AssignCards adminPlates={adminPlates} />
     </div>
   );
 };

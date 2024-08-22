@@ -1,0 +1,15 @@
+import React from 'react';
+import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';
+import { Colleges } from 'src/components/SuperAdmin/ACS/Colleges/Colleges';
+import Consultants from 'src/components/SuperAdmin/ACS/Consultants/Consultants';
+import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess';
+
+export function getSharedRoutes() {
+  return [
+    { path: 'transactions', element: <Transaction /> },
+    { path: 'colleges', element: <Colleges /> },
+    { path: 'acs_consultants', element: <Consultants /> },
+    { path: 'roleaccess', element: <RolesAndAccess /> },
+    // Add other shared routes here
+  ];
+}
