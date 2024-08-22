@@ -599,3 +599,142 @@ export const Filter = [
   'diverse lynx',
   'paycor',
 ];
+
+export const collegeLinks = [
+  {
+    collegeName: 'Arizona State University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/F3k8OGnqAzJ3XkSWRAcj7x',
+  },
+  {
+    collegeName: 'Auburn State University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/BH8GF7ZWXMyKCgPf1NH72d',
+  },
+  {
+    collegeName: 'Central Michigan University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/DAmmB6K3Z4QLqD4mflLG0j',
+  },
+  {
+    collegeName: 'Colorado State University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/FaTS3sDODMi3mtXrdUpDyd',
+  },
+  {
+    collegeName: 'Concordia University, St. Paul',
+    whatsappGrpLink: 'https://chat.whatsapp.com/BcOrTTPXezb6AIL6wOr4v2',
+  },
+  {
+    collegeName: 'California State University Fresno - CSU Fresno',
+    whatsappGrpLink: 'https://chat.whatsapp.com/L4l4cKHUvf54RDu5rwtFJC',
+  },
+  {
+    collegeName: 'California State University Los Angeles - CSULA',
+    whatsappGrpLink: 'https://chat.whatsapp.com/FkSLMIskE7HGoi0TdsgUiC',
+  },
+  {
+    collegeName: 'California State University Fullerton - CSU Fullerton',
+    whatsappGrpLink: 'https://chat.whatsapp.com/BmbGcGLRnCbDgJHU6tBuTr',
+  },
+  {
+    collegeName: 'California State University Dominguez Hills - CSUDH',
+    whatsappGrpLink: 'https://chat.whatsapp.com/LUCJsyGYxoPIIA3EwdERWk',
+  },
+  {
+    collegeName: 'California State University Long Beach - CSULB',
+    whatsappGrpLink: 'https://chat.whatsapp.com/H41W7LjjOUi2H7oCMYFcr8',
+  },
+  {
+    collegeName: 'DePaul',
+    whatsappGrpLink: 'https://chat.whatsapp.com/Gqri4gxCX3ICt5mUfCTPZR',
+  },
+  {
+    collegeName: 'Florida State University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/IHWtwAWEsvP23yVEyDI0B2',
+  },
+  {
+    collegeName: 'George Washington University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/DLJqaCPVBGxFECoiWDsBQY',
+  },
+  {
+    collegeName: 'George Mason University - GMU',
+    whatsappGrpLink: 'https://chat.whatsapp.com/KKinEJaBC6yKUcwKCGuFrn',
+  },
+  {
+    collegeName: 'Kent State University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/DYUoB09vi7BD3kZDANpVjj',
+  },
+  {
+    collegeName: 'Michigan State University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/JdJYYg41QZC3IS91tWuPum',
+  },
+  {
+    collegeName: 'New Jersey Institute of Technology - NJIT',
+    whatsappGrpLink: 'https://chat.whatsapp.com/ES83fbPVp742AhpznVl9Fo',
+  },
+  {
+    collegeName: 'Northeastern University',
+    whatsappGrpLink: 'https://chat.whatsapp.com/GN7CHtC8zZu5SU56XL7hhb',
+  },
+  {
+    collegeName: 'San José State University - SJSU',
+    whatsappGrpLink: 'https://chat.whatsapp.com/F7dFZcofUpJGQeRgJejJuO',
+  },
+  {
+    collegeName: 'Stevens Institute Of Technology',
+    whatsappGrpLink: 'https://chat.whatsapp.com/L5rW9N9AHoW5Pl8O4l3b2O',
+  },
+  {
+    collegeName: 'Texas Agricultural and Mechanical University - Texas A&M',
+    whatsappGrpLink: 'https://chat.whatsapp.com/Exq2z38V8oXB0M6mindUdh',
+  },
+  {
+    collegeName: 'University of California San DiegoUC - San Diego',
+    whatsappGrpLink: 'https://chat.whatsapp.com/Ie00U3pKluW6W5e6Fzlaa9',
+  },
+  {
+    collegeName: 'University of California Los Angeles - UCLA',
+    whatsappGrpLink: 'https://chat.whatsapp.com/Ee4rbiVGah9LwZITbm9mzP',
+  },
+  {
+    collegeName: 'University Of Central Missouri',
+    whatsappGrpLink: 'https://chat.whatsapp.com/HV8ZbeEfHNq9Vqce2SOvnf',
+  },
+  {
+    collegeName: 'University Of Central Oklahoma',
+    whatsappGrpLink: 'https://chat.whatsapp.com/DTnbLeiNp05GjP8qV58JMi',
+  },
+  {
+    collegeName: 'University Of Cincinnati',
+    whatsappGrpLink: 'https://chat.whatsapp.com/HHjaNoQhtB6JV4CKEsnsjh',
+  },
+  {
+    collegeName: 'University Of Colorado Denver',
+    whatsappGrpLink: 'https://chat.whatsapp.com/CtFAGXgusU8KmL0UCjGs0r',
+  },
+  {
+    collegeName: 'University Of Illinois Springfield',
+    whatsappGrpLink: 'https://chat.whatsapp.com/H7RpifqbEox6ct4pJjzHnv',
+  },
+  {
+    collegeName: 'University Of Missouri Kansas City',
+    whatsappGrpLink: 'https://chat.whatsapp.com/FkuFFa9SHud8clGDBO47mG',
+  },
+  {
+    collegeName: 'University Of Missouri St. Louis',
+    whatsappGrpLink: 'https://chat.whatsapp.com/Fpm3BRuuDz22XFoiN4FDjG',
+  },
+  {
+    collegeName: 'University Of Texas Arlington',
+    whatsappGrpLink: 'https://chat.whatsapp.com/KmjJRlehHpTFFHE6X5TiKW',
+  },
+  {
+    collegeName: 'University of North Texas - UNT',
+    whatsappGrpLink: 'https://chat.whatsapp.com/JqHrgZ4JpNf7bUIINdO6SH',
+  },
+  {
+    collegeName: 'University of Texas Arlington - UTA',
+    whatsappGrpLink: 'https://chat.whatsapp.com/KfEuhzUu8l21zgEsJIBoW6',
+  },
+  {
+    collegeName: 'University of Texas at Dallas - UTD',
+    whatsappGrpLink: 'https://chat.whatsapp.com/KWnofl39diF5STxEa6kFJv',
+  },
+];
