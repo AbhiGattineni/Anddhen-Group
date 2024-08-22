@@ -14,7 +14,8 @@ const Layout = () => {
     location.pathname.includes('/superadmin/roleaccess') ||
     location.pathname.includes('/admin') ||
     location.pathname.includes('/profile') ||
-    location.pathname.includes('/employeedashboard');
+    location.pathname.includes('/employeedashboard') ||
+    location.pathname.includes('/not-authorized');
 
   return (
     <div>

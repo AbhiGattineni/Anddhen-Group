@@ -8,7 +8,7 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js';
 import { RouterProvider } from 'react-router-dom';
-import DynamicRoutes from './routes/routes';
+import router from './routes/routes';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,8 +22,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-
-const router = DynamicRoutes();
 
 ReactDOM.render(
   <React.StrictMode>
