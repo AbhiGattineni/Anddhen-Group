@@ -13,8 +13,6 @@ import { EducationConsultant } from 'src/components/pages/ACS/EducationConsultan
 import { Login } from 'src/components/pages/Auth/Login';
 import { Register } from 'src/components/pages/Auth/Register';
 import { ForgotPassword } from 'src/components/pages/Auth/ForgotPassword';
-import Consultants from 'src/components/SuperAdmin/ACS/Consultants/Consultants';
-// import RoleAccess from 'src/components/SuperAdmin/RoleAccess/RoleAccess';
 import SuperAdmin from 'src/components/SuperAdmin/SuperAdmin';
 import { Aps } from 'src/components/pages/inc/Aps';
 import { Ati } from 'src/components/pages/inc/Ati';
@@ -24,12 +22,10 @@ import { EditColleges } from 'src/components/pages/ACS/EditColleges';
 import { PartTimerPortal } from 'src/components/pages/ACS/PartTimerPortal';
 import Layout from './Layout';
 import ErrorPage from 'src/components/pages/ErrorPage';
-// import { AcsAdmin } from 'src/components/pages/Admin/AcsAdmin';
-import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess';
-// import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction';
 import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard';
 import NotAuthorizedPage from 'src/components/pages/NotAuthorizedPage'; // Ensure this is imported correctly
 import { getSharedRoutes } from './getSharedRoutes';
+import { Profile } from 'src/components/pages/Auth/Profile';
 
 const router = createBrowserRouter([
   {
@@ -46,25 +42,29 @@ const router = createBrowserRouter([
       { path: 'not-authorized', element: <NotAuthorizedPage /> },
     ],
   },
-
+  {
+    path: '/profile',
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: '/ass',
     element: <Layout />,
     children: [{ index: true, element: <Ass /> }],
   },
-
   {
     path: '/ams',
     element: <Layout />,
     children: [{ index: true, element: <Ams /> }],
   },
-
   {
     path: '/aps',
     element: <Layout />,
     children: [{ index: true, element: <Aps /> }],
   },
-
   {
     path: '/ati',
     element: <Layout />,
@@ -114,7 +114,10 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      ...getSharedRoutes(),
+      ...getSharedRoutes().map((route) => ({
+        ...route,
+        element: <ProtectedRoute>{route.element}</ProtectedRoute>,
+      })),
     ],
   },
   {
@@ -124,16 +127,8 @@ const router = createBrowserRouter([
         <Layout />
       </ProtectedRoute>
     ),
-    children: [
-      { index: true, element: <SuperAdmin /> },
-      { path: 'acs_consultants', element: <Consultants /> },
-      { path: 'roleaccess', element: <RolesAndAccess /> },
-      // { path: 'transactions', element: <Transaction /> },
-      // { path: 'colleges', element: <Colleges /> },
-      ...getSharedRoutes(),
-    ],
+    children: [{ index: true, element: <SuperAdmin /> }, ...getSharedRoutes()],
   },
-
   {
     path: '/acs/educationconsulting/addcolleges',
     element: (
@@ -142,7 +137,6 @@ const router = createBrowserRouter([
       </MainLayout>
     ),
   },
-
   {
     path: '/acs/educationconsulting/editcolleges',
     element: (
