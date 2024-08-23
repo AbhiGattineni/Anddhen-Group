@@ -5,6 +5,7 @@ import resgistration1 from "../../images/resgistration1.png";
 import resgistration2 from "../../images/registration2.png";
 import { Link } from "react-router-dom";
 import { acsCards } from "../../../dataconfig";
+import CollegeWhatsappLinks from "src/components/generalComponents/ACS/CollegeWhatsappLinks";
 
 export const Acs = () => {
   return (
@@ -44,26 +45,13 @@ export const Acs = () => {
           </div>
         ))}
       </div>
-      <div className="row gap-3 mx-2 mx-md-0 my-3">
-        <Link
-          to="/acs/educationconsulting/addcolleges"
-          className="col col-12 col-md text-center text-decoration-none shadow-sm border p-3"
-        >
-          <div>
-            <p className="fw-bold text-black">Add a college</p>
-            <code className="m-0">educationconsulting/addcolleges</code>
-          </div>
-        </Link>
-        <Link
-          to="/acs/educationconsulting/editcolleges"
-          className="col col-12 col-md text-center text-decoration-none shadow-sm border p-3"
-        >
-          <div>
-            <p className="fw-bold text-black">Edit a college</p>
-            <code className="m-0">educationconsulting/editcolleges</code>
-          </div>
-        </Link>
+      <h4 className="text-center pt-4">
+        WhatsApp groups links according to the US university 2024-25
+      </h4>
+      <div>
+        <CollegeWhatsappLinks />
       </div>
+
       <h4>Contact Us</h4>
       <div className="underline"></div>
       <div>
