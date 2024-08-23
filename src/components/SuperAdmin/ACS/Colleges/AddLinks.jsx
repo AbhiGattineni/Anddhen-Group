@@ -281,7 +281,7 @@ export const AddLinks = () => {
                         name="label"
                         label="Label"
                         type="text"
-                        className="col"
+                        className="col-12 col-md"
                         value={
                           index === editingIndex ? formData.label : link.label
                         }
@@ -293,14 +293,14 @@ export const AddLinks = () => {
                         name="link"
                         label="Link"
                         type="url"
-                        className="col"
+                        className="col-12 col-md"
                         value={
                           index === editingIndex ? formData.link : link.link
                         }
                         onChange={(e) => handleChange('link', e.target.value)}
                         setError={(error) => handleFieldError('link', error)}
                       />
-                      <div className="col-auto d-flex align-items-center">
+                      <div className="col-12 col-md-auto d-flex align-items-end justify-content-md-start justify-content-between mt-2 mt-md-0">
                         {editingIndex === index ? (
                           <>
                             <button
@@ -345,7 +345,7 @@ export const AddLinks = () => {
                         name="label"
                         label="Label"
                         type="text"
-                        className="col"
+                        className="col-12 col-md"
                         value={newRow.label}
                         onChange={(e) =>
                           setNewRow({ ...newRow, label: e.target.value })
@@ -356,14 +356,14 @@ export const AddLinks = () => {
                         name="link"
                         label="Link"
                         type="url"
-                        className="col"
+                        className="col-12 col-md"
                         value={newRow.link}
                         onChange={(e) =>
                           setNewRow({ ...newRow, link: e.target.value })
                         }
                         setError={(error) => handleFieldError('link', error)}
                       />
-                      <div className="col-auto d-flex align-items-center">
+                      <div className="col-12 col-md-auto d-flex align-items-end justify-content-md-start justify-content-between mt-2 mt-md-0">
                         <button
                           type="button"
                           className="btn btn-success mx-1"
@@ -385,8 +385,7 @@ export const AddLinks = () => {
               )}
               <button
                 type="button"
-                className="btn btn-warning shadow px-5"
-                // disabled={disableButton || newRow}
+                className="btn btn-warning shadow px-5 mt-3"
                 onClick={handleAddRow}
               >
                 Add link
