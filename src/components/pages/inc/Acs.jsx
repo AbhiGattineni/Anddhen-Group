@@ -3,6 +3,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Link } from 'react-router-dom';
 import { acsCards } from '../../../dataconfig';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 export const Acs = () => {
   return (
@@ -44,34 +45,40 @@ export const Acs = () => {
           ))}
         </div>
       </div>
-      <div className="bg-c-light px-5 py-1">
-        <h4 className="padding-left-100">Contact Us</h4>
-        <div className="underline"></div>
-        <div className="d-flex flex-column flex-md-row justify-content-between">
-          <p
-            style={{ marginBottom: 5 }}
-            className="fw-bold d-flex align-items-center"
-          >
-            <i className="bi bi-envelope-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
-            anddhenconsulting@gmail.com
-          </p>
-          <p className="fw-bold d-flex align-items-center">
-            <i className="bi bi-telephone-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
+      <h4 className="text-center pt-4">
+        WhatsApp groups links according to the US university 2024-25
+      </h4>
+      <div>
+        <CollegeWhatsappLinks />
+      </div>
+
+      <h4>Contact Us</h4>
+      <div className="underline"></div>
+      <div>
+        <p>
+          <i className="bi bi-envelope me-3"></i>anddhenconsulting@gmail.com
+        </p>
+        <p style={{ marginBottom: 0 }}>
+          <i className="bi bi-telephone-fill me-3"></i>+91 9110736115
+        </p>
+        <a
+          href="https://wa.me/919110736115"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            textDecoration: 'none',
+          }}
+        >
+          <i
+            className="bi bi-whatsapp"
+            style={{ fontSize: '18px', color: 'green', marginRight: '8px' }}
+          ></i>
+          <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
             +91 9110736115
-          </p>
-          <a
-            href="https://wa.me/919110736115"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="d-flex align-items-center text-decoration-none fw-bold"
-          >
-            <i
-              className="bi bi-whatsapp bg-white rounded-circle p-1 me-3 d-inline-flex justify-content-center align-items-center"
-              style={{ fontSize: '19px', color: 'green', marginRight: '4px' }}
-            ></i>
-            +91 9110736115
-          </a>
-        </div>
+          </span>
+        </a>
       </div>
     </>
   );
