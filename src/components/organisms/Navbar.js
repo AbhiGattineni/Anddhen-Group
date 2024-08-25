@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { logout } from '../../services/Authentication/Logout';
 import useAuthStore from '../../services/store/globalStore';
 import PropTypes from 'prop-types';
+import { useAuth } from 'src/hooks/useAuth';
 
 function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = useState(false);
+  const { user } = useAuth();
 
   const setNewUser = useAuthStore((state) => state.setParttimer_consent);
   const handleLogout = () => {
@@ -186,7 +188,7 @@ function Navbar(props) {
                         Contact
                       </Link>
                     </li>
-                    {props.logout ? (
+                    {user ? (
                       <li className="nav-item d-flex justify-content-center align-items-center">
                         <button
                           onClick={handleLogout}

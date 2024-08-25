@@ -350,7 +350,7 @@ export const adminPlates = [
   },
   {
     child: 'Anddhen Consulting Services',
-    route: 'acs/consultants',
+    route: 'consultants',
   },
   {
     child: 'Anddhen Access Services',
@@ -362,7 +362,7 @@ export const adminPlates = [
   },
   {
     child: 'Anddhen Consulting Services',
-    route: 'acs/colleges',
+    route: 'colleges',
   },
 ];
 
