@@ -26,6 +26,8 @@ import { EmployeeDashboard } from 'src/components/pages/Admin/EmployeeDashboard'
 import NotAuthorizedPage from 'src/components/pages/NotAuthorizedPage'; // Ensure this is imported correctly
 import { getSharedRoutes } from './getSharedRoutes';
 import { Profile } from 'src/components/pages/Auth/Profile';
+import Ats from 'src/components/pages/inc/Ats';
+import Ans from 'src/components/pages/inc/Ans';
 
 const router = createBrowserRouter([
   {
@@ -69,6 +71,16 @@ const router = createBrowserRouter([
     path: '/ati',
     element: <Layout />,
     children: [{ index: true, element: <Ati /> }],
+  },
+  {
+    path: '/ats',
+    element: <Layout />,
+    children: [{ index: true, element: <Ats /> }],
+  },
+  {
+    path: '/ans',
+    element: <Layout />,
+    children: [{ index: true, element: <Ans /> }],
   },
   {
     path: '/acs',

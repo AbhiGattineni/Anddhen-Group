@@ -37,17 +37,16 @@ function Vmc() {
           <div className="col-md-4 text-center">
             <h6>Our Values</h6>
             <p style={{ textAlign: 'justify' }}>
-              <ul>
-                <strong>Innovation:</strong> Leading with creativity.
-                <br />
-                <strong>Integrity:</strong> Upholding honesty.
-                <br />
-                <strong>Inclusion:</strong> Embracing diversity.
-                <br />
-                <strong>Responsibility:</strong> Positive impact.
-                <br />
-                <strong>Collaboration:</strong> Building partnerships.
-              </ul>
+              <strong>Innovation:</strong> We strive to lead with creativity,
+              continually seeking new and better ways to serve our community.
+              <strong> Inclusion:</strong> We embrace diversity and foster an
+              environment where everyone feels valued and respected.
+              <strong> Responsibility:</strong> We aim to make a positive impact
+              on society, taking conscious steps to be sustainable and ethical
+              in our practices.
+              <strong> Collaboration:</strong> We believe in the power of
+              building strong partnerships, working together to achieve common
+              goals and drive success.
             </p>
           </div>
         </div>
