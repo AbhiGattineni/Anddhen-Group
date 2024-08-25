@@ -4,6 +4,7 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Link } from 'react-router-dom';
 import { acsCards } from '../../../dataconfig';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import CollegeWhatsappLinks from 'src/components/generalComponents/ACS/CollegeWhatsappLinks';
 
 export const Acs = () => {
   return (
