@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
     }
   }, [storedEmptyFields, navigate, location.pathname]);
 
-  if (loading) {
+  if (!user && loading) {
     return <LoadingSpinner />;
   }
 
