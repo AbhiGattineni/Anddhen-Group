@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged, onIdTokenChanged } from "firebase/auth";
+import { useState, useEffect } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -8,11 +8,6 @@ export const useAuth = () => {
 
   useEffect(() => {
     const auth = getAuth();
-    onIdTokenChanged(auth, async (user) => {
-      if (user) {
-        const idTokenResult = await user.getIdTokenResult();
-      }
-    });
     const unsubscribe = onAuthStateChanged(
       auth,
       (user) => {

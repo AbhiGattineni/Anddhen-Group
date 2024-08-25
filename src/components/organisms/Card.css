@@ -1,58 +1,58 @@
 .card {
-    /* box-shadow: 0 0 15px rgb(168, 168, 168); */
-    /* overflow: hidden; */
-    /* border-radius: 15px; */
-    /* padding: 20px; */
-    /* margin: 20px 0; */
-    /* background-color: azure; */
+  /* box-shadow: 0 0 15px rgb(168, 168, 168); */
+  /* overflow: hidden; */
+  /* border-radius: 15px; */
+  /* padding: 20px; */
+  /* margin: 20px 0; */
+  /* background-color: azure; */
 }
 
 .image img {
-    position: relative;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    z-index: 1;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    border: 4px solid white;
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid white;
 }
 
 .socials {
-    text-align: center;
-    padding-bottom: 15px;
+  text-align: center;
+  padding-bottom: 15px;
 }
 
 .socials i {
-    font-size: 25px;
-    margin: 0 15px;
-    color: rgb(148, 168, 193);
+  font-size: 25px;
+  margin: 0 15px;
+  color: rgb(148, 168, 193);
 }
 
 .socials i:hover {
-    transition: .7s;
+  transition: 0.7s;
 }
 
 .socials .bi-facebook:hover {
-    color: #3b5998;
+  color: #3b5998;
 }
 
 .socials .bi-linkedin:hover {
-    color: #0A66C2;
+  color: #0a66c2;
 }
 
 .socials .bi-twitter:hover {
-    color: #00acee;
+  color: #00acee;
 }
 
-.socials .bi-github:hover{
-    color: #fff;
+.socials .bi-github:hover {
+  color: #fff;
 }
 
-.socials .bi-instagram:hover{
-    color: #E1306C;
+.socials .bi-instagram:hover {
+  color: #e1306c;
 }
-.socials .bi-youtube:hover{
-    color: #FF0000;
+.socials .bi-youtube:hover {
+  color: #ff0000;
 }

@@ -1,36 +1,36 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 function AddConsultantForm() {
   const initialFormData = {
-    full_name: "",
-    phone_number: "",
-    email_id: "",
-    dob: "",
-    visa_status: "",
-    visa_validity: "",
-    btech_college: "",
-    btech_percentage: "",
-    btech_graduation_date: "",
-    masters_college: "",
-    masters_cgpa: "",
-    masters_graduation_date: "",
-    technologies: "",
-    current_location: "",
+    full_name: '',
+    phone_number: '',
+    email_id: '',
+    dob: '',
+    visa_status: '',
+    visa_validity: '',
+    btech_college: '',
+    btech_percentage: '',
+    btech_graduation_date: '',
+    masters_college: '',
+    masters_cgpa: '',
+    masters_graduation_date: '',
+    technologies: '',
+    current_location: '',
     relocation: false,
-    experience_in_us: "",
-    experience_in_india: "",
-    relocation_preference: "",
-    passport_number: "",
-    driving_licence: "",
-    rate_expectations: "",
-    last_4_ssn: "",
-    linkedin_url: "",
-    full_name_verified: "",
-    visa_status_verified: "",
-    visa_validity_verified: "",
-    experience_in_us_verified: "",
-    experience_in_india_verified: "",
-    passport_number_verified: "",
+    experience_in_us: '',
+    experience_in_india: '',
+    relocation_preference: '',
+    passport_number: '',
+    driving_licence: '',
+    rate_expectations: '',
+    last_4_ssn: '',
+    linkedin_url: '',
+    full_name_verified: '',
+    visa_status_verified: '',
+    visa_validity_verified: '',
+    experience_in_us_verified: '',
+    experience_in_india_verified: '',
+    passport_number_verified: '',
     // original_resume: null,
     // consulting_resume: null,
   };
@@ -41,22 +41,21 @@ function AddConsultantForm() {
 
   const formatErrorMessages = (errors) => {
     return Object.entries(errors).map(
-      ([field, messages]) => `${field}: ${messages.join(", ")}`
+      ([field, messages]) => `${field}: ${messages.join(', ')}`
     );
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (type === "file") {
+    if (type === 'file') {
       setFormData((prevState) => ({
         ...prevState,
         [name]: e.target.files[0],
       }));
-    } else if (name === "technologies") {
+    } else if (name === 'technologies') {
       // Convert the comma-separated values into a JSON array
-      const technologiesArray = value.split(",").map((item) => item.trim());
-      console.log("technologiesArray:", technologiesArray);
+      const technologiesArray = value.split(',').map((item) => item.trim());
       setFormData((prevState) => ({
         ...prevState,
         [name]: JSON.stringify(technologiesArray),
@@ -64,7 +63,7 @@ function AddConsultantForm() {
     } else {
       setFormData((prevState) => ({
         ...prevState,
-        [name]: type === "checkbox" ? checked : value,
+        [name]: type === 'checkbox' ? checked : value,
       }));
     }
   };
@@ -76,7 +75,7 @@ function AddConsultantForm() {
 
     const submitData = new FormData();
     Object.keys(formData).forEach((key) => {
-      if (key === "technologies") {
+      if (key === 'technologies') {
         // Ensure the technologies data remains a JSON string
         submitData.append(key, formData[key]);
       } else {
@@ -95,10 +94,10 @@ function AddConsultantForm() {
         : null,
     });
     fetch(`${API_BASE_URL}/api/consultant/`, {
-      method: "POST",
+      method: 'POST',
       body: jsonPayload,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     })
       .then((response) => {
@@ -110,13 +109,12 @@ function AddConsultantForm() {
         return response.json();
       })
       .then((data) => {
-        console.log("Success:", data);
         setIsSubmitted(true);
         setFormData(initialFormData);
       })
       .catch((error) => {
-        console.error("Error:", error);
-        setErrorMessages(error.message.split(","));
+        console.error('Error:', error);
+        setErrorMessages(error.message.split(','));
       });
   };
 
@@ -130,7 +128,7 @@ function AddConsultantForm() {
           name={fieldName}
           value="yes"
           onChange={handleChange}
-          checked={formData[fieldName] === "yes"}
+          checked={formData[fieldName] === 'yes'}
         />
         <label htmlFor={`${fieldName}Yes`}>Yes</label>
       </div>
@@ -142,7 +140,7 @@ function AddConsultantForm() {
           name={fieldName}
           value="no"
           onChange={handleChange}
-          checked={formData[fieldName] === "no"}
+          checked={formData[fieldName] === 'no'}
         />
         <label htmlFor={`${fieldName}No`}>No</label>
       </div>
@@ -442,10 +440,10 @@ function AddConsultantForm() {
         </div>
 
         {/* Resume Fields Section */}
-        <div className="form-group" style={{ margin: "10px 0" }}>
+        <div className="form-group" style={{ margin: '10px 0' }}>
           <label
             htmlFor="original_resume"
-            style={{ display: "block", marginBottom: "5px" }}
+            style={{ display: 'block', marginBottom: '5px' }}
           >
             Original Resume
           </label>
@@ -456,21 +454,21 @@ function AddConsultantForm() {
             name="original_resume"
             onChange={handleChange}
             style={{
-              display: "block",
-              width: "100%",
-              padding: "6px 12px",
-              backgroundColor: "#f8f9fa",
-              border: "1px solid #ced4da",
-              borderRadius: "4px",
+              display: 'block',
+              width: '100%',
+              padding: '6px 12px',
+              backgroundColor: '#f8f9fa',
+              border: '1px solid #ced4da',
+              borderRadius: '4px',
               transition:
-                "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
+                'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
             }}
           />
         </div>
-        <div className="form-group" style={{ margin: "10px 0" }}>
+        <div className="form-group" style={{ margin: '10px 0' }}>
           <label
             htmlFor="consulting_resume"
-            style={{ display: "block", marginBottom: "5px" }}
+            style={{ display: 'block', marginBottom: '5px' }}
           >
             Consulting Resume
           </label>
@@ -481,14 +479,14 @@ function AddConsultantForm() {
             name="consulting_resume"
             onChange={handleChange}
             style={{
-              display: "block",
-              width: "100%",
-              padding: "6px 12px",
-              backgroundColor: "#f8f9fa",
-              border: "1px solid #ced4da",
-              borderRadius: "4px",
+              display: 'block',
+              width: '100%',
+              padding: '6px 12px',
+              backgroundColor: '#f8f9fa',
+              border: '1px solid #ced4da',
+              borderRadius: '4px',
               transition:
-                "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
+                'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
             }}
           />
         </div>
@@ -496,27 +494,27 @@ function AddConsultantForm() {
           {/* Verification fields */}
           <div className="col-md-6 form-group mb-3">
             <label>Full Name Verified</label>
-            {renderVerificationRadioButtons("full_name_verified")}
+            {renderVerificationRadioButtons('full_name_verified')}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Visa Status Verified</label>
-            {renderVerificationRadioButtons("visa_status_verified")}
+            {renderVerificationRadioButtons('visa_status_verified')}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Visa Validity Verified</label>
-            {renderVerificationRadioButtons("visa_validity_verified")}
+            {renderVerificationRadioButtons('visa_validity_verified')}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Experience in US Verified</label>
-            {renderVerificationRadioButtons("experience_in_us_verified")}
+            {renderVerificationRadioButtons('experience_in_us_verified')}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Experience in India Verified</label>
-            {renderVerificationRadioButtons("experience_in_india_verified")}
+            {renderVerificationRadioButtons('experience_in_india_verified')}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Passport Number Verified</label>
-            {renderVerificationRadioButtons("passport_number_verified")}
+            {renderVerificationRadioButtons('passport_number_verified')}
           </div>
         </div>
 

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import InputField from "../../organisms/InputField";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import InputField from '../../organisms/InputField';
+import { Link } from 'react-router-dom';
 
 export const Exam = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [scoreBoard, setScoreBoard] = useState(null);
   const startExam = () => {
     if (document.documentElement.requestFullscreen) {
@@ -76,7 +76,7 @@ export const Exam = () => {
           to="/quiz"
           onClick={startExam}
           className={`btn btn-warning ${
-            name.length && email.length ? "shadow" : "disabled"
+            name.length && email.length ? 'shadow' : 'disabled'
           }`}
         >
           Start Test

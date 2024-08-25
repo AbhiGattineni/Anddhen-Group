@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import SearchableTable from "src/components/atoms/Table/SearchableTable";
-import useAssignRoleToUser from "src/react-query/useAssignRoleToUser";
-import useUserAndRoleOverview from "src/react-query/useUserAndRoleOverview";
-import { useQueryClient, useMutation } from "react-query";
+import React, { useState } from 'react';
+import SearchableTable from 'src/components/atoms/Table/SearchableTable';
+import useAssignRoleToUser from 'src/react-query/useAssignRoleToUser';
+import useUserAndRoleOverview from 'src/react-query/useUserAndRoleOverview';
+import { useQueryClient, useMutation } from 'react-query';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const AssignRole = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [user, setUser] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [user, setUser] = useState('');
   const [userError, setUserError] = useState(false);
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState('');
   const [roleError, setRoleError] = useState(false);
 
   const { data, isLoading, error } = useUserAndRoleOverview();
@@ -20,14 +20,14 @@ const AssignRole = () => {
   const deleteRole = useMutation(
     (roleId) =>
       fetch(`${API_BASE_URL}/deleteRole/${roleId}/`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["userDataAndRoles"]);
+        queryClient.invalidateQueries(['userDataAndRoles']);
       },
     }
   );
@@ -52,8 +52,8 @@ const AssignRole = () => {
     }
   };
 
-  if (isLoading) return "Loading...";
-  if (error) return "An error has occurred: " + error.message;
+  if (isLoading) return 'Loading...';
+  if (error) return 'An error has occurred: ' + error.message;
 
   const renderRow = (role, index) => (
     <tr key={index}>
@@ -75,14 +75,14 @@ const AssignRole = () => {
       <h2 className="my-4">Assign Role</h2>
 
       <form onSubmit={handleAssign} className="mb-4 row">
-        <div className={`mb-3 col-md-6 ${userError ? "has-error" : ""}`}>
+        <div className={`mb-3 col-md-6 ${userError ? 'has-error' : ''}`}>
           <label htmlFor="userSelect" className="form-label">
             User
           </label>
           <select
             id="userSelect"
-            className={`form-select ${userError ? "is-invalid" : ""}`}
-            value={user || ""}
+            className={`form-select ${userError ? 'is-invalid' : ''}`}
+            value={user || ''}
             onChange={(e) => setUser(e.target.value)}
           >
             <option value="" disabled>
@@ -99,14 +99,14 @@ const AssignRole = () => {
           )}
         </div>
 
-        <div className={`mb-3 col-md-6 ${roleError ? "has-error" : ""}`}>
+        <div className={`mb-3 col-md-6 ${roleError ? 'has-error' : ''}`}>
           <label htmlFor="roleSelect" className="form-label">
             Role
           </label>
           <select
             id="roleSelect"
-            className={`form-select ${roleError ? "is-invalid" : ""}`}
-            value={role || ""}
+            className={`form-select ${roleError ? 'is-invalid' : ''}`}
+            value={role || ''}
             onChange={(e) => setRole(e.target.value)}
           >
             <option value="" disabled>

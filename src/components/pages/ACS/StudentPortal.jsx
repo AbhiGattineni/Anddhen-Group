@@ -1,7 +1,7 @@
-import React from "react";
-import { Pricing } from "../../templates/Pricing";
-import { Videos } from "../../organisms/Videos";
-import StudentRegistrationForm from "../../organisms/StudentRegistrationForm";
+import React from 'react';
+import { Pricing } from '../../templates/Pricing';
+import { Videos } from '../../organisms/Videos';
+import StudentRegistrationForm from '../../organisms/StudentRegistrationForm';
 
 export const StudentPortal = () => {
   return (

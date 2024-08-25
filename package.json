@@ -13,6 +13,7 @@
     "emailjs-com": "^3.2.0",
     "firebase": "^9.23.0",
     "react": "^17.0.2",
+    "react-bootstrap": "^2.10.4",
     "react-calendar": "^4.6.1",
     "react-dom": "^17.0.2",
     "react-lazy-load-image-component": "^1.6.0",
@@ -28,7 +29,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "eslintConfig": {
     "extends": [
@@ -47,5 +50,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3"
   }
 }

@@ -1,47 +1,47 @@
-import React from "react";
+import React from 'react';
 const Employee = () => {
   const details = [
     {
-      Name: "Trinath Trinath Trinath",
-      Photo: "/images/dp.jpg",
-      Start_date: "10 / 10 / 2022",
-      End_date: "10 / 10 / 2022",
-      Role: "software intern",
+      Name: 'Trinath Trinath Trinath',
+      Photo: '/images/dp.jpg',
+      Start_date: '10 / 10 / 2022',
+      End_date: '10 / 10 / 2022',
+      Role: 'software intern',
     },
     {
-      Name: "Trinath",
-      Photo: "/Images/IMG_0059-02-012.jpg",
-      Start_date: "10 / 10 / 2022",
-      End_date: "10 / 10 / 2022",
-      Role: "software intern",
+      Name: 'Trinath',
+      Photo: '/Images/IMG_0059-02-012.jpg',
+      Start_date: '10 / 10 / 2022',
+      End_date: '10 / 10 / 2022',
+      Role: 'software intern',
     },
     {
-      Name: "Trinath",
-      Photo: "/Images/IMG_0059-02-012.jpg",
-      Start_date: "10 / 10 / 2022",
-      End_date: "10 / 10 / 2022",
-      Role: "software intern",
+      Name: 'Trinath',
+      Photo: '/Images/IMG_0059-02-012.jpg',
+      Start_date: '10 / 10 / 2022',
+      End_date: '10 / 10 / 2022',
+      Role: 'software intern',
     },
     {
-      Name: "Trinath",
-      Photo: "/Images/IMG_0059-02-012.jpg",
-      Start_date: "10 / 10 / 2022",
-      End_date: "10 / 10 / 2022",
-      Role: "software intern",
+      Name: 'Trinath',
+      Photo: '/Images/IMG_0059-02-012.jpg',
+      Start_date: '10 / 10 / 2022',
+      End_date: '10 / 10 / 2022',
+      Role: 'software intern',
     },
     {
-      Name: "Trinath",
-      Photo: "/Images/IMG_0059-02-012.jpg",
-      Start_date: "10 / 10 / 2022",
-      End_date: "10 / 10 / 2022",
-      Role: "software intern",
+      Name: 'Trinath',
+      Photo: '/Images/IMG_0059-02-012.jpg',
+      Start_date: '10 / 10 / 2022',
+      End_date: '10 / 10 / 2022',
+      Role: 'software intern',
     },
     {
-      Name: "Trinath",
-      Photo: "/Images/IMG_0059-02-012.jpg",
-      Start_date: "10 / 10 / 2022",
-      End_date: "10 / 10 / 2022",
-      Role: "software intern",
+      Name: 'Trinath',
+      Photo: '/Images/IMG_0059-02-012.jpg',
+      Start_date: '10 / 10 / 2022',
+      End_date: '10 / 10 / 2022',
+      Role: 'software intern',
     },
   ];
 
@@ -59,13 +59,13 @@ const Employee = () => {
             <p className="text-secondary">{card.Role}</p>
           </div>
           <div className="socials">
-            <button onClick={() => window.open("https://www.facebook.com/")}>
+            <button onClick={() => window.open('https://www.facebook.com/')}>
               <i className="bi bi-facebook"></i>
             </button>
-            <button onClick={() => window.open("https://www.linkedin.com/")}>
+            <button onClick={() => window.open('https://www.linkedin.com/')}>
               <i className="bi bi-linkedin"></i>
             </button>
-            <button onClick={() => window.open("https://twitter.com/")}>
+            <button onClick={() => window.open('https://twitter.com/')}>
               <i className="bi bi-twitter"></i>
             </button>
           </div>

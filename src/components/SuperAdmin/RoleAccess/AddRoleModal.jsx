@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import React from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const AddRoleModal = ({
   show,
@@ -7,13 +9,13 @@ const AddRoleModal = ({
   editingRole,
   handleEditRole,
 }) => {
-  const [roleForm, setRoleForm] = useState({ roleName: "", accessRole: "" });
+  const [roleForm, setRoleForm] = useState({ roleName: '', accessRole: '' });
 
   useEffect(() => {
     if (show) {
       setRoleForm({
-        roleName: editingRole?.name_of_role || "",
-        accessRole: editingRole?.admin_access_role || "",
+        roleName: editingRole?.name_of_role || '',
+        accessRole: editingRole?.admin_access_role || '',
       });
     }
   }, [show, editingRole]);
@@ -24,7 +26,7 @@ const AddRoleModal = ({
     // if (editingRole?.id) {
     //   handleEditRole(roleForm); // Update the role when editing
     // }
-    setRoleForm({ roleName: "", accessRole: "" });
+    setRoleForm({ roleName: '', accessRole: '' });
   };
 
   const handleChange = (e) => {
@@ -34,7 +36,7 @@ const AddRoleModal = ({
 
   return (
     <div
-      style={{ display: show ? "block" : "none" }}
+      style={{ display: show ? 'block' : 'none' }}
       className="modal"
       tabIndex="-1"
     >
@@ -42,7 +44,7 @@ const AddRoleModal = ({
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">
-              {editingRole?.id ? "Edit Role" : "Add New Role"}
+              {editingRole?.id ? 'Edit Role' : 'Add New Role'}
             </h5>
             <button
               type="button"
@@ -81,13 +83,24 @@ const AddRoleModal = ({
               className="btn btn-primary"
               onClick={saveRole}
             >
-              {editingRole?.id ? "Update Role" : "Save Role"}
+              {editingRole?.id ? 'Update Role' : 'Save Role'}
             </button>
           </div>
         </div>
       </div>
     </div>
   );
+};
+AddRoleModal.propTypes = {
+  show: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  editingRole: PropTypes.shape({
+    id: PropTypes.number,
+    name_of_role: PropTypes.string,
+    admin_access_role: PropTypes.string,
+  }),
+  handleEditRole: PropTypes.func,
 };
 
 export default AddRoleModal;

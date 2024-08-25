@@ -1,0 +1,12 @@
+/* ImageComponent.css */
+.custom-image-width {
+  width: auto; /* Set your desired width */
+  height: auto; /* Maintains aspect ratio */
+}
+
+@media (max-width: 768px) {
+  /* Adjust image size for smaller screens */
+  .custom-image-width {
+    width: 100%; /* Full width on mobile */
+  }
+}

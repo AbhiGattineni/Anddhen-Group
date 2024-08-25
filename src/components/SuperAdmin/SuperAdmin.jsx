@@ -1,29 +1,11 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { adminPlates } from "../../dataconfig";
+import React from 'react';
+import { adminPlates } from '../../dataconfig';
+import AssignCards from '../pages/Admin/AssignCards';
 
 const SuperAdmin = () => {
-  useEffect(() => {
-    console.log("SuperAdmin");
-  }, []);
   return (
-    <div className="row">
-      {adminPlates.map((data) => ( 
-        <div className="col-md-6 my-3">
-          <Link to={data.route} className="text-decoration-none">
-            <div className="card shadow-lg">
-              <div className="card-body">
-                <div className="d-flex justify-content-center mb-3">
-                  <p className=" font-weight-bold">{data.child}</p>
-                </div>
-                <div className="d-flex justify-content-center">
-                  <code>{data.route}</code>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </div>
-      ))}
+    <div>
+      <AssignCards adminPlates={adminPlates} />
     </div>
   );
 };

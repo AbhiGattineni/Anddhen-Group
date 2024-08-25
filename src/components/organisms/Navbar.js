@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { logout } from "../../services/Authentication/Logout";
-import useAuthStore from "../../services/store/globalStore";
-
-
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { logout } from '../../services/Authentication/Logout';
+import useAuthStore from '../../services/store/globalStore';
+import PropTypes from 'prop-types';
+import { useAuth } from 'src/hooks/useAuth';
 
 function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = useState(false);
+  const { user } = useAuth();
 
   const setNewUser = useAuthStore((state) => state.setParttimer_consent);
   const handleLogout = () => {
@@ -14,8 +15,7 @@ function Navbar(props) {
       .then(() => {
         setNewUser(false);
       })
-      .catch((error) => {
-      });
+      .catch((error) => {});
     setNavbarOpen(false);
   };
 
@@ -44,8 +44,9 @@ function Navbar(props) {
                   <span className="navbar-toggler-icon nav-link-highlight"></span>
                 </button>
                 <div
-                  className={`collapse navbar-collapse ${navbarOpen ? "show" : ""
-                    }`}
+                  className={`collapse navbar-collapse ${
+                    navbarOpen ? 'show' : ''
+                  }`}
                   id="navbarSupportedContent"
                 >
                   <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -103,6 +104,16 @@ function Navbar(props) {
                             Anddhen Trading & Investiment
                           </Link>
                         </li>
+                        <li>
+                          <Link to="/ats" className="dropdown-item">
+                            Anddhen Travel Services
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/ans" className="dropdown-item">
+                            Anddhen NRI Services
+                          </Link>
+                        </li>
                       </ul>
                     </li>
                     <li className="nav-item d-lg-none">
@@ -150,6 +161,24 @@ function Navbar(props) {
                         Anddhen Trading & Investiment
                       </Link>
                     </li>
+                    <li className="nav-item d-lg-none">
+                      <Link
+                        to="/ats"
+                        onClick={handleLinkClick}
+                        className="nav-link active nav-link-highlight"
+                      >
+                        Anddhen Travel Services
+                      </Link>
+                    </li>
+                    <li className="nav-item d-lg-none">
+                      <Link
+                        to="/ans"
+                        onClick={handleLinkClick}
+                        className="nav-link active nav-link-highlight"
+                      >
+                        Anddhen NRI Services
+                      </Link>
+                    </li>
                     <li className="nav-item">
                       <Link
                         to="/contact"
@@ -159,12 +188,16 @@ function Navbar(props) {
                         Contact
                       </Link>
                     </li>
-                    {props.logout ?
+                    {user ? (
                       <li className="nav-item d-flex justify-content-center align-items-center">
-                        <button onClick={handleLogout} className="btn btn-warning mx-2 btn-sm fw-bold">Logout</button>
+                        <button
+                          onClick={handleLogout}
+                          className="btn btn-warning mx-2 btn-sm fw-bold"
+                        >
+                          Logout
+                        </button>
                       </li>
-                      : null}
-
+                    ) : null}
                   </ul>
                 </div>
               </div>
@@ -175,5 +208,9 @@ function Navbar(props) {
     </div>
   );
 }
+
+Navbar.propTypes = {
+  logout: PropTypes.bool,
+};
 
 export default Navbar;

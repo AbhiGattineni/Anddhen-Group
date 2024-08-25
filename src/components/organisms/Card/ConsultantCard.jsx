@@ -1,19 +1,20 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 function ConsultantCard({ consultant, onViewDetails, onDelete }) {
   // Function to render verification badge
   const renderVerifiedBadge = (verified) => {
     const badgeStyle = {
-      display: "inline-block",
-      fontSize: "75%",
-      fontWeight: "700",
-      lineHeight: "1",
-      textAlign: "center",
-      whiteSpace: "nowrap",
-      verticalAlign: "baseline",
-      borderRadius: ".25rem",
-      marginLeft: "5px",
-      color: "#fff",
+      display: 'inline-block',
+      fontSize: '75%',
+      fontWeight: '700',
+      lineHeight: '1',
+      textAlign: 'center',
+      whiteSpace: 'nowrap',
+      verticalAlign: 'baseline',
+      borderRadius: '.25rem',
+      marginLeft: '5px',
+      color: '#fff',
     };
 
     return (
@@ -28,7 +29,7 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
   };
   const handleDeleteClick = () => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this consultant?"
+      'Are you sure you want to delete this consultant?'
     );
     if (confirmed) {
       onDelete(consultant.id);
@@ -63,7 +64,7 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
             <strong>Experience in US:</strong> {consultant.experience_in_us}
             {renderVerifiedBadge(consultant.experience_in_us_verified)}
             <br />
-            <strong>LinkedIn:</strong>{" "}
+            <strong>LinkedIn:</strong>{' '}
             <a
               href={consultant.linkedin_url}
               target="_blank"
@@ -85,5 +86,10 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
     </div>
   );
 }
+ConsultantCard.propTypes = {
+  consultant: PropTypes.object.isRequired,
+  onViewDetails: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
 
 export default ConsultantCard;

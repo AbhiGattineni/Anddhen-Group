@@ -1,6 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link, useNavigate } from 'react-router-dom';
 
-const ErrorPage = ({ errorCode = '404', title = 'Oops! Page not found.', message = 'The page you’re looking for doesn’t exist.' }) => {
+const ErrorPage = ({
+  errorCode = '404',
+  title = 'Oops! Page not found.',
+  message = 'The page you’re looking for doesn’t exist.',
+}) => {
   const navigate = useNavigate();
 
   const goBack = () => {
@@ -12,7 +18,7 @@ const ErrorPage = ({ errorCode = '404', title = 'Oops! Page not found.', message
       <div className="text-center">
         <h1 className="display-1 fw-bold">{errorCode}</h1>
         <p className="fs-3">
-          <span className="text-danger">Oops!</span> {title}
+          <span className="text-danger"></span> {title}
         </p>
         <p className="lead">{message}</p>
         <Link to="/" className="btn btn-primary me-3">
@@ -24,6 +30,12 @@ const ErrorPage = ({ errorCode = '404', title = 'Oops! Page not found.', message
       </div>
     </div>
   );
+};
+
+ErrorPage.propTypes = {
+  errorCode: PropTypes.string,
+  title: PropTypes.string,
+  message: PropTypes.string,
 };
 
 export default ErrorPage;

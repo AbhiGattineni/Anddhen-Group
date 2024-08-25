@@ -1,99 +1,221 @@
-# Getting Started with Create React App
+# Steps to follow to install and run the File of ANDDHEN Group
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome! to Anddhen Grouop. Follow the steps correctly to download and run the files
 
-## Available Scripts
+**Note: Downlod Git bash and Nodejs pre installed before starting the process**
 
-In the project directory, you can run:
+Use this link to download the git bash: [https://www.youtube.com/watch?v=cJTXh7g-uCM](https://www.youtube.com/watch?v=cJTXh7g-uCM)
+
+Use this link to download the NodeJs: [https://www.youtube.com/watch?v=06X51c6WHsQ](https://www.youtube.com/watch?v=06X51c6WHsQ)
+
+**Note: This links may not work for your device refer other resources to download properly**
+
+## Steps to downlod the Front end
+
+Follow the Steps correctly to download the Front end
+
+**Click the link given below**
+
+### `https://github.com/AbhiGattineni/Anddhen-Group`
+
+This Github link [https://github.com/AbhiGattineni/Anddhen-Group](https://github.com/AbhiGattineni/Anddhen-Group`) will open the Anddhen Group Front End Repository.
+
+**Click on the "Code" Button**
+
+![alt text](image-4.png)
+
+it will open a window
+
+**Copy the link From the Window**
+
+![alt text](image-3.png)
+
+**Create a new folder with Name Related to the Project(Ex:AnddhenGroup)**
+
+![alt text](image-5.png)
+
+**Now open Command prompt using cmd command and press Enter**
+
+### `cmd`
+
+![alt text](image-6.png)
+
+it will take you to command prompt window
+
+**Enter command "git init" and press enter**
+
+### `git init`
+
+![alt text](image-7.png)
+
+wait for the command to exacute
+
+**Enter command "git clone with the link copied from Git hub" and press enter**
+
+### `git clone <copied link from git hub>`
+
+![alt text](image-8.png)
+
+**Enter command "code ." and press enter**
+
+### `code .`
+
+![alt text](image-9.png)
+
+this command will take you to vscode
+
+**OR**
+
+You can open vscode directly and open the folder ""Anddhen-group" which is present in the folder which You have created.
+
+**create a file in the Repository with Name .env**
+
+### `.env`
+
+![alt text](image-12.png)
+
+this file is used to maintain the credentials
+
+**Note: Create the file in the Anddhen-group folder not in any sub folders**
+
+**Ask the Credentials from the authorised person and paste them in the .env file and save the file**
+
+after completing of the above steps
+
+**Open a new temrminal in vscode using this steps**
+
+![alt text](image-11.png)
+
+**OR**
+
+**use short cut " ctrl + shift + ` " to open new terminal**
+
+**open a Git bash terminal**
+
+![alt text](image-13.png)
+
+**Enter the command npm install**
+
+### `npm install`
+
+![alt text](image-14.png)
+
+this command is used to install all packages required
+
+**Note: Make sure that all packages are installed without any errors**
+
+after the execution of the command
+
+**Enter the command npm start**
 
 ### `npm start`
 
-Runs the app in the development mode.\
+![alt text](image-15.png)
+
+This will Runs the app in the development mode.\
+
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
+
 You may also see any lint errors in the console.
 
-### `npm test`
+## Steps to downlod the Backend
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Follow the Steps correctly to download the Back end
 
-### `npm run build`
+**Click the link given below**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `https://github.com/AbhiGattineni/Django_Backend`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This Github link [https://github.com/AbhiGattineni/Django_Backend](https://github.com/AbhiGattineni/Django_Backend) will open the files of AnddhenGroup Back end.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Click on the Code Button**
 
-### `npm run eject`
+![alt text](image-16.png)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+it wil open an a window
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+![alt text](image-17.png)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Copy the link From the Window**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Go to the folder which was created(Ex:AnddhenGroup)**
 
-## Learn More
+![alt text](image-5.png)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Now open Command prompt using cmd command and press Enter**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### `cmd`
 
-### Code Splitting
+![alt text](image-6.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**Enter command "git clone <copied link from git hub>" and press enter**
 
-### Analyzing the Bundle Size
+### `git clone <link>`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+![alt text](image-19.png)
 
-### Making a Progressive Web App
+wait till the command to exacute
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+**Enter command "cd Django_Backend" and press enter**
 
-### Advanced Configuration
+### `cd Django_Backend`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+![alt text](image-18.png)
 
-### Deployment
+**Enter command "code ." and press enter**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### `cd Django_Backend`
 
-### `npm run build` fails to minify
+![alt text](image-20.png)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+this command will take you to vs code
 
-Atomic structure
-src/
-|-- components/
-| |-- atoms/
-| | |-- Button/
-| | | |-- index.js
-| | | |-- Button.css (or Button.module.css or Button.scss depending on your styling choice)
-| | |-- Input/
-| | | |-- ...
-| |-- molecules/
-| | |-- FormInput/
-| | | |-- ...
-| |-- organisms/
-| | |-- LoginForm/
-| | | |-- index.js
-| | | |-- LoginForm.css
-| | |-- Header/
-| | | |-- ...
-| |-- templates/
-| | |-- MainLayout/
-| | | |-- ...
-| |-- pages/
-| | |-- HomePage/
-| | | |-- ...
-| | |-- AboutPage/
-| | | |-- ...
-|-- App.js
-|-- index.js
+**OR**
+
+You can open vs code directly and open the folder ""Anddhen-group" which is present in the Folder which You have created.
+
+**create a file in the Repositery with Name .env**
+
+### `.env`
+
+![alt text](image-12.png)
+
+this file is used to Maintain the credentials
+
+**Note: Create the file in the Anddhen-group folder not in any sub folders**
+
+**Ask the Credentials from the authorised person and paste them in the .env file and save the file**
+
+after completing of the above steps
+
+**Open a New temrminal in vscode using this steps**
+
+![alt text](image-11.png)
+
+**OR**
+
+**use short cut ctrl + shift + ` to open new terminal**
+
+**open a Git bash terminl**
+
+![alt text](image-13.png)
+
+**Enter the command "pip install -r requirements.txt"**
+
+### `pip install -r requirements.txt`
+
+![alt text](image-21.png)
+
+this command is used to install all packages required
+
+**Note: Make sure that all packages are installed without any errors**
+
+after the complete execution of the command
+
+**Enter the command "python manage.py runserver"**
+
+### `python manage.py runserver`
+
+this command will add backend functionality.

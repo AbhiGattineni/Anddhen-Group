@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 const MissingDataForm = ({ missingData, onCompleted }) => {
   const [formData, setFormData] = useState({});
@@ -25,11 +25,11 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
     let newErrors = {};
     Object.keys(missingData).forEach((field) => {
       if (!formData[field]) {
-        newErrors[field] = "This field is required";
+        newErrors[field] = 'This field is required';
       }
     });
     if (formData.phone_number && formData.phone_number.length !== 10) {
-      newErrors.phone_number = "Phone number must be 10 digits";
+      newErrors.phone_number = 'Phone number must be 10 digits';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -46,14 +46,14 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
         {Object.keys(missingData).map((field) => (
           <div className="mb-3" key={field}>
             <label htmlFor={field} className="form-label">
-              {field.replace(/_/g, " ")}
+              {field.replace(/_/g, ' ')}
             </label>
-            {field === "phone_country_code" ? (
+            {field === 'phone_country_code' ? (
               <select
-                className={`form-control ${errors[field] ? "is-invalid" : ""}`}
+                className={`form-control ${errors[field] ? 'is-invalid' : ''}`}
                 id={field}
                 name={field}
-                value={formData[field] || ""}
+                value={formData[field] || ''}
                 onChange={handleChange}
                 required
               >
@@ -64,10 +64,10 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
             ) : (
               <input
                 type="text"
-                className={`form-control ${errors[field] ? "is-invalid" : ""}`}
+                className={`form-control ${errors[field] ? 'is-invalid' : ''}`}
                 id={field}
                 name={field}
-                value={formData[field] || ""}
+                value={formData[field] || ''}
                 onChange={handleChange}
                 required
               />
