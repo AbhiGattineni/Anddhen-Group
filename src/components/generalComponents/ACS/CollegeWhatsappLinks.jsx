@@ -1,5 +1,5 @@
 import React from 'react';
-import { collegeLinks } from "../../../dataconfig";
+import { collegeLinks } from '../../../dataconfig';
 
 const CollegeWhatsappLinks = () => {
   return (
