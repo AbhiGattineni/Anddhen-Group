@@ -12,6 +12,7 @@ import { KeyWordsComponent } from 'src/components/generalComponents/KeyWordsComp
 
 export const PartTimerPortal = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const setParttimer_consent = useAuthStore(
     (state) => state.setParttimer_consent
@@ -26,7 +27,7 @@ export const PartTimerPortal = () => {
       setIsError(false); // Reset error state on new fetch attempt
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/get-part-timer/${user_id}/`
+          `${API_BASE_URL}/get-part-timer/${user_id}/`
         );
         if (!response.ok) {
           throw new Error(

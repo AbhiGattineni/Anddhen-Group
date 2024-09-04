@@ -8,7 +8,7 @@ import useAuthStore from 'src/services/store/globalStore';
 import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 
 export const Login = () => {
-  const { onGoogleSignIn, onEmailPasswordSignIn } = useUnifiedAuth();
+  const { onGoogleSignIn, onEmailPasswordSignIn, isLoading } = useUnifiedAuth();
   const [error, setError] = useState(null); // Use state to manage the raw error
 
   // Use the useErrorHandling hook with the current error state
@@ -32,7 +32,7 @@ export const Login = () => {
 
   return (
     <>
-      {loading ? (
+      {loading | isLoading ? (
         <LoadingSpinner />
       ) : (
         <div className="bg-light min-vh-100 d-flex align-items-center user-select-none">

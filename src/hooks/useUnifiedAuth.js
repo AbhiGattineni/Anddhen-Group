@@ -10,7 +10,7 @@ import usePostUserData from '../hooks/usePostUserData';
 
 const useUnifiedAuth = () => {
   const navigate = useNavigate();
-  const { postUserData } = usePostUserData();
+  const { postUserData, isLoading } = usePostUserData();
 
   // const handleAuth = async (authPromise, first_name, last_name) => {
   //   try {
@@ -95,6 +95,7 @@ const useUnifiedAuth = () => {
     onGitHubSignIn,
     onEmailPasswordSignIn,
     onEmailPasswordUserCreation,
+    isLoading,
   };
 };
 
