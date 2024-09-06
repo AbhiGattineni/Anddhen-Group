@@ -52,7 +52,6 @@ export const Acs = () => {
           <CollegeWhatsappLinks />
         </div>
       </div>
-
       <div className="bg-c-light py-1">
         <div className="container">
           <h4 className="row justify-content-md-left ps-3 ps-md-0">
