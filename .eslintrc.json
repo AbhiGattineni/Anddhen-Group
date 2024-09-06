@@ -10,7 +10,7 @@
     "prettier/prettier": [
       "error",
       {
-        "endOfLine": "lf"
+        "endOfLine": "crlf"
       }
     ]
   }

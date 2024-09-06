@@ -1,5 +1,5 @@
-// DynamicForm.js
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const BasicForm = ({ formData, onChange, onSubmit, errors }) => {
   return (
@@ -23,6 +23,17 @@ const BasicForm = ({ formData, onChange, onSubmit, errors }) => {
       </button>
     </form>
   );
+};
+
+BasicForm.propTypes = {
+  formData: PropTypes.objectOf(PropTypes.string).isRequired,
+  onChange: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  errors: PropTypes.objectOf(PropTypes.string),
+};
+
+BasicForm.defaultProps = {
+  errors: {},
 };
 
 export default BasicForm;
