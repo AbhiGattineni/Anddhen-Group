@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 import { acsCards } from '../../../dataconfig';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 //import CollegeWhatsappLinks from 'src/components/generalComponents/ACS/CollegeWhatsappLinks';
-
 import CollegeWhatsappLinks from 'src/components/organisms/CollegeWhatsappLinks';
 
 export const Acs = () => {
