@@ -599,6 +599,10 @@ export const Filter = [
   'diverse lynx',
   'paycor',
 ];
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 export const collegeLinks = [
   {
     collegeName: 'Arizona State University',
