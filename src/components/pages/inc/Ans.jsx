@@ -6,7 +6,7 @@ import service2 from '../../images/services2.jpg';
 import service3 from '../../images/services3.jpg';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
-
+import ShoppingPage from 'src/components/generalComponents/ShoopingPage';
 export const Ans = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
@@ -146,6 +146,8 @@ export const Ans = () => {
             </Col>
           </Row>
         </div>
+
+        <ShoppingPage />
 
         {/* Contact Form */}
         <EnquiryForm
