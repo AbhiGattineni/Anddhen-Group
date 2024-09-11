@@ -623,6 +623,7 @@ export const Filter = [
   'diverse lynx',
   'paycor',
 ];
+
 export const collegeLinks = [
   {
     collegeName: 'Arizona State University',
