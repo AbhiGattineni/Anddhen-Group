@@ -13,6 +13,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Pagination,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -21,6 +22,8 @@ import { shoopingForNRI } from '../../../src/dataconfig'; // Adjust the path bas
 const ShoppingPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [ageGroup, setAgeGroup] = useState('');
+  const [currentPage, setCurrentPage] = useState(1); // State to track the current page
+  const productsPerPage = 12; // Set the number of products per page
 
   // Filter the products based on the search query and age group
   const filteredProducts = shoopingForNRI
@@ -28,6 +31,19 @@ const ShoppingPage = () => {
       product.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .filter((product) => (ageGroup ? product.agegroup === ageGroup : true));
+
+  // Pagination logic
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  // Change page
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   return (
     <section>
@@ -118,7 +134,7 @@ const ShoppingPage = () => {
           }}
         >
           <Grid container spacing={4}>
-            {filteredProducts.map((product, index) => (
+            {currentProducts.map((product, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Card
                   sx={{
@@ -159,6 +175,22 @@ const ShoppingPage = () => {
               </Grid>
             ))}
           </Grid>
+
+          {/* Pagination Component */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: '20px',
+            }}
+          >
+            <Pagination
+              count={Math.ceil(filteredProducts.length / productsPerPage)} // Total number of pages
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
         </Box>
       </Container>
     </section>
