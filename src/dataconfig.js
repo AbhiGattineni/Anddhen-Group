@@ -853,4 +853,92 @@ export const shoopingForNRI = [
     description:
       'Kirkland Signature All Chocolate Bag offers a variety of chocolate treats in one convenient pack. Perfect for sharing or personal indulgence.',
   },
+  {
+    name: 'BENGAY Ultra Strength Pain Relieving Cream',
+    image: Image1,
+    link: 'https://www.walmart.com/ip/BENGAY-Ultra-Strength-Pain-Relieving-Cream-2-Tubes-4oz-Twin-Pack/430188986?classType=REGULAR&athbdg=L1600',
+    agegroup: '50+',
+    description:
+      'BENGAY Ultra Strength Pain Relieving Cream offers relief from minor aches and muscle pains. It comes in a twin pack with two 4oz tubes for long-lasting use.',
+  },
+  {
+    name: 'Mineral Ice Topical Analgesic Pain Relieving Gel',
+    image: Image2,
+    link: 'https://www.walmart.com/ip/Mineral-Ice-Topical-Analgesic-Pain-Reliving-Gel-16Oz-Each/662556569?classType=REGULAR',
+    agegroup: '50+',
+    description:
+      'Mineral Ice Topical Analgesic Gel provides fast cooling relief for sore muscles and joints. It is available in a 16oz bottle for extended use.',
+  },
+  {
+    name: 'Kirkland Signature Walnut Halves',
+    image: Image3,
+    link: 'https://www.costco.com/kirkland-signature-walnut-halves%2C-3-lbs.product.100119388.html',
+    agegroup: '20-50',
+    description:
+      'Kirkland Signature Walnut Halves offer 3 lbs of premium-quality, healthy walnut halves. These nuts are perfect for snacking or adding to meals.',
+  },
+  {
+    name: 'Kirkland Signature Unsalted Mixed Nuts',
+    image: Image4,
+    link: 'https://www.costco.ca/kirkland-signature-unsalted-mixed-nuts%2C-1.13-kg.product.4000119102.html',
+    agegroup: '20-50',
+    description:
+      'Kirkland Signature Unsalted Mixed Nuts provide a healthy, unsalted mix of nuts in a 1.13 kg pack. Great for snacking and cooking.',
+  },
+  {
+    name: 'Amazon Product (Variety)',
+    image: Image5,
+    link: 'https://a.co/d/ewqZmgm',
+    agegroup: '50+',
+    description:
+      'This link leads to a variety of products. Please click to view details about this product on Amazon.',
+  },
+  {
+    name: 'One A Day Men’s Multivitamin Tablets',
+    image: Image6,
+    link: 'https://www.walmart.com/ip/One-A-Day-Men-s-Multivitamin-Tablets-Multivitamins-for-Men-200-Count/10311442',
+    agegroup: '50+',
+    description:
+      'One A Day Men’s Multivitamin provides essential vitamins and minerals for daily health. Each bottle contains 200 tablets for long-term use.',
+  },
+  {
+    name: 'Amazon Product (Variety)',
+    image: Image7,
+    link: 'https://a.co/d/coUqIin',
+    agegroup: '20-50',
+    description:
+      'This link leads to a variety of products. Please click to view details about this product on Amazon.',
+  },
+  {
+    name: 'Amazon Product (Variety)',
+    image: Image8,
+    link: 'https://a.co/d/0SYbrNr',
+    agegroup: '20-50',
+    description:
+      'This link leads to a variety of products. Please click to view details about this product on Amazon.',
+  },
+  {
+    name: 'Ziploc Seal Top Bags Variety Pack',
+    image: Image9,
+    link: 'https://www.costco.com/ziploc-seal-top-bag%2C-variety-pack%2C-347-count.product.100219369.html',
+    agegroup: '20-50',
+    description:
+      'Ziploc Seal Top Bags Variety Pack includes 347 bags of various sizes. They are perfect for food storage, keeping items fresh and organized.',
+  },
+  {
+    name: 'BelVita Breakfast Biscuits - Cinnamon Brown Sugar',
+    image: Image10,
+    link: 'https://www.costco.com/belvita-breakfast-biscuit%2C-cinnamon-brown-sugar%2C-1.76-oz%2C-30-count.product.100421656.html',
+    agegroup: '20-50',
+    description:
+      'BelVita Breakfast Biscuits in Cinnamon Brown Sugar flavor offer a nutritious, energy-boosting snack. This pack includes 30 biscuits, each 1.76 oz.',
+  },
+  {
+    name: 'Kirkland Signature All Chocolate Bag - Variety Pack',
+    image: Image11,
+    link: 'https://www.costcobusinessdelivery.com/kirkland-signature-all-chocolate-bag%2C-variety-pack.product.11174127.html',
+    agegroup: '0-20',
+    description:
+      'Kirkland Signature All Chocolate Bag offers a variety of chocolate treats in one convenient pack. Perfect for sharing or personal indulgence.',
+  },
 ];
