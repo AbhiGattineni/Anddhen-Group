@@ -3,6 +3,7 @@ import { Transaction } from 'src/components/SuperAdmin/transactions/Transaction'
 import { Colleges } from 'src/components/SuperAdmin/ACS/Colleges/Colleges';
 import Consultants from 'src/components/SuperAdmin/ACS/Consultants/Consultants';
 import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess';
+import { Status } from 'src/components/SuperAdmin/Status';
 
 export function getSharedRoutes() {
   return [
@@ -10,6 +11,7 @@ export function getSharedRoutes() {
     { path: 'colleges', element: <Colleges /> },
     { path: 'acs_consultants', element: <Consultants /> },
     { path: 'roleaccess', element: <RolesAndAccess /> },
+    { path: 'status', element: <Status /> },
     // Add other shared routes here
   ];
 }
