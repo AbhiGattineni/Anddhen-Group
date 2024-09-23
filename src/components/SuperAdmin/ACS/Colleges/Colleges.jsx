@@ -1,7 +1,8 @@
 import React from 'react';
 import { AddColleges } from './AddColleges';
-import { ViewColleges } from './ViewColleges';
+// import { ViewColleges } from './ViewColleges';
 import { AddLinks } from './AddLinks';
+import { ViewCollege } from './CollapsibleTable';
 
 export const Colleges = () => {
   return (
@@ -74,7 +75,7 @@ export const Colleges = () => {
           role="tabpanel"
           aria-labelledby="profile-tab"
         >
-          <ViewColleges />
+          <ViewCollege />
         </div>
       </div>
     </div>

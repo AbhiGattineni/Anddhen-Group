@@ -389,6 +389,10 @@ export const adminPlates = [
     child: 'Anddhen Consulting Services',
     route: 'colleges',
   },
+  {
+    child: 'Anddhen Status',
+    route: 'status',
+  },
 ];
 
 export const adminPortal = [

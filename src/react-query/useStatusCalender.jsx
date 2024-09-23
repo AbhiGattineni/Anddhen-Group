@@ -12,7 +12,11 @@ const fetchCalendarData = async (firebaseId) => {
 };
 
 export const useStatusCalendar = (firebaseId) => {
-  return useQuery(['calendarData', firebaseId], () =>
-    fetchCalendarData(firebaseId)
+  return useQuery(
+    ['calendarData', firebaseId],
+    () => fetchCalendarData(firebaseId),
+    {
+      enabled: !!firebaseId, // API will only be called if firebaseId is truthy
+    }
   );
 };
