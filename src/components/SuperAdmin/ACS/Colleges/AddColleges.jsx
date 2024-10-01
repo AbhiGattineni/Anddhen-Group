@@ -298,7 +298,8 @@ export const AddColleges = () => {
       await updateCollege(formData, {
         onSuccess: () => {
           queryClient.invalidateQueries('colleges');
-          resetForm();
+          // resetForm();
+          setInputDisabled(true);
           setToast({
             show: true,
             message: 'College updated successfully!',
@@ -425,6 +426,7 @@ export const AddColleges = () => {
               <div className="row row-cols-md-2 row row-cols-sm-2 row-cols-1 g-2">
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="website_link"
                   label="Website Link"
                   type="url"
@@ -435,6 +437,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="college_email"
                   label="College Email"
                   type="email"
@@ -447,6 +450,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="college_email_link"
                   label="College Email Link"
                   type="url"
@@ -461,6 +465,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="college_phone"
                   label="College Phone"
                   type="tel"
@@ -473,6 +478,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="college_phone_link"
                   label="College Phone Link"
                   type="url"
@@ -522,6 +528,7 @@ export const AddColleges = () => {
               <div className="row row-cols-md-2 row row-cols-sm-2 row-cols-1 g-2">
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="international_UG_link"
                   label="International UG Link"
                   type="url"
@@ -536,6 +543,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="international_graduation_link"
                   label="International Graduation Link"
                   type="url"
@@ -553,6 +561,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="international_person_email"
                   label="International Person Email"
                   type="email"
@@ -567,6 +576,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="international_person_email_link"
                   label="International Person Email Link"
                   type="url"
@@ -591,6 +601,7 @@ export const AddColleges = () => {
               <div className="row row-cols-md-2 row row-cols-sm-2 row-cols-1 g-2">
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="application_UG_link"
                   label="Application UG Link"
                   type="url"
@@ -605,6 +616,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="application_graduation_link"
                   label="Application Graduation Link"
                   type="url"
@@ -619,6 +631,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="application_UG_fee"
                   label="Application UG Fee"
                   type="text"
@@ -633,6 +646,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="application_UG_fee_link"
                   label="Application UG Fee Link"
                   type="url"
@@ -647,6 +661,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="application_graduation_fee"
                   label="Application Graduation Fee"
                   type="text"
@@ -661,6 +676,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="application_graduation_fee_link"
                   label="Application Graduation Fee Link"
                   type="url"
@@ -685,6 +701,7 @@ export const AddColleges = () => {
               <div className="row row-cols-md-2 row row-cols-sm-2 row-cols-1 g-2">
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="gre_score"
                   label="GRE Score"
                   type="text"
@@ -695,6 +712,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="gre_score_link"
                   label="GRE Score Link"
                   type="url"
@@ -709,6 +727,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="toefl_UG_score"
                   label="TOEFL UG Score"
                   type="text"
@@ -723,6 +742,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="toefl_UG_score_link"
                   label="TOEFL UG Score Link"
                   type="url"
@@ -737,6 +757,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="toefl_graduation_score"
                   label="TOEFL Graduation Score"
                   type="text"
@@ -751,6 +772,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="toefl_graduation_score_link"
                   label="TOEFL Graduation Score Link"
                   type="url"
@@ -765,6 +787,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="ielts_ug_score"
                   label="IELTS UG Score"
                   type="text"
@@ -779,6 +802,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="ielts_ug_score_link"
                   label="IELTS UG Score Link"
                   type="url"
@@ -793,6 +817,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="ielts_graduation_score"
                   label="IELTS Graduation Score"
                   type="text"
@@ -807,6 +832,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="ielts_graduation_score_link"
                   label="IELTS Graduation Score Link"
                   type="url"
@@ -828,6 +854,7 @@ export const AddColleges = () => {
               <div className="row row-cols-md-2 row row-cols-sm-2 row-cols-1 g-2">
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="fall_deadline_UG"
                   label="Fall Deadline UG"
                   type="text"
@@ -842,6 +869,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="fall_deadline_UG_link"
                   label="Fall Deadline UG Link"
                   type="url"
@@ -856,6 +884,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="fall_deadline_graduation"
                   label="Fall Deadline Graduation"
                   type="text"
@@ -870,6 +899,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="fall_deadline_graduation_link"
                   label="Fall Deadline Graduation Link"
                   type="url"
@@ -887,6 +917,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="spring_deadline_UG"
                   label="Spring Deadline UG"
                   type="text"
@@ -901,6 +932,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="spring_deadline_UG_link"
                   label="Spring Deadline UG Link"
                   type="url"
@@ -915,6 +947,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="spring_deadline_graduation"
                   label="Spring Deadline Graduation"
                   type="text"
@@ -929,6 +962,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="spring_deadline_graduation_link"
                   label="Spring Deadline Graduation Link"
                   type="url"
@@ -953,6 +987,7 @@ export const AddColleges = () => {
               <div className="row row-cols-md-2 row row-cols-sm-2 row-cols-1 g-2">
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="UG_courses"
                   label="UG Courses"
                   type="text"
@@ -963,6 +998,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="UG_courses_link"
                   label="UG Courses Link"
                   type="url"
@@ -977,6 +1013,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="graduation_courses"
                   label="Graduation Courses"
                   type="text"
@@ -991,6 +1028,7 @@ export const AddColleges = () => {
                 />
                 <InputField
                   disabled={inputDisabled}
+                  notRequired={true}
                   name="graduation_courses_link"
                   label="Graduation Courses Link"
                   type="url"
@@ -1036,6 +1074,7 @@ export const AddColleges = () => {
                     <button
                       type="submit"
                       className="btn btn-primary shadow px-5"
+                      disabled={disableButton}
                       onClick={handleSave}
                     >
                       {isUpdating ? 'loading...' : 'Save'}

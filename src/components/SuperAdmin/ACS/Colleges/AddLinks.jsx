@@ -84,12 +84,15 @@ export const AddLinks = () => {
     // Implement form submission logic here
   };
 
-  const { mutate: updateLinks } = useUpdateData(
+  const { mutate: updateLinks, isLoading: editLoading } = useUpdateData(
     'links',
     `/college_details/${editedLink?.id}/update/`
   );
 
-  const { mutate: addLink } = useAddData('links', `/college_details/create/`);
+  const { mutate: addLink, isLoading: addLoading } = useAddData(
+    'links',
+    `/college_details/create/`
+  );
 
   const handleEdit = async (index) => {
     setEditingIndex(index);
@@ -206,7 +209,8 @@ export const AddLinks = () => {
     }
   };
 
-  const { mutate: deleteLink } = useDeleteData(
+  // const { mutate: deleteLink }
+  const { mutate: deleteLink, isLoading: deleteLoading } = useDeleteData(
     'links',
     `/college_details/${deleteIndex}/delete/`
   );
@@ -369,7 +373,7 @@ export const AddLinks = () => {
                           className="btn btn-success mx-1"
                           onClick={handleSave}
                         >
-                          Save
+                          {addLoading || editLoading ? 'loading...' : 'Save'}
                         </button>
                         <button
                           type="button"
@@ -407,6 +411,7 @@ export const AddLinks = () => {
       <ConfirmationDialog
         title="Confirmation"
         show={showConfirmation}
+        isLoading={deleteLoading}
         message="Are you sure you want to delete this college link?"
         onConfirm={handleDeleteLink}
         onCancel={() => setShowConfirmation(false)}
