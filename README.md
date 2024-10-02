@@ -22,23 +22,39 @@ This Github link [https://github.com/AbhiGattineni/Anddhen-Group](https://github
 
 **Click on the "Code" Button**
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-4.jpg)
+=======
+![alt text](./src/components/images/READMEimages/image-4.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 it will open a window
 
 **Copy the link From the Window**
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-3.png)
 
 **Create a new folder with Name Related to the Project(Ex:AnddhenGroup)**
 
 ![alt text](public/assets/images/readmeImages/image-5.png)
+=======
+![alt text](./src/components/images/READMEimages/image-3.png)
+
+**Create a new folder with Name Related to the Project(Ex:AnddhenGroup)**
+
+![alt text](./src/components/images/READMEimages/image-5.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 **Now open Command prompt using cmd command and press Enter**
 
 ### `cmd`
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-6.png)
+=======
+![alt text](./src/components/images/READMEimages/image-6.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 it will take you to command prompt window
 
@@ -46,7 +62,11 @@ it will take you to command prompt window
 
 ### `git init`
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-7.png)
+=======
+![alt text](./src/components/images/READMEimages/image-7.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 wait for the command to exacute
 
@@ -54,13 +74,21 @@ wait for the command to exacute
 
 ### `git clone <copied link from git hub>`
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-8.png)
+=======
+![alt text](./src/components/images/READMEimages/image-8.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 **Enter command "code ." and press enter**
 
 ### `code .`
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-9.png)
+=======
+![alt text](./src/components/images/READMEimages/image-9.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 this command will take you to vscode
 
@@ -72,7 +100,11 @@ You can open vscode directly and open the folder ""Anddhen-group" which is prese
 
 ### `.env`
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-12.png)
+=======
+![alt text](./src/components/images/READMEimages/image-12.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 this file is used to maintain the credentials
 
@@ -84,7 +116,11 @@ after completing of the above steps
 
 **Open a new temrminal in vscode using this steps**
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-11.png)
+=======
+![alt text](./src/components/images/READMEimages/image-11.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 **OR**
 
@@ -92,13 +128,21 @@ after completing of the above steps
 
 **open a Git bash terminal**
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-13.png)
+=======
+![alt text](./src/components/images/READMEimages/image-13.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 **Enter the command npm install**
 
 ### `npm install`
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-14.png)
+=======
+![alt text](./src/components/images/READMEimages/image-14.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 this command is used to install all packages required
 
@@ -110,7 +154,11 @@ after the execution of the command
 
 ### `npm start`
 
+<<<<<<< HEAD
 ![alt text](public/assets/images/readmeImages/image-15.png)
+=======
+![alt text](./src/components/images/READMEimages/image-15.png)
+>>>>>>> 7ae40b8 (images for Readme images)
 
 This will Runs the app in the development mode.
 
