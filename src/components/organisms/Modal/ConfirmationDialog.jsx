@@ -1,7 +1,14 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const ConfirmationDialog = ({ title, show, message, onConfirm, onCancel }) => {
+const ConfirmationDialog = ({
+  title,
+  show,
+  isLoading,
+  message,
+  onConfirm,
+  onCancel,
+}) => {
   useEffect(() => {
     if (show) {
       document.body.style.overflow = 'hidden';
@@ -50,7 +57,7 @@ const ConfirmationDialog = ({ title, show, message, onConfirm, onCancel }) => {
               className="btn btn-primary"
               onClick={onConfirm}
             >
-              Confirm
+              {isLoading ? 'loading...' : 'Confirm'}
             </button>
           </div>
         </div>
@@ -62,6 +69,7 @@ const ConfirmationDialog = ({ title, show, message, onConfirm, onCancel }) => {
 ConfirmationDialog.propTypes = {
   title: PropTypes.string.isRequired,
   show: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
   message: PropTypes.string.isRequired,
   onConfirm: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,

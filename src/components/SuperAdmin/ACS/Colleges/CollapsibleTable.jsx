@@ -490,6 +490,7 @@ export const ViewCollege = () => {
       fallDeadline: '',
       springDeadline: '',
     };
+    setGlobalFilter('');
     setEditFilter(initialFilter);
     setFilter(initialFilter);
   };
@@ -498,26 +499,32 @@ export const ViewCollege = () => {
     return (
       data?.filter((college) => {
         const matchesCollege = college.college_name
-          .toLowerCase()
-          .includes(globalFilter.toLowerCase());
+          ? college.college_name
+              .toLowerCase()
+              .includes(globalFilter.toLowerCase())
+          : false;
+
         const matchesGRE =
           !filter.greScore ||
           parseInt(college.gre_score, 10) <= parseInt(filter.greScore, 10);
+
         const matchesTOEFL =
           !filter.toeflScore ||
           Math.min(
-            parseInt(college.toefl_graduation_score, 10),
-            parseInt(college.toefl_UG_score, 10)
+            parseInt(college.toefl_graduation_score, 10) || Infinity,
+            parseInt(college.toefl_UG_score, 10) || Infinity
           ) <= parseInt(filter.toeflScore, 10);
+
         const matchesIELTS =
           !filter.ieltsScore ||
           Math.min(
-            parseInt(college.ielts_graduation_score, 10),
-            parseInt(college.ielts_ug_score, 10)
+            parseInt(college.ielts_graduation_score, 10) || Infinity,
+            parseInt(college.ielts_ug_score, 10) || Infinity
           ) <= parseInt(filter.ieltsScore, 10);
+
         const matchesCollegeType =
           !filter.collegeType ||
-          college.public_private.toLowerCase() ===
+          college.public_private?.toLowerCase() ===
             filter.collegeType.toLowerCase();
 
         // Calculate minimum dates for deadlines
