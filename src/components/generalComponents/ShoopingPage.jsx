@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Container,
   Grid,
@@ -14,25 +15,66 @@ import {
   FormControl,
   InputLabel,
   Pagination,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  Snackbar,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { shoopingForNRI } from '../../../src/dataconfig'; // Adjust the path based on your file structure
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useFetchData } from 'src/react-query/useFetchApis'; // Ensure the path is correct
+import { useDeleteData } from 'src/react-query/useFetchApis'; // Ensure the path is correct
+import EditShopping from '../SuperAdmin/ACS/ShoopingProducts/EditShooping'; // Import the EditShopping component
+import { useQueryClient } from 'react-query';
 
 const ShoppingPage = () => {
+  const location = useLocation(); // Get the current location object
+
+  const shouldShowIcons = !location.pathname.includes('/ans');
+  const queryClient = useQueryClient();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [searchQuery, setSearchQuery] = useState('');
   const [ageGroup, setAgeGroup] = useState('');
-  const [currentPage, setCurrentPage] = useState(1); // State to track the current page
-  const productsPerPage = 12; // Set the number of products per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editedProduct, setEditedProduct] = useState(null); // State for the product being edited
+  const [products, setProducts] = useState([]);
 
-  // Filter the products based on the search query and age group
-  const filteredProducts = shoopingForNRI
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useFetchData('products', '/products/');
+
+  useEffect(() => {
+    setProducts(data); // Set the products state to the fetched data
+  }, [data]);
+
+  const { mutate: deleteProduct } = useDeleteData(
+    'products',
+    `/products/delete/${selectedProductId}/`
+  );
+
+  if (isLoading) return <p>Loading products...</p>;
+  if (error) return <p>Error loading products</p>;
+
+  const filteredProducts = products
     .filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .filter((product) => (ageGroup ? product.agegroup === ageGroup : true));
+    .filter((product) => (ageGroup ? product.age_group === ageGroup : true)); // Change agegroup to age_group
 
-  // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(
@@ -40,9 +82,43 @@ const ShoppingPage = () => {
     indexOfLastProduct
   );
 
-  // Change page
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const handleDeleteClick = (productId) => {
+    setSelectedProductId(productId);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedProductId(null);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteProduct(null, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('products');
+        setSnackbarMessage('Product deleted successfully');
+        setSnackbarOpen(true);
+        handleCloseDialog();
+      },
+    });
+  };
+
+  const handleEditClick = (product) => {
+    setEditedProduct(product); // Set the product data to be edited
+    setEditDialogOpen(true); // Open the edit dialog
+  };
+
+  const handleCloseEditDialog = () => {
+    setEditDialogOpen(false);
+    setEditedProduct(null);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -65,7 +141,6 @@ const ShoppingPage = () => {
             marginBottom: '20px',
           }}
         >
-          {/* Search Bar */}
           <TextField
             id="outlined-search"
             label="Search Products"
@@ -74,20 +149,10 @@ const ShoppingPage = () => {
             type="search"
             sx={{
               flex: 1,
-              '& .MuiOutlinedInput-root': {
-                height: '40px',
-                padding: '0',
-              },
-              '& .MuiOutlinedInput-input': {
-                padding: '8px 14px',
-              },
-              '& .MuiInputLabel-root': {
-                top: '-7px',
-                fontSize: '16px',
-              },
-              '& .MuiInputLabel-shrink': {
-                top: '0',
-              },
+              '& .MuiOutlinedInput-root': { height: '40px', padding: '0' },
+              '& .MuiOutlinedInput-input': { padding: '8px 14px' },
+              '& .MuiInputLabel-root': { top: '-7px', fontSize: '16px' },
+              '& .MuiInputLabel-shrink': { top: '0' },
             }}
             InputProps={{
               endAdornment: (
@@ -98,16 +163,12 @@ const ShoppingPage = () => {
             }}
           />
 
-          {/* Filter Dropdown */}
           <FormControl
             variant="outlined"
             size="small"
             sx={{
               minWidth: '120px',
-              '& .MuiOutlinedInput-root': {
-                height: '40px',
-                padding: '0',
-              },
+              '& .MuiOutlinedInput-root': { height: '40px', padding: '0' },
             }}
           >
             <InputLabel id="filter-label">Filter</InputLabel>
@@ -145,53 +206,126 @@ const ShoppingPage = () => {
                     justifyContent: 'space-between',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                     cursor: 'pointer',
+                    position: 'relative',
                   }}
-                  onClick={() => window.open(product.link, '_blank')} // Opens the link in a new tab
+                  onClick={() => window.open(product.link, '_blank')}
                 >
                   <CardMedia
                     component="img"
-                    height="150"
-                    image={product.image} // Use image from the config
-                    alt={product.description}
-                    sx={{ objectFit: 'contain' }} // Ensures the complete image is visible
+                    height="250"
+                    image={`${API_BASE_URL}${product.image}`}
+                    alt={product.name}
+                    sx={{ objectFit: 'cover' }}
                   />
-                  <CardContent>
-                    <Typography
-                      variant="h6"
-                      gutterBottom
-                      sx={{ fontSize: '15px', color: 'blue' }}
-                    >
-                      {product.name} {/* Display the product name */}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ fontSize: '12px', marginTop: '4px' }}
-                    >
-                      {product.description}
-                    </Typography>
+                  <CardContent
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="h5">{product.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {product.description}
+                      </Typography>
+                    </Box>
+
+                    {shouldShowIcons && ( // Conditionally render the icon buttons
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          gap: '3px',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                          position: 'absolute', // Make the box absolutely positioned
+                          top: '260px', // Move it upwards
+                          right: '5px', // Move it to the right
+                        }}
+                      >
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering onClick of Card
+                            handleEditClick(product);
+                          }}
+                          sx={{
+                            color: '#f76c2f',
+                            borderRadius: '10%',
+                            padding: '2px',
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering onClick of Card
+                            handleDeleteClick(product.id);
+                          }}
+                          sx={{
+                            color: 'red',
+                            borderRadius: '10%',
+                            padding: '2px',
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>
             ))}
           </Grid>
 
-          {/* Pagination Component */}
-          <Box
+          {filteredProducts.length === 0 && (
+            <Typography variant="h6" align="center" sx={{ marginTop: '20px' }}>
+              No products found.
+            </Typography>
+          )}
+
+          <Pagination
+            count={Math.ceil(filteredProducts.length / productsPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
             sx={{
               display: 'flex',
               justifyContent: 'center',
               marginTop: '20px',
             }}
-          >
-            <Pagination
-              count={Math.ceil(filteredProducts.length / productsPerPage)} // Total number of pages
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-            />
-          </Box>
+          />
         </Box>
+
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this product?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmDelete} color="secondary">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          message={snackbarMessage}
+        />
+
+        <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
+          <EditShopping
+            product={editedProduct}
+            onClose={handleCloseEditDialog}
+          />
+        </Dialog>
       </Container>
     </section>
   );

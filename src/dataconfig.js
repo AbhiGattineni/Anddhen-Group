@@ -393,6 +393,10 @@ export const adminPlates = [
     child: 'Anddhen Status',
     route: 'status',
   },
+  {
+    child: 'Anddhen Shooping Products',
+    route: 'shooping',
+  },
 ];
 
 export const adminPortal = [
