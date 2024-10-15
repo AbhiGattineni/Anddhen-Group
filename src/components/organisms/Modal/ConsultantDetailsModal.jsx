@@ -1,18 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
-  const [isEditable, setIsEditable] = useState(false);
+function ConsultantDetailsModal({
+  show,
+  onHide,
+  consultant,
+  isUpdating,
+  isEditable,
+  setIsEditable,
+  onSave,
+}) {
+  // const [isEditable, setIsEditable] = useState(false);
   const [editedConsultant, setEditedConsultant] = useState({ ...consultant });
 
   useEffect(() => {
     setEditedConsultant({ ...consultant });
   }, [consultant]);
 
+  useEffect(() => {
+    if (show) {
+      document.body.style.overflow = 'hidden'; // Disable scroll
+    } else {
+      document.body.style.overflow = 'unset'; // Enable scroll
+    }
+
+    // Cleanup to reset the overflow style when the component unmounts or modal is closed
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [show]);
+
   const handleEditChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === 'checkbox') {
-      setEditedConsultant((prevState) => ({ ...prevState, [name]: checked }));
+    const { name, value, type } = e.target;
+    if (type === 'radio') {
+      setEditedConsultant((prevState) => ({
+        ...prevState,
+        [name]: value === 'true' ? true : false, // Ensure the value is converted back to a boolean
+      }));
+      //   setEditedConsultant((prevState) => ({ ...prevState, [name]: checked }));
     } else {
       setEditedConsultant((prevState) => ({ ...prevState, [name]: value }));
     }
@@ -20,7 +45,6 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
 
   const handleSaveEdits = () => {
     onSave(editedConsultant);
-    setIsEditable(false);
   };
 
   if (!consultant) return null;
@@ -30,7 +54,11 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
       className={`modal ${show ? 'd-block' : ''}`}
       tabIndex="-1"
       role="dialog"
-      style={{ display: show ? 'block' : 'none' }}
+      style={{
+        display: show ? 'block' : 'none',
+        width: '100%',
+        height: '100vh',
+      }}
     >
       <div className="modal-dialog" role="document">
         <div className="modal-content">
@@ -38,12 +66,12 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
             <h5 className="modal-title">Consultant Details</h5>
             <button
               type="button"
-              className="close"
+              className="close p-0 m-0 border border-0 bg-transparent"
               data-dismiss="modal"
               aria-label="Close"
               onClick={onHide}
             >
-              <span aria-hidden="true">&times;</span>
+              <i className="bi bi-x fs-3"></i>
             </button>
           </div>
           <div className="modal-body">
@@ -307,16 +335,18 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                 <input
                   type="radio"
                   name="full_name_verified"
-                  value={1}
+                  value={true}
                   checked={editedConsultant.full_name_verified === true}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 Yes
                 <input
                   type="radio"
                   name="full_name_verified"
-                  value={0}
+                  value={false}
                   checked={editedConsultant.full_name_verified === false}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 No
@@ -328,16 +358,18 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                 <input
                   type="radio"
                   name="visa_status_verified"
-                  value={1}
+                  value={true}
                   checked={editedConsultant.visa_status_verified === true}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 Yes
                 <input
                   type="radio"
                   name="visa_status_verified"
-                  value={0}
+                  value={false}
                   checked={editedConsultant.visa_status_verified === false}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 No
@@ -349,16 +381,18 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                 <input
                   type="radio"
                   name="visa_validity_verified"
-                  value={1}
+                  value={true}
                   checked={editedConsultant.visa_validity_verified === true}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 Yes
                 <input
                   type="radio"
                   name="visa_validity_verified"
-                  value={0}
+                  value={false}
                   checked={editedConsultant.visa_validity_verified === false}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 No
@@ -370,16 +404,18 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                 <input
                   type="radio"
                   name="relocation"
-                  value={1}
+                  value={true}
                   checked={editedConsultant.relocation === true}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 Yes
                 <input
                   type="radio"
                   name="relocation"
-                  value={0}
+                  value={false}
                   checked={editedConsultant.relocation === false}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 No
@@ -391,16 +427,18 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                 <input
                   type="radio"
                   name="experience_in_us_verified"
-                  value={1}
+                  value={true}
                   checked={editedConsultant.experience_in_us_verified === true}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 Yes
                 <input
                   type="radio"
                   name="experience_in_us_verified"
-                  value={0}
+                  value={false}
                   checked={editedConsultant.experience_in_us_verified === false}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 No
@@ -412,16 +450,18 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                 <input
                   type="radio"
                   name="passport_number_verified"
-                  value={1}
+                  value={true}
                   checked={editedConsultant.passport_number_verified === true}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 Yes
                 <input
                   type="radio"
                   name="passport_number_verified"
-                  value={0}
+                  value={false}
                   checked={editedConsultant.passport_number_verified === false}
+                  disabled={!isEditable}
                   onChange={handleEditChange}
                 />{' '}
                 No
@@ -454,7 +494,17 @@ function ConsultantDetailsModal({ show, onHide, consultant, onSave }) {
                 className="btn btn-success"
                 onClick={handleSaveEdits}
               >
-                Save Changes
+                {isUpdating ? (
+                  <>
+                    <span
+                      className="spinner-grow spinner-grow-sm"
+                      aria-hidden="true"
+                    ></span>
+                    <span role="status">Loading...</span>
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
               </button>
             )}
           </div>
@@ -468,6 +518,9 @@ ConsultantDetailsModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,
   consultant: PropTypes.object.isRequired,
+  isUpdating: PropTypes.bool.isRequired,
+  isEditable: PropTypes.bool.isRequired,
+  setIsEditable: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
 };
 

@@ -11,16 +11,16 @@ const Consultants = () => {
   };
 
   return (
-    <div className="container">
-      <nav className="navbar navbar-expand-lg navbar-dark bg-secondary rounded mb-4 px-3">
+    <div className="">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 px-5">
         <a className="navbar-brand" href="#">
           <i className="bi bi-people-fill"></i> Consultant Management
         </a>
         <button
           className="navbar-toggler"
           type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
@@ -28,7 +28,7 @@ const Consultants = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ml-auto">
+          <ul className="navbar-nav ms-auto">
             <li className="nav-item">
               <a
                 className={getNavLinkClass('add')}
@@ -50,9 +50,10 @@ const Consultants = () => {
           </ul>
         </div>
       </nav>
-
-      {activeView === 'add' && <AddConsultantForm />}
-      {activeView === 'view' && <ViewConsultants />}
+      <div className="container">
+        {activeView === 'add' && <AddConsultantForm />}
+        {activeView === 'view' && <ViewConsultants />}
+      </div>
     </div>
   );
 };
