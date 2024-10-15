@@ -9,7 +9,7 @@ export function getSharedRoutes() {
   return [
     { path: 'transactions', element: <Transaction /> },
     { path: 'colleges', element: <Colleges /> },
-    { path: 'acs_consultants', element: <Consultants /> },
+    { path: 'consultants', element: <Consultants /> },
     { path: 'roleaccess', element: <RolesAndAccess /> },
     { path: 'status', element: <Status /> },
     { path: 'shooping', element: <Shooping /> },

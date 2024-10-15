@@ -20,6 +20,19 @@ const AddRoleModal = ({
     }
   }, [show, editingRole]);
 
+  useEffect(() => {
+    if (show) {
+      document.body.style.overflow = 'hidden'; // Disable scroll
+    } else {
+      document.body.style.overflow = 'unset'; // Enable scroll
+    }
+
+    // Cleanup to reset the overflow style when the component unmounts or modal is closed
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [show]);
+
   const saveRole = () => {
     handleSave(roleForm.roleName, roleForm.accessRole, editingRole?.id);
     handleClose();
@@ -36,7 +49,11 @@ const AddRoleModal = ({
 
   return (
     <div
-      style={{ display: show ? 'block' : 'none' }}
+      style={{
+        display: show ? 'block' : 'none',
+        width: '100%',
+        height: '100vh',
+      }}
       className="modal"
       tabIndex="-1"
     >

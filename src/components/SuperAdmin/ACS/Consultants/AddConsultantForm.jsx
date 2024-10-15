@@ -1,4 +1,52 @@
 import React, { useState } from 'react';
+import { useQueryClient } from 'react-query';
+import Toast from 'src/components/organisms/Toast';
+import { useAddData } from 'src/react-query/useFetchApis';
+import { z } from 'zod';
+
+const schema = z.object({
+  full_name: z.string().min(1, 'Full Name is required'),
+  phone_number: z.string().min(1, 'Phone Number is required'),
+  email_id: z.string().email('Invalid email').min(1, 'Email ID is required'),
+  dob: z.string().min(1, 'Date of Birth is required'),
+  visa_status: z.string().min(1, 'Visa Status is required'),
+  visa_validity: z.string().min(1, 'Visa Validity is required'),
+  btech_college: z.string().min(1, 'BTech College is required'),
+  btech_percentage: z.string().min(1, 'BTech Percentage is required'),
+  btech_graduation_date: z.string().min(1, 'BTech Graduation Date is required'),
+  masters_college: z.string().min(1, 'Masters College is required'),
+  masters_cgpa: z.string().min(1, 'Masters CGPA is required'),
+  masters_graduation_date: z
+    .string()
+    .min(1, 'Masters Graduation Date is required'),
+  technologies: z.string().min(1, 'Technologies are required'),
+  current_location: z.string().min(1, 'Current Location is required'),
+  relocation: z.boolean(),
+  experience_in_us: z.string().min(1, 'Experience in US is required'),
+  experience_in_india: z.string().min(1, 'Experience in India is required'),
+  relocation_preference: z.string().min(1, 'Relocation Preference is required'),
+  passport_number: z.string().min(1, 'Passport Number is required'),
+  driving_licence: z.string().min(1, 'Driving Licence is required'),
+  rate_expectations: z.string().min(1, 'Rate Expectations are required'),
+  last_4_ssn: z.string().min(4, 'Last 4 digits of SSN are required'),
+  linkedin_url: z.string().url('Invalid LinkedIn URL'),
+  full_name_verified: z.string().min(1, 'Full Name verification is required'),
+  visa_status_verified: z
+    .string()
+    .min(1, 'Visa Status verification is required'),
+  visa_validity_verified: z
+    .string()
+    .min(1, 'Visa Validity verification is required'),
+  experience_in_us_verified: z
+    .string()
+    .min(1, 'Experience in US verification is required'),
+  experience_in_india_verified: z
+    .string()
+    .min(1, 'Experience in India verification is required'),
+  passport_number_verified: z
+    .string()
+    .min(1, 'Passport verification is required'),
+});
 
 function AddConsultantForm() {
   const initialFormData = {
@@ -16,7 +64,7 @@ function AddConsultantForm() {
     masters_graduation_date: '',
     technologies: '',
     current_location: '',
-    relocation: false,
+    relocation: null,
     experience_in_us: '',
     experience_in_india: '',
     relocation_preference: '',
@@ -31,19 +79,18 @@ function AddConsultantForm() {
     experience_in_us_verified: '',
     experience_in_india_verified: '',
     passport_number_verified: '',
-    // original_resume: null,
-    // consulting_resume: null,
+    original_resume: null,
+    consulting_resume: null,
   };
   const [formData, setFormData] = useState(initialFormData);
-  const [errorMessages, setErrorMessages] = useState([]);
+  const [errorMessages, setErrorMessages] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-  const formatErrorMessages = (errors) => {
-    return Object.entries(errors).map(
-      ([field, messages]) => `${field}: ${messages.join(', ')}`
-    );
-  };
+  const queryClient = useQueryClient();
+  const [toast, setToast] = useState({
+    show: false,
+    message: '',
+    color: undefined,
+  });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -54,11 +101,15 @@ function AddConsultantForm() {
         [name]: e.target.files[0],
       }));
     } else if (name === 'technologies') {
-      // Convert the comma-separated values into a JSON array
       const technologiesArray = value.split(',').map((item) => item.trim());
       setFormData((prevState) => ({
         ...prevState,
         [name]: JSON.stringify(technologiesArray),
+      }));
+    } else if (name === 'relocation') {
+      setFormData((prevState) => ({
+        ...prevState,
+        relocation: value === 'yes', // Set relocation as boolean (true/false)
       }));
     } else {
       setFormData((prevState) => ({
@@ -66,56 +117,6 @@ function AddConsultantForm() {
         [name]: type === 'checkbox' ? checked : value,
       }));
     }
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setErrorMessages([]);
-    setIsSubmitted(false);
-
-    const submitData = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (key === 'technologies') {
-        // Ensure the technologies data remains a JSON string
-        submitData.append(key, formData[key]);
-      } else {
-        // Convert other data to string as required
-        submitData.append(key, String(formData[key]));
-      }
-    });
-
-    const jsonPayload = JSON.stringify({
-      ...formData,
-      original_resume: formData.original_resume
-        ? formData.original_resume.name
-        : null,
-      consulting_resume: formData.consulting_resume
-        ? formData.consulting_resume.name
-        : null,
-    });
-    fetch(`${API_BASE_URL}/api/consultant/`, {
-      method: 'POST',
-      body: jsonPayload,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((err) => {
-            throw new Error(formatErrorMessages(err));
-          });
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setIsSubmitted(true);
-        setFormData(initialFormData);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        setErrorMessages(error.message.split(','));
-      });
   };
 
   const renderVerificationRadioButtons = (fieldName) => (
@@ -147,6 +148,77 @@ function AddConsultantForm() {
     </>
   );
 
+  const { mutate: addConsultant, isLoading } = useAddData(
+    'consultant',
+    `/api/consultant/`
+  );
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setErrorMessages({});
+    setIsSubmitted(false);
+
+    try {
+      schema.parse(formData); // Validate formData using Zod schema
+      setIsSubmitted(true);
+
+      // Create a FormData instance to handle file uploads and other form fields
+      const submitData = new FormData();
+
+      // Append each field to FormData
+      Object.keys(formData).forEach((key) => {
+        if (key === 'technologies') {
+          // Ensure technologies data remains a JSON string
+          submitData.append(key, formData[key]);
+        } else if (formData[key] instanceof File) {
+          // For file inputs, append the actual file
+          submitData.append(key, formData[key]);
+        } else {
+          // Append other form data as strings
+          submitData.append(key, String(formData[key]));
+        }
+      });
+
+      addConsultant(submitData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('consultant');
+          setIsSubmitted(true);
+          setFormData(initialFormData);
+          setToast({
+            show: true,
+            message: 'Details added successfully!',
+            color: '#82DD55',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
+        },
+        onError: (error) => {
+          console.error('An error occurred:', error);
+          setToast({
+            show: true,
+            message: 'Something went wrong!',
+            color: '#E23636',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
+          // Handle error state or display error message
+        },
+      });
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        const formattedErrors = e.errors.reduce((acc, error) => {
+          acc[error.path[0]] = error.message;
+          return acc;
+        }, {});
+        setErrorMessages(formattedErrors);
+      }
+    }
+  };
+
   return (
     <>
       {isSubmitted && (
@@ -154,16 +226,12 @@ function AddConsultantForm() {
           Data posted successfully!
         </div>
       )}
-      {errorMessages.length > 0 && (
-        <div className="alert alert-danger">
-          {errorMessages.map((message, index) => (
-            <p key={index}>{message}</p>
-          ))}
-        </div>
-      )}
-      <form onSubmit={handleSubmit}>
+      <form
+        className="border border-2 mb-3 px-3 pb-3 rounded"
+        onSubmit={handleSubmit}
+      >
         {/* Basic Information Section */}
-        <div className="row my-5">
+        <div className="row mb-5 mt-3">
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="full_name">Full Name</label>
             <input
@@ -173,6 +241,9 @@ function AddConsultantForm() {
               name="full_name"
               onChange={handleChange}
             />
+            {errorMessages.full_name && (
+              <p className="text-danger">{errorMessages.full_name}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="phone_number">Phone Number</label>
@@ -183,6 +254,9 @@ function AddConsultantForm() {
               name="phone_number"
               onChange={handleChange}
             />
+            {errorMessages.phone_number && (
+              <p className="text-danger">{errorMessages.phone_number}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="email_id">Email ID</label>
@@ -193,6 +267,9 @@ function AddConsultantForm() {
               name="email_id"
               onChange={handleChange}
             />
+            {errorMessages.email_id && (
+              <p className="text-danger">{errorMessages.email_id}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="dob">Date of Birth</label>
@@ -203,6 +280,9 @@ function AddConsultantForm() {
               name="dob"
               onChange={handleChange}
             />
+            {errorMessages.dob && (
+              <p className="text-danger">{errorMessages.dob}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="visa_status">Visa Status</label>
@@ -218,6 +298,9 @@ function AddConsultantForm() {
               <option value="H1B">H1B</option>
               <option value="H4 EAD">H4 EAD</option>
             </select>
+            {errorMessages.visa_status && (
+              <p className="text-danger">{errorMessages.visa_status}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="visa_validity">Visa Validity</label>
@@ -228,6 +311,9 @@ function AddConsultantForm() {
               name="visa_validity"
               onChange={handleChange}
             />
+            {errorMessages.visa_validity && (
+              <p className="text-danger">{errorMessages.visa_validity}</p>
+            )}
           </div>
         </div>
 
@@ -242,6 +328,9 @@ function AddConsultantForm() {
               name="btech_college"
               onChange={handleChange}
             />
+            {errorMessages.btech_college && (
+              <p className="text-danger">{errorMessages.btech_college}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="btech_percentage">BTech Percentage</label>
@@ -252,6 +341,9 @@ function AddConsultantForm() {
               name="btech_percentage"
               onChange={handleChange}
             />
+            {errorMessages.btech_percentage && (
+              <p className="text-danger">{errorMessages.btech_percentage}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="btech_graduation_date">BTech Graduation Date</label>
@@ -262,6 +354,11 @@ function AddConsultantForm() {
               name="btech_graduation_date"
               onChange={handleChange}
             />
+            {errorMessages.btech_graduation_date && (
+              <p className="text-danger">
+                {errorMessages.btech_graduation_date}
+              </p>
+            )}
           </div>
         </div>
 
@@ -275,6 +372,9 @@ function AddConsultantForm() {
               name="masters_college"
               onChange={handleChange}
             />
+            {errorMessages.masters_college && (
+              <p className="text-danger">{errorMessages.masters_college}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="masters_cgpa">Masters CGPA</label>
@@ -286,6 +386,9 @@ function AddConsultantForm() {
               name="masters_cgpa"
               onChange={handleChange}
             />
+            {errorMessages.masters_cgpa && (
+              <p className="text-danger">{errorMessages.masters_cgpa}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="masters_graduation_date">
@@ -298,6 +401,11 @@ function AddConsultantForm() {
               name="masters_graduation_date"
               onChange={handleChange}
             />
+            {errorMessages.masters_graduation_date && (
+              <p className="text-danger">
+                {errorMessages.masters_graduation_date}
+              </p>
+            )}
           </div>
         </div>
 
@@ -310,6 +418,9 @@ function AddConsultantForm() {
             name="technologies"
             onChange={handleChange}
           />
+          {errorMessages.technologies && (
+            <p className="text-danger">{errorMessages.technologies}</p>
+          )}
         </div>
 
         <div className="row my-5">
@@ -322,31 +433,41 @@ function AddConsultantForm() {
               name="current_location"
               onChange={handleChange}
             />
+            {errorMessages.current_location && (
+              <p className="text-danger">{errorMessages.current_location}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="relocation">Willing to Relocate?</label>
-            <div>
-              <input
-                type="radio"
-                className="form-check-input"
-                id="relocationYes"
-                name="relocation"
-                value="yes"
-                onChange={handleChange}
-              />
-              <label htmlFor="relocationYes">Yes</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                className="form-check-input"
-                id="relocationNo"
-                name="relocation"
-                value="no"
-                onChange={handleChange}
-              />
-              <label htmlFor="relocationNo">No</label>
-            </div>
+            <>
+              <div>
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  id="relocationYes"
+                  name="relocation"
+                  value="yes"
+                  onChange={handleChange}
+                  checked={formData.relocation === true}
+                />
+                <label htmlFor="relocationYes">Yes</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  id="relocationNo"
+                  name="relocation"
+                  value="no"
+                  onChange={handleChange}
+                  checked={formData.relocation === false}
+                />
+                <label htmlFor="relocationNo">No</label>
+              </div>
+            </>
+            {errorMessages.relocation && (
+              <p className="text-danger">{errorMessages.relocation}</p>
+            )}
           </div>
         </div>
         <div className="row my-5">
@@ -359,6 +480,9 @@ function AddConsultantForm() {
               name="experience_in_us"
               onChange={handleChange}
             />
+            {errorMessages.experience_in_us && (
+              <p className="text-danger">{errorMessages.experience_in_us}</p>
+            )}
           </div>
 
           <div className="col-md-6 form-group mb-3">
@@ -370,6 +494,9 @@ function AddConsultantForm() {
               name="experience_in_india"
               onChange={handleChange}
             />
+            {errorMessages.experience_in_india && (
+              <p className="text-danger">{errorMessages.experience_in_india}</p>
+            )}
           </div>
         </div>
 
@@ -383,6 +510,9 @@ function AddConsultantForm() {
             name="relocation_preference"
             onChange={handleChange}
           ></textarea>
+          {errorMessages.relocation_preference && (
+            <p className="text-danger">{errorMessages.relocation_preference}</p>
+          )}
         </div>
 
         {/* Personal Details Section */}
@@ -396,6 +526,9 @@ function AddConsultantForm() {
               name="passport_number"
               onChange={handleChange}
             />
+            {errorMessages.passport_number && (
+              <p className="text-danger">{errorMessages.passport_number}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="driving_licence">Driving Licence</label>
@@ -406,6 +539,9 @@ function AddConsultantForm() {
               name="driving_licence"
               onChange={handleChange}
             />
+            {errorMessages.driving_licence && (
+              <p className="text-danger">{errorMessages.driving_licence}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="rate_expectations">Rate Expectations</label>
@@ -416,6 +552,9 @@ function AddConsultantForm() {
               name="rate_expectations"
               onChange={handleChange}
             />
+            {errorMessages.rate_expectations && (
+              <p className="text-danger">{errorMessages.rate_expectations}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="last_4_ssn">Last 4 Digits of SSN</label>
@@ -426,6 +565,9 @@ function AddConsultantForm() {
               name="last_4_ssn"
               onChange={handleChange}
             />
+            {errorMessages.last_4_ssn && (
+              <p className="text-danger">{errorMessages.last_4_ssn}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="linkedin_url">LinkedIn URL</label>
@@ -436,6 +578,9 @@ function AddConsultantForm() {
               name="linkedin_url"
               onChange={handleChange}
             />
+            {errorMessages.linkedin_url && (
+              <p className="text-danger">{errorMessages.linkedin_url}</p>
+            )}
           </div>
         </div>
 
@@ -495,33 +640,67 @@ function AddConsultantForm() {
           <div className="col-md-6 form-group mb-3">
             <label>Full Name Verified</label>
             {renderVerificationRadioButtons('full_name_verified')}
+            {errorMessages.full_name_verified && (
+              <p className="text-danger">{errorMessages.full_name_verified}</p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Visa Status Verified</label>
             {renderVerificationRadioButtons('visa_status_verified')}
+            {errorMessages.visa_status_verified && (
+              <p className="text-danger">
+                {errorMessages.visa_status_verified}
+              </p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Visa Validity Verified</label>
             {renderVerificationRadioButtons('visa_validity_verified')}
+            {errorMessages.visa_validity_verified && (
+              <p className="text-danger">
+                {errorMessages.visa_validity_verified}
+              </p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Experience in US Verified</label>
             {renderVerificationRadioButtons('experience_in_us_verified')}
+            {errorMessages.experience_in_us_verified && (
+              <p className="text-danger">
+                {errorMessages.experience_in_us_verified}
+              </p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Experience in India Verified</label>
             {renderVerificationRadioButtons('experience_in_india_verified')}
+            {errorMessages.experience_in_india_verified && (
+              <p className="text-danger">
+                {errorMessages.experience_in_india_verified}
+              </p>
+            )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Passport Number Verified</label>
             {renderVerificationRadioButtons('passport_number_verified')}
+            {errorMessages.passport_number_verified && (
+              <p className="text-danger">
+                {errorMessages.passport_number_verified}
+              </p>
+            )}
           </div>
         </div>
 
         <button type="submit" className="btn btn-primary">
-          Submit
+          {isLoading ? 'loading...' : 'Submit'}
         </button>
       </form>
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        color={toast.color}
+        onClose={() => setToast({ show: false, message: '', color: undefined })}
+      />
     </>
   );
 }
