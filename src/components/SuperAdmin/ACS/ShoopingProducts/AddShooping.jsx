@@ -24,6 +24,8 @@ const AddShopping = ({ onClose }) => {
   });
   const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
   const [snackbarMessage, setSnackbarMessage] = useState(''); // Message state
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageName, setImageName] = useState('');
 
   // Use the custom React Query mutation hook
   const { mutate, isLoading, isError, isSuccess } = useAddData(
@@ -47,10 +49,17 @@ const AddShopping = ({ onClose }) => {
   };
 
   const handleImageChange = (e) => {
+    const file = e.target.files[0];
     setFormData({
       ...formData,
       image: e.target.files[0], // Capture the uploaded image file
     });
+    setImageName(file.name);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
 
     // Display a message after the image is selected
     if (e.target.files[0]) {
@@ -111,8 +120,12 @@ const AddShopping = ({ onClose }) => {
             required
           />
         </div>
-        <div style={{ marginBottom: '16px' }}>
-          <Button variant="contained" component="label" fullWidth>
+        <div style={{ marginBottom: '16px', display: 'flex' }}>
+          <Button
+            variant="contained"
+            component="label"
+            sx={{ whiteSpace: 'nowrap', height: '50px' }}
+          >
             Upload Image
             <input
               type="file"
@@ -123,6 +136,22 @@ const AddShopping = ({ onClose }) => {
               required
             />
           </Button>
+          {imagePreview && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginLeft: '10px',
+              }}
+            >
+              <img
+                src={imagePreview}
+                alt="Selected Preview"
+                style={{ width: '50px', height: '50px', marginRight: '15px' }}
+              />
+              <span>{imageName}</span>
+            </div>
+          )}
         </div>
         <div style={{ marginBottom: '16px' }}>
           <TextField
