@@ -33,6 +33,8 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageName, setImageName] = useState('');
 
   const { mutate: updateProduct, isLoading } = useUpdateData(
     'products',
@@ -73,6 +75,12 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
         ...prev,
         image: file,
       }));
+      setImageName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
       setSnackbarMessage('Image uploaded successfully!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
@@ -172,10 +180,11 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
               <Button
                 variant="contained"
                 component="label"
-                fullWidth
                 sx={{
                   fontSize: '0.875rem',
                   padding: '8px',
+                  whiteSpace: 'nowrap',
+                  height: '50px',
                 }}
               >
                 Upload Image (Optional)
@@ -186,6 +195,26 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
                   name="image"
                   onChange={handleImageChange}
                 />
+                {imagePreview && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginLeft: '10px',
+                    }}
+                  >
+                    <img
+                      src={imagePreview}
+                      alt="Selected Preview"
+                      style={{
+                        width: '50px',
+                        height: '50px',
+                        marginRight: '15px',
+                      }}
+                    />
+                    <span>{imageName}</span>
+                  </div>
+                )}
               </Button>
             </Box>
 
