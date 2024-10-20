@@ -14,14 +14,34 @@ function Contact() {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.fullName) newErrors.fullName = 'Full name is required';
-    if (!formData.phone) newErrors.phone = 'Phone number is required';
+
+    // Full Name validation
+    if (!formData.fullName) {
+      newErrors.fullName = 'Full name is required';
+    } else if (formData.fullName.length < 3) {
+      newErrors.fullName = 'Full name must be at least 3 characters';
+    }
+
+    // Phone Number validation
+    if (!formData.phone) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      newErrors.phone = 'Phone number must be 10 digits';
+    }
+
+    // Email validation
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email address is invalid';
     }
-    if (!formData.message) newErrors.message = 'Message is required';
+
+    // Message validation
+    if (!formData.message) {
+      newErrors.message = 'Message is required';
+    } else if (formData.message.length < 5) {
+      newErrors.message = 'Message is too short';
+    }
     return newErrors;
   };
 
@@ -98,7 +118,7 @@ function Contact() {
                 <div className="form-group">
                   <label className="mb-1">Phone Number</label>
                   <input
-                    type="text"
+                    type="tel"
                     className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
                     id="phone"
                     placeholder="Enter phone number"
