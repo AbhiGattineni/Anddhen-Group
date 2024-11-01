@@ -201,11 +201,23 @@ function AddConsultantForm() {
           // For file inputs, append the actual file
           submitData.append(key, formData[key]);
         } else if (key === 'status_consultant') {
-          submitData.append(key, formData[key]);
+          submitData.append(
+            'status_consultant',
+            JSON.stringify({
+              recruiter_id: formData.recruiter_id,
+              employer_id: formData.employer_id,
+              date: new Date().toISOString().split('T')[0],
+              ...formData.status_consultant, // Merges the dynamic fields from formData.status_consultant
+            })
+          );
         } else {
           // Append other form data as strings
           submitData.append(key, String(formData[key]));
         }
+      });
+
+      submitData.forEach((value, key) => {
+        console.log(key, value);
       });
 
       addConsultant(submitData, {
