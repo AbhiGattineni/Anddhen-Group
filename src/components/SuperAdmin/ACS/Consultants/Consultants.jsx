@@ -47,6 +47,24 @@ const Consultants = () => {
                 <i className="bi bi-card-list"></i> View Consultants
               </a>
             </li>
+            <li className="nav-item">
+              <a
+                className={getNavLinkClass('employer')}
+                href="#"
+                onClick={() => setActiveView('employer')}
+              >
+                <i className="bi bi-building-add"></i> Employer
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className={getNavLinkClass('recruiter')}
+                href="#"
+                onClick={() => setActiveView('recruiter')}
+              >
+                <i className="bi bi-people-fill"></i> Recruiter
+              </a>
+            </li>
           </ul>
         </div>
       </nav>

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useQueryClient } from 'react-query';
 import Toast from 'src/components/organisms/Toast';
+import { useFetchData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
 import { z } from 'zod';
 
 const schema = z.object({
+  employer_id: z.string().min(1, 'Employer is required'),
+  recruiter_id: z.string().min(1, 'Recruiter is required'),
   full_name: z.string().min(1, 'Full Name is required'),
   phone_number: z.string().min(1, 'Phone Number is required'),
   email_id: z.string().email('Invalid email').min(1, 'Email ID is required'),
@@ -50,6 +53,8 @@ const schema = z.object({
 
 function AddConsultantForm() {
   const initialFormData = {
+    employer_id: '',
+    recruiter_id: '',
     full_name: '',
     phone_number: '',
     email_id: '',
@@ -81,6 +86,9 @@ function AddConsultantForm() {
     passport_number_verified: '',
     original_resume: null,
     consulting_resume: null,
+    status_consultant: {
+      description: '',
+    },
   };
   const [formData, setFormData] = useState(initialFormData);
   const [errorMessages, setErrorMessages] = useState({});
@@ -91,6 +99,9 @@ function AddConsultantForm() {
     message: '',
     color: undefined,
   });
+
+  const { data: employers = [] } = useFetchData('employer', `/employers/`);
+  const { data: recruiters = [] } = useFetchData('recruiter', `/recruiters/`);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -110,6 +121,14 @@ function AddConsultantForm() {
       setFormData((prevState) => ({
         ...prevState,
         relocation: value === 'yes', // Set relocation as boolean (true/false)
+      }));
+    } else if (name === 'description') {
+      setFormData((prevData) => ({
+        ...prevData,
+        status_consultant: {
+          ...prevData.status_consultant,
+          description: value,
+        },
       }));
     } else {
       setFormData((prevState) => ({
@@ -165,6 +184,14 @@ function AddConsultantForm() {
       // Create a FormData instance to handle file uploads and other form fields
       const submitData = new FormData();
 
+      // const statusConsultant = {
+      //   employer_id: formData.employer_id,
+      //   recruiter_id: formData.recruiter_id,
+      //   description: formData.status_consultant.description,
+      // };
+
+      // formData.status_consultant = statusConsultant;
+
       // Append each field to FormData
       Object.keys(formData).forEach((key) => {
         if (key === 'technologies') {
@@ -172,6 +199,8 @@ function AddConsultantForm() {
           submitData.append(key, formData[key]);
         } else if (formData[key] instanceof File) {
           // For file inputs, append the actual file
+          submitData.append(key, formData[key]);
+        } else if (key === 'status_consultant') {
           submitData.append(key, formData[key]);
         } else {
           // Append other form data as strings
@@ -230,6 +259,48 @@ function AddConsultantForm() {
         className="border border-2 mb-3 px-3 pb-3 rounded"
         onSubmit={handleSubmit}
       >
+        <div className="row mt-3">
+          <div className="col-md-6 form-group mb-3">
+            <label htmlFor="employer_id">Employer</label>
+            <select
+              className="form-control"
+              id="employer_id"
+              name="employer_id"
+              value={formData.employer_id}
+              onChange={handleChange}
+            >
+              <option value="">Select Employer</option>
+              {employers.map((employer) => (
+                <option key={employer.id} value={employer.id}>
+                  {employer.name}
+                </option>
+              ))}
+            </select>
+            {errorMessages.employer_id && (
+              <p className="text-danger">{errorMessages.employer_id}</p>
+            )}
+          </div>
+          <div className="col-md-6 form-group mb-3">
+            <label htmlFor="recruiter_id">Recruiter</label>
+            <select
+              className="form-control"
+              id="recruiter_id"
+              name="recruiter_id"
+              value={formData.recruiter_id}
+              onChange={handleChange}
+            >
+              <option value="">Select Recruiter</option>
+              {recruiters.map((recruiter) => (
+                <option key={recruiter.id} value={recruiter.id}>
+                  {recruiter.name}
+                </option>
+              ))}
+            </select>
+            {errorMessages.recruiter_id && (
+              <p className="text-danger">{errorMessages.recruiter_id}</p>
+            )}
+          </div>
+        </div>
         {/* Basic Information Section */}
         <div className="row mb-5 mt-3">
           <div className="col-md-6 form-group mb-3">
@@ -690,7 +761,15 @@ function AddConsultantForm() {
             )}
           </div>
         </div>
-
+        <textarea
+          name="description"
+          value={formData.status_consultant.description}
+          onChange={handleChange}
+          placeholder="Type something here..."
+          rows="5"
+          cols="50"
+        />
+        <br />
         <button type="submit" className="btn btn-primary">
           {isLoading ? 'loading...' : 'Submit'}
         </button>
