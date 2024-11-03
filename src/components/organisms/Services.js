@@ -44,8 +44,12 @@ const Services = () => {
                 <LazyLoadImage
                   effect="blur"
                   src={service.Photo}
-                  className="w-100 border-bottom"
                   alt="services"
+                  className="w-100 border-bottom"
+                  style={{
+                    height: '250px', // Fixed height
+                    // Crop the image to fill the container
+                  }}
                 />
                 <div className="card-body">
                   <h6>{service.Name}</h6>
