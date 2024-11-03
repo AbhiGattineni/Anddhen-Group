@@ -48,9 +48,6 @@ function Footer() {
             <div>
               <Link to="/contact">Contact</Link>
             </div>
-            <div>
-              <Link to="/blog">blog</Link>
-            </div>
           </div>
           <div className="col-md-4">
             <h6>Contact Information</h6>

@@ -20,7 +20,7 @@ export const Card = (props) => {
           height="200px"
         />
         <div className="card-body">
-          <h6>{props.title}</h6>
+          <h6 className="truncate">{props.title}</h6>
           <div className="underline"></div>
           <p className="truncate">{props.description}</p>
         </div>
