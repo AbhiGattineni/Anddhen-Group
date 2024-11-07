@@ -1,34 +1,25 @@
 import React, { useState } from 'react';
 import { useQueryClient } from 'react-query';
 import Toast from 'src/components/organisms/Toast';
+import { useFetchData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
 import { z } from 'zod';
 
 const schema = z.object({
+  employer_id: z.string().min(1, 'Employer is required'),
+  recruiter_id: z.string().min(1, 'Recruiter is required'),
   full_name: z.string().min(1, 'Full Name is required'),
   phone_number: z.string().min(1, 'Phone Number is required'),
   email_id: z.string().email('Invalid email').min(1, 'Email ID is required'),
   dob: z.string().min(1, 'Date of Birth is required'),
   visa_status: z.string().min(1, 'Visa Status is required'),
   visa_validity: z.string().min(1, 'Visa Validity is required'),
-  btech_college: z.string().min(1, 'BTech College is required'),
-  btech_percentage: z.string().min(1, 'BTech Percentage is required'),
-  btech_graduation_date: z.string().min(1, 'BTech Graduation Date is required'),
-  masters_college: z.string().min(1, 'Masters College is required'),
-  masters_cgpa: z.string().min(1, 'Masters CGPA is required'),
-  masters_graduation_date: z
-    .string()
-    .min(1, 'Masters Graduation Date is required'),
   technologies: z.string().min(1, 'Technologies are required'),
   current_location: z.string().min(1, 'Current Location is required'),
   relocation: z.boolean(),
   experience_in_us: z.string().min(1, 'Experience in US is required'),
   experience_in_india: z.string().min(1, 'Experience in India is required'),
-  relocation_preference: z.string().min(1, 'Relocation Preference is required'),
   passport_number: z.string().min(1, 'Passport Number is required'),
-  driving_licence: z.string().min(1, 'Driving Licence is required'),
-  rate_expectations: z.string().min(1, 'Rate Expectations are required'),
-  last_4_ssn: z.string().min(4, 'Last 4 digits of SSN are required'),
   linkedin_url: z.string().url('Invalid LinkedIn URL'),
   full_name_verified: z.string().min(1, 'Full Name verification is required'),
   visa_status_verified: z
@@ -50,6 +41,8 @@ const schema = z.object({
 
 function AddConsultantForm() {
   const initialFormData = {
+    employer_id: '',
+    recruiter_id: '',
     full_name: '',
     phone_number: '',
     email_id: '',
@@ -81,6 +74,9 @@ function AddConsultantForm() {
     passport_number_verified: '',
     original_resume: null,
     consulting_resume: null,
+    status_consultant: {
+      description: '',
+    },
   };
   const [formData, setFormData] = useState(initialFormData);
   const [errorMessages, setErrorMessages] = useState({});
@@ -92,13 +88,16 @@ function AddConsultantForm() {
     color: undefined,
   });
 
+  const { data: employers = [] } = useFetchData('employer', `/employers/`);
+  const { data: recruiters = [] } = useFetchData('recruiter', `/recruiters/`);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
     if (type === 'file') {
       setFormData((prevState) => ({
         ...prevState,
-        [name]: e.target.files[0],
+        [name]: e.target.files[0] || null,
       }));
     } else if (name === 'technologies') {
       const technologiesArray = value.split(',').map((item) => item.trim());
@@ -110,6 +109,14 @@ function AddConsultantForm() {
       setFormData((prevState) => ({
         ...prevState,
         relocation: value === 'yes', // Set relocation as boolean (true/false)
+      }));
+    } else if (name === 'description') {
+      setFormData((prevData) => ({
+        ...prevData,
+        status_consultant: {
+          ...prevData.status_consultant,
+          description: value,
+        },
       }));
     } else {
       setFormData((prevState) => ({
@@ -161,6 +168,13 @@ function AddConsultantForm() {
     try {
       schema.parse(formData); // Validate formData using Zod schema
       setIsSubmitted(true);
+      if (!formData['consulting_resume'] && !formData['original_resume']) {
+        setErrorMessages((prev) => ({
+          ...prev,
+          resume:
+            'At least one resume (Original or Consulting) must be uploaded',
+        }));
+      }
 
       // Create a FormData instance to handle file uploads and other form fields
       const submitData = new FormData();
@@ -173,6 +187,16 @@ function AddConsultantForm() {
         } else if (formData[key] instanceof File) {
           // For file inputs, append the actual file
           submitData.append(key, formData[key]);
+        } else if (key === 'status_consultant') {
+          submitData.append(
+            'status_consultant',
+            JSON.stringify({
+              recruiter_id: formData.recruiter_id,
+              employer_id: formData.employer_id,
+              date: new Date().toISOString().split('T')[0],
+              ...formData.status_consultant, // Merges the dynamic fields from formData.status_consultant
+            })
+          );
         } else {
           // Append other form data as strings
           submitData.append(key, String(formData[key]));
@@ -209,15 +233,21 @@ function AddConsultantForm() {
         },
       });
     } catch (e) {
+      console.log(formData);
       if (e instanceof z.ZodError) {
         const formattedErrors = e.errors.reduce((acc, error) => {
           acc[error.path[0]] = error.message;
           return acc;
         }, {});
+        if (!formData.original_resume && !formData.consulting_resume) {
+          formattedErrors.resume =
+            'At least one resume (Original or Consulting) must be uploaded';
+        }
         setErrorMessages(formattedErrors);
       }
     }
   };
+  console.log(errorMessages);
 
   return (
     <>
@@ -230,6 +260,48 @@ function AddConsultantForm() {
         className="border border-2 mb-3 px-3 pb-3 rounded"
         onSubmit={handleSubmit}
       >
+        <div className="row mt-3">
+          <div className="col-md-6 form-group mb-3">
+            <label htmlFor="employer_id">Employer</label>
+            <select
+              className="form-control"
+              id="employer_id"
+              name="employer_id"
+              value={formData.employer_id}
+              onChange={handleChange}
+            >
+              <option value="">Select Employer</option>
+              {employers.map((employer) => (
+                <option key={employer.id} value={employer.id}>
+                  {employer.name}
+                </option>
+              ))}
+            </select>
+            {errorMessages.employer_id && (
+              <p className="text-danger">{errorMessages.employer_id}</p>
+            )}
+          </div>
+          <div className="col-md-6 form-group mb-3">
+            <label htmlFor="recruiter_id">Recruiter</label>
+            <select
+              className="form-control"
+              id="recruiter_id"
+              name="recruiter_id"
+              value={formData.recruiter_id}
+              onChange={handleChange}
+            >
+              <option value="">Select Recruiter</option>
+              {recruiters.map((recruiter) => (
+                <option key={recruiter.id} value={recruiter.id}>
+                  {recruiter.name}
+                </option>
+              ))}
+            </select>
+            {errorMessages.recruiter_id && (
+              <p className="text-danger">{errorMessages.recruiter_id}</p>
+            )}
+          </div>
+        </div>
         {/* Basic Information Section */}
         <div className="row mb-5 mt-3">
           <div className="col-md-6 form-group mb-3">
@@ -635,6 +707,9 @@ function AddConsultantForm() {
             }}
           />
         </div>
+        {errorMessages.resume && (
+          <p className="text-danger">{errorMessages.resume}</p>
+        )}
         <div className="row my-5">
           {/* Verification fields */}
           <div className="col-md-6 form-group mb-3">
@@ -690,7 +765,17 @@ function AddConsultantForm() {
             )}
           </div>
         </div>
-
+        <textarea
+          name="description"
+          value={formData.status_consultant.description}
+          onChange={handleChange}
+          placeholder="Add your notes here ..."
+          rows="3"
+          cols="50"
+          className="form-control shadow-sm rounded border-primary"
+          style={{ resize: 'none', padding: '10px' }}
+        />
+        <br />
         <button type="submit" className="btn btn-primary">
           {isLoading ? 'loading...' : 'Submit'}
         </button>

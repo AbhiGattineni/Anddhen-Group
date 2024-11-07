@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import AddConsultantForm from './AddConsultantForm';
 import ViewConsultants from './ViewConsultants';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure to import Bootstrap CSS
+import Employer from './Employer';
+import Recruiter from './Recruiter';
 
 const Consultants = () => {
   const [activeView, setActiveView] = useState('add');
@@ -47,12 +49,32 @@ const Consultants = () => {
                 <i className="bi bi-card-list"></i> View Consultants
               </a>
             </li>
+            <li className="nav-item">
+              <a
+                className={getNavLinkClass('employer')}
+                href="#"
+                onClick={() => setActiveView('employer')}
+              >
+                <i className="bi bi-building-add"></i> Employer
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className={getNavLinkClass('recruiter')}
+                href="#"
+                onClick={() => setActiveView('recruiter')}
+              >
+                <i className="bi bi-people-fill"></i> Recruiter
+              </a>
+            </li>
           </ul>
         </div>
       </nav>
       <div className="container">
         {activeView === 'add' && <AddConsultantForm />}
         {activeView === 'view' && <ViewConsultants />}
+        {activeView === 'employer' && <Employer />}
+        {activeView === 'recruiter' && <Recruiter />}
       </div>
     </div>
   );

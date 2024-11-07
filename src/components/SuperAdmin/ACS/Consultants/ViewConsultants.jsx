@@ -62,7 +62,6 @@ function ViewConsultants() {
 
   const handleClose = () => {
     setIsEditable(false);
-    console.log(isEditable);
     setIsModalVisible(false);
   };
 
