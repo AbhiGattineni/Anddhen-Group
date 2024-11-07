@@ -14,24 +14,12 @@ const schema = z.object({
   dob: z.string().min(1, 'Date of Birth is required'),
   visa_status: z.string().min(1, 'Visa Status is required'),
   visa_validity: z.string().min(1, 'Visa Validity is required'),
-  btech_college: z.string().min(1, 'BTech College is required'),
-  btech_percentage: z.string().min(1, 'BTech Percentage is required'),
-  btech_graduation_date: z.string().min(1, 'BTech Graduation Date is required'),
-  masters_college: z.string().min(1, 'Masters College is required'),
-  masters_cgpa: z.string().min(1, 'Masters CGPA is required'),
-  masters_graduation_date: z
-    .string()
-    .min(1, 'Masters Graduation Date is required'),
   technologies: z.string().min(1, 'Technologies are required'),
   current_location: z.string().min(1, 'Current Location is required'),
   relocation: z.boolean(),
   experience_in_us: z.string().min(1, 'Experience in US is required'),
   experience_in_india: z.string().min(1, 'Experience in India is required'),
-  relocation_preference: z.string().min(1, 'Relocation Preference is required'),
   passport_number: z.string().min(1, 'Passport Number is required'),
-  driving_licence: z.string().min(1, 'Driving Licence is required'),
-  rate_expectations: z.string().min(1, 'Rate Expectations are required'),
-  last_4_ssn: z.string().min(4, 'Last 4 digits of SSN are required'),
   linkedin_url: z.string().url('Invalid LinkedIn URL'),
   full_name_verified: z.string().min(1, 'Full Name verification is required'),
   visa_status_verified: z
@@ -109,7 +97,7 @@ function AddConsultantForm() {
     if (type === 'file') {
       setFormData((prevState) => ({
         ...prevState,
-        [name]: e.target.files[0],
+        [name]: e.target.files[0] || null,
       }));
     } else if (name === 'technologies') {
       const technologiesArray = value.split(',').map((item) => item.trim());
@@ -180,17 +168,16 @@ function AddConsultantForm() {
     try {
       schema.parse(formData); // Validate formData using Zod schema
       setIsSubmitted(true);
+      if (!formData['consulting_resume'] && !formData['original_resume']) {
+        setErrorMessages((prev) => ({
+          ...prev,
+          resume:
+            'At least one resume (Original or Consulting) must be uploaded',
+        }));
+      }
 
       // Create a FormData instance to handle file uploads and other form fields
       const submitData = new FormData();
-
-      // const statusConsultant = {
-      //   employer_id: formData.employer_id,
-      //   recruiter_id: formData.recruiter_id,
-      //   description: formData.status_consultant.description,
-      // };
-
-      // formData.status_consultant = statusConsultant;
 
       // Append each field to FormData
       Object.keys(formData).forEach((key) => {
@@ -201,7 +188,15 @@ function AddConsultantForm() {
           // For file inputs, append the actual file
           submitData.append(key, formData[key]);
         } else if (key === 'status_consultant') {
-          submitData.append(key, formData[key]);
+          submitData.append(
+            'status_consultant',
+            JSON.stringify({
+              recruiter_id: formData.recruiter_id,
+              employer_id: formData.employer_id,
+              date: new Date().toISOString().split('T')[0],
+              ...formData.status_consultant, // Merges the dynamic fields from formData.status_consultant
+            })
+          );
         } else {
           // Append other form data as strings
           submitData.append(key, String(formData[key]));
@@ -238,15 +233,21 @@ function AddConsultantForm() {
         },
       });
     } catch (e) {
+      console.log(formData);
       if (e instanceof z.ZodError) {
         const formattedErrors = e.errors.reduce((acc, error) => {
           acc[error.path[0]] = error.message;
           return acc;
         }, {});
+        if (!formData.original_resume && !formData.consulting_resume) {
+          formattedErrors.resume =
+            'At least one resume (Original or Consulting) must be uploaded';
+        }
         setErrorMessages(formattedErrors);
       }
     }
   };
+  console.log(errorMessages);
 
   return (
     <>
@@ -706,6 +707,9 @@ function AddConsultantForm() {
             }}
           />
         </div>
+        {errorMessages.resume && (
+          <p className="text-danger">{errorMessages.resume}</p>
+        )}
         <div className="row my-5">
           {/* Verification fields */}
           <div className="col-md-6 form-group mb-3">
@@ -765,9 +769,11 @@ function AddConsultantForm() {
           name="description"
           value={formData.status_consultant.description}
           onChange={handleChange}
-          placeholder="Type something here..."
-          rows="5"
+          placeholder="Add your notes here ..."
+          rows="3"
           cols="50"
+          className="form-control shadow-sm rounded border-primary"
+          style={{ resize: 'none', padding: '10px' }}
         />
         <br />
         <button type="submit" className="btn btn-primary">
