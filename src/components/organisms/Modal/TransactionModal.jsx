@@ -324,7 +324,7 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
                 >
                   <option value="">Select</option>
                   <option value="INR">INR</option>
-                  <option value="USD">USD</option>
+                  {/* <option value="USD">USD</option> */}
                 </select>
               </div>
               <InputField

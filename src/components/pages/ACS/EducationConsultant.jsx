@@ -1,158 +1,160 @@
-import React, { useState } from 'react';
-import InputField from '../../organisms/InputField';
-import { bTechBranches, usStates } from '../../../dataconfig';
-import Toast from '../../organisms/Toast';
-import { Search } from '../../organisms/Search';
+import React from 'react';
+// import InputField from '../../organisms/InputField';
+// import { bTechBranches, usStates } from '../../../dataconfig';
+// import Toast from '../../organisms/Toast';
+// import { Search } from '../../organisms/Search';
+// import { ViewColleges } from 'src/components/SuperAdmin/ACS/Colleges/ViewColleges';
+import { ViewCollege } from 'src/components/SuperAdmin/ACS/Colleges/CollapsibleTable';
 
 export const EducationConsultant = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    schoolName: '',
-    schoolGradeType: 'CGPA',
-    schoolGrade: '',
-    schoolGraduateYear: '',
-    middleName: '',
-    middleGradeType: 'CGPA',
-    middleGrade: '',
-    middleGraduateYear: '',
-    bachelorsName: '',
-    bachelorGradeType: 'CGPA',
-    bachelorGrade: '',
-    bachelorGraduateYear: '',
-    branchStream: '',
-    selectedOptions: [],
-    greValues: { AWA: '', Quantitative: '', Verbal: '' },
-    greTotalScore: '',
-    ieltsValue: '',
-    tofelValue: '',
-  });
-  const [loading] = useState(false);
-  const [selectedState, setSelectedState] = useState(null);
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [toast, setToast] = useState({ show: false, message: '' });
-  const handleCheckboxChange = (option) => {
-    if (formData.selectedOptions.includes(option)) {
-      // If the checkbox is being unchecked
-      setFormData((prevData) => ({
-        ...prevData,
-        selectedOptions: prevData.selectedOptions.filter(
-          (item) => item !== option
-        ),
-        // Reset values based on the unchecked checkbox
-        ...(option === 'TOFEL' && { tofelValue: '' }),
-        ...(option === 'GRE' && {
-          greValues: { AWA: '', Quantitative: '', Verbal: '' },
-        }),
-        ...(option === 'IELTS' && { ieltsValue: '' }),
-      }));
-    } else {
-      // If the checkbox is being checked
-      if (option === 'GRE') {
-        setFormData((prevData) => ({
-          ...prevData,
-          selectedOptions: [...prevData.selectedOptions, option],
-          greTotalScore: '', // Initialize total score when GRE is selected
-        }));
-      } else {
-        setFormData((prevData) => ({
-          ...prevData,
-          selectedOptions: [...prevData.selectedOptions, option],
-        }));
-      }
-    }
-  };
+  // const [formData, setFormData] = useState({
+  //   firstName: '',
+  //   lastName: '',
+  //   email: '',
+  //   phone: '',
+  //   schoolName: '',
+  //   schoolGradeType: 'CGPA',
+  //   schoolGrade: '',
+  //   schoolGraduateYear: '',
+  //   middleName: '',
+  //   middleGradeType: 'CGPA',
+  //   middleGrade: '',
+  //   middleGraduateYear: '',
+  //   bachelorsName: '',
+  //   bachelorGradeType: 'CGPA',
+  //   bachelorGrade: '',
+  //   bachelorGraduateYear: '',
+  //   branchStream: '',
+  //   selectedOptions: [],
+  //   greValues: { AWA: '', Quantitative: '', Verbal: '' },
+  //   greTotalScore: '',
+  //   ieltsValue: '',
+  //   tofelValue: '',
+  // });
+  // const [loading] = useState(false);
+  // const [selectedState, setSelectedState] = useState(null);
+  // const [fieldErrors, setFieldErrors] = useState({});
+  // const [toast, setToast] = useState({ show: false, message: '' });
+  // const handleCheckboxChange = (option) => {
+  //   if (formData.selectedOptions.includes(option)) {
+  //     // If the checkbox is being unchecked
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       selectedOptions: prevData.selectedOptions.filter(
+  //         (item) => item !== option
+  //       ),
+  //       // Reset values based on the unchecked checkbox
+  //       ...(option === 'TOFEL' && { tofelValue: '' }),
+  //       ...(option === 'GRE' && {
+  //         greValues: { AWA: '', Quantitative: '', Verbal: '' },
+  //       }),
+  //       ...(option === 'IELTS' && { ieltsValue: '' }),
+  //     }));
+  //   } else {
+  //     // If the checkbox is being checked
+  //     if (option === 'GRE') {
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         selectedOptions: [...prevData.selectedOptions, option],
+  //         greTotalScore: '', // Initialize total score when GRE is selected
+  //       }));
+  //     } else {
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         selectedOptions: [...prevData.selectedOptions, option],
+  //       }));
+  //     }
+  //   }
+  // };
 
-  const isFormValid = () => {
-    const formFields = Object.keys(formData).filter(
-      (key) =>
-        key !== 'greValues' && key !== 'ieltsValue' && key !== 'tofelValue'
-    );
+  // const isFormValid = () => {
+  //   const formFields = Object.keys(formData).filter(
+  //     (key) =>
+  //       key !== 'greValues' && key !== 'ieltsValue' && key !== 'tofelValue'
+  //   );
 
-    const isGreSelected = formData.selectedOptions.includes('GRE');
-    const isIeltsSelected = formData.selectedOptions.includes('IELTS');
-    const isTofelSelected = formData.selectedOptions.includes('TOFEL');
+  //   const isGreSelected = formData.selectedOptions.includes('GRE');
+  //   const isIeltsSelected = formData.selectedOptions.includes('IELTS');
+  //   const isTofelSelected = formData.selectedOptions.includes('TOFEL');
 
-    return (
-      formFields.every((key) => Boolean(formData[key])) &&
-      !Object.values(fieldErrors).some(Boolean) &&
-      (!isGreSelected ||
-        (Boolean(formData.greValues.AWA) &&
-          Boolean(formData.greValues.Quantitative) &&
-          Boolean(formData.greValues.Verbal))) &&
-      (!isIeltsSelected || Boolean(formData.ieltsValue)) &&
-      (!isTofelSelected || Boolean(formData.tofelValue)) &&
-      formData.selectedOptions.length
-    );
-  };
+  //   return (
+  //     formFields.every((key) => Boolean(formData[key])) &&
+  //     !Object.values(fieldErrors).some(Boolean) &&
+  //     (!isGreSelected ||
+  //       (Boolean(formData.greValues.AWA) &&
+  //         Boolean(formData.greValues.Quantitative) &&
+  //         Boolean(formData.greValues.Verbal))) &&
+  //     (!isIeltsSelected || Boolean(formData.ieltsValue)) &&
+  //     (!isTofelSelected || Boolean(formData.tofelValue)) &&
+  //     formData.selectedOptions.length
+  //   );
+  // };
 
-  function handleChange(field, value) {
-    setFormData((previousData) => ({ ...previousData, [field]: value }));
-  }
-  const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
-  };
-  const handleInputChange = (field, value) => {
-    switch (field) {
-      case 'AWA':
-      case 'Quantitative':
-      case 'Verbal':
-        setFormData((prevData) => ({
-          ...prevData,
-          greValues: { ...prevData.greValues, [field]: value },
-        }));
-        break;
-      case 'IELTS':
-        setFormData((prevData) => ({ ...prevData, ieltsValue: value }));
-        break;
-      case 'TOFEL':
-        setFormData((prevData) => ({ ...prevData, tofelValue: value }));
-        break;
-      default:
-        break;
-    }
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid()) return;
+  // function handleChange(field, value) {
+  //   setFormData((previousData) => ({ ...previousData, [field]: value }));
+  // }
+  // const handleFieldError = (fieldName, error) => {
+  //   setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
+  // };
+  // const handleInputChange = (field, value) => {
+  //   switch (field) {
+  //     case 'AWA':
+  //     case 'Quantitative':
+  //     case 'Verbal':
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         greValues: { ...prevData.greValues, [field]: value },
+  //       }));
+  //       break;
+  //     case 'IELTS':
+  //       setFormData((prevData) => ({ ...prevData, ieltsValue: value }));
+  //       break;
+  //     case 'TOFEL':
+  //       setFormData((prevData) => ({ ...prevData, tofelValue: value }));
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!isFormValid()) return;
 
-    try {
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        schoolName: '',
-        schoolGradeType: 'CGPA',
-        schoolGrade: '',
-        schoolGraduateYear: '',
-        middleName: '',
-        middleGradeType: 'CGPA',
-        middleGrade: '',
-        middleGraduateYear: '',
-        bachelorsName: '',
-        bachelorGradeType: 'CGPA',
-        bachelorGrade: '',
-        bachelorGraduateYear: '',
-        branchStream: '',
-        selectedOptions: [],
-      });
-      setToast({ show: true, message: 'Login successfully' });
-      setTimeout(() => setToast({ show: false, message: '' }), 3000);
-    } catch (error) {
-      setToast({ show: true, message: 'Something went wrong!' });
-      setTimeout(() => setToast({ show: false, message: '' }), 3000);
-      console.error('Error:', error);
-    }
-  };
+  //   try {
+  //     setFormData({
+  //       firstName: '',
+  //       lastName: '',
+  //       email: '',
+  //       phone: '',
+  //       schoolName: '',
+  //       schoolGradeType: 'CGPA',
+  //       schoolGrade: '',
+  //       schoolGraduateYear: '',
+  //       middleName: '',
+  //       middleGradeType: 'CGPA',
+  //       middleGrade: '',
+  //       middleGraduateYear: '',
+  //       bachelorsName: '',
+  //       bachelorGradeType: 'CGPA',
+  //       bachelorGrade: '',
+  //       bachelorGraduateYear: '',
+  //       branchStream: '',
+  //       selectedOptions: [],
+  //     });
+  //     setToast({ show: true, message: 'Login successfully' });
+  //     setTimeout(() => setToast({ show: false, message: '' }), 3000);
+  //   } catch (error) {
+  //     setToast({ show: true, message: 'Something went wrong!' });
+  //     setTimeout(() => setToast({ show: false, message: '' }), 3000);
+  //     console.error('Error:', error);
+  //   }
+  // };
   return (
     <div className="container my-3">
       <h2 className="main-heading">
         Enter details to check eligible colleges list
       </h2>
-      <div className="">
+      {/* <div className="">
         <form onSubmit={handleSubmit}>
           <div className="my-3">
             <h5>General Details</h5>
@@ -539,11 +541,13 @@ export const EducationConsultant = () => {
           </div>
         </form>
       </div>
-      <Toast
+      <ViewColleges /> */}
+      <ViewCollege />
+      {/* <Toast
         show={toast.show}
         message={toast.message}
         onClose={() => setToast({ show: false, message: '' })}
-      />
+      /> */}
     </div>
   );
 };

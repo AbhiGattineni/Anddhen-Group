@@ -93,6 +93,7 @@ const InputField = ({ value, ...props }) => {
     'phone_country_code',
     'link',
     'college_label',
+    'label',
   ];
 
   const validateInput = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card } from '../organisms/Card';
-import { myworks } from '../../dataconfig';
+import { Card } from '../organisms/Card'; // Make sure the Card component is imported from the right path
+import { myworks } from '../../dataconfig'; // Importing your data from the config
 
 import PropTypes from 'prop-types';
 

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Carousel, Container, Row, Col, Card } from 'react-bootstrap';
 
-import service1 from '../../images/services1.jpg';
-import service2 from '../../images/services2.jpg';
+import service1 from '../../images/services1.png';
+import service2 from '../../images/services2.png';
 import service3 from '../../images/services3.jpg';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
-
+import ShoppingPage from 'src/components/generalComponents/ShoopingPage';
 export const Ans = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
@@ -30,7 +30,7 @@ export const Ans = () => {
               style={{ width: '600px', height: '300px' }}
             />
             <Carousel.Caption>
-              <h3>Your Support in India</h3>
+              <h3 className="text-dark">Your Support in India</h3>
             </Carousel.Caption>
           </Carousel.Item>
           <Carousel.Item>
@@ -139,13 +139,15 @@ export const Ans = () => {
                   <Card.Title className="text-dark">NRI Services</Card.Title>
                   <Card.Text className="text-secondary">
                     All-in-one support for managing tasks in India, from family
-                    care to sending gifts and more.
+                    care to sending gifts.
                   </Card.Text>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
         </div>
+
+        <ShoppingPage />
 
         {/* Contact Form */}
         <EnquiryForm

@@ -1,35 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import ConsultantCard from '../../../organisms/Card/ConsultantCard';
 import ConsultantDetailsModal from '../../../organisms/Modal/ConsultantDetailsModal';
+import { useFetchData } from 'src/react-query/useFetchApis';
+import { useDeleteData } from 'src/react-query/useFetchApis';
+import { useQueryClient } from 'react-query';
+import { useUpdateData } from 'src/react-query/useFetchApis';
 
 function ViewConsultants() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({});
   const [consultants, setConsultants] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [consultantId, setConsultantId] = useState(null);
+  const [updatedConsultant, setUpdatedConsultant] = useState(null);
+  const [isEditable, setIsEditable] = useState(false);
 
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
+  const {
+    data = [],
+    isLoading, // Provide a default value of an empty array
+  } = useFetchData('consultant', `/api/consultants/`);
   useEffect(() => {
-    fetchConsultants();
-  }, []);
-
-  const fetchConsultants = () => {
-    setIsLoading(true);
-    fetch(`${API_BASE_URL}/api/consultants/`)
-      .then((response) => response.json())
-      .then((data) => {
-        setConsultants(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching data: ', error);
-        setIsLoading(false);
-      });
-  };
+    setConsultants(data);
+  }, [data]);
 
   const toggleFilters = () => setShowFilters(!showFilters);
 
@@ -48,37 +43,61 @@ function ViewConsultants() {
     setSelectedConsultant(consultant);
     setIsModalVisible(true);
   };
+  const { mutate: deleteConsultant, isLoading: isDeleting } = useDeleteData(
+    'consultant',
+    `/consultants/delete/${consultantId}/`
+  );
+
   const handleDeleteConsultant = (consultantId) => {
-    fetch(`${API_BASE_URL}/consultants/delete/${consultantId}/`, {
-      method: 'DELETE',
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log('Consultant deleted successfully');
-          fetchConsultants();
-        } else {
-          console.error('Failed to delete consultant');
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+    setConsultantId(consultantId);
+    deleteConsultant(null, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('consultant');
+      },
+      onError: (error) => {
+        console.error('An error occurred:', error);
+      },
+    });
   };
 
-  const handleSaveChanges = (updatedConsultant) => {
-    fetch(`${API_BASE_URL}/api/consultants/${updatedConsultant.id}/`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedConsultant),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setIsModalVisible(false);
-        fetchConsultants();
-      })
-      .catch((error) => {
-        console.error('Error:', error);
+  const handleClose = () => {
+    setIsEditable(false);
+    setIsModalVisible(false);
+  };
+
+  const { mutate: updateConsultant, isLoading: isUpdating } = useUpdateData(
+    'colleges',
+    `/api/consultants/${updatedConsultant?.id}/`
+  );
+
+  const handleSaveChanges = async (updatedConsultant) => {
+    setUpdatedConsultant(updatedConsultant);
+    const submitData = new FormData();
+    Object.keys(updatedConsultant).forEach((key) => {
+      if (key !== 'consulting_resume' && key !== 'original_resume') {
+        if (key === 'technologies') {
+          // Stringify the array before appending it to FormData
+          submitData.append(key, JSON.stringify(updatedConsultant[key]));
+        } else {
+          // If it's a regular field, append the value
+          submitData.append(key, updatedConsultant[key]);
+        }
+      }
+    });
+    try {
+      await updateConsultant(submitData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('consultant');
+          setIsModalVisible(false);
+          setIsEditable(false);
+        },
+        onError: (error) => {
+          console.error('An error occurred:', error);
+        },
       });
+    } catch (error) {
+      console.error('Update error:', error.message);
+    }
   };
 
   return (
@@ -196,13 +215,17 @@ function ViewConsultants() {
                 key={consultant.id}
                 consultant={consultant}
                 onViewDetails={handleViewDetails}
+                isDeleting={isDeleting}
                 onDelete={handleDeleteConsultant}
               />
             ))}
           <ConsultantDetailsModal
             show={isModalVisible}
-            onHide={() => setIsModalVisible(false)}
+            onHide={handleClose}
             consultant={selectedConsultant}
+            isUpdating={isUpdating}
+            isEditable={isEditable}
+            setIsEditable={setIsEditable}
             onSave={handleSaveChanges}
           />
         </div>

@@ -4,7 +4,9 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Link } from 'react-router-dom';
 import { acsCards } from '../../../dataconfig';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import CollegeWhatsappLinks from 'src/components/generalComponents/ACS/CollegeWhatsappLinks';
+//import CollegeWhatsappLinks from 'src/components/generalComponents/ACS/CollegeWhatsappLinks';
+
+import CollegeWhatsappLinks from 'src/components/organisms/CollegeWhatsappLinks';
 
 export const Acs = () => {
   return (
@@ -45,41 +47,62 @@ export const Acs = () => {
             </div>
           ))}
         </div>
-      </div>
-      <h4 className="text-center pt-4">
-        WhatsApp groups links according to the US university 2024-25
-      </h4>
-      <div>
-        <CollegeWhatsappLinks />
+        <h4 className="text-center pt-4">
+          WhatsApp groups links according to the US university 2024-25
+        </h4>
+        <div className="row justify-content-md-center px-0">
+          <CollegeWhatsappLinks />
+        </div>
       </div>
 
-      <h4>Contact Us</h4>
-      <div className="underline"></div>
-      <div>
-        <p>
-          <i className="bi bi-envelope me-3"></i>anddhenconsulting@gmail.com
-        </p>
-        <p style={{ marginBottom: 0 }}>
-          <i className="bi bi-telephone-fill me-3"></i>+91 9110736115
-        </p>
-        <a
-          href="https://wa.me/919110736115"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            textDecoration: 'none',
-          }}
-        >
-          <i
-            className="bi bi-whatsapp"
-            style={{ fontSize: '18px', color: 'green', marginRight: '8px' }}
-          ></i>
-          <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-            +91 9110736115
-          </span>
-        </a>
+      <div className="bg-c-light py-1">
+        <div className="container">
+          <h4 className="row justify-content-md-left ps-3 ps-md-0">
+            Contact Us
+          </h4>
+          <div className="ps-2 ps-md-0">
+            <div className="underline"></div>
+          </div>
+          <div className="d-flex flex-column flex-md-row justify-content-between">
+            <p
+              style={{ marginBottom: 5 }}
+              className="fw-bold d-flex align-items-center"
+            >
+              <i className="bi bi-envelope-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
+              anddhenconsulting@gmail.com
+            </p>
+            <p
+              style={{ marginBottom: 5 }}
+              className="fw-bold d-flex align-items-center"
+            >
+              <i className="bi bi-telephone-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
+              +91 9110736115
+            </p>
+            <a
+              href="https://wa.me/919110736115"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="d-flex align-items-center text-decoration-none fw-bold "
+              style={{ marginBottom: 5 }}
+            >
+              <i
+                className="bi bi-whatsapp bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"
+                style={{
+                  fontSize: '14px',
+                  color: 'green',
+                  marginRight: '4px',
+                }}
+              ></i>
+              <span
+                style={{
+                  fontSize: '14px',
+                }}
+              >
+                +91 9110736115
+              </span>
+            </a>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function ConsultantCard({ consultant, onViewDetails, onDelete }) {
+function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   // Function to render verification badge
   const renderVerifiedBadge = (verified) => {
     const badgeStyle = {
@@ -20,9 +21,9 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
     return (
       <span style={badgeStyle}>
         {verified ? (
-          <i className="bi bi-check-circle-fill text-success">verified</i>
+          <i className="bi bi-check-circle-fill text-success"> verified</i>
         ) : (
-          <i className="bi bi-x-circle-fill text-danger">unverified</i>
+          <i className="bi bi-x-circle-fill text-danger"> unverified</i>
         )}
       </span>
     );
@@ -41,7 +42,13 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
       <div className="card h-100 position-relative">
         <div className="position-absolute top-0 end-0 m-2">
           <button className="btn btn-danger btn-sm" onClick={handleDeleteClick}>
-            <i className="bi bi-trash-fill"></i>
+            {isDeleting ? (
+              <div className="spinner-border spinner-border-sm" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            ) : (
+              <i className="bi bi-trash-fill"></i>
+            )}
           </button>
         </div>
         <div className="card-body">
@@ -72,6 +79,41 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
             >
               Profile
             </a>
+            <br />
+            <div className="d-inline-flex flex-wrap gap-2 mt-2">
+              <div className="border border-2 border-danger bg-danger bg-opacity-10 rounded px-2 w-0 text-center">
+                <a
+                  className="fs-1 text-danger text-decoration-none"
+                  href={`${API_BASE_URL}${consultant.original_resume}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="bi bi-filetype-pdf"></i>
+                  <p
+                    className="m-0"
+                    style={{ fontSize: '10px', fontWeight: 'bold' }}
+                  >
+                    original_resume
+                  </p>
+                </a>
+              </div>
+              <div className="border border-2 border-danger bg-danger bg-opacity-10 rounded px-2 w-0 text-center">
+                <a
+                  className="fs-1 text-danger text-decoration-none"
+                  href={`${API_BASE_URL}${consultant.consulting_resume}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="bi bi-filetype-pdf"></i>
+                  <p
+                    className="m-0"
+                    style={{ fontSize: '10px', fontWeight: 'bold' }}
+                  >
+                    consulting_resume
+                  </p>
+                </a>
+              </div>
+            </div>
           </p>
         </div>
         <div className="card-footer">
@@ -89,6 +131,7 @@ function ConsultantCard({ consultant, onViewDetails, onDelete }) {
 ConsultantCard.propTypes = {
   consultant: PropTypes.object.isRequired,
   onViewDetails: PropTypes.func.isRequired,
+  isDeleting: PropTypes.bool.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 

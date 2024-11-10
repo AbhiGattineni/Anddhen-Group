@@ -35,8 +35,16 @@ export const Transaction = () => {
       { Header: 'Receiver', accessor: 'receiver_name' },
       { Header: 'Transaction ID', accessor: 'transaction_id' },
       { Header: 'Accountant Name', accessor: 'accountant_name' },
-      { Header: 'Transaction Date', accessor: 'transaction_datetime' },
-      { Header: 'Uploaded Date', accessor: 'uploaded_datetime' },
+      {
+        Header: 'Transaction Date',
+        accessor: 'transaction_datetime',
+        Cell: ({ value }) => new Date(value).toLocaleString(),
+      },
+      {
+        Header: 'Uploaded Date',
+        accessor: 'uploaded_datetime',
+        Cell: ({ value }) => new Date(value).toLocaleString(),
+      },
       { Header: 'Credited Amount', accessor: 'credited_amount' },
       { Header: 'Debited Amount', accessor: 'debited_amount' },
       { Header: 'Payment Type', accessor: 'payment_type' },
@@ -176,7 +184,7 @@ export const Transaction = () => {
                 </button>
               </div>
               <div>
-                <span className="nav-link fw-bold">Total: ${total}</span>
+                <span className="nav-link fw-bold">Total: ₹{total}</span>
               </div>
             </div>
           </div>

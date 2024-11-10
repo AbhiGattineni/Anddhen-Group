@@ -21,9 +21,28 @@ const Subsidiaries = () => {
                   src={subsidiary.Photo}
                   className="w-100 border-bottom"
                   alt="subsidiary"
+                  style={{
+                    height:
+                      window.innerWidth < 768 && window.innerWidth >= 576
+                        ? '150px'
+                        : '200px', // Set height for tablets and larger screens
+                    objectFit: 'cover',
+                  }}
                 />
+
                 <div className="card-body">
-                  <h6>
+                  <h6
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 1, // Limits the name to 2 lines
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis', // Ensures ellipsis is added if text is truncated
+                      whiteSpace: 'normal', // Allows wrapping to multiple lines
+                      lineHeight: '1.5em', // Adjust this as needed
+                      height: '1.8em', // Fixes height for 2 lines (2 * line-height)
+                    }}
+                  >
                     <Link
                       to={subsidiary.link}
                       className="text-black text-decoration-none"
@@ -32,7 +51,20 @@ const Subsidiaries = () => {
                     </Link>
                   </h6>
                   <div className="underline"></div>
-                  <p>{subsidiary.Description}</p>
+                  <p
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2, // Limits the text to 2 lines
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis', // Ensures ellipsis is added if text is truncated
+                      whiteSpace: 'normal', // Allows wrapping to multiple lines
+                      lineHeight: '1.5em', // Adjust this as needed
+                      height: '3em', // Fixes height for 2 lines (2 * line-height)
+                    }}
+                  >
+                    {subsidiary.Description}
+                  </p>
                   <Link to={subsidiary.link} className="btn btn-warning shadow">
                     Read More
                   </Link>
