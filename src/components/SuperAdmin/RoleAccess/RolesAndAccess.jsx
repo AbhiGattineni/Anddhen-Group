@@ -65,7 +65,7 @@ const RolesAndAccess = () => {
           role="tabpanel"
           aria-labelledby="profile-tab"
         >
-          <AssignRole />
+          {/* <AssignRole /> */}
         </div>
         {/* <div
           className="tab-pane fade"
@@ -81,3 +81,4 @@ const RolesAndAccess = () => {
 };
 
 export default RolesAndAccess;
+
