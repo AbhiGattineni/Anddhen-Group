@@ -179,6 +179,14 @@ function AddConsultantForm() {
       // Create a FormData instance to handle file uploads and other form fields
       const submitData = new FormData();
 
+      // const statusConsultant = {
+      //   employer_id: formData.employer_id,
+      //   recruiter_id: formData.recruiter_id,
+      //   description: formData.status_consultant.description,
+      // };
+
+      // formData.status_consultant = statusConsultant;
+
       // Append each field to FormData
       Object.keys(formData).forEach((key) => {
         if (key === 'technologies') {
@@ -201,6 +209,10 @@ function AddConsultantForm() {
           // Append other form data as strings
           submitData.append(key, String(formData[key]));
         }
+      });
+
+      submitData.forEach((value, key) => {
+        console.log(key, value);
       });
 
       addConsultant(submitData, {
