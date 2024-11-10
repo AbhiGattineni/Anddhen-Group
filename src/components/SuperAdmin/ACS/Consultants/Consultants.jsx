@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import AddConsultantForm from './AddConsultantForm';
 import ViewConsultants from './ViewConsultants';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure to import Bootstrap CSS
+import Employer from './Employer';
+import Recruiter from './Recruiter';
 
 const Consultants = () => {
   const [activeView, setActiveView] = useState('add');
@@ -71,6 +73,8 @@ const Consultants = () => {
       <div className="container">
         {activeView === 'add' && <AddConsultantForm />}
         {activeView === 'view' && <ViewConsultants />}
+        {activeView === 'employer' && <Employer />}
+        {activeView === 'recruiter' && <Recruiter />}
       </div>
     </div>
   );

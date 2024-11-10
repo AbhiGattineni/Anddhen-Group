@@ -5,7 +5,7 @@ import AssignRole from './AssignRole';
 const RolesAndAccess = () => {
   return (
     <div className="container">
-      <h1 className="my-4">IAM</h1>
+      <h2 className="my-4">Roles Management</h2>
       <ul className="nav nav-tabs" id="myTab" role="tablist">
         <li className="nav-item" role="presentation">
           <button
@@ -35,7 +35,7 @@ const RolesAndAccess = () => {
             Assign Role
           </button>
         </li>
-        <li className="nav-item" role="presentation">
+        {/* <li className="nav-item" role="presentation">
           <button
             className="nav-link"
             id="contact-tab"
@@ -48,7 +48,7 @@ const RolesAndAccess = () => {
           >
             Tab 3
           </button>
-        </li>
+        </li> */}
       </ul>
       <div className="tab-content" id="myTabContent">
         <div
@@ -67,14 +67,14 @@ const RolesAndAccess = () => {
         >
           <AssignRole />
         </div>
-        <div
+        {/* <div
           className="tab-pane fade"
           id="contact"
           role="tabpanel"
           aria-labelledby="contact-tab"
         >
           <p>Content for Tab 3</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

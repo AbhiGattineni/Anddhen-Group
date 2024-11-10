@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchableTable from 'src/components/atoms/Table/SearchableTable';
-import useAssignRoleToUser from 'src/react-query/useAssignRoleToUser';
-import useUserAndRoleOverview from 'src/react-query/useUserAndRoleOverview';
-import { useQueryClient, useMutation } from 'react-query';
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+import { useQueryClient } from 'react-query';
+import { useDeleteData } from 'src/react-query/useFetchApis';
+import { useFetchData } from 'src/react-query/useFetchApis';
+import { useAddData } from 'src/react-query/useFetchApis';
 
 const AssignRole = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,25 +11,59 @@ const AssignRole = () => {
   const [userError, setUserError] = useState(false);
   const [role, setRole] = useState('');
   const [roleError, setRoleError] = useState(false);
+  const [deleteRoleId, setDeleteRoleId] = useState(null);
 
-  const { data, isLoading, error } = useUserAndRoleOverview();
-  const assignRoleMutation = useAssignRoleToUser();
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useFetchData('roles', '/api/user_and_role_overview/');
+
+  const { mutate: assignRole } = useAddData('roles', `/assignrole/`); // Using your custom hook
+
+  const handleAssignRole = (user, role) => {
+    assignRole(
+      { user, role },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries('roles'); // Refresh user data and roles
+          setRole('');
+          setUser('');
+        },
+        onError: (error) => {
+          console.error('Error assigning role:', error);
+        },
+      }
+    );
+  };
 
   const queryClient = useQueryClient();
-  const deleteRole = useMutation(
-    (roleId) =>
-      fetch(`${API_BASE_URL}/deleteRole/${roleId}/`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['userDataAndRoles']);
-      },
+  useEffect(() => {
+    if (deleteRoleId) {
+      handleDelete();
     }
+  }, [deleteRoleId]);
+  const { mutate: deleteRole } = useDeleteData(
+    'roles',
+    `/deleteRole/${deleteRoleId}/`
   );
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this role?')) {
+      deleteRole(null, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('roles'); // Refresh the roles and user data
+        },
+        onError: (error) => {
+          console.error('Error deleting role:', error);
+        },
+      });
+    }
+  };
+
+  function handleDeleteRole(roleId) {
+    setDeleteRoleId(roleId);
+  }
 
   const handleAssign = (event) => {
     event.preventDefault();
@@ -48,7 +81,7 @@ const AssignRole = () => {
     }
 
     if (user && role) {
-      assignRoleMutation.mutate({ user, role });
+      handleAssignRole(user, role);
     }
   };
 
@@ -62,9 +95,18 @@ const AssignRole = () => {
       <td>
         <button
           className="btn btn-danger"
-          onClick={() => deleteRole.mutate(role.id)}
+          onClick={() => handleDeleteRole(role.id)}
+          disabled={deleteRoleId === role.id} // Disable button during delete operation
         >
-          Delete
+          {deleteRoleId === role.id ? (
+            <span
+              className="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+          ) : (
+            'Delete'
+          )}
         </button>
       </td>
     </tr>
@@ -88,7 +130,7 @@ const AssignRole = () => {
             <option value="" disabled>
               Select User
             </option>
-            {data.users.map((user) => (
+            {data?.users.map((user) => (
               <option key={user.user_id} value={user.user_id}>
                 {user.full_name}
               </option>
@@ -112,7 +154,7 @@ const AssignRole = () => {
             <option value="" disabled>
               Select Role
             </option>
-            {data.roles.map((role) => (
+            {data?.roles.map((role) => (
               <option key={role.id} value={role.id}>
                 {role.name_of_role}
               </option>
@@ -131,7 +173,7 @@ const AssignRole = () => {
       </form>
       <div className="table-responsive">
         <SearchableTable
-          data={data.assigned_roles}
+          data={data?.assigned_roles}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           renderRow={renderRow}

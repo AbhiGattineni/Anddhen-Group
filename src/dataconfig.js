@@ -3,6 +3,8 @@ import Subsidiary2 from './components/images/consulting2.jpg';
 import Subsidiary3 from './components/images/service6.jpg';
 import Subsidiary4 from './components/images/philanthropy1.jpg';
 import Subsidiary5 from './components/images/trade3.jpg';
+import Subsidiary6 from './components/images/subsid6.jpg';
+import Subsidiary7 from './components/images/subsid7.jpg';
 import image1 from './components/images/dp.jpg';
 import image2 from './components/images/img1.jpg';
 import rushil from './components/images/rushil.jpg';
@@ -93,32 +95,51 @@ export const subsidiaries = [
   {
     Name: 'Anddhen Marketing Services',
     Photo: Subsidiary1,
-    Description: 'Description for Subsidiary 1',
+    Description:
+      'Comprehensive marketing strategies to boost brand presence and growth.',
     link: '/ams',
   },
   {
     Name: 'Anddhen Consulting Services',
     Photo: Subsidiary2,
-    Description: 'Description for Subsidiary 2',
+    Description:
+      'Expert consulting services for business development and strategic solutions.',
     link: '/acs',
   },
   {
     Name: 'Anddhen Software Services',
     Photo: Subsidiary3,
-    Description: 'Description for Subsidiary 3',
+    Description:
+      'Innovative software development services tailored to business needs.',
     link: '/ass',
   },
   {
     Name: 'Anddhen Philanthropy Services',
     Photo: Subsidiary4,
-    Description: 'Description for Subsidiary 4',
+    Description:
+      'Supporting philanthropic initiatives for positive social impact and change.',
     link: '/aps',
   },
   {
-    Name: 'Anddhen Trading & Investiment',
+    Name: 'Anddhen Trading & Investment',
     Photo: Subsidiary5,
-    Description: 'Description for Subsidiary 5',
+    Description:
+      'Expert trading and investment services to maximize financial returns.',
     link: '/ati',
+  },
+  {
+    Name: 'Andhden Travel Services',
+    Photo: Subsidiary6,
+    Description:
+      'Comprehensive travel solutions for seamless journeys and experiences.',
+    link: '/ats',
+  },
+  {
+    Name: 'Anddhen NRI Services',
+    Photo: Subsidiary7,
+    Description:
+      'Dedicated services for NRIs to manage overseas investments effectively.',
+    link: '/ans',
   },
 ];
 export const details = [
@@ -529,23 +550,23 @@ export const acsCards = [
   {
     image: resgistration1,
     path: '/acs/educationconsulting',
-    heading: 'Higher education consulting',
+    heading: 'Higher Education Consulting',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam.',
+      'Expert guidance and consulting services for students pursuing higher studies in various fields and countries.',
   },
   {
     image: resgistration2,
     path: 'jobapplication',
-    heading: 'Job applications',
+    heading: 'Job Applications',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam.',
+      'Professional assistance with job applications and part-time work placements to help you gain valuable experience.',
   },
   {
     image: resgistration2,
-    path: '/',
+    path: '/acs/courses',
     heading: 'Courses',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus, ex, recusandae. Facere modi sunt, quod quibusdam.',
+      'Comprehensive skill development courses designed to enhance your knowledge and boost career opportunities.',
   },
 ];
 
