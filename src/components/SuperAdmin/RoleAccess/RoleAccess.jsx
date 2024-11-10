@@ -1,37 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AddRoleModal from './AddRoleModal';
 import Button from '../../atoms/Button/Button';
+import { useFetchData } from 'src/react-query/useFetchApis';
+import { useAddData } from 'src/react-query/useFetchApis';
+import { useQueryClient } from 'react-query';
+import Toast from 'src/components/organisms/Toast';
+import { useDeleteData } from 'src/react-query/useFetchApis';
+import { useUpdateData } from 'src/react-query/useFetchApis';
 
 const RoleAccess = () => {
-  const [roles, setRoles] = useState([]);
   const [editingRole, setEditingRole] = useState({
     id: null,
     name_of_role: '',
     admin_access_role: '',
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [deleteRoleId, setDeleteRoleId] = useState(null);
+  const [deletingRoleId, setDeletingRoleId] = useState(null); // Track ID of role being deleted
+  const queryClient = useQueryClient();
+  const [toast, setToast] = useState({
+    show: false,
+    message: '',
+    color: undefined,
+  });
   const [showModal, setShowModal] = useState(false);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  useEffect(() => {
-    fetchRoles();
-  }, []);
-
-  const fetchRoles = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/roles/all/`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setRoles(data);
-    } catch (error) {
-      console.error('Error fetching roles:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { data: roles = [], isLoading } = useFetchData('roles', `/roles/all/`);
 
   const handleEditRole = (role) => {
     setEditingRole({
@@ -50,69 +43,133 @@ const RoleAccess = () => {
     }
   };
 
-  const handleAddRole = async (roleName, accessRole) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/roles/add/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  const { mutate: addRole } = useAddData('roles', `/roles/add/`);
+
+  const handleAddRole = (roleName, accessRole) => {
+    addRole(
+      {
+        name_of_role: roleName,
+        admin_access_role: accessRole,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries('roles'); // Refresh roles data
+          setShowModal(false);
+          setToast({
+            show: true,
+            message: 'Role added successfully!',
+            color: '#82DD55',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
         },
-        body: JSON.stringify({
-          name_of_role: roleName,
-          admin_access_role: accessRole,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+        onError: (error) => {
+          console.error('Error adding role:', error);
+          setToast({
+            show: true,
+            message: 'Something went wrong!',
+            color: '#E23636',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
+        },
       }
-      setShowModal(false);
-      fetchRoles(); // Refetch roles after adding
-    } catch (error) {
-      console.error('Error adding role:', error);
-    }
+    );
   };
 
-  const handleUpdateRole = async (id, roleName, accessRole) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/roles/update/${id}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+  const { mutate: updateRole } = useUpdateData(
+    'roles',
+    `/roles/update/${editingRole?.id}/`
+  );
+
+  const handleUpdateRole = (id, roleName, accessRole) => {
+    updateRole(
+      {
+        name_of_role: roleName,
+        admin_access_role: accessRole,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries('roles'); // Refresh the roles data
+          setEditingRole({ id: null, name_of_role: '', admin_access_role: '' }); // Reset editing role state
+          setToast({
+            show: true,
+            message: 'Role updated successfully!',
+            color: '#82DD55',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
         },
-        body: JSON.stringify({
-          name_of_role: roleName, // Use the roleName parameter
-          admin_access_role: accessRole, // Use the accessRole parameter
-        }),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+        onError: (error) => {
+          console.error('Error updating role:', error);
+          setToast({
+            show: true,
+            message: 'Something went wrong!',
+            color: '#E23636',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
+        },
       }
-      // You may also want to reset the editingRole state here if necessary
-      setEditingRole({ id: null, name_of_role: '', admin_access_role: '' });
-      fetchRoles(); // Refetch roles after updating
-    } catch (error) {
-      console.error('Error updating role:', error);
-    }
+    );
   };
 
-  const handleDeleteRole = async (roleId) => {
+  useEffect(() => {
+    if (deleteRoleId) {
+      handleDelete();
+    }
+  }, [deleteRoleId]);
+
+  const { mutate: deleteRole } = useDeleteData(
+    'roles',
+    `/roles/delete/${deleteRoleId}/`
+  );
+
+  const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this role?')) {
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/roles/delete/${roleId}/`,
-          {
-            method: 'DELETE',
-          }
-        );
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        fetchRoles(); // Refetch roles after deleting
-      } catch (error) {
-        console.error('Error deleting role:', error);
-      }
+      setDeletingRoleId(deleteRoleId); // Set the role ID being deleted
+      deleteRole(null, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('roles'); // Refresh roles data after deletion
+          setDeletingRoleId(null); // Reset deleting role ID
+          setToast({
+            show: true,
+            message: 'Role deleted successfully!',
+            color: '#82DD55',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
+        },
+        onError: (error) => {
+          console.error('Error deleting role:', error);
+          setDeletingRoleId(null); // Reset deleting role ID on error
+          setToast({
+            show: true,
+            message: 'Something went wrong!',
+            color: '#E23636',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000
+          );
+        },
+      });
     }
   };
+
+  function handleDeleteRole(roleid) {
+    setDeleteRoleId(roleid);
+  }
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -158,14 +215,32 @@ const RoleAccess = () => {
                   <button
                     className="btn btn-primary mr-2"
                     onClick={() => handleEditRole(role)}
+                    disabled={editingRole.id === role} // Disable button during update
                   >
-                    <i className="bi bi-pencil-fill"></i>
+                    {editingRole.id === role ? (
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                    ) : (
+                      <i className="bi bi-pencil-fill"></i>
+                    )}
                   </button>
                   <button
                     className="btn btn-danger"
                     onClick={() => handleDeleteRole(role.id)}
+                    disabled={deletingRoleId === role.id} // Disable only the specific delete button
                   >
-                    <i className="bi bi-trash-fill"></i>
+                    {deletingRoleId === role.id ? (
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                    ) : (
+                      <i className="bi bi-trash-fill"></i>
+                    )}
                   </button>
                 </td>
               </tr>
@@ -173,6 +248,12 @@ const RoleAccess = () => {
           </tbody>
         )}
       </table>
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        color={toast.color}
+        onClose={() => setToast({ show: false, message: '', color: undefined })}
+      />
     </div>
   );
 };
