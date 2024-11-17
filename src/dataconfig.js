@@ -1,32 +1,3 @@
-import Subsidiary3 from ;
-import Subsidiary4 from ;
-import Subsidiary5 from ;
-import Subsidiary6 from ;
-import Subsidiary7 from;
-import image1 from ;
-import image2 from ;
-import rushil from ;
-import stephen from ;
-import saiteja from ;
-import vijetha from ;
-import chandu from ;
-import neha from ;
-import charan from ;
-import sampreeth from ;
-import resgistration1 from ;
-import resgistration2 from ;
-import Image1 from ;
-import Image2 from ;
-import Image3 from ;
-import Image4 from ;
-import Image5 from ;
-import Image6 from;
-import Image7 from ;
-import Image8 from ;
-import Image9 from ;
-import Image10 from ;
-import Image11 from ;
-
 export const priceData = [
   {
     id: 1,
@@ -134,7 +105,7 @@ export const subsidiaries = [
   },
   {
     Name: 'Anddhen NRI Services',
-    Photo:  '/assets/images/subsid7.jpg',
+    Photo: '/assets/images/subsid7.jpg',
     Description:
       'Dedicated services for NRIs to manage overseas investments effectively.',
     link: '/ans',
@@ -225,7 +196,7 @@ export const details = [
     LinkedIn: 'https://www.linkedin.com/in/abhishek-gattineni-05937088/',
     GitHub: 'https://github.com/AbhiGattineni',
   },
-  
+
   {
     Name: 'Sai Charan',
     Photo: '/assets/images/charan.jpg',
@@ -835,7 +806,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'One A Day Men’s Multivitamin Tablets',
-    image:  '/assets/images/nriImages/6.jpg',
+    image: '/assets/images/nriImages/6.jpg',
     link: 'https://www.walmart.com/ip/One-A-Day-Men-s-Multivitamin-Tablets-Multivitamins-for-Men-200-Count/10311442',
     agegroup: '50+',
     description:
@@ -880,5 +851,5 @@ export const shoopingForNRI = [
     agegroup: '0-20',
     description:
       'Kirkland Signature All Chocolate Bag offers a variety of chocolate treats in one convenient pack. Perfect for sharing or personal indulgence.',
-  }
+  },
 ];
