@@ -15,7 +15,7 @@ const Consultants = () => {
   return (
     <div className="">
       <nav className="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 px-5">
-        <a className="navbar-brand" href="#">
+        <a className="navbar-brand">
           <i className="bi bi-people-fill"></i> Consultant Management
         </a>
         <button
@@ -34,7 +34,6 @@ const Consultants = () => {
             <li className="nav-item">
               <a
                 className={getNavLinkClass('add')}
-                href="#"
                 onClick={() => setActiveView('add')}
               >
                 <i className="bi bi-plus-circle-fill"></i> Add Consultant
@@ -43,7 +42,6 @@ const Consultants = () => {
             <li className="nav-item">
               <a
                 className={getNavLinkClass('view')}
-                href="#"
                 onClick={() => setActiveView('view')}
               >
                 <i className="bi bi-card-list"></i> View Consultants
@@ -52,7 +50,6 @@ const Consultants = () => {
             <li className="nav-item">
               <a
                 className={getNavLinkClass('employer')}
-                href="#"
                 onClick={() => setActiveView('employer')}
               >
                 <i className="bi bi-building-add"></i> Employer
@@ -61,7 +58,6 @@ const Consultants = () => {
             <li className="nav-item">
               <a
                 className={getNavLinkClass('recruiter')}
-                href="#"
                 onClick={() => setActiveView('recruiter')}
               >
                 <i className="bi bi-people-fill"></i> Recruiter

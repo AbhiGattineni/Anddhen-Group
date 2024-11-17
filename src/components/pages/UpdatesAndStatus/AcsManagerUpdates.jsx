@@ -6,7 +6,7 @@ import { useApi } from '../../../hooks/useApi';
 
 const AcsManagerUpdates = () => {
   const [showToast, setShowToast] = useState(false);
-  const { loading, error, callApi } = useApi();
+  const { loading, callApi } = useApi();
 
   const [date, setDate] = useState('');
   const [managerName, setManagerName] = useState('');

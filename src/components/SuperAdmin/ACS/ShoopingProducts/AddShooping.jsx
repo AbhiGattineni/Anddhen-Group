@@ -92,7 +92,7 @@ const AddShopping = ({ onClose }) => {
       setSnackbarOpen(true);
       queryClient.invalidateQueries('products');
     }
-  }, [isSuccess]);
+  }, [isSuccess, queryClient]);
 
   // React effect to show error message if product addition fails
   React.useEffect(() => {

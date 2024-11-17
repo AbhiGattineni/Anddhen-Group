@@ -7,8 +7,8 @@ export const UpdatesAndStatus = () => {
     <div className="container my-5">
       <h1 className="main-heading">Updates And Status</h1>
       <div className="row">
-        {updatesAndStatus.map((data) => (
-          <div className="col-md-6 my-3">
+        {updatesAndStatus.map((data, i) => (
+          <div className="col-md-6 my-3" key={i}>
             <Link to={data.route} className="text-decoration-none">
               <div className="card shadow-lg">
                 {' '}

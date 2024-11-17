@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const MissingDataForm = ({ missingData, onCompleted }) => {
   const [formData, setFormData] = useState({});
@@ -83,6 +84,10 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
       </form>
     </div>
   );
+};
+MissingDataForm.propTypes = {
+  missingData: PropTypes.object.isRequired,
+  onCompleted: PropTypes.func.isRequired,
 };
 
 export default MissingDataForm;

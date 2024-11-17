@@ -70,7 +70,7 @@ export const AddLinks = () => {
     if (selectedLinks) {
       setInputDisabled(true);
     }
-  }, [data, selectedcollege]);
+  }, [data, selectedcollege, selectedLinks]);
 
   const handleFieldError = (fieldName, error) => {
     setFieldErrors((prevErrors) => ({

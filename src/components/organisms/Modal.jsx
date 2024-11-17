@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
 export const Modal = ({ isModalOpen, setIsModalOpen }) => {
@@ -12,7 +13,6 @@ export const Modal = ({ isModalOpen, setIsModalOpen }) => {
     padding: '20px',
     width: '300px',
     borderRadius: '8px',
-    boxShadow: '0px 0px 150px rgba(0, 0, 0, 0.5)',
   };
 
   const overlayStyles = {
@@ -59,4 +59,8 @@ export const Modal = ({ isModalOpen, setIsModalOpen }) => {
       )}
     </div>
   );
+};
+Modal.propTypes = {
+  isModalOpen: PropTypes.bool.isRequired,
+  setIsModalOpen: PropTypes.func.isRequired,
 };

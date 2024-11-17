@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import InputField from '../../organisms/InputField';
 import { Link } from 'react-router-dom';
 
 export const Exam = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [scoreBoard, setScoreBoard] = useState(null);
+  const [scoreBoard] = useState(null);
   const startExam = () => {
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen();
