@@ -22,7 +22,7 @@ This Github link [https://github.com/AbhiGattineni/Anddhen-Group](https://github
 
 **Click on the "Code" Button**
 
-![alt text](public/assets/images/readmeImages/image-4.png)
+![alt text](public/assets/images/readmeImages/image-4.jpg)
 
 it will open a window
 
