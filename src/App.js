@@ -14,7 +14,6 @@ export function MainLayout({ children, logout }) {
     </div>
   );
 }
-
 MainLayout.propTypes = {
   children: PropTypes.node.isRequired,
   logout: PropTypes.bool,
