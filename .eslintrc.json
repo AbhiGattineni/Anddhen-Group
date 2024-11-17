@@ -7,11 +7,6 @@
   ],
   "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": [
-      "error",
-      {
-        "endOfLine": "crlf"
-      }
-    ]
+    "prettier/prettier": ["error"]
   }
 }

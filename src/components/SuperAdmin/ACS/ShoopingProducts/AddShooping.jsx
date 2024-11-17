@@ -30,7 +30,7 @@ const AddShopping = ({ onClose }) => {
   // Use the custom React Query mutation hook
   const { mutate, isLoading, isError, isSuccess } = useAddData(
     'products',
-    '/products/add/'
+    '/products/add/',
   );
 
   const handleInputChange = (e) => {

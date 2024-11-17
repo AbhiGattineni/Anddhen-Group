@@ -38,7 +38,7 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
 
   const { mutate: updateProduct, isLoading } = useUpdateData(
     'products',
-    `/products/update/${product?.id}/`
+    `/products/update/${product?.id}/`,
   );
 
   useEffect(() => {

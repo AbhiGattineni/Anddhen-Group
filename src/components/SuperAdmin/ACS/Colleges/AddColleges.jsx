@@ -128,7 +128,7 @@ export const AddColleges = () => {
 
   useEffect(() => {
     const selectedCollegeData = collegesList.find(
-      (college) => college.id === selectedcollege?.value
+      (college) => college.id === selectedcollege?.value,
     );
 
     if (selectedCollegeData) {
@@ -223,7 +223,7 @@ export const AddColleges = () => {
   // Extracting keys from formData
   useEffect(() => {
     const allFieldsFilled = Object.values(formData).every(
-      (value) => value !== ''
+      (value) => value !== '',
     );
     const hasErrors = Object.values(fieldErrors).some((error) => error);
     setDisableButton(!allFieldsFilled || hasErrors);
@@ -245,7 +245,7 @@ export const AddColleges = () => {
 
   const { mutate: addCollege, isLoading } = useAddData(
     'colleges',
-    `/colleges/create/`
+    `/colleges/create/`,
   );
 
   const handleSubmit = (e) => {
@@ -261,7 +261,7 @@ export const AddColleges = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
       onError: (error) => {
@@ -273,7 +273,7 @@ export const AddColleges = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
         // Handle error state or display error message
       },
@@ -289,7 +289,7 @@ export const AddColleges = () => {
   // Using the custom hook for updating college
   const { mutate: updateCollege, isLoading: isUpdating } = useUpdateData(
     'colleges',
-    `/colleges/${selectedcollege?.value}/update/`
+    `/colleges/${selectedcollege?.value}/update/`,
   );
 
   const handleSave = async (e) => {
@@ -307,7 +307,7 @@ export const AddColleges = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
         onError: (error) => {
@@ -319,7 +319,7 @@ export const AddColleges = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
       });
@@ -332,7 +332,7 @@ export const AddColleges = () => {
       });
       setTimeout(
         () => setToast({ show: false, message: '', color: undefined }),
-        3000
+        3000,
       );
     }
   };
@@ -340,7 +340,7 @@ export const AddColleges = () => {
   // Using the custom hook for deleting college
   const { mutate: deleteCollege, isLoading: isDeleting } = useDeleteData(
     'colleges',
-    `/colleges/${selectedcollege?.value}/delete/`
+    `/colleges/${selectedcollege?.value}/delete/`,
   );
 
   const handleDelete = (e) => {
@@ -361,7 +361,7 @@ export const AddColleges = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
           setIsEdit(false);
         },
@@ -374,7 +374,7 @@ export const AddColleges = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
       });
@@ -552,7 +552,7 @@ export const AddColleges = () => {
                   onChange={(e) =>
                     handleChange(
                       'international_graduation_link',
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   setError={(error) =>
@@ -585,7 +585,7 @@ export const AddColleges = () => {
                   onChange={(e) =>
                     handleChange(
                       'international_person_email_link',
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   setError={(error) =>
@@ -685,7 +685,7 @@ export const AddColleges = () => {
                   onChange={(e) =>
                     handleChange(
                       'application_graduation_fee_link',
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   setError={(error) =>
@@ -908,7 +908,7 @@ export const AddColleges = () => {
                   onChange={(e) =>
                     handleChange(
                       'fall_deadline_graduation_link',
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   setError={(error) =>
@@ -971,7 +971,7 @@ export const AddColleges = () => {
                   onChange={(e) =>
                     handleChange(
                       'spring_deadline_graduation_link',
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   setError={(error) =>

@@ -1,8 +1,5 @@
 {
   "semi": true,
   "singleQuote": true,
-  "tabWidth": 2,
-  "trailingComma": "es5",
-  "jsxBracketSameLine": false,
-  "endOfLine": "crlf"
+  "tabWidth": 2
 }

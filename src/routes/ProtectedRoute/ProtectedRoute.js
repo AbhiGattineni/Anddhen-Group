@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
   // Extract roles from local storage
   const userRoles = useMemo(
     () => localStorage.getItem('roles')?.split(',') || [],
-    []
+    [],
   );
 
   useEffect(() => {

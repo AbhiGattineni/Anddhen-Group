@@ -56,7 +56,7 @@ export const Registration = () => {
         {
           method: 'POST',
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) {

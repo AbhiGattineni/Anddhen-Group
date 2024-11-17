@@ -45,7 +45,7 @@ export const AddLinks = () => {
 
   useEffect(() => {
     const allFieldsFilled = Object.values(formData).every(
-      (value) => value !== ''
+      (value) => value !== '',
     );
     const hasErrors = Object.values(fieldErrors).some((error) => error);
     setDisableButton(!allFieldsFilled || hasErrors);
@@ -63,7 +63,7 @@ export const AddLinks = () => {
   useEffect(() => {
     if (selectedcollege && selectedcollege.value) {
       const filteredLinks = data.filter(
-        (link) => link.college === selectedcollege.value
+        (link) => link.college === selectedcollege.value,
       );
       setSelectedLinks(filteredLinks);
     }
@@ -86,12 +86,12 @@ export const AddLinks = () => {
 
   const { mutate: updateLinks, isLoading: editLoading } = useUpdateData(
     'links',
-    `/college_details/${editedLink?.id}/update/`
+    `/college_details/${editedLink?.id}/update/`,
   );
 
   const { mutate: addLink, isLoading: addLoading } = useAddData(
     'links',
-    `/college_details/create/`
+    `/college_details/create/`,
   );
 
   const handleEdit = async (index) => {
@@ -126,7 +126,7 @@ export const AddLinks = () => {
             });
             setTimeout(
               () => setToast({ show: false, message: '', color: undefined }),
-              3000
+              3000,
             );
           },
           onError: (error) => {
@@ -138,7 +138,7 @@ export const AddLinks = () => {
             });
             setTimeout(
               () => setToast({ show: false, message: '', color: undefined }),
-              3000
+              3000,
             );
           },
         });
@@ -153,7 +153,9 @@ export const AddLinks = () => {
           onSuccess: () => {
             queryClient.invalidateQueries('links');
             const updatedLinks = selectedLinks.map((link, index) =>
-              index === editingIndex ? { ...formData, id: editedLink.id } : link
+              index === editingIndex
+                ? { ...formData, id: editedLink.id }
+                : link,
             );
             setSelectedLinks(updatedLinks);
             setEditingIndex(null);
@@ -165,7 +167,7 @@ export const AddLinks = () => {
             });
             setTimeout(
               () => setToast({ show: false, message: '', color: undefined }),
-              3000
+              3000,
             );
           },
           onError: (error) => {
@@ -177,7 +179,7 @@ export const AddLinks = () => {
             });
             setTimeout(
               () => setToast({ show: false, message: '', color: undefined }),
-              3000
+              3000,
             );
           },
         });
@@ -191,7 +193,7 @@ export const AddLinks = () => {
       });
       setTimeout(
         () => setToast({ show: false, message: '', color: undefined }),
-        3000
+        3000,
       );
     }
   };
@@ -212,7 +214,7 @@ export const AddLinks = () => {
   // const { mutate: deleteLink }
   const { mutate: deleteLink, isLoading: deleteLoading } = useDeleteData(
     'links',
-    `/college_details/${deleteIndex}/delete/`
+    `/college_details/${deleteIndex}/delete/`,
   );
 
   const handleDeleteLink = (e) => {
@@ -229,7 +231,7 @@ export const AddLinks = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
       onError: (error) => {
@@ -241,7 +243,7 @@ export const AddLinks = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
     });

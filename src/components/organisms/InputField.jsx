@@ -122,7 +122,7 @@ const InputField = ({ value, ...props }) => {
 
     if (
       ['email', 'international_person_email', 'college_email'].includes(
-        props.name
+        props.name,
       ) &&
       !emailPattern.test(value)
     ) {
@@ -165,7 +165,7 @@ const InputField = ({ value, ...props }) => {
 
     if (
       ['application_UG_fee', 'application_graduation_fee'].includes(
-        props.name
+        props.name,
       ) &&
       !value
     ) {

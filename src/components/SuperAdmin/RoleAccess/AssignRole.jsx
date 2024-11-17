@@ -33,7 +33,7 @@ const AssignRole = () => {
         onError: (error) => {
           console.error('Error assigning role:', error);
         },
-      }
+      },
     );
   };
 
@@ -45,7 +45,7 @@ const AssignRole = () => {
   }, [deleteRoleId]);
   const { mutate: deleteRole } = useDeleteData(
     'roles',
-    `/deleteRole/${deleteRoleId}/`
+    `/deleteRole/${deleteRoleId}/`,
   );
 
   const handleDelete = () => {

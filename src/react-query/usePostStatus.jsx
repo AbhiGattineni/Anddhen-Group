@@ -30,14 +30,14 @@ export function usePostStatus() {
             return [...oldData, [newStatus.date, newStatus.name]];
           }
           return [[newStatus.date, newStatus.name]];
-        }
+        },
       );
     },
     onError: (error) => {
       // Revert the optimistic update on error
       queryClient.setQueryData(
         ['calendarData', auth.currentUser.uid],
-        (oldData) => oldData
+        (oldData) => oldData,
       );
     },
     onSettled: () => {

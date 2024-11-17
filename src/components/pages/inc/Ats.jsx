@@ -196,4 +196,3 @@ export const Ats = () => {
 };
 
 export default Ats;
-

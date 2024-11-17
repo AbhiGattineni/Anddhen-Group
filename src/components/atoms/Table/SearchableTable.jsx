@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const SearchableTable = ({ data, searchTerm, setSearchTerm, renderRow }) => {
   const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (

@@ -63,7 +63,7 @@ const ShoppingPage = () => {
 
   const { mutate: deleteProduct } = useDeleteData(
     'products',
-    `/products/delete/${selectedProductId}/`
+    `/products/delete/${selectedProductId}/`,
   );
 
   if (isLoading) return <p>Loading products...</p>;
@@ -71,7 +71,7 @@ const ShoppingPage = () => {
 
   const filteredProducts = products
     .filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()),
     )
     .filter((product) => (ageGroup ? product.age_group === ageGroup : true)); // Change agegroup to age_group
 
@@ -79,7 +79,7 @@ const ShoppingPage = () => {
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(
     indexOfFirstProduct,
-    indexOfLastProduct
+    indexOfLastProduct,
   );
 
   const handlePageChange = (event, value) => {

@@ -30,7 +30,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
   };
   const handleDeleteClick = () => {
     const confirmed = window.confirm(
-      'Are you sure you want to delete this consultant?'
+      'Are you sure you want to delete this consultant?',
     );
     if (confirmed) {
       onDelete(consultant.id);

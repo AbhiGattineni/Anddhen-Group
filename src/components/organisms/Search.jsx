@@ -12,7 +12,7 @@ export const Search = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase())
+    option.label.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   const handleInputChange = (inputValue) => {
     setSearchQuery(inputValue);

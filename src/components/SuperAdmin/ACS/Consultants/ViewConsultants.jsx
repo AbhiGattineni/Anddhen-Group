@@ -45,7 +45,7 @@ function ViewConsultants() {
   };
   const { mutate: deleteConsultant, isLoading: isDeleting } = useDeleteData(
     'consultant',
-    `/consultants/delete/${consultantId}/`
+    `/consultants/delete/${consultantId}/`,
   );
 
   const handleDeleteConsultant = (consultantId) => {
@@ -67,7 +67,7 @@ function ViewConsultants() {
 
   const { mutate: updateConsultant, isLoading: isUpdating } = useUpdateData(
     'colleges',
-    `/api/consultants/${updatedConsultant?.id}/`
+    `/api/consultants/${updatedConsultant?.id}/`,
   );
 
   const handleSaveChanges = async (updatedConsultant) => {
@@ -208,7 +208,7 @@ function ViewConsultants() {
                 consultant.full_name
                   .toLowerCase()
                   .includes(searchTerm.toLowerCase()) &&
-                applyFilters(consultant)
+                applyFilters(consultant),
             )
             .map((consultant) => (
               <ConsultantCard

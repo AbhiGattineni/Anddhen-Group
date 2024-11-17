@@ -157,7 +157,7 @@ function AddConsultantForm() {
 
   const { mutate: addConsultant, isLoading } = useAddData(
     'consultant',
-    `/api/consultant/`
+    `/api/consultant/`,
   );
 
   const handleSubmit = (event) => {
@@ -203,7 +203,7 @@ function AddConsultantForm() {
               employer_id: formData.employer_id,
               date: new Date().toISOString().split('T')[0],
               ...formData.status_consultant, // Merges the dynamic fields from formData.status_consultant
-            })
+            }),
           );
         } else {
           // Append other form data as strings
@@ -227,7 +227,7 @@ function AddConsultantForm() {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
         onError: (error) => {
@@ -239,7 +239,7 @@ function AddConsultantForm() {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
           // Handle error state or display error message
         },

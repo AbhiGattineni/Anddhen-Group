@@ -17,7 +17,7 @@ export const useAuth = () => {
       (error) => {
         setError(error);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();

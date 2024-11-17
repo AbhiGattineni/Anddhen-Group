@@ -61,11 +61,11 @@ function ConsultantDetailsModal({
   const { data: recruiters = [] } = useFetchData('recruiter', `/recruiters/`);
   const { data: notesData = [] } = useFetchData(
     'status-consultant',
-    `/status-consultants/`
+    `/status-consultants/`,
   );
   const { mutate: addNote, isLoading } = useAddData(
     'status-consultant',
-    `/status-consultants/`
+    `/status-consultants/`,
   );
   useEffect(() => {
     if (editedConsultant?.id && notesData?.length) {
@@ -601,7 +601,7 @@ function ConsultantDetailsModal({
                               {filteredDescriptions[noteId].description}
                             </p>
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                     <textarea

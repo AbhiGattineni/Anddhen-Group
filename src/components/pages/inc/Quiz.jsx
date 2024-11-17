@@ -16,7 +16,7 @@ export const Quiz = () => {
       try {
         setLoading(true);
         await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${TAB_NAME}!A1:F10?key=${API_KEY}`
+          `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${TAB_NAME}!A1:F10?key=${API_KEY}`,
         )
           .then((response) => response.json())
           .then((data) => {
@@ -64,7 +64,7 @@ export const Quiz = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -77,7 +77,7 @@ export const Quiz = () => {
     } catch (error) {
       console.error(
         'There was a problem with the fetch operation:',
-        error.message
+        error.message,
       );
     }
   };

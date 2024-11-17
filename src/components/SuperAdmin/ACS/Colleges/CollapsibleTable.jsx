@@ -340,7 +340,7 @@ function Row({ row, filter }) {
                         {Object.entries(details)
                           .slice(
                             0,
-                            Math.ceil(Object.entries(details).length / 2)
+                            Math.ceil(Object.entries(details).length / 2),
                           )
                           .map(([key, value]) => (
                             <li key={key}>
@@ -512,14 +512,14 @@ export const ViewCollege = () => {
           !filter.toeflScore ||
           Math.min(
             parseInt(college.toefl_graduation_score, 10) || Infinity,
-            parseInt(college.toefl_UG_score, 10) || Infinity
+            parseInt(college.toefl_UG_score, 10) || Infinity,
           ) <= parseInt(filter.toeflScore, 10);
 
         const matchesIELTS =
           !filter.ieltsScore ||
           Math.min(
             parseInt(college.ielts_graduation_score, 10) || Infinity,
-            parseInt(college.ielts_ug_score, 10) || Infinity
+            parseInt(college.ielts_ug_score, 10) || Infinity,
           ) <= parseInt(filter.ieltsScore, 10);
 
         const matchesCollegeType =
@@ -531,14 +531,14 @@ export const ViewCollege = () => {
         const minFallDeadline = new Date(
           Math.min(
             new Date(college.fall_deadline_UG || '9999-12-31'),
-            new Date(college.fall_deadline_graduation || '9999-12-31')
-          )
+            new Date(college.fall_deadline_graduation || '9999-12-31'),
+          ),
         );
         const minSpringDeadline = new Date(
           Math.min(
             new Date(college.spring_deadline_UG || '9999-12-31'),
-            new Date(college.spring_deadline_graduation || '9999-12-31')
-          )
+            new Date(college.spring_deadline_graduation || '9999-12-31'),
+          ),
         );
         const selectedFallDeadline = filter.fallDeadline
           ? new Date(filter.fallDeadline)
@@ -567,7 +567,7 @@ export const ViewCollege = () => {
   const paginatedData = useMemo(() => {
     return filteredData.slice(
       page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage
+      page * rowsPerPage + rowsPerPage,
     );
   }, [filteredData, page, rowsPerPage]);
 

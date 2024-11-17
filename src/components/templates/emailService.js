@@ -10,14 +10,14 @@ export const sendEmail = (application, data) => {
         {
           to_email: emailJs_email,
           message: `You have received a new application from ${application} application.\n${Object.keys(
-            data
+            data,
           )
             .map((att) => {
               return `${att}: ${data[att]}`;
             })
             .join('\n')}`,
         },
-        process.env.REACT_APP_EMAIL_USER_ID
+        process.env.REACT_APP_EMAIL_USER_ID,
       )
       .then((response) => {
         console.log('Email sent to:', emailJs_email);

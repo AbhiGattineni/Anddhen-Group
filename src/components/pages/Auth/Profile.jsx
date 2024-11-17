@@ -22,7 +22,7 @@ export const Profile = () => {
         parsedEmptyFields.reduce((acc, field) => {
           acc[field] = '';
           return acc;
-        }, {})
+        }, {}),
       );
     } else {
       navigate('/login');

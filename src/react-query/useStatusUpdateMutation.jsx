@@ -73,7 +73,7 @@ export const useStatusUpdateMutation = () => {
             return [...oldData, auth.currentUser.uid];
           }
           return [newStatus];
-        }
+        },
       );
 
       return { previousStatus };
@@ -82,7 +82,7 @@ export const useStatusUpdateMutation = () => {
       if (context?.previousStatus) {
         queryClient.setQueryData(
           ['calendarData', auth.currentUser.uid],
-          context.previousStatus
+          context.previousStatus,
         );
       }
     },

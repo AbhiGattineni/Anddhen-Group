@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 
 const fetchPartTimerData = async (user_id) => {
   const response = await fetch(
-    `http://127.0.0.1:8000/get-part-timer/${user_id}/`
+    `http://127.0.0.1:8000/get-part-timer/${user_id}/`,
   );
   if (!response.ok) {
     throw new Error('Error fetching data');

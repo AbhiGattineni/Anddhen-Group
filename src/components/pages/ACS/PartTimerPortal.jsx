@@ -14,7 +14,7 @@ export const PartTimerPortal = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const setParttimer_consent = useAuthStore(
-    (state) => state.setParttimer_consent
+    (state) => state.setParttimer_consent,
   );
   const [isError, setIsError] = useState(false); // Add this line
   const [error, setError] = useState(null);
@@ -26,11 +26,11 @@ export const PartTimerPortal = () => {
       setIsError(false); // Reset error state on new fetch attempt
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/get-part-timer/${user_id}/`
+          `http://127.0.0.1:8000/get-part-timer/${user_id}/`,
         );
         if (!response.ok) {
           throw new Error(
-            `Error fetching data: ${response.status} - ${response.statusText}`
+            `Error fetching data: ${response.status} - ${response.statusText}`,
           );
         }
         const data = await response.json();

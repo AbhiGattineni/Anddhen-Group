@@ -54,7 +54,7 @@ const useUnifiedAuth = () => {
       const userData = await postUserData(
         usersData.user,
         first_name,
-        last_name
+        last_name,
       );
       if (userData.empty_fields.length > 0) {
         localStorage.setItem('empty_fields', userData.empty_fields);
@@ -81,12 +81,12 @@ const useUnifiedAuth = () => {
     email,
     password,
     first_name,
-    last_name
+    last_name,
   ) =>
     handleAuth(
       createUserWithEmailPassword(email, password),
       first_name,
-      last_name
+      last_name,
     );
 
   return {

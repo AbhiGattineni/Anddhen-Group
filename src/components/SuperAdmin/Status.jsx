@@ -31,7 +31,7 @@ export const Status = () => {
   const [selectedDate, setSelectedDate] = useState('');
 
   const selectedAcsStatusDate = useAuthStore(
-    (state) => state.selectedAcsStatusDate
+    (state) => state.selectedAcsStatusDate,
   );
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export const Status = () => {
           onError: (error) => {
             setAllStatuses({});
           },
-        }
+        },
       );
     }
   }, [empId]);
@@ -96,7 +96,7 @@ export const Status = () => {
   const handleEmployeeChange = (event) => {
     const selectedEmpId = event.target.value;
     const selectedEmpName = employees.find(
-      (emp) => emp.user_id === selectedEmpId
+      (emp) => emp.user_id === selectedEmpId,
     )?.user_name;
 
     setEmpId(selectedEmpId);

@@ -37,7 +37,7 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
     setMessage(
       allCorrect
         ? 'Fill form to proceed with registration'
-        : 'You are not matching with our requirements!'
+        : 'You are not matching with our requirements!',
     );
   };
 
@@ -76,7 +76,7 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
                   >
                     {option}
                   </button>
-                )
+                ),
               )}
             </div>
           </div>

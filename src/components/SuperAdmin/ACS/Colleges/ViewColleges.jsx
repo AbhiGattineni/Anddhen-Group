@@ -71,7 +71,7 @@ const Table = ({ columns, data }) => {
     },
     useGlobalFilter,
     useExpanded,
-    usePagination
+    usePagination,
   );
 
   return (
@@ -126,8 +126,8 @@ const Table = ({ columns, data }) => {
                                 .slice(
                                   0,
                                   Math.ceil(
-                                    Object.entries(row.original).length / 2
-                                  )
+                                    Object.entries(row.original).length / 2,
+                                  ),
                                 )
                                 .map(
                                   ([key, value]) =>
@@ -149,7 +149,7 @@ const Table = ({ columns, data }) => {
                                           value
                                         )}
                                       </li>
-                                    )
+                                    ),
                                 )}
                             </ul>
                           </div>
@@ -158,8 +158,8 @@ const Table = ({ columns, data }) => {
                               {Object.entries(row.original)
                                 .slice(
                                   Math.ceil(
-                                    Object.entries(row.original).length / 2
-                                  )
+                                    Object.entries(row.original).length / 2,
+                                  ),
                                 )
                                 .map(
                                   ([key, value]) =>
@@ -181,7 +181,7 @@ const Table = ({ columns, data }) => {
                                           value
                                         )}
                                       </li>
-                                    )
+                                    ),
                                 )}
                             </ul>
                           </div>
@@ -242,7 +242,7 @@ export const ViewColleges = () => {
         Cell: ExpanderCell,
       },
     ],
-    []
+    [],
   );
 
   if (isLoading) return <div>Loading...</div>;

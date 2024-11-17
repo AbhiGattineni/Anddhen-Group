@@ -48,15 +48,15 @@ const Recruiter = () => {
 
   const { mutate: updateRecruiter, isLoading: isUpdating } = useUpdateData(
     'recruiter',
-    `/recruiters/${selectedId}/`
+    `/recruiters/${selectedId}/`,
   );
   const { mutate: addRecruiters, isLoading: isAdding } = useAddData(
     'recruiter',
-    '/recruiters/'
+    '/recruiters/',
   );
   const { mutate: deleteRecruiter, isLoading: isDeleting } = useDeleteData(
     'recruiter',
-    `/recruiters/${selectedId}/`
+    `/recruiters/${selectedId}/`,
   );
 
   const handleEditClick = (id, row) => {
@@ -111,7 +111,7 @@ const Recruiter = () => {
     setToast({ show: true, message, color });
     setTimeout(
       () => setToast({ show: false, message: '', color: undefined }),
-      3000
+      3000,
     );
   };
 
@@ -120,7 +120,7 @@ const Recruiter = () => {
       row.name.toLowerCase().includes(search.toLowerCase()) ||
       row.phone.includes(search) ||
       row.employer.toLowerCase().includes(search.toLowerCase()) ||
-      row.email.toLowerCase().includes(search.toLowerCase())
+      row.email.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (

@@ -62,7 +62,7 @@ const RoleAccess = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
         onError: (error) => {
@@ -74,16 +74,16 @@ const RoleAccess = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
-      }
+      },
     );
   };
 
   const { mutate: updateRole } = useUpdateData(
     'roles',
-    `/roles/update/${editingRole?.id}/`
+    `/roles/update/${editingRole?.id}/`,
   );
 
   const handleUpdateRole = (id, roleName, accessRole) => {
@@ -103,7 +103,7 @@ const RoleAccess = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
         onError: (error) => {
@@ -115,10 +115,10 @@ const RoleAccess = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
-      }
+      },
     );
   };
 
@@ -130,7 +130,7 @@ const RoleAccess = () => {
 
   const { mutate: deleteRole } = useDeleteData(
     'roles',
-    `/roles/delete/${deleteRoleId}/`
+    `/roles/delete/${deleteRoleId}/`,
   );
 
   const handleDelete = () => {
@@ -147,7 +147,7 @@ const RoleAccess = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
         onError: (error) => {
@@ -160,7 +160,7 @@ const RoleAccess = () => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
         },
       });

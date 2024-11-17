@@ -23,7 +23,7 @@ const StatusUpdates = () => {
   });
   const { data } = useCalendarData(auth.currentUser.uid);
   const selectedAcsStatusDate = useAuthStore(
-    (state) => state.selectedAcsStatusDate
+    (state) => state.selectedAcsStatusDate,
   );
   const [msgResponse, setMsgResponse] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
@@ -47,7 +47,7 @@ const StatusUpdates = () => {
   useEffect(() => {
     // Get the department from the URL (you can replace this with your actual logic)
     const currentDepartment = window.location.pathname.includes(
-      '/parttimerportal'
+      '/parttimerportal',
     )
       ? 'ACS'
       : '';

@@ -289,7 +289,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'international_graduation_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -349,7 +349,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'application_graduation_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -433,7 +433,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'application_graduation_fee',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -463,13 +463,13 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'application_graduation_fee_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
                         handleFieldError(
                           'application_graduation_fee_link',
-                          error
+                          error,
                         )
                       }
                     />
@@ -632,7 +632,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'toefl_graduation_score_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -743,7 +743,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'ielts_graduation_score_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -853,7 +853,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'fall_deadline_graduation_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -934,7 +934,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'spring_deadline_graduation',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -963,13 +963,13 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'spring_deadline_graduation_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
                         handleFieldError(
                           'spring_deadline_graduation_link',
-                          error
+                          error,
                         )
                       }
                     />
@@ -1107,7 +1107,7 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'international_person_email',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
@@ -1137,13 +1137,13 @@ export const EditColleges = () => {
                       onChange={(e) =>
                         handleChange(
                           'international_person_email_link',
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       setError={(error) =>
                         handleFieldError(
                           'international_person_email_link',
-                          error
+                          error,
                         )
                       }
                     />

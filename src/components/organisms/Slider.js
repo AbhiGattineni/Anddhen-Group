@@ -148,4 +148,3 @@ ResponsiveImage.propTypes = {
 };
 
 export default Slider;
-

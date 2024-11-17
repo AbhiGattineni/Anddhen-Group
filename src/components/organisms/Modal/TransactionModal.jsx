@@ -70,7 +70,7 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
         console.error('An error occurred:', error);
         // Handle error state or display error message
       },
-    }
+    },
   );
 
   const handleSubmit = (e) => {
@@ -107,7 +107,7 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
 
   useEffect(() => {
     const allFieldsFilled = Object.values(formData).every(
-      (value) => value !== ''
+      (value) => value !== '',
     );
     const hasErrors = Object.values(fieldErrors).some((error) => error);
     setDisableButton(!allFieldsFilled || hasErrors);

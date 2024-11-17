@@ -7,18 +7,18 @@ import InputAdornment from '@mui/material/InputAdornment';
 const CollegeWhatsappLinks = () => {
   const { data = [] } = useFetchData(
     'collegeswhatsapplinks',
-    '/college_details/'
+    '/college_details/',
   );
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filter the data to only include items with the label 'whatsapp community'
   const filteredData = data.filter(
-    (college) => college.label === 'whatsapp community'
+    (college) => college.label === 'whatsapp community',
   );
 
   // Further filter the data based on the search query
   const searchedData = filteredData.filter((college) =>
-    college.college_name.toLowerCase().includes(searchQuery.toLowerCase())
+    college.college_name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (

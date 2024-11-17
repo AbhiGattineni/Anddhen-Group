@@ -14,7 +14,7 @@ export const useStatusMutation = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(statusData),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -33,7 +33,7 @@ export const useStatusMutation = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedData),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -53,7 +53,7 @@ export const useStatusMutation = () => {
             return [...oldData, [newStatus.date, newStatus.parttimerName]];
           }
           return [[newStatus.date, newStatus.parttimerName]];
-        }
+        },
       );
     },
     onError: (error, newStatus, rollback) => {

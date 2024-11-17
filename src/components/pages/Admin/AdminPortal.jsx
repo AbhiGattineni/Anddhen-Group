@@ -15,7 +15,7 @@ export const AdminPortal = () => {
     (async () => {
       try {
         const response = await axios.get(
-          `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${name}?key=${API_KEY}`
+          `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${name}?key=${API_KEY}`,
         );
         setData(response.data.values);
       } catch (error) {

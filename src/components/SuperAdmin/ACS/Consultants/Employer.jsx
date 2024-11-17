@@ -51,7 +51,7 @@ const Employer = () => {
   // Save updated data
   const { mutate: updateEmployer, isLoading: isUpdating } = useUpdateData(
     'employer',
-    `/employers/${editRowId}/`
+    `/employers/${editRowId}/`,
   );
   const handleSave = () => {
     updateEmployer(editValues, {
@@ -64,7 +64,7 @@ const Employer = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
         setEditRowId(null);
       },
@@ -77,7 +77,7 @@ const Employer = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
     });
@@ -102,7 +102,7 @@ const Employer = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
       onError: (error) => {
@@ -114,7 +114,7 @@ const Employer = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
     });
@@ -123,7 +123,7 @@ const Employer = () => {
   // Delete employer
   const { mutate: deleteEmployer, isLoading: isDeleting } = useDeleteData(
     'employer',
-    `/employers/${selectedId}/`
+    `/employers/${selectedId}/`,
   );
   const handleDelete = (id) => {
     setSelectedId(id); // Set the ID to delete
@@ -137,7 +137,7 @@ const Employer = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
       onError: (error) => {
@@ -149,7 +149,7 @@ const Employer = () => {
         });
         setTimeout(
           () => setToast({ show: false, message: '', color: undefined }),
-          3000
+          3000,
         );
       },
     });
@@ -158,7 +158,7 @@ const Employer = () => {
   const filteredData = data.filter(
     (row) =>
       row.name.toLowerCase().includes(search.toLowerCase()) ||
-      row.address.toLowerCase().includes(search.toLowerCase())
+      row.address.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (

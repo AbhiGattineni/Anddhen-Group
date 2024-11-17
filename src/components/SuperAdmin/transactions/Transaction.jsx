@@ -57,7 +57,7 @@ export const Transaction = () => {
         Cell: ({ row }) => calculateRunningTotal(row.index),
       },
     ],
-    [transactions]
+    [transactions],
   );
 
   const calculateRunningTotal = (index) => {
@@ -108,7 +108,7 @@ export const Transaction = () => {
     },
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
   );
 
   const { globalFilter, pageIndex, pageSize } = state;

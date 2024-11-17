@@ -24,14 +24,14 @@ export const EmployeeDashboard = () => {
   // const userId = auth.currentUser ? auth.currentUser.uid : null;
   const { data } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(
-    (state) => state.selectedAcsStatusDate
+    (state) => state.selectedAcsStatusDate,
   );
   const formattedData = data ? data.map((item) => [item.date, item.name]) : [];
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole.split(',');
   const filteredPlates = adminPlates.filter((plate) =>
-    current_roles.includes(plate.route)
+    current_roles.includes(plate.route),
   );
 
   const handleEdit = (e) => {

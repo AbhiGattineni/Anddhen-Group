@@ -30,7 +30,7 @@ AssignCards.propTypes = {
     PropTypes.shape({
       child: PropTypes.string.isRequired,
       route: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
 };
 

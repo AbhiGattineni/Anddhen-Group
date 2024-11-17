@@ -40,7 +40,7 @@ const usePostUserData = () => {
 
       if (!response.ok) {
         throw new Error(
-          `Error posting new user to backend: ${response.statusText}`
+          `Error posting new user to backend: ${response.statusText}`,
         );
       }
       const responseData = await response.json();

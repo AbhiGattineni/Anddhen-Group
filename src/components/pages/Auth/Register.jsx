@@ -64,7 +64,7 @@ export const Register = () => {
   // Wrapper functions for sign-up methods
   const handleEmailPasswordSignUp = (email, password, first_name, last_name) =>
     handleSignUp(() =>
-      onEmailPasswordUserCreation(email, password, first_name, last_name)
+      onEmailPasswordUserCreation(email, password, first_name, last_name),
     );
 
   const handleSubmit = async (e) => {
@@ -74,7 +74,7 @@ export const Register = () => {
       formData.email,
       formData.password,
       formData.first_name,
-      formData.last_name
+      formData.last_name,
     );
   };
   return (

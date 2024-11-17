@@ -108,7 +108,7 @@ export const AcsAdmin = () => {
             return sortConfig.direction === 'ascending' ? 1 : -1;
           }
           return 0;
-        })
+        }),
       );
     }
   }, [sortConfig]);
@@ -123,8 +123,8 @@ export const AcsAdmin = () => {
     if (searchTerm) {
       filteredData = filteredData.filter((row) =>
         row.some((cell) =>
-          cell.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )
+          cell.toString().toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
       );
     }
 
