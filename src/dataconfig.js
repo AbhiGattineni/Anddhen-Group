@@ -532,7 +532,7 @@ export const acsCards = [
       'Professional assistance with job applications and part-time work placements to help you gain valuable experience.',
   },
   {
-    image: resgistration2,
+    image: '/assets/images/registration2.png',
     path: '/acs/courses',
     heading: 'Courses',
     description:
