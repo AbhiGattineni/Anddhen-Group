@@ -1,33 +1,31 @@
-import Subsidiary1 from './components/images/marketing.jpg';
-import Subsidiary2 from './components/images/consulting2.jpg';
-import Subsidiary3 from './components/images/service6.jpg';
-import Subsidiary4 from './components/images/philanthropy1.jpg';
-import Subsidiary5 from './components/images/trade3.jpg';
-import Subsidiary6 from './components/images/subsid6.jpg';
-import Subsidiary7 from './components/images/subsid7.jpg';
-import image1 from './components/images/dp.jpg';
-import image2 from './components/images/img1.jpg';
-import rushil from './components/images/rushil.jpg';
-import stephen from './components/images/stephen.jpg';
-import saiteja from './components/images/saiteja.png';
-import vijetha from './components/images/vijetha.jpg';
-import chandu from './components/images/chandu.jpg';
-import neha from './components/images/neha.jpg';
-import charan from './components/images/charan.jpg';
-import sampreeth from './components/images/sampreeth.jpg';
-import resgistration1 from './components/images/resgistration1.png';
-import resgistration2 from './components/images/registration2.png';
-import Image1 from './components/images/images for shooping page of nri/1.jpg';
-import Image2 from './components/images/images for shooping page of nri/2.jpg';
-import Image3 from './components/images/images for shooping page of nri/3.jpg';
-import Image4 from './components/images/images for shooping page of nri/4.jpg';
-import Image5 from './components/images/images for shooping page of nri/5.jpg';
-import Image6 from './components/images/images for shooping page of nri/6.jpg';
-import Image7 from './components/images/images for shooping page of nri/7.jpg';
-import Image8 from './components/images/images for shooping page of nri/8.jpg';
-import Image9 from './components/images/images for shooping page of nri/9.jpg';
-import Image10 from './components/images/images for shooping page of nri/10.jpg';
-import Image11 from './components/images/images for shooping page of nri/11.jpg';
+import Subsidiary3 from ;
+import Subsidiary4 from ;
+import Subsidiary5 from ;
+import Subsidiary6 from ;
+import Subsidiary7 from;
+import image1 from ;
+import image2 from ;
+import rushil from ;
+import stephen from ;
+import saiteja from ;
+import vijetha from ;
+import chandu from ;
+import neha from ;
+import charan from ;
+import sampreeth from ;
+import resgistration1 from ;
+import resgistration2 from ;
+import Image1 from ;
+import Image2 from ;
+import Image3 from ;
+import Image4 from ;
+import Image5 from ;
+import Image6 from;
+import Image7 from ;
+import Image8 from ;
+import Image9 from ;
+import Image10 from ;
+import Image11 from ;
 
 export const priceData = [
   {
@@ -94,49 +92,49 @@ export const priceData = [
 export const subsidiaries = [
   {
     Name: 'Anddhen Marketing Services',
-    Photo: Subsidiary1,
+    Photo: '/assets/images/marketing.jpg',
     Description:
       'Comprehensive marketing strategies to boost brand presence and growth.',
     link: '/ams',
   },
   {
     Name: 'Anddhen Consulting Services',
-    Photo: Subsidiary2,
+    Photo: '/assets/images/consulting2.jpg',
     Description:
       'Expert consulting services for business development and strategic solutions.',
     link: '/acs',
   },
   {
     Name: 'Anddhen Software Services',
-    Photo: Subsidiary3,
+    Photo: '/assets/images/service6.jpg',
     Description:
       'Innovative software development services tailored to business needs.',
     link: '/ass',
   },
   {
     Name: 'Anddhen Philanthropy Services',
-    Photo: Subsidiary4,
+    Photo: '/assets/images/philanthropy1.jpg',
     Description:
       'Supporting philanthropic initiatives for positive social impact and change.',
     link: '/aps',
   },
   {
     Name: 'Anddhen Trading & Investment',
-    Photo: Subsidiary5,
+    Photo: '/assets/images/trade3.jpg',
     Description:
       'Expert trading and investment services to maximize financial returns.',
     link: '/ati',
   },
   {
     Name: 'Andhden Travel Services',
-    Photo: Subsidiary6,
+    Photo: '/assets/images/subsid6.jpg',
     Description:
       'Comprehensive travel solutions for seamless journeys and experiences.',
     link: '/ats',
   },
   {
     Name: 'Anddhen NRI Services',
-    Photo: Subsidiary7,
+    Photo:  '/assets/images/subsid7.jpg',
     Description:
       'Dedicated services for NRIs to manage overseas investments effectively.',
     link: '/ans',
@@ -144,20 +142,32 @@ export const subsidiaries = [
 ];
 export const details = [
   {
-    Name: 'Rushil Basappa',
-    Photo: rushil,
+    Name: 'Abhishek Gattineni',
+    Photo: '/assets/images/dp.jpg',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
       'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?',
-    Role: 'CEO',
+    Role: 'Founder',
+    Facebook: 'https://www.facebook.com/abhi.gattineni/',
+    LinkedIn: 'https://www.linkedin.com/in/abhishek-gattineni-05937088/',
+    GitHub: 'https://github.com/AbhiGattineni',
+  },
+  {
+    Name: 'Rushil Basappa',
+    Photo: '/assets/images/rushil.jpg',
+    Start_date: '10/10/2022',
+    End_date: '10/10/2022',
+    Description:
+      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?',
+    Role: 'Co-Founder & CEO',
     Facebook: 'https://www.facebook.com/abhi.gattineni/',
     LinkedIn: 'https://www.linkedin.com/in/abhishek-gattineni-05937088/',
     GitHub: 'https://github.com/AbhiGattineni',
   },
   {
     Name: 'Stephen Jakku',
-    Photo: stephen,
+    Photo: '/assets/images/stephen.jpg',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
@@ -169,7 +179,7 @@ export const details = [
   },
   {
     Name: 'Saiteja Polampally',
-    Photo: saiteja,
+    Photo: '/assets/images/saiteja.png',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
@@ -181,7 +191,7 @@ export const details = [
   },
   {
     Name: 'Vijetha Boddapati',
-    Photo: vijetha,
+    Photo: '/assets/images/vijetha.jpg',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
@@ -193,7 +203,7 @@ export const details = [
   },
   {
     Name: 'Chandu Vardhan',
-    Photo: chandu,
+    Photo: '/assets/images/chandu.jpg',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
@@ -205,7 +215,7 @@ export const details = [
   },
   {
     Name: 'Neha Goli',
-    Photo: neha,
+    Photo: '/assets/images/neha.jpg',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
@@ -215,21 +225,10 @@ export const details = [
     LinkedIn: 'https://www.linkedin.com/in/abhishek-gattineni-05937088/',
     GitHub: 'https://github.com/AbhiGattineni',
   },
-  {
-    Name: 'Abhishek Gattineni',
-    Photo: image1,
-    Start_date: '10/10/2022',
-    End_date: '10/10/2022',
-    Description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis inventore maiores, quas ea rerum cumque ut voluptatibus recusandae! Numquam molestiae nobis excepturi ea explicabo. Provident cumque quaerat similique illum quo?',
-    Role: 'Founder',
-    Facebook: 'https://www.facebook.com/abhi.gattineni/',
-    LinkedIn: 'https://www.linkedin.com/in/abhishek-gattineni-05937088/',
-    GitHub: 'https://github.com/AbhiGattineni',
-  },
+  
   {
     Name: 'Sai Charan',
-    Photo: charan,
+    Photo: '/assets/images/charan.jpg',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
@@ -241,7 +240,7 @@ export const details = [
   },
   {
     Name: 'Trinath Gundla',
-    Photo: image2,
+    Photo: '/assets/images/img1.jpg',
     Start_date: '10/10/2022',
     End_date: '10/10/2022',
     Description:
@@ -253,7 +252,7 @@ export const details = [
   },
   {
     Name: 'Sai Sampreeth',
-    Photo: sampreeth,
+    Photo: '/assets/images/sampreeth.jpg',
     Start_date: '15/6/2024',
     End_date: 'Present',
     Description:
@@ -548,14 +547,14 @@ export const usStates = [
 
 export const acsCards = [
   {
-    image: resgistration1,
+    image: '/assets/images/resgistration1.png',
     path: '/acs/educationconsulting',
     heading: 'Higher Education Consulting',
     description:
       'Expert guidance and consulting services for students pursuing higher studies in various fields and countries.',
   },
   {
-    image: resgistration2,
+    image: '/assets/images/registration2.png',
     path: 'jobapplication',
     heading: 'Job Applications',
     description:
@@ -796,7 +795,7 @@ export const collegeLinks = [
 export const shoopingForNRI = [
   {
     name: 'BENGAY Ultra Strength Pain Relieving Cream',
-    image: Image1,
+    image: '/assets/images/nriImages/1.jpg',
     link: 'https://www.walmart.com/ip/BENGAY-Ultra-Strength-Pain-Relieving-Cream-2-Tubes-4oz-Twin-Pack/430188986?classType=REGULAR&athbdg=L1600',
     agegroup: '50+',
     description:
@@ -804,7 +803,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'Mineral Ice Topical Analgesic Pain Relieving Gel',
-    image: Image2,
+    image: '/assets/images/nriImages/2.jpg',
     link: 'https://www.walmart.com/ip/Mineral-Ice-Topical-Analgesic-Pain-Reliving-Gel-16Oz-Each/662556569?classType=REGULAR',
     agegroup: '50+',
     description:
@@ -812,7 +811,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'Kirkland Signature Walnut Halves',
-    image: Image3,
+    image: '/assets/images/nriImages/3.jpg',
     link: 'https://www.costco.com/kirkland-signature-walnut-halves%2C-3-lbs.product.100119388.html',
     agegroup: '20-50',
     description:
@@ -820,7 +819,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'Kirkland Signature Unsalted Mixed Nuts',
-    image: Image4,
+    image: '/assets/images/nriImages/4.jpg',
     link: 'https://www.costco.ca/kirkland-signature-unsalted-mixed-nuts%2C-1.13-kg.product.4000119102.html',
     agegroup: '20-50',
     description:
@@ -828,7 +827,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'Amazon Product (Variety)',
-    image: Image5,
+    image: '/assets/images/nriImages/5.jpg',
     link: 'https://a.co/d/ewqZmgm',
     agegroup: '50+',
     description:
@@ -836,7 +835,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'One A Day Men’s Multivitamin Tablets',
-    image: Image6,
+    image:  '/assets/images/nriImages/6.jpg',
     link: 'https://www.walmart.com/ip/One-A-Day-Men-s-Multivitamin-Tablets-Multivitamins-for-Men-200-Count/10311442',
     agegroup: '50+',
     description:
@@ -844,7 +843,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'Amazon Product (Variety)',
-    image: Image7,
+    image: '/assets/images/nriImages/7.jpg',
     link: 'https://a.co/d/coUqIin',
     agegroup: '20-50',
     description:
@@ -852,7 +851,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'Amazon Product (Variety)',
-    image: Image8,
+    image: '/assets/images/nriImages/8.jpg',
     link: 'https://a.co/d/0SYbrNr',
     agegroup: '20-50',
     description:
@@ -860,7 +859,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'Ziploc Seal Top Bags Variety Pack',
-    image: Image9,
+    image: '/assets/images/nriImages/9.jpg',
     link: 'https://www.costco.com/ziploc-seal-top-bag%2C-variety-pack%2C-347-count.product.100219369.html',
     agegroup: '20-50',
     description:
@@ -868,7 +867,7 @@ export const shoopingForNRI = [
   },
   {
     name: 'BelVita Breakfast Biscuits - Cinnamon Brown Sugar',
-    image: Image10,
+    image: '/assets/images/nriImages/10.jpg',
     link: 'https://www.costco.com/belvita-breakfast-biscuit%2C-cinnamon-brown-sugar%2C-1.76-oz%2C-30-count.product.100421656.html',
     agegroup: '20-50',
     description:
@@ -876,98 +875,10 @@ export const shoopingForNRI = [
   },
   {
     name: 'Kirkland Signature All Chocolate Bag - Variety Pack',
-    image: Image11,
+    image: '/assets/images/nriImages/11.jpg',
     link: 'https://www.costcobusinessdelivery.com/kirkland-signature-all-chocolate-bag%2C-variety-pack.product.11174127.html',
     agegroup: '0-20',
     description:
       'Kirkland Signature All Chocolate Bag offers a variety of chocolate treats in one convenient pack. Perfect for sharing or personal indulgence.',
-  },
-  {
-    name: 'BENGAY Ultra Strength Pain Relieving Cream',
-    image: Image1,
-    link: 'https://www.walmart.com/ip/BENGAY-Ultra-Strength-Pain-Relieving-Cream-2-Tubes-4oz-Twin-Pack/430188986?classType=REGULAR&athbdg=L1600',
-    agegroup: '50+',
-    description:
-      'BENGAY Ultra Strength Pain Relieving Cream offers relief from minor aches and muscle pains. It comes in a twin pack with two 4oz tubes for long-lasting use.',
-  },
-  {
-    name: 'Mineral Ice Topical Analgesic Pain Relieving Gel',
-    image: Image2,
-    link: 'https://www.walmart.com/ip/Mineral-Ice-Topical-Analgesic-Pain-Reliving-Gel-16Oz-Each/662556569?classType=REGULAR',
-    agegroup: '50+',
-    description:
-      'Mineral Ice Topical Analgesic Gel provides fast cooling relief for sore muscles and joints. It is available in a 16oz bottle for extended use.',
-  },
-  {
-    name: 'Kirkland Signature Walnut Halves',
-    image: Image3,
-    link: 'https://www.costco.com/kirkland-signature-walnut-halves%2C-3-lbs.product.100119388.html',
-    agegroup: '20-50',
-    description:
-      'Kirkland Signature Walnut Halves offer 3 lbs of premium-quality, healthy walnut halves. These nuts are perfect for snacking or adding to meals.',
-  },
-  {
-    name: 'Kirkland Signature Unsalted Mixed Nuts',
-    image: Image4,
-    link: 'https://www.costco.ca/kirkland-signature-unsalted-mixed-nuts%2C-1.13-kg.product.4000119102.html',
-    agegroup: '20-50',
-    description:
-      'Kirkland Signature Unsalted Mixed Nuts provide a healthy, unsalted mix of nuts in a 1.13 kg pack. Great for snacking and cooking.',
-  },
-  {
-    name: 'Amazon Product (Variety)',
-    image: Image5,
-    link: 'https://a.co/d/ewqZmgm',
-    agegroup: '50+',
-    description:
-      'This link leads to a variety of products. Please click to view details about this product on Amazon.',
-  },
-  {
-    name: 'One A Day Men’s Multivitamin Tablets',
-    image: Image6,
-    link: 'https://www.walmart.com/ip/One-A-Day-Men-s-Multivitamin-Tablets-Multivitamins-for-Men-200-Count/10311442',
-    agegroup: '50+',
-    description:
-      'One A Day Men’s Multivitamin provides essential vitamins and minerals for daily health. Each bottle contains 200 tablets for long-term use.',
-  },
-  {
-    name: 'Amazon Product (Variety)',
-    image: Image7,
-    link: 'https://a.co/d/coUqIin',
-    agegroup: '20-50',
-    description:
-      'This link leads to a variety of products. Please click to view details about this product on Amazon.',
-  },
-  {
-    name: 'Amazon Product (Variety)',
-    image: Image8,
-    link: 'https://a.co/d/0SYbrNr',
-    agegroup: '20-50',
-    description:
-      'This link leads to a variety of products. Please click to view details about this product on Amazon.',
-  },
-  {
-    name: 'Ziploc Seal Top Bags Variety Pack',
-    image: Image9,
-    link: 'https://www.costco.com/ziploc-seal-top-bag%2C-variety-pack%2C-347-count.product.100219369.html',
-    agegroup: '20-50',
-    description:
-      'Ziploc Seal Top Bags Variety Pack includes 347 bags of various sizes. They are perfect for food storage, keeping items fresh and organized.',
-  },
-  {
-    name: 'BelVita Breakfast Biscuits - Cinnamon Brown Sugar',
-    image: Image10,
-    link: 'https://www.costco.com/belvita-breakfast-biscuit%2C-cinnamon-brown-sugar%2C-1.76-oz%2C-30-count.product.100421656.html',
-    agegroup: '20-50',
-    description:
-      'BelVita Breakfast Biscuits in Cinnamon Brown Sugar flavor offer a nutritious, energy-boosting snack. This pack includes 30 biscuits, each 1.76 oz.',
-  },
-  {
-    name: 'Kirkland Signature All Chocolate Bag - Variety Pack',
-    image: Image11,
-    link: 'https://www.costcobusinessdelivery.com/kirkland-signature-all-chocolate-bag%2C-variety-pack.product.11174127.html',
-    agegroup: '0-20',
-    description:
-      'Kirkland Signature All Chocolate Bag offers a variety of chocolate treats in one convenient pack. Perfect for sharing or personal indulgence.',
-  },
+  }
 ];

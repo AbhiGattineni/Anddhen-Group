@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import logo from './../../images/photo-1594708767771-a7502209ff51.avif';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 
@@ -16,7 +15,7 @@ export const Aps = () => {
         <LazyLoadImage
           effect="blur"
           className="rounded"
-          src={logo}
+          src="/assets/images/photo-1594708767771-a7502209ff51.avif"
           alt="Card image cap"
           style={{ height: '50vh', width: '60vw', objectFit: 'cover' }} //change this for image height and width
         />
@@ -120,3 +119,4 @@ export const Aps = () => {
     </div>
   );
 };
+

@@ -1,9 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Service1 from '../images/portfolio.jpg';
-import Service2 from '../images/web.jpg';
-import Service3 from '../images/fullstack.png';
-import Service4 from '../images/app.jpg';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
@@ -11,22 +7,22 @@ const Services = () => {
   const services = [
     {
       Name: 'Portfolio/Business Websites',
-      Photo: Service1,
+      Photo: '/assets/images/portfolio.jpg',
       Description: 'We build portfolio websites',
     },
     {
       Name: 'Front End Web Applications',
-      Photo: Service2,
+      Photo: '/assets/images/web.jpg',
       Description: 'We build portfolio websites',
     },
     {
       Name: 'Full Stack Development',
-      Photo: Service3,
+      Photo: '/assets/images/fullstack.png',
       Description: 'We build portfolio websites',
     },
     {
       Name: 'Mobile Application Development',
-      Photo: Service4,
+      Photo: '/assets/images/app.jpg',
       Description: 'We build portfolio websites',
     },
   ];

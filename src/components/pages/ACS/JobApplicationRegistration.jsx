@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import resgistration1 from '../../images/resgistration1.png';
-import resgistration2 from '../../images/registration2.png';
 
 export const JobApplicationRegistration = () => {
   return (
@@ -14,7 +12,7 @@ export const JobApplicationRegistration = () => {
               <LazyLoadImage
                 effect="blur"
                 className="card-img-top object-fit-fill"
-                src={resgistration1}
+                src="/assets/images/resgistration1.png"
                 alt="Card image cap"
                 height="250px"
               />
@@ -34,7 +32,7 @@ export const JobApplicationRegistration = () => {
               <LazyLoadImage
                 effect="blur"
                 className="card-img-top object-fit-fill"
-                src={resgistration2}
+                src="/assets/images/registration2.png"
                 alt="Card image cap"
                 height="250px"
               />
@@ -50,3 +48,4 @@ export const JobApplicationRegistration = () => {
     </div>
   );
 };
+

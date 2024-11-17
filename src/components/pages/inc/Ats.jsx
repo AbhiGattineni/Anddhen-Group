@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Carousel, Container, Row, Col, Card } from 'react-bootstrap';
 
-import travel1 from '../../images/travel1.jpg';
-import travel2 from '../../images/travel2.jpg';
-import travel3 from '../../images/travel3.avif';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 
@@ -25,7 +22,7 @@ export const Ats = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src={travel1}
+              src="/assets/images/travel1.jpg"
               alt="First slide"
               style={{ width: '600px', height: '300px' }}
             />
@@ -36,7 +33,7 @@ export const Ats = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src={travel2}
+              src="/assets/images/travel2.jpg"
               alt="Second slide"
               style={{ width: '600px', height: '300px' }}
             />
@@ -47,7 +44,7 @@ export const Ats = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src={travel3}
+              src="/assets/images/travel3.avif"
               alt="Third slide"
               style={{ width: '600px', height: '300px' }}
             />
@@ -199,3 +196,4 @@ export const Ats = () => {
 };
 
 export default Ats;
+

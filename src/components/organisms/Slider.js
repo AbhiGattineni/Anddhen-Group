@@ -1,11 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './SliderStyles.css';
-import Slider1 from '../images/marketingupdated.png';
-import Slider2 from '../images/consulting updated.png';
-import Slider3 from '../images/software.png';
-import Slider4 from '../images/philo1.jpg';
-import Slider5 from '../images/swing.png';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const ResponsiveImage = ({ src, alt }) => (
@@ -55,7 +50,10 @@ function Slider() {
       </div>
       <div className="carousel-inner">
         <div className="carousel-item active">
-          <ResponsiveImage src={Slider1} alt="Slide 1" />
+          <ResponsiveImage
+            src="/assets/images/marketingupdated.png"
+            alt="Slide 1"
+          />
           <div className="carousel-caption d-none d-md-block ">
             <h5
               className="bg-white rounded-pill d-inline-block p-2 "
@@ -69,7 +67,10 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage src={Slider2} alt="Slide 2" />
+          <ResponsiveImage
+            src="/assets/images/consulting updated.png"
+            alt="Slide 2"
+          />
           <div className="carousel-caption d-none d-md-block text-danger">
             <h5 className="bg-white rounded-pill d-inline-block p-2">
               Anddhen Consulting Services
@@ -80,7 +81,7 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage src={Slider3} alt="Slide 3" />
+          <ResponsiveImage src="/assets/images/software.png" alt="Slide 3" />
           <div className="carousel-caption d-none d-md-block">
             <h5
               className="bg-white rounded-pill d-inline-block p-2"
@@ -94,7 +95,7 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage src={Slider4} alt="Slide 4" />
+          <ResponsiveImage src="/assets/images/philo1.jpg" alt="Slide 4" />
           <div className="carousel-caption d-none d-md-block text-danger">
             <h5 className="bg-white rounded-pill d-inline-block p-2">
               Anddhen Philanthropy Services
@@ -105,7 +106,7 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage src={Slider5} alt="Slide 5" />
+          <ResponsiveImage src="/assets/images/swing.png" alt="Slide 5" />
           <div className="carousel-caption d-none d-md-block ">
             <h5
               className="bg-white rounded-pill d-inline-block p-2  "
@@ -147,3 +148,4 @@ ResponsiveImage.propTypes = {
 };
 
 export default Slider;
+

@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Carousel, Container, Row, Col, Card } from 'react-bootstrap';
 
-import service1 from '../../images/services1.png';
-import service2 from '../../images/services2.png';
-import service3 from '../../images/services3.jpg';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 import ShoppingPage from 'src/components/generalComponents/ShoopingPage';
@@ -25,7 +22,7 @@ export const Ans = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src={service1}
+              src="/assets/images/services1.png"
               alt="First slide"
               style={{ width: '600px', height: '300px' }}
             />
@@ -36,7 +33,7 @@ export const Ans = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src={service2}
+              src="/assets/images/services2.png"
               alt="Second slide"
               style={{ width: '600px', height: '300px' }}
             />
@@ -47,7 +44,7 @@ export const Ans = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src={service3}
+              src="/assets/images/services3.png"
               alt="Third slide"
               style={{ width: '600px', height: '300px' }}
             />
