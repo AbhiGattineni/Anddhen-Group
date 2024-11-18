@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import apsdesktop from './../../images/apsdesktop.JPG';
-import apsmobile from './../../images/apsmobile.JPG';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 
@@ -18,7 +16,9 @@ export const Aps = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const logo = isMobile ? apsmobile : apsdesktop;
+  const logo = isMobile
+    ? '/assets/images/apsmobile.JPG'
+    : '/assets/images/apsdesktop.JPG';
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
