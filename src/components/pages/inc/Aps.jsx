@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import apsdesktop from './../../images/apsdesktop.JPG';
+import apsmobile from './../../images/apsmobile.JPG';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 
 export const Aps = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const logo = isMobile ? apsmobile : apsdesktop;
+
   return (
-    <div className="" style={{ height: '100%', width: '100%' }}>
+    <div style={{ height: '100%', width: '100%' }}>
       <h5 className="py-3 text-center" style={{ fontWeight: 'bold' }}>
         ANDDHEN - JAYA LAKSHMI FOUNDATION
       </h5>
@@ -17,7 +31,11 @@ export const Aps = () => {
           className="rounded"
           src="/assets/images/photo-1594708767771-a7502209ff51.avif"
           alt="Card image cap"
-          style={{ height: '50vh', width: '60vw', objectFit: 'cover' }} //change this for image height and width
+          style={{
+            height: isMobile ? '40vh' : null,
+            width: isMobile ? '80vw' : '60vw',
+            objectFit: isMobile ? 'cover' : 'contain', // Show full image on desktop
+          }}
         />
       </div>
 
