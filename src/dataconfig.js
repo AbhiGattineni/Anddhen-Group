@@ -385,8 +385,12 @@ export const adminPlates = [
     route: 'status',
   },
   {
-    child: 'Anddhen Shooping Products',
-    route: 'shooping',
+    child: 'Anddhen Shopping Products',
+    route: 'shopping',
+  },
+  {
+    child: 'Our Team',
+    route: 'ourTeam',
   },
 ];
 
