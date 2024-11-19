@@ -38,7 +38,7 @@ export const AddTeamMember = ({ open, onClose }) => {
 
   const { mutate: addTeamMember, isLoading } = useAddData(
     'teamMembers',
-    '/team_members/add/'
+    '/team_members/add/',
   );
 
   const handleChange = (e) => {

@@ -39,7 +39,7 @@ const Cards = () => {
   // Hook for deleting a team member
   const { mutate: deleteCollege } = useDeleteData(
     'teamMembers',
-    `/team_members/delete/${deleteId}/`
+    `/team_members/delete/${deleteId}/`,
   );
 
   const handleDeleteTeam = () => {
@@ -151,7 +151,7 @@ const Cards = () => {
                       <MenuItem key={option} value={option}>
                         {option.toUpperCase()}
                       </MenuItem>
-                    )
+                    ),
                   )}
                 </TextField>
               </Grid>

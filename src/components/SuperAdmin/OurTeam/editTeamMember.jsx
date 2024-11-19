@@ -40,7 +40,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
 
   const { mutate: updateTeamMember, isLoading } = useUpdateData(
     'teamMembers',
-    `/team_members/update/${member?.id}/`
+    `/team_members/update/${member?.id}/`,
   );
 
   const handleSnackbarClose = () => {
@@ -78,7 +78,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
           setSnackbar({
             open: true,
@@ -96,7 +96,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
           });
           setTimeout(
             () => setToast({ show: false, message: '', color: undefined }),
-            3000
+            3000,
           );
           setSnackbar({
             open: true,
@@ -114,7 +114,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
       });
       setTimeout(
         () => setToast({ show: false, message: '', color: undefined }),
-        3000
+        3000,
       );
       setSnackbar({
         open: true,
