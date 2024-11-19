@@ -29,10 +29,10 @@ export const Aps = () => {
         <LazyLoadImage
           effect="blur"
           className="rounded"
-          src="/assets/images/photo-1594708767771-a7502209ff51.avif"
+          src={logo}
           alt="Card image cap"
           style={{
-            height: isMobile ? '40vh' : null,
+            height: isMobile ? '40vh' : '60vh',
             width: isMobile ? '80vw' : '60vw',
             objectFit: isMobile ? 'cover' : 'contain', // Show full image on desktop
           }}
