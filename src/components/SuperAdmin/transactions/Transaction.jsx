@@ -5,6 +5,8 @@ import {
   useSortBy,
   usePagination,
   useGlobalFilter,
+  useResizeColumns,
+  useFlexLayout,
 } from 'react-table';
 import { TransactionModal } from 'src/components/organisms/Modal/TransactionModal';
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -33,24 +35,37 @@ export const Transaction = () => {
     () => [
       { Header: 'Sender', accessor: 'sender_name' },
       { Header: 'Receiver', accessor: 'receiver_name' },
-      { Header: 'Transaction ID', accessor: 'transaction_id' },
-      { Header: 'Accountant Name', accessor: 'accountant_name' },
       {
-        Header: 'Transaction Date',
+        Header: 'Acc Name',
+        Tooltip: 'Accountant Name',
+        accessor: 'accountant_name',
+      },
+      {
+        Header: 'Tr Date',
+        Tooltip: 'Transaction Date',
         accessor: 'transaction_datetime',
         Cell: ({ value }) => new Date(value).toLocaleString(),
       },
       {
-        Header: 'Uploaded Date',
+        Header: 'Up Date',
+        Tooltip: 'Uploaded Date',
         accessor: 'uploaded_datetime',
         Cell: ({ value }) => new Date(value).toLocaleString(),
       },
-      { Header: 'Credited Amount', accessor: 'credited_amount' },
-      { Header: 'Debited Amount', accessor: 'debited_amount' },
-      { Header: 'Payment Type', accessor: 'payment_type' },
+      {
+        Header: 'Cred Amt',
+        Tooltip: 'Credited Amount',
+        accessor: 'credited_amount',
+      },
+      {
+        Header: 'Deb Amt',
+        Tooltip: 'Debited Amount',
+        accessor: 'debited_amount',
+      },
+      { Header: 'Pay Type', Tooltip: 'Payment Type', accessor: 'payment_type' },
       { Header: 'Subsidiary', accessor: 'subsidiary' },
       { Header: 'Currency', accessor: 'currency' },
-      { Header: 'Description', accessor: 'description' },
+      { Header: 'Desp', Tooltip: 'Description', accessor: 'description' },
       {
         Header: 'Total',
         accessor: 'total',
@@ -70,7 +85,7 @@ export const Transaction = () => {
         total -= parseFloat(transaction.debited_amount);
       }
     }
-    return `$${total.toFixed(2)}`;
+    return `₹${total.toFixed(2)}`;
   };
 
   const total = useMemo(() => {
@@ -109,6 +124,8 @@ export const Transaction = () => {
     useGlobalFilter,
     useSortBy,
     usePagination,
+    useResizeColumns,
+    useFlexLayout,
   );
 
   const { globalFilter, pageIndex, pageSize } = state;
@@ -142,39 +159,48 @@ export const Transaction = () => {
       <div className="border border-black border-2 rounded">
         <nav className="navbar navbar-expand-lg navbar-light bg-light rounded-top">
           <div className="container-fluid">
-            <div className="d-flex flex-column flex-md-row justify-content-center align-items-center w-100">
+            <div className="d-flex flex-wrap justify-content-between align-items-center w-100 gap-3">
+              {/* Search input */}
               <input
                 type="text"
-                className="w-50 form-control"
+                className="form-control w-auto"
                 placeholder="Search..."
                 value={globalFilter || ''}
                 onChange={(e) => setGlobalFilter(e.target.value)}
               />
-              <div className="d-flex flex-column flex-md-row justify-content-center align-items-center w-100 gap-2 gap-md-0">
-                <div className="form-group mx-2">
-                  <label htmlFor="startDate">Start Date:</label>
-                  <input
-                    type="date"
-                    id="startDate"
-                    className="form-control"
-                    value={
-                      startDate ? startDate.toISOString().split('T')[0] : ''
-                    }
-                    onChange={(e) => setStartDate(new Date(e.target.value))}
-                  />
-                </div>
-                <div className="form-group mx-2">
-                  <label htmlFor="endDate">End Date:</label>
-                  <input
-                    type="date"
-                    id="endDate"
-                    className="form-control w-100"
-                    value={endDate ? endDate.toISOString().split('T')[0] : ''}
-                    onChange={(e) => setEndDate(new Date(e.target.value))}
-                  />
-                </div>
+
+              {/* Start Date */}
+              <div className="d-flex align-items-center gap-2">
+                <label htmlFor="startDate" className="mb-0">
+                  Start Date:
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  className="form-control w-auto"
+                  value={startDate ? startDate.toISOString().split('T')[0] : ''}
+                  onChange={(e) => setStartDate(new Date(e.target.value))}
+                />
+              </div>
+
+              {/* End Date */}
+              <div className="d-flex align-items-center gap-2">
+                <label htmlFor="endDate" className="mb-0">
+                  End Date:
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  className="form-control w-auto"
+                  value={endDate ? endDate.toISOString().split('T')[0] : ''}
+                  onChange={(e) => setEndDate(new Date(e.target.value))}
+                />
+              </div>
+
+              {/* Filter and Reset Buttons */}
+              <div className="d-flex gap-2">
                 <button
-                  className="btn btn-primary mx-2"
+                  className="btn btn-primary"
                   onClick={handleFilterByDate}
                 >
                   Filter by Date
@@ -183,8 +209,17 @@ export const Transaction = () => {
                   Reset
                 </button>
               </div>
+
+              {/* Total display */}
               <div>
-                <span className="nav-link fw-bold">Total: ₹{total}</span>
+                <span className="nav-link">
+                  Total:
+                  <span
+                    className={`fs-5 fw-bold ${total < 0 ? 'text-danger' : ''}`}
+                  >
+                    ₹{total}
+                  </span>
+                </span>
               </div>
             </div>
           </div>
@@ -196,18 +231,32 @@ export const Transaction = () => {
                 <tr {...headerGroup.getHeaderGroupProps()} key={index}>
                   {headerGroup.headers.map((column, index) => (
                     <th
-                      className="bg-info text-white"
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                      {...column.getHeaderProps()}
                       key={index}
+                      style={{ ...column.getHeaderProps().style }}
+                      data-bs-toggle="tooltip" // Bootstrap tooltip attribute
+                      title={column.Tooltip || column.Header} // Tooltip content
                     >
-                      {column.render('Header')}
-                      <span>
-                        {column.isSorted
-                          ? column.isSortedDesc
-                            ? ' 🔽'
-                            : ' 🔼'
-                          : ''}
-                      </span>
+                      <div className="d-flex justify-content-between align-items-center">
+                        {column.render('Header')}
+                        <span>
+                          {column.isSorted
+                            ? column.isSortedDesc
+                              ? ' 🔽'
+                              : ' 🔼'
+                            : ''}
+                        </span>
+                        <div
+                          {...column.getResizerProps()}
+                          className="resizer"
+                          style={{
+                            width: '5px',
+                            height: '100%',
+                            backgroundColor: 'transparent',
+                            cursor: 'col-resize',
+                          }}
+                        />
+                      </div>
                     </th>
                   ))}
                 </tr>

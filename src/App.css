@@ -180,3 +180,18 @@ p {
 .modal-background h2 {
   text-shadow: 3px 2px black;
 }
+
+.resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.resizer:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
