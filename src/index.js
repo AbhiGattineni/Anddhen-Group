@@ -53,7 +53,6 @@ ReactDOM.render(
           }}
         ></i>
       </a>
-
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>,
