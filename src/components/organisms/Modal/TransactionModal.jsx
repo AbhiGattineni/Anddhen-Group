@@ -6,11 +6,12 @@ import PropTypes from 'prop-types';
 
 export const TransactionModal = ({ showModal, setShowModal }) => {
   const queryClient = useQueryClient();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [formData, setFormData] = useState({
     receiver_name: '',
-    receiver_id: '',
+    // receiver_id: '',
     sender_name: '',
-    sender_id: '',
+    // sender_id: '',
     amount: '',
     transaction_datetime: '',
     transaction_type: '',
@@ -26,9 +27,9 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
   const resetForm = () => {
     setFormData({
       receiver_name: '',
-      receiver_id: '',
+      // receiver_id: '',
       sender_name: '',
-      sender_id: '',
+      // sender_id: '',
       amount: '',
       transaction_datetime: '',
       transaction_type: '',
@@ -53,7 +54,7 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
 
   const { mutate: createTransaction, isLoading } = useMutation(
     (formData) =>
-      fetch('http://127.0.0.1:8000/transactions/create/', {
+      fetch(`${API_BASE_URL}/transactions/create/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,9 +83,9 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
       currency: formData.currency,
       debited_amount: 0.0,
       description: formData.description,
-      receiver_id: formData.receiver_id,
+      // receiver_id: formData.receiver_id,
       receiver_name: formData.receiver_name,
-      sender_id: formData.sender_id,
+      // sender_id: formData.sender_id,
       sender_name: formData.sender_name,
       subsidiary: formData.subsidiary,
       transaction_datetime: formData.transaction_datetime,
@@ -150,7 +151,12 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
       className={`position-fixed top-50 start-50 translate-middle bg-white rounded shadow overflow-hidden modal-dialog-centered ${
         showModal ? 'd-block' : 'd-none'
       }`}
-      style={{ maxHeight: '90vh', maxWidth: '90vw', overflowY: 'auto' }} // Limiting modal height and width, allowing overflow
+      style={{
+        maxHeight: '90vh',
+        maxWidth: '90vw',
+        overflowY: 'auto',
+        zIndex: 105,
+      }} // Limiting modal height and width, allowing overflow
     >
       <div className="modal-content p-0 h-100">
         <div className="modal-header py-2 px-3">
@@ -181,18 +187,6 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
               />
               <InputField
                 className="col-12 col-md-6 mb-3"
-                name="receiver_id"
-                label="Receiver ID"
-                placeholder="Receiver ID"
-                type="text"
-                value={formData.receiver_id}
-                onChange={(e) => handleChange('receiver_id', e.target.value)}
-                setError={(error) => handleFieldError('receiver_id', error)}
-              />
-            </div>
-            <div className="row">
-              <InputField
-                className="col-12 col-md-6 mb-3"
                 name="sender_name"
                 label="Sender Name"
                 placeholder="Sender Name"
@@ -201,6 +195,19 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
                 onChange={(e) => handleChange('sender_name', e.target.value)}
                 setError={(error) => handleFieldError('sender_name', error)}
               />
+              {/* <InputField
+                className="col-12 col-md-6 mb-3"
+                name="receiver_id"
+                label="Receiver ID"
+                placeholder="Receiver ID"
+                type="text"
+                value={formData.receiver_id}
+                onChange={(e) => handleChange('receiver_id', e.target.value)}
+                setError={(error) => handleFieldError('receiver_id', error)}
+              /> */}
+            </div>
+            {/* <div className="row">
+              
               <InputField
                 className="col-12 col-md-6 mb-3"
                 name="sender_id"
@@ -211,7 +218,7 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
                 onChange={(e) => handleChange('sender_id', e.target.value)}
                 setError={(error) => handleFieldError('sender_id', error)}
               />
-            </div>
+            </div> */}
             <div className="row">
               <InputField
                 className="col-12 col-md-6 mb-3"
