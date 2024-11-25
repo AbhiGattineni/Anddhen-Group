@@ -385,8 +385,12 @@ export const adminPlates = [
     route: 'status',
   },
   {
-    child: 'Anddhen Shooping Products',
-    route: 'shooping',
+    child: 'Anddhen Shopping Products',
+    route: 'shopping',
+  },
+  {
+    child: 'Our Team',
+    route: 'ourTeam',
   },
 ];
 
@@ -623,6 +627,7 @@ export const Filter = [
   'diverse lynx',
   'paycor',
 ];
+
 export const collegeLinks = [
   {
     collegeName: 'Arizona State University',

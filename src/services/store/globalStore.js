@@ -19,6 +19,8 @@ const useAuthStore = create((set) => ({
     set({ selectedUpdateStatusDate: date }),
   collegesList: [],
   setcollegesList: (colleges) => set({ collegesList: colleges }),
+  teamAllDetails: null,
+  setTeamAllDetails: (team) => set({ teamAllDetails: team }),
 }));
 
 export default useAuthStore;
