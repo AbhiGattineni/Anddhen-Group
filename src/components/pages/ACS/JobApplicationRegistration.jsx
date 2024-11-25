@@ -12,7 +12,7 @@ export const JobApplicationRegistration = () => {
               <LazyLoadImage
                 effect="blur"
                 className="card-img-top object-fit-fill"
-                src="/assets/images/resgistration1.png"
+                src="/assets/images/studentPortel.jpg"
                 alt="Card image cap"
                 height="250px"
               />
@@ -32,7 +32,7 @@ export const JobApplicationRegistration = () => {
               <LazyLoadImage
                 effect="blur"
                 className="card-img-top object-fit-fill"
-                src="/assets/images/registration2.png"
+                src="/assets/images/partTimer.jpg"
                 alt="Card image cap"
                 height="250px"
               />

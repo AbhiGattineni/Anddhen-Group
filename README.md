@@ -28,17 +28,17 @@ it will open a window
 
 **Copy the link From the Window**
 
-![alt text](public/assets/images/readmeImages/image-3.png)
+![alt text](public/assets/images/readmeImages/image-3.jpg)
 
 **Create a new folder with Name Related to the Project(Ex:AnddhenGroup)**
 
-![alt text](public/assets/images/readmeImages/image-5.png)
+![alt text](public/assets/images/readmeImages/image-5.jpg)
 
 **Now open Command prompt using cmd command and press Enter**
 
 ### `cmd`
 
-![alt text](public/assets/images/readmeImages/image-6.png)
+![alt text](public/assets/images/readmeImages/image-6.jpg)
 
 it will take you to command prompt window
 
@@ -46,7 +46,7 @@ it will take you to command prompt window
 
 ### `git init`
 
-![alt text](public/assets/images/readmeImages/image-7.png)
+![alt text](public/assets/images/readmeImages/image-7.jpg)
 
 wait for the command to exacute
 
@@ -54,13 +54,13 @@ wait for the command to exacute
 
 ### `git clone <copied link from git hub>`
 
-![alt text](public/assets/images/readmeImages/image-8.png)
+![alt text](public/assets/images/readmeImages/image-8.jpg)
 
 **Enter command "code ." and press enter**
 
 ### `code .`
 
-![alt text](public/assets/images/readmeImages/image-9.png)
+![alt text](public/assets/images/readmeImages/image-9.jpg)
 
 this command will take you to vscode
 
@@ -72,7 +72,7 @@ You can open vscode directly and open the folder ""Anddhen-group" which is prese
 
 ### `.env`
 
-![alt text](public/assets/images/readmeImages/image-12.png)
+![alt text](public/assets/images/readmeImages/image-12.jpg)
 
 this file is used to maintain the credentials
 
@@ -84,7 +84,7 @@ after completing of the above steps
 
 **Open a new temrminal in vscode using this steps**
 
-![alt text](public/assets/images/readmeImages/image-11.png)
+![alt text](public/assets/images/readmeImages/image-11.jpg)
 
 **OR**
 
@@ -92,13 +92,13 @@ after completing of the above steps
 
 **open a Git bash terminal**
 
-![alt text](public/assets/images/readmeImages/image-13.png)
+![alt text](public/assets/images/readmeImages/image-13.jpg)
 
 **Enter the command npm install**
 
 ### `npm install`
 
-![alt text](public/assets/images/readmeImages/image-14.png)
+![alt text](public/assets/images/readmeImages/image-14.jpg)
 
 this command is used to install all packages required
 
@@ -110,7 +110,7 @@ after the execution of the command
 
 ### `npm start`
 
-![alt text](public/assets/images/readmeImages/image-15.png)
+![alt text](public/assets/images/readmeImages/image-15.jpg)
 
 This will Runs the app in the development mode.
 
