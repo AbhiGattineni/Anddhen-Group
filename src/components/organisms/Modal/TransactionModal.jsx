@@ -3,15 +3,19 @@ import InputField from '../InputField';
 import { auth } from 'src/services/Authentication/firebase';
 import { useMutation, useQueryClient } from 'react-query';
 import PropTypes from 'prop-types';
+import { useUpdateData } from 'src/react-query/useFetchApis';
 
-export const TransactionModal = ({ showModal, setShowModal }) => {
+export const TransactionModal = ({
+  editTransaction,
+  setEditTransaction,
+  showModal,
+  setShowModal,
+}) => {
   const queryClient = useQueryClient();
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [formData, setFormData] = useState({
     receiver_name: '',
-    // receiver_id: '',
     sender_name: '',
-    // sender_id: '',
     amount: '',
     transaction_datetime: '',
     transaction_type: '',
@@ -23,6 +27,26 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
 
   const [fieldErrors, setFieldErrors] = useState({});
   const [disableButton, setDisableButton] = useState(true);
+  useEffect(() => {
+    if (editTransaction) {
+      // Convert ISO string to the format 'YYYY-MM-DDTHH:MM'
+      const formattedDate = new Date(editTransaction.transaction_datetime)
+        .toISOString()
+        .slice(0, 16); // Remove the 'Z' and keep only 'YYYY-MM-DDTHH:MM'
+
+      setFormData({
+        receiver_name: editTransaction.receiver_name || '',
+        sender_name: editTransaction.sender_name || '',
+        amount: editTransaction.credited_amount || '',
+        transaction_datetime: formattedDate || '',
+        transaction_type: editTransaction.transaction_type || '',
+        payment_type: editTransaction.payment_type || '',
+        subsidiary: editTransaction.subsidiary || '',
+        currency: editTransaction.currency || '',
+        description: editTransaction.description || '',
+      });
+    }
+  }, [editTransaction]);
 
   const resetForm = () => {
     setFormData({
@@ -69,10 +93,43 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
       },
       onError: (error) => {
         console.error('An error occurred:', error);
-        // Handle error state or display error message
       },
     },
   );
+
+  const { mutate: updateCollege, isLoading: isUpdating } = useUpdateData(
+    'transactions',
+    `/transactions/${editTransaction?.id}/update/`,
+  );
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    try {
+      const submitData = { ...editTransaction, ...formData };
+
+      let amount = parseFloat(formData.amount).toFixed(2);
+
+      if (formData.transaction_type === 'credit') {
+        submitData.credited_amount = parseFloat(amount);
+        submitData.debited_amount = 0;
+      } else if (formData.transaction_type === 'debit') {
+        submitData.debited_amount = parseFloat(amount);
+        submitData.credited_amount = 0;
+      }
+      await updateCollege(submitData, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('transactions');
+          resetForm();
+          setEditTransaction(null);
+        },
+        onError: (error) => {
+          console.error('An error occurred:', error);
+        },
+      });
+    } catch (error) {
+      console.error('Update error:', error.message);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -107,43 +164,50 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
   };
 
   useEffect(() => {
-    const allFieldsFilled = Object.values(formData).every(
-      (value) => value !== '',
-    );
-    const hasErrors = Object.values(fieldErrors).some((error) => error);
-    setDisableButton(!allFieldsFilled || hasErrors);
+    if (formData || fieldErrors) {
+      const allFieldsFilled = Object.values(formData).every(
+        (value) => value !== '',
+      );
+      const hasErrors = Object.values(fieldErrors).some((error) => error);
+      setDisableButton(!allFieldsFilled || hasErrors);
+    }
   }, [formData, fieldErrors]);
 
   const toggleModal = useCallback(() => {
     resetForm();
     document.body.style.overflow = 'auto'; // Restore body overflow
     setShowModal(false);
+    setEditTransaction(null);
   }, [setShowModal]);
 
   useEffect(() => {
-    const handleBodyOverflow = () => {
-      document.body.style.overflow = showModal ? 'hidden' : 'auto';
-    };
+    if (showModal) {
+      const handleBodyOverflow = () => {
+        document.body.style.overflow = showModal ? 'hidden' : 'auto';
+      };
 
-    handleBodyOverflow();
+      handleBodyOverflow();
 
-    return () => {
-      document.body.style.overflow = 'auto'; // Ensure body overflow is restored when unmounting
-    };
+      return () => {
+        document.body.style.overflow = 'auto'; // Ensure body overflow is restored when unmounting
+      };
+    }
   }, [showModal]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showModal && !event.target.closest('.modal-content')) {
-        toggleModal();
-      }
-    };
+    if (showModal || toggleModal) {
+      const handleClickOutside = (event) => {
+        if (showModal && !event.target.closest('.modal-content')) {
+          toggleModal();
+        }
+      };
 
-    document.addEventListener('click', handleClickOutside);
+      document.addEventListener('click', handleClickOutside);
 
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
   }, [showModal, toggleModal]);
 
   return (
@@ -173,7 +237,7 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
           className="modal-body row px-3 py-2"
           style={{ overflowY: 'auto', maxHeight: '80vh' }}
         >
-          <form onSubmit={handleSubmit} className="w-100">
+          <form className="w-100">
             <div className="row">
               <InputField
                 className="col-12 col-md-6 mb-3"
@@ -346,13 +410,27 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
               />
             </div>
             <div className="form-group py-3 w-100 d-flex justify-content-center">
-              <button
-                type="submit"
-                className="btn btn-warning shadow px-5"
-                disabled={disableButton || isLoading}
-              >
-                {isLoading ? 'Submitting...' : 'Submit'}
-              </button>
+              {editTransaction ? (
+                // If editTransaction has data, show the Edit button
+                <button
+                  onClick={handleEdit}
+                  type="button"
+                  className="btn btn-warning shadow px-5"
+                  disabled={disableButton || isLoading}
+                >
+                  {isUpdating ? 'Updating...' : 'Update'}
+                </button>
+              ) : (
+                // If no editTransaction data, show the Submit button
+                <button
+                  onClick={handleSubmit}
+                  type="submit"
+                  className="btn btn-warning shadow px-5"
+                  disabled={disableButton || isLoading}
+                >
+                  {isLoading ? 'Submitting...' : 'Submit'}
+                </button>
+              )}
             </div>
           </form>
         </div>
@@ -362,6 +440,26 @@ export const TransactionModal = ({ showModal, setShowModal }) => {
 };
 
 TransactionModal.propTypes = {
+  editTransaction: PropTypes.shape({
+    accountant_id: PropTypes.string.isRequired,
+    accountant_name: PropTypes.string.isRequired,
+    credited_amount: PropTypes.string.isRequired,
+    currency: PropTypes.string.isRequired,
+    debited_amount: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
+    payment_type: PropTypes.string.isRequired,
+    receiver_id: PropTypes.string.isRequired,
+    receiver_name: PropTypes.string.isRequired,
+    sender_id: PropTypes.string.isRequired,
+    sender_name: PropTypes.string.isRequired,
+    subsidiary: PropTypes.string.isRequired,
+    transaction_datetime: PropTypes.string.isRequired,
+    transaction_id: PropTypes.string.isRequired,
+    transaction_type: PropTypes.string.isRequired,
+    uploaded_datetime: PropTypes.string.isRequired,
+  }).isRequired,
+  setEditTransaction: PropTypes.func.isRequired,
   showModal: PropTypes.bool.isRequired,
   setShowModal: PropTypes.func.isRequired,
 };
