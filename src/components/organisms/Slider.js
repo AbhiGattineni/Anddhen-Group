@@ -51,7 +51,7 @@ function Slider() {
       <div className="carousel-inner">
         <div className="carousel-item active">
           <ResponsiveImage
-            src="/assets/images/marketingupdated.png"
+            src="/assets/images/marketingupdated.jpg"
             alt="Slide 1"
           />
           <div className="carousel-caption d-none d-md-block ">
@@ -68,7 +68,7 @@ function Slider() {
         </div>
         <div className="carousel-item">
           <ResponsiveImage
-            src="/assets/images/consulting updated.png"
+            src="/assets/images/consultingUpdated.jpg"
             alt="Slide 2"
           />
           <div className="carousel-caption d-none d-md-block text-danger">
@@ -81,7 +81,7 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage src="/assets/images/software.png" alt="Slide 3" />
+          <ResponsiveImage src="/assets/images/software.jpg" alt="Slide 3" />
           <div className="carousel-caption d-none d-md-block">
             <h5
               className="bg-white rounded-pill d-inline-block p-2"
@@ -106,7 +106,10 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage src="/assets/images/swing.png" alt="Slide 5" />
+          <ResponsiveImage
+            src="/assets/images/tradingupdated.jpg"
+            alt="Slide 5"
+          />
           <div className="carousel-caption d-none d-md-block ">
             <h5
               className="bg-white rounded-pill d-inline-block p-2  "

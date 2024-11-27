@@ -22,7 +22,7 @@ export const Ans = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src="/assets/images/services1.png"
+              src="/assets/images/services1.jpg"
               alt="First slide"
               style={{ width: '600px', height: '300px' }}
             />
@@ -33,7 +33,7 @@ export const Ans = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src="/assets/images/services2.png"
+              src="/assets/images/services2.jpg"
               alt="Second slide"
               style={{ width: '600px', height: '300px' }}
             />
@@ -44,7 +44,7 @@ export const Ans = () => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src="/assets/images/services3.png"
+              src="/assets/images/slider1.jpg"
               alt="Third slide"
               style={{ width: '600px', height: '300px' }}
             />

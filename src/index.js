@@ -26,7 +26,6 @@ const queryClient = new QueryClient({
 ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      {/* <App /> */}
       <RouterProvider router={router} />
       <a
         href="https://wa.me/919110736115"
