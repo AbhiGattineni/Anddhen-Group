@@ -79,6 +79,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
             >
               Profile
             </a>
+            {renderVerifiedBadge(consultant.linkedin_url_verified)}
             <br />
             <div className="d-inline-flex flex-wrap gap-2 mt-2">
               <div className="border border-2 border-danger bg-danger bg-opacity-10 rounded px-2 w-0 text-center">

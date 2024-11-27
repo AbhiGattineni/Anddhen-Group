@@ -21,6 +21,9 @@ const schema = z.object({
   experience_in_india: z.string().min(1, 'Experience in India is required'),
   passport_number: z.string().min(1, 'Passport Number is required'),
   linkedin_url: z.string().url('Invalid LinkedIn URL'),
+  linkedin_url_verified: z
+    .string()
+    .min(1, 'LinkedIn URL verification is required'),
   full_name_verified: z.string().min(1, 'Full Name verification is required'),
   visa_status_verified: z
     .string()
@@ -72,6 +75,7 @@ function AddConsultantForm() {
     experience_in_us_verified: '',
     experience_in_india_verified: '',
     passport_number_verified: '',
+    linkedin_url_verified: '',
     original_resume: null,
     consulting_resume: null,
     status_consultant: {
@@ -80,7 +84,6 @@ function AddConsultantForm() {
   };
   const [formData, setFormData] = useState(initialFormData);
   const [errorMessages, setErrorMessages] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const queryClient = useQueryClient();
   const [toast, setToast] = useState({
     show: false,
@@ -163,11 +166,8 @@ function AddConsultantForm() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setErrorMessages({});
-    setIsSubmitted(false);
-
     try {
       schema.parse(formData); // Validate formData using Zod schema
-      setIsSubmitted(true);
       if (!formData['consulting_resume'] && !formData['original_resume']) {
         setErrorMessages((prev) => ({
           ...prev,
@@ -178,14 +178,6 @@ function AddConsultantForm() {
 
       // Create a FormData instance to handle file uploads and other form fields
       const submitData = new FormData();
-
-      // const statusConsultant = {
-      //   employer_id: formData.employer_id,
-      //   recruiter_id: formData.recruiter_id,
-      //   description: formData.status_consultant.description,
-      // };
-
-      // formData.status_consultant = statusConsultant;
 
       // Append each field to FormData
       Object.keys(formData).forEach((key) => {
@@ -211,14 +203,9 @@ function AddConsultantForm() {
         }
       });
 
-      submitData.forEach((value, key) => {
-        console.log(key, value);
-      });
-
       addConsultant(submitData, {
         onSuccess: () => {
           queryClient.invalidateQueries('consultant');
-          setIsSubmitted(true);
           setFormData(initialFormData);
           setToast({
             show: true,
@@ -231,7 +218,16 @@ function AddConsultantForm() {
           );
         },
         onError: (error) => {
-          console.error('An error occurred:', error);
+          console.error('An error occurred:', error.response.data);
+          if (error.response?.data) {
+            setErrorMessages((prev) => {
+              const newErrors = { ...prev };
+              Object.entries(error.response.data).forEach(([key, messages]) => {
+                newErrors[key] = messages.join(', '); // Convert array to string
+              });
+              return newErrors;
+            });
+          }
           setToast({
             show: true,
             message: 'Something went wrong!',
@@ -245,7 +241,6 @@ function AddConsultantForm() {
         },
       });
     } catch (e) {
-      console.log(formData);
       if (e instanceof z.ZodError) {
         const formattedErrors = e.errors.reduce((acc, error) => {
           acc[error.path[0]] = error.message;
@@ -259,15 +254,9 @@ function AddConsultantForm() {
       }
     }
   };
-  console.log(errorMessages);
 
   return (
     <>
-      {isSubmitted && (
-        <div className="alert alert-success" role="alert">
-          Data posted successfully!
-        </div>
-      )}
       <form
         className="border border-2 mb-3 px-3 pb-3 rounded"
         onSubmit={handleSubmit}
@@ -323,6 +312,7 @@ function AddConsultantForm() {
               className="form-control"
               id="full_name"
               name="full_name"
+              value={formData.full_name}
               onChange={handleChange}
             />
             {errorMessages.full_name && (
@@ -336,6 +326,7 @@ function AddConsultantForm() {
               className="form-control"
               id="phone_number"
               name="phone_number"
+              value={formData.phone_number}
               onChange={handleChange}
             />
             {errorMessages.phone_number && (
@@ -349,6 +340,7 @@ function AddConsultantForm() {
               className="form-control"
               id="email_id"
               name="email_id"
+              value={formData.email_id}
               onChange={handleChange}
             />
             {errorMessages.email_id && (
@@ -362,6 +354,7 @@ function AddConsultantForm() {
               className="form-control"
               id="dob"
               name="dob"
+              value={formData.dob}
               onChange={handleChange}
             />
             {errorMessages.dob && (
@@ -374,6 +367,7 @@ function AddConsultantForm() {
               className="form-control"
               id="visa_status"
               name="visa_status"
+              value={formData.visa_status}
               onChange={handleChange}
             >
               <option value="">Select Visa Status</option>
@@ -393,6 +387,7 @@ function AddConsultantForm() {
               className="form-control"
               id="visa_validity"
               name="visa_validity"
+              value={formData.visa_validity}
               onChange={handleChange}
             />
             {errorMessages.visa_validity && (
@@ -410,6 +405,7 @@ function AddConsultantForm() {
               className="form-control"
               id="btech_college"
               name="btech_college"
+              value={formData.btech_college}
               onChange={handleChange}
             />
             {errorMessages.btech_college && (
@@ -423,6 +419,7 @@ function AddConsultantForm() {
               className="form-control"
               id="btech_percentage"
               name="btech_percentage"
+              value={formData.btech_percentage}
               onChange={handleChange}
             />
             {errorMessages.btech_percentage && (
@@ -436,6 +433,7 @@ function AddConsultantForm() {
               className="form-control"
               id="btech_graduation_date"
               name="btech_graduation_date"
+              value={formData.btech_graduation_date}
               onChange={handleChange}
             />
             {errorMessages.btech_graduation_date && (
@@ -454,6 +452,7 @@ function AddConsultantForm() {
               className="form-control"
               id="masters_college"
               name="masters_college"
+              value={formData.masters_college}
               onChange={handleChange}
             />
             {errorMessages.masters_college && (
@@ -468,6 +467,7 @@ function AddConsultantForm() {
               className="form-control"
               id="masters_cgpa"
               name="masters_cgpa"
+              value={formData.masters_cgpa}
               onChange={handleChange}
             />
             {errorMessages.masters_cgpa && (
@@ -483,6 +483,7 @@ function AddConsultantForm() {
               className="form-control"
               id="masters_graduation_date"
               name="masters_graduation_date"
+              value={formData.masters_graduation_date}
               onChange={handleChange}
             />
             {errorMessages.masters_graduation_date && (
@@ -500,6 +501,7 @@ function AddConsultantForm() {
             className="form-control"
             id="technologies"
             name="technologies"
+            // value={formData.technologies}
             onChange={handleChange}
           />
           {errorMessages.technologies && (
@@ -515,6 +517,7 @@ function AddConsultantForm() {
               className="form-control"
               id="current_location"
               name="current_location"
+              value={formData.current_location}
               onChange={handleChange}
             />
             {errorMessages.current_location && (
@@ -562,6 +565,7 @@ function AddConsultantForm() {
               className="form-control"
               id="experience_in_us"
               name="experience_in_us"
+              value={formData.experience_in_us}
               onChange={handleChange}
             />
             {errorMessages.experience_in_us && (
@@ -576,6 +580,7 @@ function AddConsultantForm() {
               className="form-control"
               id="experience_in_india"
               name="experience_in_india"
+              value={formData.experience_in_india}
               onChange={handleChange}
             />
             {errorMessages.experience_in_india && (
@@ -592,6 +597,7 @@ function AddConsultantForm() {
             className="form-control"
             id="relocation_preference"
             name="relocation_preference"
+            value={formData.relocation_preference}
             onChange={handleChange}
           ></textarea>
           {errorMessages.relocation_preference && (
@@ -608,6 +614,7 @@ function AddConsultantForm() {
               className="form-control"
               id="passport_number"
               name="passport_number"
+              value={formData.passport_number}
               onChange={handleChange}
             />
             {errorMessages.passport_number && (
@@ -621,6 +628,7 @@ function AddConsultantForm() {
               className="form-control"
               id="driving_licence"
               name="driving_licence"
+              value={formData.driving_licence}
               onChange={handleChange}
             />
             {errorMessages.driving_licence && (
@@ -634,6 +642,7 @@ function AddConsultantForm() {
               className="form-control"
               id="rate_expectations"
               name="rate_expectations"
+              value={formData.rate_expectations}
               onChange={handleChange}
             />
             {errorMessages.rate_expectations && (
@@ -647,6 +656,7 @@ function AddConsultantForm() {
               className="form-control"
               id="last_4_ssn"
               name="last_4_ssn"
+              value={formData.last_4_ssn}
               onChange={handleChange}
             />
             {errorMessages.last_4_ssn && (
@@ -660,6 +670,7 @@ function AddConsultantForm() {
               className="form-control"
               id="linkedin_url"
               name="linkedin_url"
+              value={formData.linkedin_url}
               onChange={handleChange}
             />
             {errorMessages.linkedin_url && (
@@ -681,6 +692,7 @@ function AddConsultantForm() {
             className="form-control-file"
             id="original_resume"
             name="original_resume"
+            // value={formData.original_resume}
             onChange={handleChange}
             style={{
               display: 'block',
@@ -706,6 +718,7 @@ function AddConsultantForm() {
             className="form-control-file"
             id="consulting_resume"
             name="consulting_resume"
+            // value={formData.consulting_resume}
             onChange={handleChange}
             style={{
               display: 'block',
@@ -773,6 +786,15 @@ function AddConsultantForm() {
             {errorMessages.passport_number_verified && (
               <p className="text-danger">
                 {errorMessages.passport_number_verified}
+              </p>
+            )}
+          </div>
+          <div className="col-md-6 form-group mb-3">
+            <label>LinkedIn URL Verified</label>
+            {renderVerificationRadioButtons('linkedin_url_verified')}
+            {errorMessages.linkedin_url_verified && (
+              <p className="text-danger">
+                {errorMessages.linkedin_url_verified}
               </p>
             )}
           </div>

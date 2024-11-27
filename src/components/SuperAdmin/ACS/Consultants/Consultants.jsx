@@ -35,6 +35,7 @@ const Consultants = () => {
               <a
                 className={getNavLinkClass('add')}
                 onClick={() => setActiveView('add')}
+                style={{ cursor: 'pointer' }}
               >
                 <i className="bi bi-plus-circle-fill"></i> Add Consultant
               </a>
@@ -43,6 +44,7 @@ const Consultants = () => {
               <a
                 className={getNavLinkClass('view')}
                 onClick={() => setActiveView('view')}
+                style={{ cursor: 'pointer' }}
               >
                 <i className="bi bi-card-list"></i> View Consultants
               </a>
@@ -51,6 +53,7 @@ const Consultants = () => {
               <a
                 className={getNavLinkClass('employer')}
                 onClick={() => setActiveView('employer')}
+                style={{ cursor: 'pointer' }}
               >
                 <i className="bi bi-building-add"></i> Employer
               </a>
@@ -59,6 +62,7 @@ const Consultants = () => {
               <a
                 className={getNavLinkClass('recruiter')}
                 onClick={() => setActiveView('recruiter')}
+                style={{ cursor: 'pointer' }}
               >
                 <i className="bi bi-people-fill"></i> Recruiter
               </a>

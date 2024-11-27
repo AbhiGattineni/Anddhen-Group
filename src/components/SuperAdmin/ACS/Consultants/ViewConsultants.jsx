@@ -43,21 +43,28 @@ function ViewConsultants() {
     setSelectedConsultant(consultant);
     setIsModalVisible(true);
   };
-  const { mutate: deleteConsultant, isLoading: isDeleting } = useDeleteData(
+  useEffect(() => {
+    if (consultantId) {
+      deleteConsultant(null, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('consultant');
+        },
+        onError: (error) => {
+          console.error('An error occurred:', error);
+        },
+      });
+    }
+  }, [consultantId]);
+
+  const { mutate: deleteConsultant } = useDeleteData(
     'consultant',
     `/consultants/delete/${consultantId}/`,
   );
 
   const handleDeleteConsultant = (consultantId) => {
-    setConsultantId(consultantId);
-    deleteConsultant(null, {
-      onSuccess: () => {
-        queryClient.invalidateQueries('consultant');
-      },
-      onError: (error) => {
-        console.error('An error occurred:', error);
-      },
-    });
+    if (consultantId) {
+      setConsultantId(consultantId);
+    }
   };
 
   const handleClose = () => {
@@ -215,7 +222,7 @@ function ViewConsultants() {
                 key={consultant.id}
                 consultant={consultant}
                 onViewDetails={handleViewDetails}
-                isDeleting={isDeleting}
+                isDeleting={consultantId === consultant.id}
                 onDelete={handleDeleteConsultant}
               />
             ))}

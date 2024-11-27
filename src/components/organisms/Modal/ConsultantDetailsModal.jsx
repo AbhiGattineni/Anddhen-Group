@@ -584,26 +584,52 @@ function ConsultantDetailsModal({
                     No
                   </div>
                 </div>
+                <div className="col-md-6 form-group">
+                  <label>LinkedIn URL Verified:</label>
+                  <div>
+                    <input
+                      type="radio"
+                      name="linkedin_url_verified"
+                      value={true}
+                      checked={editedConsultant.linkedin_url_verified === true}
+                      disabled={!isEditable}
+                      onChange={handleEditChange}
+                    />{' '}
+                    Yes
+                    <input
+                      type="radio"
+                      name="linkedin_url_verified"
+                      value={false}
+                      checked={editedConsultant.linkedin_url_verified === false}
+                      disabled={!isEditable}
+                      onChange={handleEditChange}
+                    />{' '}
+                    No
+                  </div>
+                </div>
               </div>
               {filteredDescriptions &&
                 Object.keys(filteredDescriptions).length > 0 && (
                   <div className="mt-2">
                     <h5>Notes :</h5>
                     <ul>
-                      {Object.keys(filteredDescriptions).map(
-                        (noteId, index) => (
+                      {Object.keys(filteredDescriptions)
+                        .filter(
+                          (noteId) => filteredDescriptions[noteId].description,
+                        ) // Filter out empty descriptions
+                        .map((noteId, index) => (
                           <li key={index}>
                             <p>
                               <strong>
                                 {filteredDescriptions[noteId].date}
-                              </strong>{' '}
+                              </strong>
                               <br />
                               {filteredDescriptions[noteId].description}
                             </p>
                           </li>
-                        ),
-                      )}
+                        ))}
                     </ul>
+
                     <textarea
                       name="description"
                       value={newNote}
