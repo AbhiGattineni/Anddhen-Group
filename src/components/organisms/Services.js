@@ -7,17 +7,17 @@ const Services = () => {
   const services = [
     {
       Name: 'Portfolio/Business Websites',
-      Photo: '/assets/images/portfolio.jpg',
+      Photo: '/assets/images/BussinessWebsite.jpg',
       Description: 'We build portfolio websites',
     },
     {
       Name: 'Front End Web Applications',
-      Photo: '/assets/images/web.jpg',
+      Photo: '/assets/images/frontend.jpg',
       Description: 'We build portfolio websites',
     },
     {
       Name: 'Full Stack Development',
-      Photo: '/assets/images/fullstack.png',
+      Photo: '/assets/images/fullstack.jpg',
       Description: 'We build portfolio websites',
     },
     {

@@ -522,21 +522,21 @@ export const usStates = [
 
 export const acsCards = [
   {
-    image: '/assets/images/resgistration1.png',
+    image: '/assets/images/higherEducation.jpg',
     path: '/acs/educationconsulting',
     heading: 'Higher Education Consulting',
     description:
       'Expert guidance and consulting services for students pursuing higher studies in various fields and countries.',
   },
   {
-    image: '/assets/images/registration2.png',
+    image: '/assets/images/jobApplication.jpg',
     path: 'jobapplication',
     heading: 'Job Applications',
     description:
       'Professional assistance with job applications and part-time work placements to help you gain valuable experience.',
   },
   {
-    image: '/assets/images/registration2.png',
+    image: '/assets/images/courses.jpg',
     path: '/acs/courses',
     heading: 'Courses',
     description:
