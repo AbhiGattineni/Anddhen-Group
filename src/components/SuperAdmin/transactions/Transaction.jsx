@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import {
   useTable,
   useSortBy,
@@ -9,6 +9,9 @@ import {
   useFlexLayout,
 } from 'react-table';
 import { TransactionModal } from 'src/components/organisms/Modal/TransactionModal';
+import PropTypes from 'prop-types';
+import { useDeleteData } from 'src/react-query/useFetchApis';
+import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const Transaction = () => {
@@ -16,6 +19,10 @@ export const Transaction = () => {
   const [endDate, setEndDate] = useState(null);
   const [filteredTransactions, setFilteredTransactions] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const queryClient = useQueryClient();
+  const [deleteTransactionId, setDeleteTransactionId] = useState(null);
+  const [editTransaction, setEditTransaction] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const fetchTransactions = async () => {
@@ -30,6 +37,39 @@ export const Transaction = () => {
     data: transactions = [], // Provide a default value of an empty array
     isLoading,
   } = useQuery('transactions', fetchTransactions);
+
+  const handleEdit = (transaction) => {
+    if (transaction) {
+      setEditTransaction(transaction);
+      setShowModal(true);
+    }
+  };
+
+  const { mutate: deleteTransaction, isLoading: isDeleting } = useDeleteData(
+    'transactions',
+    `/transactions/${deleteTransactionId}/delete/`,
+  );
+
+  const handleDeleteTransation = (e) => {
+    e.preventDefault();
+    deleteTransaction(null, {
+      onSuccess: () => {
+        setShowConfirmation(false);
+        queryClient.invalidateQueries('transactions');
+        setDeleteTransactionId(null);
+      },
+      onError: (error) => {
+        console.error('An error occurred:', error);
+      },
+    });
+  };
+
+  const handleDelete = (transactionId) => {
+    if (transactionId) {
+      setShowConfirmation(true);
+      setDeleteTransactionId(transactionId);
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -56,11 +96,13 @@ export const Transaction = () => {
         Header: 'Cred Amt',
         Tooltip: 'Credited Amount',
         accessor: 'credited_amount',
+        Cell: ({ value }) => `₹ ${parseFloat(value).toFixed(2)}`,
       },
       {
         Header: 'Deb Amt',
         Tooltip: 'Debited Amount',
         accessor: 'debited_amount',
+        Cell: ({ value }) => `₹ ${parseFloat(value).toFixed(2)}`,
       },
       { Header: 'Pay Type', Tooltip: 'Payment Type', accessor: 'payment_type' },
       { Header: 'Subsidiary', accessor: 'subsidiary' },
@@ -71,8 +113,30 @@ export const Transaction = () => {
         accessor: 'total',
         Cell: ({ row }) => calculateRunningTotal(row.index),
       },
+      {
+        Header: 'Actions',
+        accessor: 'actions',
+        Cell: ({ row }) => (
+          <div className="d-flex justify-content-center gap-2">
+            {/* Edit Button */}
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => handleEdit(row.original)}
+            >
+              Edit
+            </button>
+            {/* Delete Button */}
+            <button
+              className="btn btn-sm btn-danger"
+              onClick={() => handleDelete(row.original.id)}
+            >
+              Delete
+            </button>
+          </div>
+        ),
+      },
     ],
-    [transactions],
+    [],
   );
 
   const calculateRunningTotal = (index) => {
@@ -85,7 +149,7 @@ export const Transaction = () => {
         total -= parseFloat(transaction.debited_amount);
       }
     }
-    return `₹${total.toFixed(2)}`;
+    return `₹ ${total.toFixed(2)}`;
   };
 
   const total = useMemo(() => {
@@ -213,11 +277,11 @@ export const Transaction = () => {
               {/* Total display */}
               <div>
                 <span className="nav-link">
-                  Total:
+                  Total :
                   <span
-                    className={`fs-5 fw-bold ${total < 0 ? 'text-danger' : ''}`}
+                    className={`fs-5 px-1 fw-bold ${total < 0 ? 'text-danger' : ''}`}
                   >
-                    ₹{total}
+                    ₹ {total}
                   </span>
                 </span>
               </div>
@@ -228,16 +292,23 @@ export const Transaction = () => {
           <table {...getTableProps()} className="table table-hover m-0">
             <thead className="thead-dark">
               {headerGroups.map((headerGroup, index) => (
-                <tr {...headerGroup.getHeaderGroupProps()} key={index}>
+                <tr
+                  className="text-center"
+                  {...headerGroup.getHeaderGroupProps()}
+                  key={index}
+                >
                   {headerGroup.headers.map((column, index) => (
                     <th
                       {...column.getHeaderProps()}
                       key={index}
                       style={{ ...column.getHeaderProps().style }}
-                      data-bs-toggle="tooltip" // Bootstrap tooltip attribute
-                      title={column.Tooltip || column.Header} // Tooltip content
+                      data-bs-toggle="tooltip"
+                      title={column.Tooltip || column.Header}
                     >
-                      <div className="d-flex justify-content-between align-items-center">
+                      <div
+                        className="d-flex flex-column justify-content-center align-items-center"
+                        style={{ textAlign: 'center' }}
+                      >
                         {column.render('Header')}
                         <span>
                           {column.isSorted
@@ -266,37 +337,48 @@ export const Transaction = () => {
               <p className="p-3 fw-bold">loading...</p>
             ) : (
               <tbody {...getTableBodyProps()}>
-                {page.map((row, index) => {
-                  prepareRow(row);
-                  return (
-                    <tr {...row.getRowProps()} key={index}>
-                      {row.cells.map((cell, index) => {
-                        const columnId = cell.column.id;
-                        const isTransactionType =
-                          columnId === 'transaction_type';
-                        const isTotal = columnId === 'total';
-                        const className = isTransactionType
-                          ? row.original.transaction_type === 'credit'
-                            ? 'bg-success text-white'
-                            : 'bg-danger text-white'
-                          : isTotal
+                {page.length === 0 ? ( // Check if there are no rows
+                  <tr>
+                    <td
+                      colSpan={headerGroups[0].headers.length}
+                      className="text-center p-3"
+                    >
+                      No transactions available
+                    </td>
+                  </tr>
+                ) : (
+                  page.map((row, index) => {
+                    prepareRow(row);
+                    return (
+                      <tr {...row.getRowProps()} key={index}>
+                        {row.cells.map((cell, index) => {
+                          const columnId = cell.column.id;
+                          const isTransactionType =
+                            columnId === 'transaction_type';
+                          const isTotal = columnId === 'total';
+                          const className = isTransactionType
                             ? row.original.transaction_type === 'credit'
-                              ? 'text-success fw-bold'
-                              : 'text-danger fw-bold'
-                            : '';
-                        return (
-                          <td {...cell.getCellProps()} key={index}>
-                            <div
-                              className={`${className} text-center p-1 rounded-pill`}
-                            >
-                              {cell.render('Cell')}
-                            </div>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
+                              ? 'bg-success text-white'
+                              : 'bg-danger text-white'
+                            : isTotal
+                              ? row.original.transaction_type === 'credit'
+                                ? 'text-success fw-bold'
+                                : 'text-danger fw-bold'
+                              : '';
+                          return (
+                            <td {...cell.getCellProps()} key={index}>
+                              <div
+                                className={`${className} text-center p-1 rounded-pill`}
+                              >
+                                {cell.render('Cell')}
+                              </div>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             )}
           </table>
@@ -353,7 +435,29 @@ export const Transaction = () => {
           </div>
         </div>
       </div>
-      <TransactionModal showModal={showModal} setShowModal={setShowModal} />
+      <TransactionModal
+        editTransaction={editTransaction}
+        setEditTransaction={setEditTransaction}
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
+      <ConfirmationDialog
+        title="Confirmation"
+        show={showConfirmation}
+        isLoading={isDeleting}
+        message="Are you sure you want to delete transaction?"
+        onConfirm={handleDeleteTransation}
+        onCancel={() => setShowConfirmation(false)}
+      />
     </div>
   );
+};
+Transaction.propTypes = {
+  row: PropTypes.shape({
+    original: PropTypes.shape({
+      id: PropTypes.number.isRequired, // or `.string` based on your data type
+      transaction_type: PropTypes.string,
+      total: PropTypes.number,
+    }).isRequired,
+  }).isRequired,
 };
