@@ -216,6 +216,9 @@ function AddConsultantForm() {
             () => setToast({ show: false, message: '', color: undefined }),
             3000,
           );
+          document.getElementById('original_resume').value = '';
+          document.getElementById('consulting_resume').value = '';
+          document.getElementById('technologies').value = '';
         },
         onError: (error) => {
           console.error('An error occurred:', error.response.data);
@@ -692,7 +695,6 @@ function AddConsultantForm() {
             className="form-control-file"
             id="original_resume"
             name="original_resume"
-            // value={formData.original_resume}
             onChange={handleChange}
             style={{
               display: 'block',
@@ -718,7 +720,6 @@ function AddConsultantForm() {
             className="form-control-file"
             id="consulting_resume"
             name="consulting_resume"
-            // value={formData.consulting_resume}
             onChange={handleChange}
             style={{
               display: 'block',
