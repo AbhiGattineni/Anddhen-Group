@@ -30,9 +30,13 @@ export const EmployeeDashboard = () => {
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole.split(',');
-  const filteredPlates = adminPlates.filter((plate) =>
-    current_roles.includes(plate.route),
-  );
+  const filteredPlates = current_roles.some(
+    (role) => role.trim() === 'superadmin',
+  )
+    ? adminPlates
+    : adminPlates.filter((plate) =>
+        current_roles.some((role) => role.trim() === plate.route.trim()),
+      );
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -176,7 +180,7 @@ export const EmployeeDashboard = () => {
   return (
     <div className="container">
       <div className="my-3">
-        <AssignCards adminPlates={filteredPlates} />
+        {/* <AssignCards adminPlates={filteredPlates} /> */}
         <form className="form">
           <h2>Status Update Form</h2>
           <div className="row">
@@ -251,7 +255,7 @@ export const EmployeeDashboard = () => {
           </div>
         </form>
       </div>
-      <AssignCards adminPlates={adminPlates} />
+      <AssignCards adminPlates={filteredPlates} />
     </div>
   );
 };
