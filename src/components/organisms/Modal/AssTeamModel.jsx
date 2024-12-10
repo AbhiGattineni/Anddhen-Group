@@ -44,6 +44,7 @@ export const AssTeamModal = () => {
 
   return (
     <div
+      style={{ zIndex: 100 }}
       className={`position-fixed top-50 start-50 translate-middle bg-white rounded shadow overflow-hidden modal-dialog-centered ${
         showModal ? 'd-block' : 'd-none'
       } ass-team-modal`}
