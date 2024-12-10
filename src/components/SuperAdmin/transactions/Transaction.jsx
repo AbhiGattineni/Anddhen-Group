@@ -136,7 +136,7 @@ export const Transaction = () => {
         ),
       },
     ],
-    [],
+    [transactions],
   );
 
   const calculateRunningTotal = (index) => {
@@ -146,6 +146,7 @@ export const Transaction = () => {
       if (transaction && transaction.transaction_type === 'credit') {
         total += parseFloat(transaction.credited_amount);
       } else if (transaction && transaction.transaction_type === 'debit') {
+        console.log(transaction);
         total -= parseFloat(transaction.debited_amount);
       }
     }
