@@ -43,21 +43,28 @@ function ViewConsultants() {
     setSelectedConsultant(consultant);
     setIsModalVisible(true);
   };
-  const { mutate: deleteConsultant, isLoading: isDeleting } = useDeleteData(
+  useEffect(() => {
+    if (consultantId) {
+      deleteConsultant(null, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('consultant');
+        },
+        onError: (error) => {
+          console.error('An error occurred:', error);
+        },
+      });
+    }
+  }, [consultantId]);
+
+  const { mutate: deleteConsultant } = useDeleteData(
     'consultant',
     `/consultants/delete/${consultantId}/`,
   );
 
   const handleDeleteConsultant = (consultantId) => {
-    setConsultantId(consultantId);
-    deleteConsultant(null, {
-      onSuccess: () => {
-        queryClient.invalidateQueries('consultant');
-      },
-      onError: (error) => {
-        console.error('An error occurred:', error);
-      },
-    });
+    if (consultantId) {
+      setConsultantId(consultantId);
+    }
   };
 
   const handleClose = () => {
@@ -202,23 +209,46 @@ function ViewConsultants() {
         </div>
       ) : (
         <div className="row">
-          {consultants
-            .filter(
+          {consultants.length === 0 ? (
+            <div className="col-12 text-center">
+              <p className="fw-semibold">No consultants available.</p>
+            </div>
+          ) : (
+            consultants
+              .filter(
+                (consultant) =>
+                  consultant.full_name
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) &&
+                  applyFilters(consultant),
+              )
+              .map((consultant) => (
+                <ConsultantCard
+                  key={consultant.id}
+                  consultant={consultant}
+                  onViewDetails={handleViewDetails}
+                  isDeleting={consultantId === consultant.id}
+                  onDelete={handleDeleteConsultant}
+                />
+              ))
+          )}
+
+          {/* Show a message if no consultants match the filters */}
+          {consultants.length > 0 &&
+            consultants.filter(
               (consultant) =>
                 consultant.full_name
                   .toLowerCase()
                   .includes(searchTerm.toLowerCase()) &&
                 applyFilters(consultant),
-            )
-            .map((consultant) => (
-              <ConsultantCard
-                key={consultant.id}
-                consultant={consultant}
-                onViewDetails={handleViewDetails}
-                isDeleting={isDeleting}
-                onDelete={handleDeleteConsultant}
-              />
-            ))}
+            ).length === 0 && (
+              <div className="col-12 text-center">
+                <p className="fw-semibold">
+                  No consultants match your search or filters.
+                </p>
+              </div>
+            )}
+
           <ConsultantDetailsModal
             show={isModalVisible}
             onHide={handleClose}
