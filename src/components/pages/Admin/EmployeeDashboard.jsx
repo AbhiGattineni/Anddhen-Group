@@ -180,7 +180,6 @@ export const EmployeeDashboard = () => {
   return (
     <div className="container">
       <div className="my-3">
-        {/* <AssignCards adminPlates={filteredPlates} /> */}
         <form className="form">
           <h2>Status Update Form</h2>
           <div className="row">
