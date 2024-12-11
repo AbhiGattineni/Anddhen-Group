@@ -20,6 +20,8 @@ export const EmployeeDashboard = () => {
   const [showEdit, setShowEdit] = useState(false);
   const queryClient = useQueryClient();
   const { statusMutation, updateMutation } = useStatusUpdateMutation();
+  const [search, setSearch] = useState('');
+  const [searchedPlates, setSearchedPlates] = useState(adminPlates);
 
   // const userId = auth.currentUser ? auth.currentUser.uid : null;
   const { data } = useStatusCalendar(auth.currentUser?.uid);
@@ -37,6 +39,24 @@ export const EmployeeDashboard = () => {
     : adminPlates.filter((plate) =>
         current_roles.some((role) => role.trim() === plate.route.trim()),
       );
+
+  useEffect(() => {
+    if (searchedPlates != filteredPlates) {
+      setSearchedPlates(filteredPlates);
+    }
+  }, []);
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearch(query);
+    setSearchedPlates(
+      filteredPlates.filter(
+        (plate) =>
+          plate.child.toLowerCase().includes(query) ||
+          plate.route.toLowerCase().includes(query),
+      ),
+    );
+  };
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -254,7 +274,16 @@ export const EmployeeDashboard = () => {
           </div>
         </form>
       </div>
-      <AssignCards adminPlates={filteredPlates} />
+      <div className="input-group px-5 mt-4">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search cards..."
+          value={search}
+          onChange={handleSearch}
+        />
+      </div>
+      <AssignCards adminPlates={searchedPlates} />
     </div>
   );
 };
