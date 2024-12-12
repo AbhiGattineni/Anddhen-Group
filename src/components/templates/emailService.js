@@ -19,9 +19,6 @@ export const sendEmail = (application, data) => {
         },
         process.env.REACT_APP_EMAIL_USER_ID,
       )
-      .then((response) => {
-        console.log('Email sent to:', emailJs_email);
-      })
       .catch((error) => {
         console.error('Email send error:', error);
       });
