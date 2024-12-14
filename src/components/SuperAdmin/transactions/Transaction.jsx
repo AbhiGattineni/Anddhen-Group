@@ -146,7 +146,6 @@ export const Transaction = () => {
       if (transaction && transaction.transaction_type === 'credit') {
         total += parseFloat(transaction.credited_amount);
       } else if (transaction && transaction.transaction_type === 'debit') {
-        console.log(transaction);
         total -= parseFloat(transaction.debited_amount);
       }
     }
@@ -354,16 +353,16 @@ export const Transaction = () => {
                       <tr {...row.getRowProps()} key={index}>
                         {row.cells.map((cell, index) => {
                           const columnId = cell.column.id;
-                          const isTransactionType =
-                            columnId === 'transaction_type';
-                          const isTotal = columnId === 'total';
-                          const className = isTransactionType
+                          console.log(columnId);
+                          const isDebited = columnId === 'credited_amount';
+                          const isCredited = columnId === 'debited_amount';
+                          const className = isDebited
                             ? row.original.transaction_type === 'credit'
-                              ? 'bg-success text-white'
-                              : 'bg-danger text-white'
-                            : isTotal
+                              ? 'text-success  fw-bold'
+                              : ''
+                            : isCredited
                               ? row.original.transaction_type === 'credit'
-                                ? 'text-success fw-bold'
+                                ? ''
                                 : 'text-danger fw-bold'
                               : '';
                           return (
