@@ -5,22 +5,114 @@ import { useFetchData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
 import { z } from 'zod';
 
+const calculateAge = (dob) => {
+  const birthDate = new Date(dob);
+  const age = new Date().getFullYear() - birthDate.getFullYear();
+  const monthDifference = new Date().getMonth() - birthDate.getMonth();
+  return monthDifference < 0 ||
+    (monthDifference === 0 && new Date().getDate() < birthDate.getDate())
+    ? age - 1
+    : age;
+};
+
 const schema = z.object({
   employer_id: z.string().min(1, 'Employer is required'),
   recruiter_id: z.string().min(1, 'Recruiter is required'),
-  full_name: z.string().min(1, 'Full Name is required'),
-  phone_number: z.string().min(1, 'Phone Number is required'),
-  email_id: z.string().email('Invalid email').min(1, 'Email ID is required'),
-  dob: z.string().min(1, 'Date of Birth is required'),
+  full_name: z
+    .string()
+    .min(3, 'Full Name must be at least 3 characters long')
+    .min(1, 'Full Name is required'),
+
+  phone_number: z
+    .string()
+    .length(10, 'Phone Number must be exactly 10 characters')
+    .min(1, 'Phone Number is required'),
+
+  email_id: z
+    .string()
+    .email('Invalid email address')
+    .min(1, 'Email ID is required'),
+
+  dob: z
+    .string()
+    .min(1, 'Date of Birth is required')
+    .refine(
+      (dob) => calculateAge(dob) >= 18,
+      'DOB must be at least 18 years old',
+    ),
+  btech_graduation_date: z
+    .string()
+    .optional()
+    .refine((date) => {
+      if (date) {
+        const graduationDate = new Date(date);
+        const currentDate = new Date();
+        return graduationDate <= currentDate;
+      }
+      return true; // If no date is provided, it's valid
+    }, 'Graduation date cannot be in the future'),
+  masters_graduation_date: z
+    .string()
+    .optional()
+    .refine((date) => {
+      if (date) {
+        const graduationDate = new Date(date);
+        const currentDate = new Date();
+        return graduationDate <= currentDate;
+      }
+      return true; // If no date is provided, it's valid
+    }, 'Graduation date cannot be in the future'),
   visa_status: z.string().min(1, 'Visa Status is required'),
   visa_validity: z.string().min(1, 'Visa Validity is required'),
   technologies: z.string().min(1, 'Technologies are required'),
   current_location: z.string().min(1, 'Current Location is required'),
-  relocation: z.boolean(),
-  experience_in_us: z.string().min(1, 'Experience in US is required'),
-  experience_in_india: z.string().min(1, 'Experience in India is required'),
-  passport_number: z.string().min(1, 'Passport Number is required'),
-  linkedin_url: z.string().url('Invalid LinkedIn URL'),
+  relocation: z.string().min(1, 'Relocation is required'),
+  experience_in_us: z
+    .string()
+    .min(1, 'Experience in US is required')
+    .refine(
+      (value) => !isNaN(Number(value)),
+      'Experience in US must be a number',
+    ),
+  experience_in_india: z
+    .string()
+    .min(1, 'Experience in India is required')
+    .refine(
+      (value) => !isNaN(Number(value)),
+      'Experience in India must be a number',
+    ),
+  passport_number: z
+    .string()
+    .min(1, 'Passport Number is required')
+    .length(8, 'Passport Number must be exactly 8 characters')
+    .max(15, 'Passport Number must be no more than 15 characters')
+    .regex(
+      /^[A-Za-z0-9]+$/,
+      'Passport Number must contain only alphanumeric characters',
+    ),
+
+  linkedin_url: z
+    .string()
+    .url('Invalid LinkedIn URL')
+    .min(1, 'LinkedIn URL is required')
+    .refine(
+      (value) => value.startsWith('https://www.linkedin.com/'),
+      'LinkedIn URL must start with https://www.linkedin.com/',
+    ),
+  driving_licence: z
+    .string()
+    .min(1, 'Driving Licence is required')
+    .length(6, 'Driving Licence number must be at least 6 characters')
+    .max(16, 'Driving Licence number must be no more than 16 characters')
+    .regex(
+      /^[A-Za-z0-9-]+$/,
+      'Driving Licence must contain only alphanumeric characters and dashes',
+    ),
+  last_4_ssn: z
+    .string()
+    .length(4, 'SSN Last 4 digits must be exactly 4 digits')
+    .regex(/^\d{4}$/, 'SSN Last 4 digits must be a 4-digit number')
+    .min(1, 'SSN Last 4 digits are required'),
   linkedin_url_verified: z
     .string()
     .min(1, 'LinkedIn URL verification is required'),
@@ -60,7 +152,7 @@ function AddConsultantForm() {
     masters_graduation_date: '',
     technologies: '',
     current_location: '',
-    relocation: null,
+    relocation: '',
     experience_in_us: '',
     experience_in_india: '',
     relocation_preference: '',
@@ -174,6 +266,7 @@ function AddConsultantForm() {
           resume:
             'At least one resume (Original or Consulting) must be uploaded',
         }));
+        return;
       }
 
       // Create a FormData instance to handle file uploads and other form fields
@@ -197,8 +290,8 @@ function AddConsultantForm() {
               ...formData.status_consultant, // Merges the dynamic fields from formData.status_consultant
             }),
           );
-        } else {
-          // Append other form data as strings
+        } else if (formData[key] !== null && formData[key] !== undefined) {
+          // submitData.append(key, formData[key]);
           submitData.append(key, String(formData[key]));
         }
       });
@@ -216,8 +309,8 @@ function AddConsultantForm() {
             () => setToast({ show: false, message: '', color: undefined }),
             3000,
           );
-          document.getElementById('original_resume').value = '';
-          document.getElementById('consulting_resume').value = '';
+          document.getElementById('original_resume').value = null;
+          document.getElementById('consulting_resume').value = null;
           document.getElementById('technologies').value = '';
         },
         onError: (error) => {
@@ -261,6 +354,7 @@ function AddConsultantForm() {
   return (
     <>
       <form
+        encType="multipart/form-data"
         className="border border-2 mb-3 px-3 pb-3 rounded"
         onSubmit={handleSubmit}
       >

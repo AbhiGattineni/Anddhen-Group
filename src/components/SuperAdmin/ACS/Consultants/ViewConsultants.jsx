@@ -214,41 +214,35 @@ function ViewConsultants() {
               <p className="fw-semibold">No consultants available.</p>
             </div>
           ) : (
-            consultants
-              .filter(
+            (() => {
+              const filteredConsultants = consultants.filter(
                 (consultant) =>
                   consultant.full_name
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) &&
                   applyFilters(consultant),
-              )
-              .map((consultant) => (
-                <ConsultantCard
-                  key={consultant.id}
-                  consultant={consultant}
-                  onViewDetails={handleViewDetails}
-                  isDeleting={consultantId === consultant.id}
-                  onDelete={handleDeleteConsultant}
-                />
-              ))
+              );
+
+              return filteredConsultants.length > 0 ? (
+                filteredConsultants.map((consultant) => (
+                  <div key={consultant.id} className="col-12 col-sm-6 col-md-4">
+                    <ConsultantCard
+                      consultant={consultant}
+                      onViewDetails={handleViewDetails}
+                      isDeleting={consultantId === consultant.id}
+                      onDelete={handleDeleteConsultant}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="col-12 text-center">
+                  <p className="fw-semibold">
+                    No consultants match your search or filters.
+                  </p>
+                </div>
+              );
+            })()
           )}
-
-          {/* Show a message if no consultants match the filters */}
-          {consultants.length > 0 &&
-            consultants.filter(
-              (consultant) =>
-                consultant.full_name
-                  .toLowerCase()
-                  .includes(searchTerm.toLowerCase()) &&
-                applyFilters(consultant),
-            ).length === 0 && (
-              <div className="col-12 text-center">
-                <p className="fw-semibold">
-                  No consultants match your search or filters.
-                </p>
-              </div>
-            )}
-
           <ConsultantDetailsModal
             show={isModalVisible}
             onHide={handleClose}

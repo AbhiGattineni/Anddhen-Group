@@ -38,7 +38,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
   };
 
   return (
-    <div className="col-md-4 mb-3">
+    <div className="mb-3">
       <div className="card h-100 position-relative">
         <div className="position-absolute top-0 end-0 m-2">
           <button className="btn btn-danger btn-sm" onClick={handleDeleteClick}>
@@ -82,38 +82,42 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
             {renderVerifiedBadge(consultant.linkedin_url_verified)}
             <br />
             <div className="d-inline-flex flex-wrap gap-2 mt-2">
-              <div className="border border-2 border-danger bg-danger bg-opacity-10 rounded px-2 w-0 text-center">
-                <a
-                  className="fs-1 text-danger text-decoration-none"
-                  href={`${API_BASE_URL}${consultant.original_resume}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="bi bi-filetype-pdf"></i>
-                  <p
-                    className="m-0"
-                    style={{ fontSize: '10px', fontWeight: 'bold' }}
+              {consultant.original_resume && (
+                <div className="border border-2 border-danger bg-danger bg-opacity-10 rounded px-2 w-0 text-center">
+                  <a
+                    className="fs-1 text-danger text-decoration-none"
+                    href={`${API_BASE_URL}${consultant.original_resume}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    original_resume
-                  </p>
-                </a>
-              </div>
-              <div className="border border-2 border-danger bg-danger bg-opacity-10 rounded px-2 w-0 text-center">
-                <a
-                  className="fs-1 text-danger text-decoration-none"
-                  href={`${API_BASE_URL}${consultant.consulting_resume}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <i className="bi bi-filetype-pdf"></i>
-                  <p
-                    className="m-0"
-                    style={{ fontSize: '10px', fontWeight: 'bold' }}
+                    <i className="bi bi-filetype-pdf"></i>
+                    <p
+                      className="m-0"
+                      style={{ fontSize: '10px', fontWeight: 'bold' }}
+                    >
+                      original_resume
+                    </p>
+                  </a>
+                </div>
+              )}
+              {consultant.consulting_resume && (
+                <div className="border border-2 border-danger bg-danger bg-opacity-10 rounded px-2 w-0 text-center">
+                  <a
+                    className="fs-1 text-danger text-decoration-none"
+                    href={`${API_BASE_URL}${consultant.consulting_resume}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    consulting_resume
-                  </p>
-                </a>
-              </div>
+                    <i className="bi bi-filetype-pdf"></i>
+                    <p
+                      className="m-0"
+                      style={{ fontSize: '10px', fontWeight: 'bold' }}
+                    >
+                      consulting_resume
+                    </p>
+                  </a>
+                </div>
+              )}
             </div>
           </p>
         </div>
