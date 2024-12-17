@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { useAuth } from 'src/hooks/useAuth';
 
 function Navbar(props) {
+  console.log(props.logout);
   const [navbarOpen, setNavbarOpen] = useState(false);
   const { user } = useAuth();
 
@@ -15,7 +16,9 @@ function Navbar(props) {
       .then(() => {
         setNewUser(false);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error(error);
+      });
     setNavbarOpen(false);
   };
 
@@ -44,9 +47,7 @@ function Navbar(props) {
                   <span className="navbar-toggler-icon nav-link-highlight"></span>
                 </button>
                 <div
-                  className={`collapse navbar-collapse ${
-                    navbarOpen ? 'show' : ''
-                  }`}
+                  className={`collapse navbar-collapse ${navbarOpen ? 'show' : ''}`}
                   id="navbarSupportedContent"
                 >
                   <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -188,7 +189,7 @@ function Navbar(props) {
                         Contact
                       </Link>
                     </li>
-                    {user ? (
+                    {user && props.logout ? (
                       <li className="nav-item d-flex justify-content-center align-items-center">
                         <button
                           onClick={handleLogout}

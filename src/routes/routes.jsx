@@ -32,7 +32,7 @@ import Ans from 'src/components/pages/inc/Ans';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: <Layout logout={false} />,
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Home /> },
