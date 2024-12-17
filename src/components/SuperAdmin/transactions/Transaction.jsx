@@ -353,7 +353,6 @@ export const Transaction = () => {
                       <tr {...row.getRowProps()} key={index}>
                         {row.cells.map((cell, index) => {
                           const columnId = cell.column.id;
-                          console.log(columnId);
                           const isDebited = columnId === 'credited_amount';
                           const isCredited = columnId === 'debited_amount';
                           const className = isDebited
