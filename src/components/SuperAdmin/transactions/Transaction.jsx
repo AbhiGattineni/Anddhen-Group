@@ -136,7 +136,7 @@ export const Transaction = () => {
         ),
       },
     ],
-    [],
+    [transactions],
   );
 
   const calculateRunningTotal = (index) => {
@@ -353,16 +353,15 @@ export const Transaction = () => {
                       <tr {...row.getRowProps()} key={index}>
                         {row.cells.map((cell, index) => {
                           const columnId = cell.column.id;
-                          const isTransactionType =
-                            columnId === 'transaction_type';
-                          const isTotal = columnId === 'total';
-                          const className = isTransactionType
+                          const isDebited = columnId === 'credited_amount';
+                          const isCredited = columnId === 'debited_amount';
+                          const className = isDebited
                             ? row.original.transaction_type === 'credit'
-                              ? 'bg-success text-white'
-                              : 'bg-danger text-white'
-                            : isTotal
+                              ? 'text-success  fw-bold'
+                              : ''
+                            : isCredited
                               ? row.original.transaction_type === 'credit'
-                                ? 'text-success fw-bold'
+                                ? ''
                                 : 'text-danger fw-bold'
                               : '';
                           return (

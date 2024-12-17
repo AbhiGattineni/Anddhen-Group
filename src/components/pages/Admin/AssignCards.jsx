@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const AssignCards = ({ adminPlates }) => {
   return (
-    <div className="row">
+    <div className="row mx-3">
       {adminPlates.map((data, index) => (
         <div className="col-md-6 my-3" key={index}>
           <Link to={data.route} className="text-decoration-none">
