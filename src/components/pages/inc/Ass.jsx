@@ -1,9 +1,10 @@
 import React from 'react';
 import Services from '../../organisms/Services';
-import Myworks from '../../organisms/Myworks';
 import Cards from '../../organisms/Cards';
 import { AssProjectModal } from 'src/components/organisms/Modal/AssProjectModal';
 import { AssTeamModal } from 'src/components/organisms/Modal/AssTeamModel';
+import ImageSlider from 'src/components/organisms/ImageSlider/ImageSlider';
+import { myworks } from 'src/dataconfig';
 
 export const Ass = () => {
   return (
@@ -28,10 +29,13 @@ export const Ass = () => {
           <h3 className="main-heading">Our Works</h3>
           <div className="underline mx-auto"></div>
         </div>
-        <Myworks title="Portfolio or Business Applications" />
-        <Myworks title="Full Stack Applications" />
-        <Myworks title="Mobile Applications" />
-        <Myworks title="Web and Wordpress Applications" />
+        <ImageSlider
+          title="Portfolio or Business Applications"
+          cards={myworks}
+        />
+        <ImageSlider title="Full Stack Applications" cards={myworks} />
+        <ImageSlider title="Mobile Applications" cards={myworks} />
+        <ImageSlider title="Web and Wordpress Applications" cards={myworks} />
         <Cards />
       </div>
       <AssProjectModal />
