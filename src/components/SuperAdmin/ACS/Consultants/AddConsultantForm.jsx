@@ -5,22 +5,120 @@ import { useFetchData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
 import { z } from 'zod';
 
+const calculateAge = (dob) => {
+  const birthDate = new Date(dob);
+  const age = new Date().getFullYear() - birthDate.getFullYear();
+  const monthDifference = new Date().getMonth() - birthDate.getMonth();
+  return monthDifference < 0 ||
+    (monthDifference === 0 && new Date().getDate() < birthDate.getDate())
+    ? age - 1
+    : age;
+};
+
 const schema = z.object({
   employer_id: z.string().min(1, 'Employer is required'),
   recruiter_id: z.string().min(1, 'Recruiter is required'),
-  full_name: z.string().min(1, 'Full Name is required'),
-  phone_number: z.string().min(1, 'Phone Number is required'),
-  email_id: z.string().email('Invalid email').min(1, 'Email ID is required'),
-  dob: z.string().min(1, 'Date of Birth is required'),
+  full_name: z
+    .string()
+    .min(1, 'Full Name is required')
+    .min(3, 'Full Name must be at least 3 characters long'),
+
+  phone_number: z
+    .string()
+    .min(1, 'Phone Number is required')
+    .length(10, 'Phone Number must be exactly 10 characters'),
+
+  email_id: z
+    .string()
+    .min(1, 'Email ID is required')
+    .email('Invalid email address'),
+
+  dob: z
+    .string()
+    .min(1, 'Date of Birth is required')
+    .refine(
+      (dob) => calculateAge(dob) >= 18,
+      'DOB must be at least 18 years old',
+    ),
+  btech_graduation_date: z
+    .string()
+    .optional()
+    .refine((date) => {
+      if (date) {
+        const graduationDate = new Date(date);
+        const currentDate = new Date();
+        return graduationDate <= currentDate;
+      }
+      return true; // If no date is provided, it's valid
+    }, 'Graduation date cannot be in the future'),
+  masters_graduation_date: z
+    .string()
+    .optional()
+    .refine((date) => {
+      if (date) {
+        const graduationDate = new Date(date);
+        const currentDate = new Date();
+        return graduationDate <= currentDate;
+      }
+      return true; // If no date is provided, it's valid
+    }, 'Graduation date cannot be in the future'),
   visa_status: z.string().min(1, 'Visa Status is required'),
   visa_validity: z.string().min(1, 'Visa Validity is required'),
   technologies: z.string().min(1, 'Technologies are required'),
   current_location: z.string().min(1, 'Current Location is required'),
-  relocation: z.boolean(),
-  experience_in_us: z.string().min(1, 'Experience in US is required'),
-  experience_in_india: z.string().min(1, 'Experience in India is required'),
-  passport_number: z.string().min(1, 'Passport Number is required'),
-  linkedin_url: z.string().url('Invalid LinkedIn URL'),
+  relocation: z.boolean().refine((val) => val !== null, {
+    message: 'Relocation is required',
+  }),
+  experience_in_us: z
+    .string()
+    .min(1, 'Experience in US is required')
+    .refine(
+      (value) => !isNaN(Number(value)),
+      'Experience in US must be a number',
+    ),
+  experience_in_india: z
+    .string()
+    .min(1, 'Experience in India is required')
+    .refine(
+      (value) => !isNaN(Number(value)),
+      'Experience in India must be a number',
+    ),
+  passport_number: z
+    .string()
+    .min(1, 'Passport Number is required')
+    .length(8, 'Passport Number must be exactly 8 characters')
+    .max(15, 'Passport Number must be no more than 15 characters')
+    .regex(
+      /^[A-Za-z0-9]+$/,
+      'Passport Number must contain only alphanumeric characters',
+    ),
+
+  linkedin_url: z
+    .string()
+    .min(1, 'LinkedIn URL is required')
+    .url('Invalid LinkedIn URL')
+    .refine(
+      (value) => value.startsWith('https://www.linkedin.com/'),
+      'LinkedIn URL must start with https://www.linkedin.com/',
+    ),
+  driving_licence: z
+    .string()
+    .optional()
+    .refine((val) => !val || (val.length >= 6 && val.length <= 16), {
+      message: 'Driving Licence number must be between 6 and 16 characters',
+    })
+    .refine((val) => !val || /^[A-Za-z0-9-]+$/.test(val), {
+      message:
+        'Driving Licence must contain only alphanumeric characters and dashes',
+    }),
+
+  last_4_ssn: z
+    .string()
+    .optional()
+    .refine((val) => !val || /^\d{4}$/.test(val), {
+      message: 'SSN Last 4 digits must be a 4-digit number',
+    }),
+
   linkedin_url_verified: z
     .string()
     .min(1, 'LinkedIn URL verification is required'),
@@ -111,7 +209,7 @@ function AddConsultantForm() {
     } else if (name === 'relocation') {
       setFormData((prevState) => ({
         ...prevState,
-        relocation: value === 'yes', // Set relocation as boolean (true/false)
+        relocation: value === 'yes',
       }));
     } else if (name === 'description') {
       setFormData((prevData) => ({
@@ -174,6 +272,7 @@ function AddConsultantForm() {
           resume:
             'At least one resume (Original or Consulting) must be uploaded',
         }));
+        return;
       }
 
       // Create a FormData instance to handle file uploads and other form fields
@@ -197,8 +296,8 @@ function AddConsultantForm() {
               ...formData.status_consultant, // Merges the dynamic fields from formData.status_consultant
             }),
           );
-        } else {
-          // Append other form data as strings
+        } else if (formData[key] !== null && formData[key] !== undefined) {
+          // submitData.append(key, formData[key]);
           submitData.append(key, String(formData[key]));
         }
       });
@@ -216,8 +315,8 @@ function AddConsultantForm() {
             () => setToast({ show: false, message: '', color: undefined }),
             3000,
           );
-          document.getElementById('original_resume').value = '';
-          document.getElementById('consulting_resume').value = '';
+          document.getElementById('original_resume').value = null;
+          document.getElementById('consulting_resume').value = null;
           document.getElementById('technologies').value = '';
         },
         onError: (error) => {
@@ -261,12 +360,13 @@ function AddConsultantForm() {
   return (
     <>
       <form
+        encType="multipart/form-data"
         className="border border-2 mb-3 px-3 pb-3 rounded"
         onSubmit={handleSubmit}
       >
         <div className="row mt-3">
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="employer_id">Employer</label>
+            <label htmlFor="employer_id">Employer *</label>
             <select
               className="form-control"
               id="employer_id"
@@ -286,7 +386,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="recruiter_id">Recruiter</label>
+            <label htmlFor="recruiter_id">Recruiter *</label>
             <select
               className="form-control"
               id="recruiter_id"
@@ -309,7 +409,7 @@ function AddConsultantForm() {
         {/* Basic Information Section */}
         <div className="row mb-5 mt-3">
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="full_name">Full Name</label>
+            <label htmlFor="full_name">Full Name *</label>
             <input
               type="text"
               className="form-control"
@@ -323,7 +423,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="phone_number">Phone Number</label>
+            <label htmlFor="phone_number">Phone Number *</label>
             <input
               type="text"
               className="form-control"
@@ -337,7 +437,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="email_id">Email ID</label>
+            <label htmlFor="email_id">Email ID *</label>
             <input
               type="email"
               className="form-control"
@@ -351,7 +451,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="dob">Date of Birth</label>
+            <label htmlFor="dob">Date of Birth *</label>
             <input
               type="date"
               className="form-control"
@@ -365,7 +465,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="visa_status">Visa Status</label>
+            <label htmlFor="visa_status">Visa Status *</label>
             <select
               className="form-control"
               id="visa_status"
@@ -384,7 +484,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="visa_validity">Visa Validity</label>
+            <label htmlFor="visa_validity">Visa Validity *</label>
             <input
               type="date"
               className="form-control"
@@ -499,7 +599,7 @@ function AddConsultantForm() {
 
         {/* Professional Details Section */}
         <div className="form-group">
-          <label htmlFor="technologies">Technologies (comma-separated)</label>
+          <label htmlFor="technologies">Technologies (comma-separated) *</label>
           <textarea
             className="form-control"
             id="technologies"
@@ -514,7 +614,7 @@ function AddConsultantForm() {
 
         <div className="row my-5">
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="current_location">Current Location</label>
+            <label htmlFor="current_location">Current Location *</label>
             <input
               type="text"
               className="form-control"
@@ -528,33 +628,31 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="relocation">Willing to Relocate?</label>
-            <>
-              <div>
-                <input
-                  type="radio"
-                  className="form-check-input"
-                  id="relocationYes"
-                  name="relocation"
-                  value="yes"
-                  onChange={handleChange}
-                  checked={formData.relocation === true}
-                />
-                <label htmlFor="relocationYes">Yes</label>
-              </div>
-              <div>
-                <input
-                  type="radio"
-                  className="form-check-input"
-                  id="relocationNo"
-                  name="relocation"
-                  value="no"
-                  onChange={handleChange}
-                  checked={formData.relocation === false}
-                />
-                <label htmlFor="relocationNo">No</label>
-              </div>
-            </>
+            <label htmlFor="relocation">Willing to Relocate? *</label>
+            <div>
+              <input
+                type="radio"
+                className="form-check-input"
+                id="relocationYes"
+                name="relocation"
+                value="yes"
+                onChange={handleChange}
+                checked={formData.relocation === true}
+              />
+              <label htmlFor="relocationYes">Yes</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                className="form-check-input"
+                id="relocationNo"
+                name="relocation"
+                value="no"
+                onChange={handleChange}
+                checked={formData.relocation === false}
+              />
+              <label htmlFor="relocationNo">No</label>
+            </div>
             {errorMessages.relocation && (
               <p className="text-danger">{errorMessages.relocation}</p>
             )}
@@ -562,7 +660,7 @@ function AddConsultantForm() {
         </div>
         <div className="row my-5">
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="experience_in_us">Experience in US</label>
+            <label htmlFor="experience_in_us">Experience in US *</label>
             <input
               type="text"
               className="form-control"
@@ -577,7 +675,7 @@ function AddConsultantForm() {
           </div>
 
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="experience_in_india">Experience in India</label>
+            <label htmlFor="experience_in_india">Experience in India *</label>
             <input
               type="text"
               className="form-control"
@@ -611,7 +709,7 @@ function AddConsultantForm() {
         {/* Personal Details Section */}
         <div className="row my-5">
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="passport_number">Passport Number</label>
+            <label htmlFor="passport_number">Passport Number *</label>
             <input
               type="text"
               className="form-control"
@@ -667,7 +765,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="linkedin_url">LinkedIn URL</label>
+            <label htmlFor="linkedin_url">LinkedIn URL *</label>
             <input
               type="url"
               className="form-control"
@@ -739,14 +837,14 @@ function AddConsultantForm() {
         <div className="row my-5">
           {/* Verification fields */}
           <div className="col-md-6 form-group mb-3">
-            <label>Full Name Verified</label>
+            <label>Full Name Verified *</label>
             {renderVerificationRadioButtons('full_name_verified')}
             {errorMessages.full_name_verified && (
               <p className="text-danger">{errorMessages.full_name_verified}</p>
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label>Visa Status Verified</label>
+            <label>Visa Status Verified *</label>
             {renderVerificationRadioButtons('visa_status_verified')}
             {errorMessages.visa_status_verified && (
               <p className="text-danger">
@@ -755,7 +853,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label>Visa Validity Verified</label>
+            <label>Visa Validity Verified *</label>
             {renderVerificationRadioButtons('visa_validity_verified')}
             {errorMessages.visa_validity_verified && (
               <p className="text-danger">
@@ -764,7 +862,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label>Experience in US Verified</label>
+            <label>Experience in US Verified *</label>
             {renderVerificationRadioButtons('experience_in_us_verified')}
             {errorMessages.experience_in_us_verified && (
               <p className="text-danger">
@@ -773,7 +871,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label>Experience in India Verified</label>
+            <label>Experience in India Verified *</label>
             {renderVerificationRadioButtons('experience_in_india_verified')}
             {errorMessages.experience_in_india_verified && (
               <p className="text-danger">
@@ -782,7 +880,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label>Passport Number Verified</label>
+            <label>Passport Number Verified *</label>
             {renderVerificationRadioButtons('passport_number_verified')}
             {errorMessages.passport_number_verified && (
               <p className="text-danger">
@@ -791,7 +889,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label>LinkedIn URL Verified</label>
+            <label>LinkedIn URL Verified *</label>
             {renderVerificationRadioButtons('linkedin_url_verified')}
             {errorMessages.linkedin_url_verified && (
               <p className="text-danger">
