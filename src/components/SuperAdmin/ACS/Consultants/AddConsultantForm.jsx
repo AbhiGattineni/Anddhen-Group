@@ -158,7 +158,7 @@ function AddConsultantForm() {
     masters_graduation_date: '',
     technologies: '',
     current_location: '',
-    relocation: null,
+    relocation: '',
     experience_in_us: '',
     experience_in_india: '',
     relocation_preference: '',
