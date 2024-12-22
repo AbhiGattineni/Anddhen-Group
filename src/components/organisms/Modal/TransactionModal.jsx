@@ -37,7 +37,9 @@ export const TransactionModal = ({
       setFormData({
         receiver_name: editTransaction.receiver_name || '',
         sender_name: editTransaction.sender_name || '',
-        amount: editTransaction.credited_amount || '',
+        amount:
+          parseInt(editTransaction.credited_amount || 0, 10) +
+          parseInt(editTransaction.debited_amount || 0, 10),
         transaction_datetime: formattedDate || '',
         transaction_type: editTransaction.transaction_type || '',
         payment_type: editTransaction.payment_type || '',
@@ -120,6 +122,7 @@ export const TransactionModal = ({
         onSuccess: () => {
           queryClient.invalidateQueries('transactions');
           resetForm();
+          toggleModal();
           setEditTransaction(null);
         },
         onError: (error) => {
@@ -175,7 +178,7 @@ export const TransactionModal = ({
 
   const toggleModal = useCallback(() => {
     resetForm();
-    document.body.style.overflow = 'auto'; // Restore body overflow
+    document.body.style.overflow = 'auto';
     setShowModal(false);
     setEditTransaction(null);
   }, [setShowModal]);
@@ -225,7 +228,7 @@ export const TransactionModal = ({
       <div className="modal-content p-0 h-100">
         <div className="modal-header py-2 px-3">
           <h1 className="modal-title fs-6" id="exampleModalLabel">
-            Add Transaction
+            {editTransaction ? 'Edit' : 'Add'} Transaction
           </h1>
           <button
             type="button"

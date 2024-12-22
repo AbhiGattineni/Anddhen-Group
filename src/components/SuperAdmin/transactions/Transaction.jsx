@@ -211,7 +211,7 @@ export const Transaction = () => {
   };
 
   return (
-    <div className="container-xl mb-5 mt-2 p-0">
+    <div className="container-xl mb-5 mt-2 px-3">
       <div className="d-flex justify-content-end">
         <button
           className="btn btn-primary m-2"
@@ -220,22 +220,22 @@ export const Transaction = () => {
           Add Transactions
         </button>
       </div>
-      <div className="border border-black border-2 rounded">
+      <div className="border border-black border-2 rounded ">
         <nav className="navbar navbar-expand-lg navbar-light bg-light rounded-top">
           <div className="container-fluid">
-            <div className="d-flex flex-wrap justify-content-between align-items-center w-100 gap-3">
+            <div className="row w-100 gap-3 p-2">
               {/* Search input */}
               <input
                 type="text"
-                className="form-control w-auto"
+                className="form-control w-auto col"
                 placeholder="Search..."
                 value={globalFilter || ''}
                 onChange={(e) => setGlobalFilter(e.target.value)}
               />
 
               {/* Start Date */}
-              <div className="d-flex align-items-center gap-2">
-                <label htmlFor="startDate" className="mb-0">
+              <div className="d-flex align-items-center gap-2 col">
+                <label htmlFor="startDate" className="mb-0 text-nowrap">
                   Start Date:
                 </label>
                 <input
@@ -248,8 +248,8 @@ export const Transaction = () => {
               </div>
 
               {/* End Date */}
-              <div className="d-flex align-items-center gap-2">
-                <label htmlFor="endDate" className="mb-0">
+              <div className="d-flex align-items-center gap-2 col">
+                <label htmlFor="endDate" className="mb-0 text-nowrap">
                   End Date:
                 </label>
                 <input
@@ -262,7 +262,7 @@ export const Transaction = () => {
               </div>
 
               {/* Filter and Reset Buttons */}
-              <div className="d-flex gap-2">
+              <div className="d-flex gap-2 col text-nowrap">
                 <button
                   className="btn btn-primary"
                   onClick={handleFilterByDate}
@@ -275,7 +275,7 @@ export const Transaction = () => {
               </div>
 
               {/* Total display */}
-              <div>
+              <div className="col text-nowrap text-sm-start text-md-end">
                 <span className="nav-link">
                   Total :
                   <span
@@ -385,14 +385,14 @@ export const Transaction = () => {
         <div className="d-flex justify-content-between align-items-center p-3 bg-light rounded-bottom">
           <div>
             <button
-              className="btn btn-outline-secondary"
+              className="btn btn-outline-secondary btn-sm"
               onClick={() => gotoPage(0)}
               disabled={!canPreviousPage}
             >
               {'<<'}
             </button>
             <button
-              className="btn btn-outline-secondary mx-1"
+              className="btn btn-outline-secondary mx-1 btn-sm"
               onClick={() => previousPage()}
               disabled={!canPreviousPage}
             >
@@ -405,14 +405,14 @@ export const Transaction = () => {
               </strong>{' '}
             </span>
             <button
-              className="btn btn-outline-secondary mx-1"
+              className="btn btn-outline-secondary mx-1 btn-sm"
               onClick={() => nextPage()}
               disabled={!canNextPage}
             >
               {'>'}
             </button>
             <button
-              className="btn btn-outline-secondary"
+              className="btn btn-outline-secondary btn-sm"
               onClick={() => gotoPage(pageCount - 1)}
               disabled={!canNextPage}
             >
@@ -421,7 +421,7 @@ export const Transaction = () => {
           </div>
           <div>
             <select
-              className="form-select"
+              className="form-select form-select-sm"
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
             >

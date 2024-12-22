@@ -172,11 +172,15 @@ const InputField = ({ value, ...props }) => {
       return 'Fee should be valid';
     }
 
-    if (
-      ['date', 'transaction_datetime'].includes(props.name) &&
-      new Date(value) > today
-    ) {
+    if (['date'].includes(props.name) && new Date(value) > today) {
       return 'Date cannot be in the future';
+    }
+
+    if (
+      ['transaction_datetime'].includes(props.name) &&
+      new Date(value) > new Date()
+    ) {
+      return 'DateTime cannot be in the future';
     }
 
     if (props.name === 'year' && value.length !== 4) {
