@@ -29,7 +29,7 @@ const ImageSlider = ({ title, cards }) => {
   const totalImages = cards.length;
 
   // Dynamic button size
-  const buttonSize = isSmallScreen ? 40 : 50;
+  // const buttonSize = isSmallScreen ? 40 : 50;
 
   // Function to go to the next set of images (one by one)
   const nextImages = () => {
@@ -59,18 +59,62 @@ const ImageSlider = ({ title, cards }) => {
         backgroundColor: '#f9f9f9',
       }}
     >
-      {/* Heading */}
-      <Typography
-        variant="h5"
+      {/* Heading and Navigation Buttons */}
+      <Box
         sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           mb: 2,
-          color: 'black',
-          fontWeight: 'bold',
-          textAlign: 'left',
         }}
       >
-        {title}
-      </Typography>
+        {/* Heading */}
+        <Typography
+          variant="h5"
+          sx={{
+            color: 'black',
+            fontWeight: 'bold',
+            textAlign: 'left',
+          }}
+        >
+          {title}
+        </Typography>
+
+        {/* Navigation Buttons */}
+        <Box>
+          <IconButton
+            onClick={prevImages}
+            disabled={startIndex === 0}
+            sx={{
+              backgroundColor: '#ffc107',
+              color: '#fff',
+              '&:disabled': { backgroundColor: '#ccc' },
+              boxShadow: 2,
+              width: 40,
+              height: 40,
+              transition: 'all 0.3s ease',
+              mr: 1,
+            }}
+          >
+            <ArrowBackIos fontSize="small" />
+          </IconButton>
+          <IconButton
+            onClick={nextImages}
+            disabled={startIndex + imagesPerPage >= totalImages}
+            sx={{
+              backgroundColor: '#ffc107',
+              color: '#fff',
+              '&:disabled': { backgroundColor: '#ccc' },
+              boxShadow: 2,
+              width: 40,
+              height: 40,
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <ArrowForwardIos fontSize="small" />
+          </IconButton>
+        </Box>
+      </Box>
 
       {/* Main Slider Container */}
       <Box
@@ -81,25 +125,6 @@ const ImageSlider = ({ title, cards }) => {
           position: 'relative',
         }}
       >
-        {/* Left Button with Gap */}
-        <Box sx={{ mr: 2 }}>
-          <IconButton
-            onClick={prevImages}
-            disabled={startIndex === 0}
-            sx={{
-              backgroundColor: '#ffc107',
-              color: '#fff',
-              '&:disabled': { backgroundColor: '#ccc' },
-              boxShadow: 2,
-              width: buttonSize,
-              height: buttonSize,
-              transition: 'all 0.3s ease',
-            }}
-          >
-            <ArrowBackIos fontSize="small" />
-          </IconButton>
-        </Box>
-
         {/* Image Grid */}
         <Grid
           container
@@ -145,25 +170,6 @@ const ImageSlider = ({ title, cards }) => {
               </Grid>
             ))}
         </Grid>
-
-        {/* Right Button with Gap */}
-        <Box sx={{ ml: 2 }}>
-          <IconButton
-            onClick={nextImages}
-            disabled={startIndex + imagesPerPage >= totalImages}
-            sx={{
-              backgroundColor: '#ffc107',
-              color: '#fff',
-              '&:disabled': { backgroundColor: '#ccc' },
-              boxShadow: 2,
-              width: buttonSize,
-              height: buttonSize,
-              transition: 'all 0.3s ease',
-            }}
-          >
-            <ArrowForwardIos fontSize="small" />
-          </IconButton>
-        </Box>
       </Box>
     </Box>
   );
