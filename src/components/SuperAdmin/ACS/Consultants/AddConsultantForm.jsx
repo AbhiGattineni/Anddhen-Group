@@ -177,6 +177,7 @@ function AddConsultantForm() {
     original_resume: null,
     consulting_resume: null,
     status_consultant: {
+      date: '',
       description: '',
     },
   };
@@ -217,6 +218,14 @@ function AddConsultantForm() {
         status_consultant: {
           ...prevData.status_consultant,
           description: value,
+        },
+      }));
+    } else if (name === 'date') {
+      setFormData((prevData) => ({
+        ...prevData,
+        status_consultant: {
+          ...prevData.status_consultant,
+          date: value,
         },
       }));
     } else {
@@ -896,6 +905,21 @@ function AddConsultantForm() {
                 {errorMessages.linkedin_url_verified}
               </p>
             )}
+          </div>
+        </div>
+        <div className="mb-3">
+          <div className="d-flex align-items-center">
+            <label htmlFor="date" className="me-2">
+              Date:
+            </label>
+            <input
+              type="date"
+              className="form-control w-auto"
+              id="date"
+              name="date"
+              value={formData.status_consultant.date}
+              onChange={handleChange}
+            />
           </div>
         </div>
         <textarea

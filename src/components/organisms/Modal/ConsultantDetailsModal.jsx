@@ -18,6 +18,10 @@ function ConsultantDetailsModal({
   const [editedConsultant, setEditedConsultant] = useState({ ...consultant });
   const [filteredDescriptions, setFilteredDescriptions] = useState({});
   const [newNote, setNewNote] = useState('');
+  const [newNoteDate, setNewNoteDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
   const getCurrentDate = () => {
     const date = new Date();
     const year = date.getFullYear();
@@ -90,11 +94,16 @@ function ConsultantDetailsModal({
       submitData.append('recruiter_id', editedConsultant.recruiter_id);
       submitData.append('employer_id', editedConsultant.employer_id);
       submitData.append('date', getCurrentDate());
+      submitData.append('date', newNoteDate);
       submitData.append('description', newNote);
       addNote(submitData, {
         onSuccess: () => {
           queryClient.invalidateQueries('status-consultant');
-          setNewNote('');
+          setNewNote();
+          setNewNoteDate(() => {
+            const today = new Date();
+            return today.toISOString().split('T')[0];
+          });
         },
         onError: (error) => {
           console.error('An error occurred:', error);
@@ -616,7 +625,12 @@ function ConsultantDetailsModal({
                       {Object.keys(filteredDescriptions)
                         .filter(
                           (noteId) => filteredDescriptions[noteId].description,
-                        ) // Filter out empty descriptions
+                        )
+                        .sort(
+                          (a, b) =>
+                            new Date(filteredDescriptions[a].date) -
+                            new Date(filteredDescriptions[b].date),
+                        )
                         .map((noteId, index) => (
                           <li key={index}>
                             <p>
@@ -629,7 +643,21 @@ function ConsultantDetailsModal({
                           </li>
                         ))}
                     </ul>
-
+                    <div className="mb-3">
+                      <div className="d-flex align-items-center">
+                        <label htmlFor="newNoteDate" className="me-2">
+                          Date:
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control w-auto"
+                          id="newNoteDate"
+                          name="newNoteDate"
+                          value={newNoteDate}
+                          onChange={(e) => setNewNoteDate(e.target.value)}
+                        />
+                      </div>
+                    </div>
                     <textarea
                       name="description"
                       value={newNote}
