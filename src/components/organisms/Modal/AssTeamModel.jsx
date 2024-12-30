@@ -60,7 +60,7 @@ export const AssTeamModal = () => {
             ></button>
           </div>
           <div
-            className="p-0 h-100 overflow-auto"
+            className="px-4 h-100 overflow-auto"
             style={{ maxHeight: 'calc(90vh - 90px)' }}
           >
             <div className="profile-photo d-flex flex-column w-100 justify-content-center align-items-center">

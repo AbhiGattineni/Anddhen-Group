@@ -231,7 +231,7 @@ const Cards = () => {
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete this product?
+              Are you sure you want to delete this profile?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
