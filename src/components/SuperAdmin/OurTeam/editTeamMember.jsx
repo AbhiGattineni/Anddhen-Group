@@ -131,7 +131,12 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
 
   return (
     <div>
-      <DialogContent>
+      <DialogContent
+        sx={{
+          maxHeight: '400px', // Set a maximum height
+          overflowY: 'auto', // Enable vertical scrolling
+        }}
+      >
         <TextField
           label="Name"
           name="name"
