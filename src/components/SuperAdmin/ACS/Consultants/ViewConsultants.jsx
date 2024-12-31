@@ -39,8 +39,6 @@ function ViewConsultants() {
     setFilters({ ...filters, [filterKey]: value });
   };
 
-  console.log(filters);
-
   const applyFilters = (consultant) => {
     return Object.keys(filters).every((key) => {
       if (filters[key] === 'all') {

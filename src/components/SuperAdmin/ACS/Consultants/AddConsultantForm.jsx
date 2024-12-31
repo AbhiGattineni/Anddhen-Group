@@ -43,6 +43,7 @@ const schema = z.object({
   btech_graduation_date: z
     .string()
     .optional()
+    .nullable()
     .refine((date) => {
       if (date) {
         const graduationDate = new Date(date);
@@ -54,6 +55,7 @@ const schema = z.object({
   masters_graduation_date: z
     .string()
     .optional()
+    .nullable()
     .refine((date) => {
       if (date) {
         const graduationDate = new Date(date);
@@ -329,12 +331,18 @@ function AddConsultantForm() {
           document.getElementById('technologies').value = '';
         },
         onError: (error) => {
-          console.error('An error occurred:', error.response.data);
           if (error.response?.data) {
             setErrorMessages((prev) => {
               const newErrors = { ...prev };
               Object.entries(error.response.data).forEach(([key, messages]) => {
-                newErrors[key] = messages.join(', '); // Convert array to string
+                // Ensure messages is an array
+                if (Array.isArray(messages)) {
+                  newErrors[key] = messages.join(', '); // Convert array to string
+                } else if (typeof messages === 'string') {
+                  newErrors[key] = messages; // Handle string case
+                } else {
+                  newErrors[key] = 'An unexpected error occurred'; // Fallback
+                }
               });
               return newErrors;
             });
@@ -348,7 +356,6 @@ function AddConsultantForm() {
             () => setToast({ show: false, message: '', color: undefined }),
             3000,
           );
-          // Handle error state or display error message
         },
       });
     } catch (e) {
@@ -795,7 +802,7 @@ function AddConsultantForm() {
             htmlFor="original_resume"
             style={{ display: 'block', marginBottom: '5px' }}
           >
-            Original Resume
+            Original Resume (At least one resume is required)
           </label>
           <input
             type="file"
