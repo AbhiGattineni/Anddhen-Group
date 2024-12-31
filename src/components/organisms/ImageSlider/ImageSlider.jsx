@@ -66,6 +66,7 @@ const ImageSlider = ({ title, cards }) => {
           justifyContent: 'space-between',
           alignItems: 'center',
           mb: 2,
+          flexWrap: 'nowrap', // Prevent buttons from wrapping
         }}
       >
         {/* Heading */}
@@ -75,13 +76,14 @@ const ImageSlider = ({ title, cards }) => {
             color: 'black',
             fontWeight: 'bold',
             textAlign: 'left',
+            fontSize: { xs: '1.25rem', sm: '1.5rem' }, // Smaller title on small screens
           }}
         >
           {title}
         </Typography>
 
         {/* Navigation Buttons */}
-        <Box>
+        <Box sx={{ whiteSpace: 'nowrap' }}>
           <IconButton
             onClick={prevImages}
             disabled={startIndex === 0}
