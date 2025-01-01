@@ -17,13 +17,20 @@ function ViewConsultants() {
   const [consultantId, setConsultantId] = useState(null);
   const [updatedConsultant, setUpdatedConsultant] = useState(null);
   const [isEditable, setIsEditable] = useState(false);
+  const [visaStatus, setVisaStatus] = useState([]);
 
-  const {
-    data = [],
-    isLoading, // Provide a default value of an empty array
-  } = useFetchData('consultant', `/api/consultants/`);
+  const { data = [], isLoading } = useFetchData(
+    'consultant',
+    `/api/consultants/`,
+  );
   useEffect(() => {
     setConsultants(data);
+    if (data && data.length > 0) {
+      const visaStatuses = Array.from(
+        new Set(data.map((consultant) => consultant.visa_status)),
+      );
+      setVisaStatus(visaStatuses);
+    }
   }, [data]);
 
   const toggleFilters = () => setShowFilters(!showFilters);
@@ -34,8 +41,36 @@ function ViewConsultants() {
 
   const applyFilters = (consultant) => {
     return Object.keys(filters).every((key) => {
-      if (filters[key] === '') return true;
-      return consultant[key] === filters[key];
+      if (filters[key] === 'all') {
+        // For 'relocation', 'visa_status', 'verified' keys, return true if value is 'all'
+        if (['relocation', 'visa_status', 'verified'].includes(key)) {
+          return true;
+        }
+      } else if (filters[key] === '') {
+        // If the value for other keys is '', return true
+        return true;
+      }
+      if (key === 'verified') {
+        const verifiedKeys = Object.keys(consultant).filter((consultantKey) =>
+          consultantKey.includes('verified'),
+        );
+
+        if (filters[key] === 'true') {
+          return verifiedKeys.every(
+            (consultantKey) => consultant[consultantKey] === true,
+          );
+        } else if (filters[key] === 'false') {
+          return verifiedKeys.some(
+            (consultantKey) => consultant[consultantKey] === false,
+          );
+        }
+      } else if (key === 'current_location') {
+        return consultant.current_location
+          .toLowerCase()
+          .includes(filters[key].toLowerCase());
+      } else {
+        return String(consultant[key]) === filters[key];
+      }
     });
   };
 
@@ -133,25 +168,27 @@ function ViewConsultants() {
               <label className="form-label">Visa Status</label>
               <select
                 className="form-select"
+                value={filters.visa_status || 'all'}
                 onChange={(e) =>
                   handleFilterChange('visa_status', e.target.value)
                 }
               >
-                <option value="">All</option>
-                <option value="OPT">OPT</option>
-                <option value="CPT">CPT</option>
-                {/* Add more options as needed */}
+                <option value="all">All</option>
+                {visaStatus.map((status, index) => (
+                  <option key={index} value={status}>
+                    {status}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="col-md-3">
               <label className="form-label">Verified Status</label>
               <select
                 className="form-select"
-                onChange={(e) =>
-                  handleFilterChange('full_name_verified', e.target.value)
-                }
+                value={filters.verified || 'all'}
+                onChange={(e) => handleFilterChange('verified', e.target.value)}
               >
-                <option value="">All</option>
+                <option value="all">All</option>
                 <option value={true}>Verified</option>
                 <option value={false}>Unverified</option>
               </select>
@@ -160,11 +197,12 @@ function ViewConsultants() {
               <label className="form-label">Relocation</label>
               <select
                 className="form-select"
+                value={filters.relocation || 'all'}
                 onChange={(e) =>
                   handleFilterChange('relocation', e.target.value)
                 }
               >
-                <option value="">All</option>
+                <option value="all">All</option>
                 <option value={true}>Willing to Relocate</option>
                 <option value={false}>Not Willing to Relocate</option>
               </select>
@@ -175,6 +213,7 @@ function ViewConsultants() {
                 type="text"
                 className="form-control"
                 placeholder="Experience in US"
+                value={filters.experience_in_us || ''}
                 onChange={(e) =>
                   handleFilterChange('experience_in_us', e.target.value)
                 }
@@ -186,12 +225,34 @@ function ViewConsultants() {
                 type="text"
                 className="form-control"
                 placeholder="Current Location"
+                value={filters.current_location || ''}
                 onChange={(e) =>
                   handleFilterChange('current_location', e.target.value)
                 }
               />
             </div>
-            {/* Add more filters based on other data fields */}
+            <div className="col-md-3">
+              <label className="form-label">Uploaded Date</label>
+              <input
+                type="date"
+                className="form-control"
+                value={filters.uploaded_date || ''}
+                onChange={(e) =>
+                  handleFilterChange('uploaded_date', e.target.value)
+                }
+              />
+            </div>
+            <div className="col-md-3 d-flex align-items-end">
+              <button
+                onClick={() => {
+                  setFilters({});
+                }}
+                className="btn btn-primary w-auto"
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -121,13 +121,16 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
             </div>
           </p>
         </div>
-        <div className="card-footer">
+        <div className="card-footer d-flex flex-wrap justify-content-between align-items-center">
           <button
-            className="btn btn-primary"
+            className="btn btn-primary text-nowrap"
             onClick={() => onViewDetails(consultant)}
           >
             View Details
           </button>
+          <div className="fs-7 fst-italic fw-light text-center text-nowrap">
+            Uploaded on: {consultant.uploaded_date}
+          </div>
         </div>
       </div>
     </div>
