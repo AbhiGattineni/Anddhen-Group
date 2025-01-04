@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
+import TransactionTable from 'src/components/generalComponents/TransactionTable';
 
 export const Aps = () => {
   const [showToast, setShowToast] = useState(false);
@@ -113,6 +114,7 @@ export const Aps = () => {
           </div>
         </div>
       </section>
+      <TransactionTable />
 
       {/* Contact Form */}
       <section className="py-4 border-top">

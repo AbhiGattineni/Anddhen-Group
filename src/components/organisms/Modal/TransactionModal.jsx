@@ -4,6 +4,7 @@ import { auth } from 'src/services/Authentication/firebase';
 import { useMutation, useQueryClient } from 'react-query';
 import PropTypes from 'prop-types';
 import { useUpdateData } from 'src/react-query/useFetchApis';
+import { capitalizeName } from '../Utils';
 
 export const TransactionModal = ({
   editTransaction,
@@ -138,15 +139,15 @@ export const TransactionModal = ({
     e.preventDefault();
     let upload_data = {
       accountant_id: auth.currentUser.uid,
-      accountant_name: auth.currentUser.displayName,
+      accountant_name: capitalizeName(auth.currentUser.displayName),
       credited_amount: 0.0,
       currency: formData.currency,
       debited_amount: 0.0,
       description: formData.description,
       // receiver_id: formData.receiver_id,
-      receiver_name: formData.receiver_name,
+      receiver_name: capitalizeName(formData.receiver_name),
       // sender_id: formData.sender_id,
-      sender_name: formData.sender_name,
+      sender_name: capitalizeName(formData.sender_name),
       subsidiary: formData.subsidiary,
       transaction_datetime: formData.transaction_datetime,
       payment_type: formData.payment_type,
