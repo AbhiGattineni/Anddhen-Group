@@ -3,6 +3,8 @@ import { TextField } from '@mui/material';
 import { useFetchData } from 'src/react-query/useFetchApis';
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import FacebookIcon from '@mui/icons-material/Facebook';
 
 const CollegeWhatsappLinks = () => {
   const { data = [] } = useFetchData(
@@ -11,28 +13,23 @@ const CollegeWhatsappLinks = () => {
   );
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter the data to only include items with the label 'whatsapp community'
-  const filteredData = data.filter(
-    (college) => college.label === 'whatsapp community',
-  );
+  // Group links by college ID
+  const groupedData = data.reduce((acc, item) => {
+    const { college, college_name, label, link } = item;
+    if (!acc[college]) {
+      acc[college] = { college_name, links: {} };
+    }
+    acc[college].links[label] = link;
+    return acc;
+  }, {});
 
-  // Further filter the data based on the search query
-  const searchedData = filteredData.filter((college) =>
+  // Filter based on search query
+  const searchedData = Object.values(groupedData).filter((college) =>
     college.college_name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      {/* <TextField
-        id="standard-helperText"
-        label="Search WhatsApp Links"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        helperText="Enter the college name"
-        variant="standard"
-        fullWidth
-        margin="normal"
-      /> */}
       <TextField
         id="outlined-search"
         label="Search university"
@@ -41,10 +38,10 @@ const CollegeWhatsappLinks = () => {
         type="search"
         sx={{
           width: {
-            xs: '100%', // Full width on extra-small screens (mobile)
-            sm: '300px', // 400px width on small screens (tablets)
-            md: '400px', // 500px width on medium screens (desktops)
-            lg: '40%', // 600px width on large screens (larger desktops)
+            xs: '100%',
+            sm: '300px',
+            md: '400px',
+            lg: '40%',
           },
           marginBottom: '20px',
           '& .MuiOutlinedInput-root': {
@@ -71,17 +68,30 @@ const CollegeWhatsappLinks = () => {
         }}
       />
 
-      <ol style={{ lineHeight: '2em', fontSize: '18px', color: '#007bff' }}>
+      <ol style={{ lineHeight: '2em', fontSize: '18px' }}>
         {searchedData.map((college, index) => (
           <li key={index}>
-            <a
-              href={college.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'none', color: '#007bff' }}
-            >
-              {college.college_name}
-            </a>
+            <span style={{ marginRight: '10px' }}>{college.college_name}</span>
+            {college.links['whatsapp community link'] && (
+              <a
+                href={college.links['whatsapp community link']}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ marginRight: '10px', color: 'green' }}
+              >
+                <WhatsAppIcon />
+              </a>
+            )}
+            {college.links['facebook group link'] && (
+              <a
+                href={college.links['facebook group link']}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#4267B2' }}
+              >
+                <FacebookIcon />
+              </a>
+            )}
           </li>
         ))}
       </ol>
