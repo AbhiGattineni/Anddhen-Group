@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField } from '@mui/material';
+import { TextField, CircularProgress, Typography } from '@mui/material';
 import { useFetchData } from 'src/react-query/useFetchApis';
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -7,7 +7,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import FacebookIcon from '@mui/icons-material/Facebook';
 
 const CollegeWhatsappLinks = () => {
-  const { data = [] } = useFetchData(
+  const { data = [], isLoading } = useFetchData(
     'collegeswhatsapplinks',
     '/college_details/',
   );
@@ -68,33 +68,62 @@ const CollegeWhatsappLinks = () => {
         }}
       />
 
-      <ol style={{ lineHeight: '2em', fontSize: '18px' }}>
-        {searchedData.map((college, index) => (
-          <li key={index}>
-            <span style={{ marginRight: '10px' }}>{college.college_name}</span>
-            {college.links['whatsapp community link'] && (
-              <a
-                href={college.links['whatsapp community link']}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ marginRight: '10px', color: 'green' }}
-              >
-                <WhatsAppIcon />
-              </a>
-            )}
-            {college.links['facebook group link'] && (
-              <a
-                href={college.links['facebook group link']}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#4267B2' }}
-              >
-                <FacebookIcon />
-              </a>
-            )}
-          </li>
-        ))}
-      </ol>
+      {isLoading ? (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '20px',
+          }}
+        >
+          <CircularProgress />
+        </div>
+      ) : (
+        <>
+          {searchedData.length === 0 ? (
+            <Typography
+              variant="h6"
+              color="textSecondary"
+              style={{
+                textAlign: 'center',
+                marginTop: '20px',
+              }}
+            >
+              No results found
+            </Typography>
+          ) : (
+            <ol style={{ lineHeight: '2em', fontSize: '18px' }}>
+              {searchedData.map((college, index) => (
+                <li key={index}>
+                  <span style={{ marginRight: '10px' }}>
+                    {college.college_name}
+                  </span>
+                  {college.links['whatsapp community link'] && (
+                    <a
+                      href={college.links['whatsapp community link']}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ marginRight: '10px', color: 'green' }}
+                    >
+                      <WhatsAppIcon />
+                    </a>
+                  )}
+                  {college.links['facebook group link'] && (
+                    <a
+                      href={college.links['facebook group link']}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#4267B2' }}
+                    >
+                      <FacebookIcon />
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ol>
+          )}
+        </>
+      )}
     </div>
   );
 };

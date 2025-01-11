@@ -19,6 +19,7 @@ export const PartTimerPortal = () => {
   const [isError, setIsError] = useState(false); // Add this line
   const [error, setError] = useState(null);
   // const { data: partTimerData, isLoading, isError, error } = usePartTimerQuery(auth.currentUser.uid);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchPartTimerData = async (user_id) => {
@@ -26,7 +27,7 @@ export const PartTimerPortal = () => {
       setIsError(false); // Reset error state on new fetch attempt
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/get-part-timer/${user_id}/`,
+          `${API_BASE_URL}/get-part-timer/${user_id}/`,
         );
         if (!response.ok) {
           throw new Error(

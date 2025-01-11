@@ -6,6 +6,7 @@ import RolesAndAccess from 'src/components/SuperAdmin/RoleAccess/RolesAndAccess'
 import { Status } from 'src/components/SuperAdmin/Status';
 import { Shooping } from 'src/components/SuperAdmin/ACS/ShoopingProducts/Shooping';
 import OurTeam from 'src/components/SuperAdmin/OurTeam/ourTeam';
+import { PartTimerPortal } from 'src/components/pages/ACS/PartTimerPortal';
 export function getSharedRoutes() {
   return [
     { path: 'transactions', element: <Transaction /> },
@@ -15,6 +16,7 @@ export function getSharedRoutes() {
     { path: 'status', element: <Status /> },
     { path: 'shopping', element: <Shooping /> },
     { path: 'ourTeam', element: <OurTeam /> },
+    { path: 'jobapplication/parttimerportal', element: <PartTimerPortal /> },
     // Add other shared routes here
   ];
 }
