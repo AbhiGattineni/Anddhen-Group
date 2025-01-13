@@ -392,6 +392,10 @@ export const adminPlates = [
     child: 'Our Team',
     route: 'ourTeam',
   },
+  {
+    child: 'Partimer Status',
+    route: 'jobapplication/parttimerportal',
+  },
 ];
 
 export const adminPortal = [
@@ -530,7 +534,7 @@ export const acsCards = [
   },
   {
     image: '/assets/images/jobApplication.jpg',
-    path: 'jobapplication',
+    path: 'jobapplication/studentportal',
     heading: 'Job Applications',
     description:
       'Professional assistance with job applications and part-time work placements to help you gain valuable experience.',
