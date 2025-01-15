@@ -23,6 +23,7 @@
     "react-bootstrap": "^2.10.4",
     "react-calendar": "^4.6.1",
     "react-dom": "^17.0.2",
+    "react-helmet-async": "^2.0.5",
     "react-lazy-load-image-component": "^1.6.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.21.2",
@@ -44,11 +45,11 @@
     "prepare": "chmod +x .husky/pre-commit"
   },
   "lint-staged": {
-  "src/**/*.{js,jsx,ts,tsx}": [
-    "prettier --write",
-    "eslint --fix"
-  ]
-},
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
