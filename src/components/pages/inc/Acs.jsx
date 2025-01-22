@@ -5,10 +5,19 @@ import { Link } from 'react-router-dom';
 import { acsCards } from '../../../dataconfig';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import CollegeWhatsappLinks from 'src/components/organisms/CollegeWhatsappLinks';
+import { Helmet } from 'react-helmet-async/lib';
 
 export const Acs = () => {
   return (
     <>
+      <Helmet>
+        <title>Anddhen Consulting Services | Anddhen Group</title>
+        <meta
+          name="description"
+          content="WhatsApp groups links according to the US university 2024-25"
+        />
+        <link rel="cononical" href="/acs" />
+      </Helmet>
       <div className="container mt-3">
         <h1 className="main-heading">Anddhen Consulting Services</h1>
         <p>
@@ -66,7 +75,12 @@ export const Acs = () => {
               className="fw-bold d-flex align-items-center"
             >
               <i className="bi bi-envelope-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
-              anddhenconsulting@gmail.com
+              <a
+                href="mailto:anddhenconsulting@gmail.com"
+                className="text-decoration-none text-dark fw-bold"
+              >
+                anddhenconsulting@gmail.com
+              </a>
             </p>
             <p
               style={{ marginBottom: 5 }}
