@@ -194,11 +194,29 @@ export const Transaction = () => {
 
   const { globalFilter, pageIndex, pageSize } = state;
 
+  // const handleFilterByDate = () => {
+  //   if (startDate && endDate) {
+  //     const filtered = transactions.filter((transaction) => {
+  //       const transactionDate = new Date(transaction.transaction_datetime);
+  //       return transactionDate >= startDate && transactionDate <= endDate;
+  //     });
+  //     setFilteredTransactions(filtered);
+  //   }
+  // };
   const handleFilterByDate = () => {
     if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      // Normalize startDate to the beginning of the day
+      start.setHours(0, 0, 0, 0);
+
+      // Normalize endDate to the end of the day
+      end.setHours(23, 59, 59, 999);
+
       const filtered = transactions.filter((transaction) => {
         const transactionDate = new Date(transaction.transaction_datetime);
-        return transactionDate >= startDate && transactionDate <= endDate;
+        return transactionDate >= start && transactionDate <= end;
       });
       setFilteredTransactions(filtered);
     }
