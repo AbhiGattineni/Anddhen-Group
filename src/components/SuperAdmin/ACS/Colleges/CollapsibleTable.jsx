@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from 'react-query';
-import axios from 'axios';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -24,11 +22,7 @@ import {
   Select,
   useMediaQuery,
 } from '@mui/material';
-
-const fetchColleges = async () => {
-  const { data } = await axios.get('http://127.0.0.1:8000/colleges/all/');
-  return data;
-};
+import { useFetchData } from 'src/react-query/useFetchApis';
 
 // Component for handling global filter
 const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
@@ -452,7 +446,9 @@ Row.propTypes = {
 };
 
 export const ViewCollege = () => {
-  const { data } = useQuery('colleges', fetchColleges);
+  const {
+    data = [], // Provide a default value of an empty array
+  } = useFetchData('colleges', `/colleges/all/`);
   const [globalFilter, setGlobalFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
