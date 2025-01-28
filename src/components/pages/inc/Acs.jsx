@@ -41,7 +41,7 @@ export const Acs = () => {
                     width="100%"
                     className="card-img-top object-fit-fill"
                     src={data.image}
-                    alt="Card image cap"
+                    alt={`${data.heading} image`}
                   />
                 </div>
                 <div className="card-body card-body-cascade text-center">
