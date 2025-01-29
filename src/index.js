@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { hydrate, render } from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -24,7 +24,9 @@ const queryClient = new QueryClient({
   },
 });
 
-ReactDOM.render(
+const rootElement = document.getElementById('root');
+
+const App = (
   <React.StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
@@ -57,11 +59,14 @@ ReactDOM.render(
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </HelmetProvider>
-  </React.StrictMode>,
-  document.getElementById('root'),
+  </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+if (rootElement.hasChildNodes()) {
+  hydrate(App, rootElement);
+} else {
+  render(App, rootElement);
+}
+
+// Performance measurement
 reportWebVitals();

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useQuery } from 'react-query';
-import axios from 'axios';
 import {
   useTable,
   usePagination,
@@ -8,9 +7,12 @@ import {
   useGlobalFilter,
 } from 'react-table';
 import PropTypes from 'prop-types';
+import { useFetchData } from 'src/react-query/useFetchApis';
 
 const fetchColleges = async () => {
-  const { data } = await axios.get('http://127.0.0.1:8000/colleges/all/');
+  const {
+    data = [], // Provide a default value of an empty array
+  } = useFetchData('colleges', `/colleges/all/`);
   return data;
 };
 
