@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
-import { Carousel } from 'react-bootstrap';
+import { Carousel, Container } from 'react-bootstrap';
 
 export const Ati = () => {
   const [setShowToast] = useState(false);
   const [setToastMsg] = useState('');
   return (
-    <div className="">
-      <div className="container mt-3">
-        <h1 className="main-heading">Anddhen Trading & Investiment</h1>
-      </div>
+    <div className="section border-top">
+      <h1 className="text-center">Anddhen Trading and Investment </h1>
+      <div className="underline mx-auto"></div>
       <Carousel
         className="mt-4 mx-auto"
         style={{ maxWidth: '80%', maxHeight: '60%' }}
@@ -22,9 +21,7 @@ export const Ati = () => {
             style={{ width: '600px', height: '300px' }}
           />
           <Carousel.Caption>
-            <h4 className="text-dark">
-              We pave your path to success, turning goals into achievements
-            </h4>
+            <h4 className="text-dark">Trade with us, grow with us</h4>
           </Carousel.Caption>
         </Carousel.Item>
         <Carousel.Item>
@@ -35,9 +32,7 @@ export const Ati = () => {
             style={{ width: '600px', height: '300px' }}
           />
           <Carousel.Caption>
-            <h4 className="text-black bg-white rounded-pill d-inline-block p-1">
-              Earn more with our expertise, effortlessly and stress-free
-            </h4>
+            <h4>Invest smart, grow from the start</h4>
           </Carousel.Caption>
         </Carousel.Item>
         <Carousel.Item>
@@ -53,19 +48,21 @@ export const Ati = () => {
         </Carousel.Item>
       </Carousel>
 
-      <div className="container mt-3">
-        <p>
-          Unlock the true potential of your investments with our expert stock
-          market management services. Specializing in short-term gains, we
-          manage diverse portfolios across the Indian and U.S. stock markets,
-          focusing on equities, ETFs, and other high-potential assets. Our team
-          uses advanced market analysis, trend predictions, and proven
-          strategies to maximize profits quickly while minimizing risk. Whether
-          you're an experienced investor or just starting, we tailor our
-          approach to your financial goals and risk tolerance. With us, you get
-          personalized insights and cutting-edge strategies designed to
-          capitalize on short-term opportunities for rapid growth.
-        </p>
+      <div className="mt-5 p-3 rounded bg-light">
+        <Container>
+          <p className="p-2" style={{ textAlign: 'justify' }}>
+            Unlock the true potential of your investments with our expert stock
+            market management services. Specializing in short-term gains, we
+            manage diverse portfolios across the Indian and U.S. stock markets,
+            focusing on equities, ETFs, and other high-potential assets. Our
+            team uses advanced market analysis, trend predictions, and proven
+            strategies to maximize profits quickly while minimizing risk.
+            Whether you're an experienced investor or just starting, we tailor
+            our approach to your financial goals and risk tolerance. With us,
+            you get personalized insights and cutting-edge strategies designed
+            to capitalize on short-term opportunities for rapid growth.
+          </p>
+        </Container>
       </div>
       <EnquiryForm
         title="ATI : Andheen Trading and Investment Services"
