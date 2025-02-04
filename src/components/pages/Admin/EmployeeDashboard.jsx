@@ -213,7 +213,7 @@ export const EmployeeDashboard = () => {
             </div>
           )}
           <div className="row">
-            <div className="col-12 col-md-6 col-lg-4">
+            <div className="col-6 col-md-3">
               <div className="mb-3">
                 <input
                   type="text"
@@ -226,7 +226,7 @@ export const EmployeeDashboard = () => {
                 />
               </div>
             </div>
-            <div className="col-12 col-md-6 col-lg-4">
+            <div className="col-6 col-md-3">
               <div className="mb-3">
                 <input
                   type="date"
@@ -240,16 +240,16 @@ export const EmployeeDashboard = () => {
                 />
               </div>
             </div>
-            <div className="col-12 col-md-6 col-lg-4">
+            <div className="col-12 col-md-6">
               <div className="mb-3">
-                <input
-                  type="text"
+                <textarea
                   className="form-control"
                   id="status"
                   placeholder="Status"
                   value={formValues.status}
                   onChange={handleInputChange}
                   disabled={disableInputs}
+                  rows={1}
                 />
               </div>
             </div>
