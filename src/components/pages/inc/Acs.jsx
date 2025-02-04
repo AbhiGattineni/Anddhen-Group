@@ -11,12 +11,40 @@ export const Acs = () => {
   return (
     <>
       <Helmet>
-        <title>Anddhen Consulting Services | Anddhen Group</title>
+        <title>WhatsApp Groups for US Spring/Fall 2025 | Anddhen Group</title>
         <meta
           name="description"
           content="WhatsApp groups links according to the US university 2024-25"
         />
+        <meta
+          name="keywords"
+          content="WhatsApp group links, MS in US 2025, WhatsApp groups for students, Spring 2025, Fall 2025, Study in USA"
+        />
         <link rel="cononical" href="/acs" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: 'How do I join WhatsApp groups for MS in US 2025?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: "Click on the WhatsApp group link and tap 'Join Chat' to become a member.",
+                },
+              },
+              {
+                '@type': 'Question',
+                name: 'Are these WhatsApp groups official?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'No, these groups are created by students to share information and help each other.',
+                },
+              },
+            ],
+          })}
+        </script>
       </Helmet>
       <div className="container mt-3">
         <h1 className="main-heading">Anddhen Consulting Services</h1>
