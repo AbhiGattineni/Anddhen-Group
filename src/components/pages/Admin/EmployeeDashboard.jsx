@@ -23,7 +23,6 @@ export const EmployeeDashboard = () => {
   const [search, setSearch] = useState('');
   const [searchedPlates, setSearchedPlates] = useState(adminPlates);
 
-  // const userId = auth.currentUser ? auth.currentUser.uid : null;
   const { data } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate,
@@ -41,7 +40,7 @@ export const EmployeeDashboard = () => {
       );
 
   useEffect(() => {
-    if (searchedPlates != filteredPlates) {
+    if (searchedPlates !== filteredPlates) {
       setSearchedPlates(filteredPlates);
     }
   }, []);
@@ -71,29 +70,30 @@ export const EmployeeDashboard = () => {
       });
     }
   }, [auth.currentUser]);
+
   const formatDate = (date) => {
     const inputDate = new Date(date);
     const year = inputDate.getFullYear();
     const month = String(inputDate.getMonth() + 1).padStart(2, '0');
     const day = String(inputDate.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    return formattedDate;
+    return `${year}-${month}-${day}`;
   };
+
   useEffect(() => {
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
     if (data && selectedAcsStatusDate) {
-      let found = false; // Flag to indicate if a match is found
+      let found = false;
       data.forEach((status) => {
         if (formattedSelectedDate === status.date) {
-          found = true; // Set flag to true if a match is found
+          found = true;
           setDisableInputs(true);
           setFormValues({
             name: auth.currentUser.displayName,
             date: status.date,
             status: status.status,
           });
-          return; // Exit the loop once a match is found
+          return;
         }
       });
       if (!found) {
@@ -106,14 +106,12 @@ export const EmployeeDashboard = () => {
       }
     }
 
-    var currentDate = new Date().toISOString().split('T')[0];
-    var isSelectedDateCurrent = formattedSelectedDate === currentDate;
+    const currentDate = new Date().toISOString().split('T')[0];
+    const isSelectedDateCurrent = formattedSelectedDate === currentDate;
     if (
       data &&
       isSelectedDateCurrent &&
-      data.some(function (obj) {
-        return obj.date === currentDate;
-      })
+      data.some((obj) => obj.date === currentDate)
     ) {
       setShowEdit(true);
     } else {
@@ -147,9 +145,10 @@ export const EmployeeDashboard = () => {
           default:
             break;
         }
-        const errorMessage = `Please fill in the required field: ${missingFieldName}`;
-        setMsgResponse(errorMessage);
-        return; // Stop form submission if a required field is missing
+        setMsgResponse(
+          `Please fill in the required field: ${missingFieldName}`,
+        );
+        return;
       }
 
       const postStatus = {
@@ -159,9 +158,7 @@ export const EmployeeDashboard = () => {
         status: formValues.status,
       };
 
-      // setMsgResponse("Loading...");
       let response;
-
       try {
         if (!showEdit) {
           response = await statusMutation.mutateAsync(postStatus);
@@ -274,15 +271,18 @@ export const EmployeeDashboard = () => {
           </div>
         </form>
       </div>
-      <div className="input-group px-5 mt-4">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search cards..."
-          value={search}
-          onChange={handleSearch}
-        />
-      </div>
+      {/* Conditionally render search bar if cards are available */}
+      {searchedPlates.length > 0 && (
+        <div className="input-group px-5 mt-4">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search cards..."
+            value={search}
+            onChange={handleSearch}
+          />
+        </div>
+      )}
       <AssignCards adminPlates={searchedPlates} />
     </div>
   );
