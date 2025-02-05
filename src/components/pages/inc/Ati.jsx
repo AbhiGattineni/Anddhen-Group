@@ -57,7 +57,7 @@ export const Ati = () => {
             focusing on equities, ETFs, and other high-potential assets. Our
             team uses advanced market analysis, trend predictions, and proven
             strategies to maximize profits quickly while minimizing risk.
-            Whether you're an experienced investor or just starting, we tailor
+            Whether you are an experienced investor or just starting, we tailor
             our approach to your financial goals and risk tolerance. With us,
             you get personalized insights and cutting-edge strategies designed
             to capitalize on short-term opportunities for rapid growth.

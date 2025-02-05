@@ -546,6 +546,13 @@ export const acsCards = [
     description:
       'Comprehensive skill development courses designed to enhance your knowledge and boost career opportunities.',
   },
+  {
+    image: '/assets/images/courses.jpg',
+    path: '/acs/resume-building',
+    heading: 'Resume Building',
+    description:
+      'Comprehensive skill development courses designed to enhance your knowledge and boost career opportunities.',
+  },
 ];
 
 export const STAFFING = [
