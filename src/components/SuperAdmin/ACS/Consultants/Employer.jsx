@@ -13,6 +13,7 @@ import {
   Typography,
   CircularProgress,
   Grid,
+  Pagination,
 } from '@mui/material';
 import { Edit, Save, Delete, Add, Search } from '@mui/icons-material';
 import {
@@ -35,24 +36,25 @@ const Employer = () => {
     message: '',
     color: undefined,
   });
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 15;
   const queryClient = useQueryClient();
 
   const { data = [] } = useFetchData('employer', '/employers/');
 
   const handleSearch = (e) => setSearch(e.target.value);
 
-  // Initialize edit state with current row values
   const handleEditId = (id) => {
     const row = data.find((row) => row.id === id);
     setEditValues({ name: row.name, address: row.address });
     setEditRowId(id);
   };
 
-  // Save updated data
   const { mutate: updateEmployer, isLoading: isUpdating } = useUpdateData(
     'employer',
     `/employers/${editRowId}/`,
   );
+
   const handleSave = () => {
     updateEmployer(editValues, {
       onSuccess: () => {
@@ -83,12 +85,10 @@ const Employer = () => {
     });
   };
 
-  // Update local edit values on input change
   const handleInputChange = (e, field) => {
     setEditValues((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  // Add new employer
   const { mutate: addEmployer } = useAddData('employer', '/employers/');
   const handleAddRow = () => {
     addEmployer(newRow, {
@@ -120,13 +120,12 @@ const Employer = () => {
     });
   };
 
-  // Delete employer
   const { mutate: deleteEmployer, isLoading: isDeleting } = useDeleteData(
     'employer',
     `/employers/${selectedId}/`,
   );
   const handleDelete = (id) => {
-    setSelectedId(id); // Set the ID to delete
+    setSelectedId(id);
     deleteEmployer(null, {
       onSuccess: () => {
         queryClient.invalidateQueries('employer');
@@ -161,6 +160,13 @@ const Employer = () => {
       row.address.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const paginatedData = filteredData.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage,
+  );
+
+  const handlePageChange = (event, value) => setPage(value);
+
   return (
     <Paper style={{ padding: 20 }}>
       <Typography variant="h5" gutterBottom>
@@ -168,13 +174,6 @@ const Employer = () => {
       </Typography>
       <Grid container spacing={2} sx={{ padding: 2 }}>
         <Grid item xs={12} sm={6} md={4}>
-          {/* <TextField
-              label="Search"
-              variant="outlined"
-              value={search}
-              onChange={handleSearch}
-              fullWidth
-              /> */}
           <TextField
             label="Search"
             variant="outlined"
@@ -182,9 +181,7 @@ const Employer = () => {
             onChange={handleSearch}
             fullWidth
             margin="normal"
-            InputProps={{
-              startAdornment: <Search />,
-            }}
+            InputProps={{ startAdornment: <Search /> }}
           />
         </Grid>
       </Grid>
@@ -227,7 +224,7 @@ const Employer = () => {
                 </Button>
               </TableCell>
             </TableRow>
-            {filteredData.map((row) => (
+            {paginatedData.map((row) => (
               <TableRow key={row.id}>
                 {['name', 'address'].map((field) => (
                   <TableCell key={field}>
@@ -271,6 +268,12 @@ const Employer = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination
+        count={Math.ceil(filteredData.length / rowsPerPage)}
+        page={page}
+        onChange={handlePageChange}
+        sx={{ marginTop: 2, display: 'flex', justifyContent: 'center' }}
+      />
       <Toast
         show={toast.show}
         message={toast.message}

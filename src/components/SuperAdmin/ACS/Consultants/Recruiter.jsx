@@ -13,6 +13,7 @@ import {
   Typography,
   Grid,
   CircularProgress,
+  Pagination,
 } from '@mui/material';
 import { Edit, Save, Delete, Add, Search } from '@mui/icons-material';
 import {
@@ -41,6 +42,9 @@ const Recruiter = () => {
     employer: '',
     email: '',
   });
+
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 15;
 
   const { data = [] } = useFetchData('recruiter', '/recruiters/');
 
@@ -123,6 +127,13 @@ const Recruiter = () => {
       row.email.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const paginatedData = filteredData.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage,
+  );
+
+  const handlePageChange = (event, value) => setPage(value);
+
   return (
     <div>
       <TableContainer component={Paper} sx={{ padding: 2 }}>
@@ -187,7 +198,7 @@ const Recruiter = () => {
                 </Button>
               </TableCell>
             </TableRow>
-            {filteredData.map((row) => (
+            {paginatedData.map((row) => (
               <TableRow key={row.id}>
                 {['name', 'phone', 'employer', 'email'].map((field) => (
                   <TableCell key={field}>
@@ -235,6 +246,14 @@ const Recruiter = () => {
             ))}
           </TableBody>
         </Table>
+        <Grid container justifyContent="center" sx={{ marginTop: 2 }}>
+          <Pagination
+            count={Math.ceil(filteredData.length / rowsPerPage)}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        </Grid>
       </TableContainer>
       <Toast
         show={toast.show}
