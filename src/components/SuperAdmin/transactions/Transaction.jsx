@@ -93,16 +93,24 @@ export const Transaction = () => {
         Cell: ({ value }) => new Date(value).toLocaleString(),
       },
       {
-        Header: 'Cred Amt',
-        Tooltip: 'Credited Amount',
-        accessor: 'credited_amount',
-        Cell: ({ value }) => `₹ ${parseFloat(value).toFixed(2)}`,
-      },
-      {
-        Header: 'Deb Amt',
-        Tooltip: 'Debited Amount',
-        accessor: 'debited_amount',
-        Cell: ({ value }) => `₹ ${parseFloat(value).toFixed(2)}`,
+        Header: 'Amount',
+        accessor: 'amount',
+        Cell: ({ row }) => {
+          const transaction = row.original;
+          const amount =
+            transaction.transaction_type === 'credit'
+              ? transaction.credited_amount
+              : transaction.debited_amount;
+          const color =
+            transaction.transaction_type === 'credit'
+              ? 'text-success'
+              : 'text-danger';
+          return (
+            <div className={`${color} fw-bold`}>
+              ₹ {parseFloat(amount).toFixed(2)}
+            </div>
+          );
+        },
       },
       { Header: 'Pay Type', Tooltip: 'Payment Type', accessor: 'payment_type' },
       { Header: 'Subsidiary', accessor: 'subsidiary' },
@@ -194,15 +202,6 @@ export const Transaction = () => {
 
   const { globalFilter, pageIndex, pageSize } = state;
 
-  // const handleFilterByDate = () => {
-  //   if (startDate && endDate) {
-  //     const filtered = transactions.filter((transaction) => {
-  //       const transactionDate = new Date(transaction.transaction_datetime);
-  //       return transactionDate >= startDate && transactionDate <= endDate;
-  //     });
-  //     setFilteredTransactions(filtered);
-  //   }
-  // };
   const handleFilterByDate = () => {
     if (startDate && endDate) {
       const start = new Date(startDate);
@@ -370,23 +369,9 @@ export const Transaction = () => {
                     return (
                       <tr {...row.getRowProps()} key={index}>
                         {row.cells.map((cell, index) => {
-                          const columnId = cell.column.id;
-                          const isDebited = columnId === 'credited_amount';
-                          const isCredited = columnId === 'debited_amount';
-                          const className = isDebited
-                            ? row.original.transaction_type === 'credit'
-                              ? 'text-success  fw-bold'
-                              : ''
-                            : isCredited
-                              ? row.original.transaction_type === 'credit'
-                                ? ''
-                                : 'text-danger fw-bold'
-                              : '';
                           return (
                             <td {...cell.getCellProps()} key={index}>
-                              <div
-                                className={`${className} text-center p-1 rounded-pill`}
-                              >
+                              <div className="text-center p-1 rounded-pill">
                                 {cell.render('Cell')}
                               </div>
                             </td>
