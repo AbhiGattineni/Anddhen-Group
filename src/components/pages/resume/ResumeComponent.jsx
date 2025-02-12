@@ -175,8 +175,6 @@ const ResumeComponent = () => {
     }));
   };
 
-  console.log(formData);
-
   const isNextDisabled = () => {
     const categoryId = categories[activeStep].id; // Get current category ID
     const requiredFields = categories[activeStep].required || [];
