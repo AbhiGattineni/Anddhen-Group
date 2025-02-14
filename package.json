@@ -49,14 +49,10 @@
     "generate-sitemap": "node sitemap-generator.js"
   },
   "reactSnap": {
-    "puppeteerArgs": [
-      "--no-sandbox"
-    ],
-    "timeout": 60000,
-    "exclude": [
-      "/ass"
-    ]
-  },
+  "puppeteerArgs": ["--no-sandbox"],
+  "timeout": 120000,
+  "exclude": ["/ass"]
+},
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
       "prettier --write",
