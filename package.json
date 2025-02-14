@@ -44,7 +44,6 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "prepare": "chmod +x .husky/pre-commit",
-    "postbuild": "react-snap",
     "generate-sitemap": "node sitemap-generator.js"
   },
   "lint-staged": {
