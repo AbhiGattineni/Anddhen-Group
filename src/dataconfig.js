@@ -354,18 +354,6 @@ export const videoLinks = [
 export const adminPlates = [
   {
     child: 'Anddhen Consulting Services',
-    route: 'managers/updates',
-  },
-  {
-    child: 'Anddhen Consulting Services',
-    route: 'parttimers/updates',
-  },
-  {
-    child: 'Anddhen Software Services',
-    route: 'interns/updates',
-  },
-  {
-    child: 'Anddhen Consulting Services',
     route: 'consultants',
   },
   {
