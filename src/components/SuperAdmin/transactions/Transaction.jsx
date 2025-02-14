@@ -12,7 +12,6 @@ import { TransactionModal } from 'src/components/organisms/Modal/TransactionModa
 import PropTypes from 'prop-types';
 import { useDeleteData } from 'src/react-query/useFetchApis';
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const Transaction = () => {
   const [startDate, setStartDate] = useState(null);
