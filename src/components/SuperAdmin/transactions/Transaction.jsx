@@ -457,9 +457,14 @@ export const Transaction = () => {
 Transaction.propTypes = {
   row: PropTypes.shape({
     original: PropTypes.shape({
-      id: PropTypes.number.isRequired, // or `.string` based on your data type
+      id: PropTypes.number.isRequired,
       transaction_type: PropTypes.string,
       total: PropTypes.number,
+      credited_amount: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      debited_amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }).isRequired,
   }).isRequired,
 };
