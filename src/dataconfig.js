@@ -856,3 +856,63 @@ export const shoopingForNRI = [
       'Kirkland Signature All Chocolate Bag offers a variety of chocolate treats in one convenient pack. Perfect for sharing or personal indulgence.',
   },
 ];
+
+export const marketingData = [
+  {
+    id: 1,
+    logo: '/assets/images/SocialMedia.png',
+    heading: 'Social Media Management',
+    description:
+      'Take your online presence to the next level! We handle posting, engagement, and analytics, so you can focus on creating while we grow your audience.',
+  },
+  {
+    id: 2,
+    logo: '/assets/images/photoediting.png',
+    heading: 'Photo Editing',
+    description:
+      'Make your visuals unforgettable! Our editing experts enhance your photos to perfection, ensuring they stand out and grab attention in any feed.',
+  },
+  {
+    id: 3,
+
+    logo: '/assets/images/videoEditing.png',
+    heading: 'Video Editing',
+    description:
+      'Turn your raw clips into stunning masterpieces! We add life to make your content polished, professional, and ready to captivate your audience.',
+  },
+  {
+    id: 4,
+    logo: '/assets/images/contentCreation.png',
+    heading: 'Content Creation',
+    description:
+      'Never run out of ideas! We create eye-catching visuals and engaging captions that resonate with your audience and keep them coming back for more.',
+  },
+  {
+    id: 5,
+    logo: '/assets/images/SchedulePosting.png',
+    heading: 'Scheduled Posting',
+    description:
+      'Post smarter, not harder! We schedule your content at the best times to maximize visibility and engagement, so you can focus on creating.',
+  },
+  {
+    id: 6,
+    logo: '/assets/images/hashtag.png',
+    heading: 'Hashtag Strategy',
+    description:
+      'Boost your reach and get discovered! We craft custom hashtag strategies to attract new followers and make your content stand out in a crowded space.',
+  },
+  {
+    id: 7,
+    logo: '/assets/images/thumbnail.png', // Replace with the actual path to the thumbnail making logo
+    heading: 'Thumbnail Making',
+    description:
+      'Create eye-catching thumbnails that grab attention and drive clicks! Our designers craft custom thumbnails tailored to your content, ensuring it stands out and attracts viewers.',
+  },
+  {
+    id: 8,
+    logo: '/assets/images/connection.png', // Replace with the actual path to the connection establishment logo
+    heading: 'Brand-Creator Connections',
+    description:
+      'We bridge the gap between brands and content creators! Our platform connects you with the right partners, helping you collaborate and grow together in the digital space.',
+  },
+];
