@@ -237,11 +237,6 @@ const ResumeComponent = () => {
     }));
   };
 
-<<<<<<< HEAD
-=======
-  console.log(formData);
-
->>>>>>> d58414a (resume page creation)
   const isNextDisabled = () => {
     const categoryId = categories[activeStep].id; // Get current category ID
     const requiredFields = categories[activeStep].required || [];
