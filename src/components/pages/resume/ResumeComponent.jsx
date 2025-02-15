@@ -20,6 +20,7 @@ import { useTheme } from '@mui/material/styles';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 // import { Document, Page, Text, View, Link } from '@react-pdf/renderer';
 import ResumePreview from './ResumePreview';
+import { fetchAi } from './AISuggestions';
 
 const categories = [
   {
@@ -30,9 +31,9 @@ const categories = [
       'email',
       'phone',
       'address',
-      'linkedIn',
-      'gitHub',
-      'portfolio',
+      'linkedIn_Link',
+      'gitHub_Link',
+      'portfolio_Link',
     ],
     required: ['name', 'email', 'phone', 'address'],
   },
@@ -40,22 +41,43 @@ const categories = [
     id: 'education',
     label: 'Education',
     fields: [
-      'collegeName',
+      'college_Name',
       'location',
       'degree',
       'field',
-      'gpaScore',
-      'startDate',
-      'endDate',
+      'gpa_Score',
+      'start_Date',
+      'end_Date',
       'current',
     ],
-    required: ['collegeName', 'location', 'degree', 'field', 'startDate'],
+    required: [
+      'college_Name',
+      'location',
+      'degree',
+      'field',
+      'start_Date',
+      'end_Date',
+    ],
   },
   {
     id: 'skills',
     label: 'Technical Skills',
     fields: [],
     required: [],
+  },
+  {
+    id: 'experience',
+    label: 'Experience',
+    fields: [
+      'company_Name',
+      'role',
+      'start_Date',
+      'end_Date',
+      'current',
+      'location',
+      'description',
+    ],
+    required: ['company_Name', 'role', 'start_Date', 'location', 'description'],
   },
 ];
 
@@ -64,7 +86,11 @@ const ResumeComponent = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [formData, setFormData] = useState({ education: [{}], skills: [] });
+  const [formData, setFormData] = useState({
+    education: [{}],
+    skills: [],
+    experience: [{}],
+  });
   const [skillInput, setSkillInput] = useState('');
   const suggestedSkills = [
     'React',
@@ -87,13 +113,32 @@ const ResumeComponent = () => {
       }));
     }
   };
+  console.log(formData);
 
   const memoizedResume = useMemo(
     () => <ResumePreview formData={formData} />,
     [formData],
   );
 
-  const handleNext = () => setActiveStep((prev) => prev + 1);
+  const handleNext = async () => {
+    if (activeStep === 1) {
+      console.log('Entering skills..');
+      const education = JSON.stringify(formData.education);
+
+      try {
+        const skills = await fetchAi(
+          `Give some suggested skill languages for the user based on the education: ${education} and only give skills as points as numbers without any description.`,
+        );
+
+        console.log('Skills:', skills);
+      } catch (error) {
+        console.error('Error fetching AI skills:', error);
+      }
+    }
+
+    setActiveStep((prev) => prev + 1);
+  };
+
   const handleBack = () => setActiveStep((prev) => prev - 1);
 
   const handleChange = (e, index = null) => {
@@ -108,7 +153,7 @@ const ResumeComponent = () => {
           ...prevData[categoryId],
           [name]: type === 'checkbox' ? checked : value,
         };
-      } else if (activeStep === 1) {
+      } else if (activeStep === 1 || activeStep === 3) {
         const existingArray = Array.isArray(prevData[categoryId])
           ? [...prevData[categoryId]]
           : [];
@@ -119,16 +164,15 @@ const ResumeComponent = () => {
             [name]: type === 'checkbox' ? checked : value,
           };
 
-          // If "current" is checked for this entry, set "endDate" to "Present"
+          // If "current" is checked for this entry, set "end_Date" to "Present"
           if (name === 'current') {
             if (checked) {
-              existingArray[index].endDate = 'Present';
+              existingArray[index].end_Date = 'Present';
             } else {
-              existingArray[index].endDate = ''; // Allow the user to enter an end date again
+              existingArray[index].end_Date = ''; // Allow the user to enter an end date again
             }
           }
         }
-
         values = existingArray;
       } else if (activeStep === 2) {
         values = [...prevData[categoryId], value];
@@ -145,6 +189,13 @@ const ResumeComponent = () => {
     }));
   };
 
+  const addExperience = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      experience: [...(prevData.experience || []), {}], // Add new empty experience entry
+    }));
+  };
+
   const removeEducation = (index) => {
     setFormData((prevData) => {
       if (prevData.education.length === 1) return prevData;
@@ -152,6 +203,17 @@ const ResumeComponent = () => {
       return {
         ...prevData,
         education: prevData.education.filter((_, i) => i !== index),
+      };
+    });
+  };
+
+  const removeExperience = (index) => {
+    setFormData((prevData) => {
+      if (prevData.experience.length === 1) return prevData;
+
+      return {
+        ...prevData,
+        experience: prevData.experience.filter((_, i) => i !== index),
       };
     });
   };
@@ -268,7 +330,9 @@ const ResumeComponent = () => {
               categories[activeStep].fields.map((field) => (
                 <TextField
                   key={field}
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
+                  label={field
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, (char) => char.toUpperCase())}
                   name={field}
                   fullWidth
                   margin="normal"
@@ -308,7 +372,9 @@ const ResumeComponent = () => {
                       ) : (
                         <TextField
                           key={field}
-                          label={field.charAt(0).toUpperCase() + field.slice(1)}
+                          label={field
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
                           name={field}
                           fullWidth
                           margin="normal"
@@ -317,7 +383,7 @@ const ResumeComponent = () => {
                           required={categories[activeStep].required.includes(
                             field,
                           )}
-                          disabled={field === 'endDate' && edu.current}
+                          disabled={field === 'end_Date' && edu.current}
                         />
                       ),
                     )}
@@ -387,6 +453,84 @@ const ResumeComponent = () => {
                     />
                   ))}
                 </Box>
+              </>
+            )}
+
+            {/* Step 1: Experience */}
+            {activeStep === 3 && (
+              <>
+                {formData.experience?.map((exp, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      mb: 2,
+                      p: 2,
+                      border: '1px solid #ddd',
+                      borderRadius: '8px',
+                      position: 'relative',
+                    }}
+                  >
+                    {categories[activeStep].fields.map((field) =>
+                      field === 'current' ? (
+                        <FormControlLabel
+                          key={field}
+                          control={
+                            <Checkbox
+                              name={field}
+                              checked={exp[field] || false}
+                              onChange={(e) => handleChange(e, index)}
+                            />
+                          }
+                          label="Currently Working"
+                        />
+                      ) : (
+                        <TextField
+                          key={field}
+                          label={field
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, (char) => char.toUpperCase())}
+                          name={field}
+                          fullWidth
+                          margin="normal"
+                          onChange={(e) => handleChange(e, index)}
+                          value={exp[field] ?? ''}
+                          required={categories[activeStep].required.includes(
+                            field,
+                          )}
+                          disabled={field === 'end_Date' && exp.current}
+                        />
+                      ),
+                    )}
+
+                    {/* Remove experince Entry (Disabled if only 1 entry remains) */}
+                    {formData.experience.length > 1 && (
+                      <Typography
+                        onClick={() => removeExperience(index)}
+                        sx={{
+                          mt: 1,
+                          color: 'red',
+                          cursor: 'pointer',
+                          textAlign: 'right',
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          '&:hover': { textDecoration: 'underline' },
+                        }}
+                      >
+                        Remove
+                      </Typography>
+                    )}
+                  </Box>
+                ))}
+
+                {/* Add Experience Button */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={addExperience}
+                  sx={{ mt: 2 }}
+                >
+                  Add Experience
+                </Button>
               </>
             )}
           </Box>
