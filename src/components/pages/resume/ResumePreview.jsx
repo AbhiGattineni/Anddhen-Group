@@ -18,7 +18,7 @@ const ResumePreview = ({ formData }) => (
           src={formData?.personalInfo?.portfolio_Link}
           style={{
             fontSize: 16,
-            fontWeight: 200,
+            fontFamily: 'Helvetica-Bold',
             textDecoration: 'none',
             color: 'blue',
           }}
@@ -46,7 +46,9 @@ const ResumePreview = ({ formData }) => (
           {formData.personalInfo?.email && (
             <>
               <Text style={{ marginHorizontal: 5 }}>|</Text>
-              <Text>{formData.personalInfo?.email}</Text>
+              <Link src={formData.personalInfo?.email}>
+                {formData.personalInfo?.email}
+              </Link>
             </>
           )}
           {formData.personalInfo?.linkedIn_Link && (
@@ -65,12 +67,12 @@ const ResumePreview = ({ formData }) => (
       </View>
 
       {/* Education */}
-      {Object.keys(formData.education[0]).length > 0 && (
+      {Object.keys(formData?.education[0]).length > 0 && (
         <View style={{ marginBottom: 2 }}>
           <Text
             style={{
               fontSize: 11,
-              fontWeight: 'bold',
+              fontFamily: 'Helvetica-Bold',
               textDecoration: 'underline',
             }}
           >
@@ -84,8 +86,10 @@ const ResumePreview = ({ formData }) => (
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ fontWeight: 'bold' }}>
-                  {educ.college_Name}{' '}
+                <Text>
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
+                    {educ.college_Name}
+                  </Text>{' '}
                   {educ.gpa_Score && <Text>(GPA: {educ.gpa_Score} / 4.0)</Text>}
                 </Text>
                 <Text>{educ.location}</Text>
@@ -108,7 +112,7 @@ const ResumePreview = ({ formData }) => (
         </View>
       )}
 
-      {Object.keys(formData.skills).length > 0 && (
+      {Object.keys(formData?.skills).length > 0 && (
         <>
           <View
             style={{
@@ -117,26 +121,33 @@ const ResumePreview = ({ formData }) => (
               marginVertical: 2,
             }}
           />
-
           <View>
             <Text
               style={{
                 fontSize: 11,
-                fontWeight: 'bold',
+                fontFamily: 'Helvetica-Bold',
                 textDecoration: 'underline',
               }}
             >
               TECHNICAL SKILLS
             </Text>
-            {formData.technicalSkills?.map((skill, index) => (
-              <Text key={index}>{skill}</Text>
-            ))}
+            {formData.categorialSkills &&
+              Object.entries(formData.categorialSkills).map(
+                ([category, skills], index) => (
+                  <Text key={index} style={{ fontSize: 9 }}>
+                    <Text style={{ fontFamily: 'Helvetica-Bold' }}>
+                      {category}:
+                    </Text>{' '}
+                    {skills.join(', ')}
+                  </Text>
+                ),
+              )}
           </View>
         </>
       )}
 
       {/* Experience */}
-      {Object.keys(formData.experience[0]).length > 0 && (
+      {Object.keys(formData?.experience[0]).length > 0 && (
         <>
           <View
             style={{
@@ -149,13 +160,158 @@ const ResumePreview = ({ formData }) => (
             <Text
               style={{
                 fontSize: 11,
-                fontWeight: 'bold',
+                fontFamily: 'Helvetica-Bold',
                 textDecoration: 'underline',
               }}
             >
               EXPERIENCE
             </Text>
+            {formData.experience?.map((exp, index) => (
+              <View key={index} style={{ marginTop: 5, fontSize: 9 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
+                    {exp.company_Name}
+                  </Text>
+                  <Text style={{ fontStyle: 'italic' }}>{exp.location}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
+                    {exp.role}
+                  </Text>
+                  <Text>
+                    {exp.start_Date} - {exp.end_Date}
+                  </Text>
+                </View>
+                {exp.description && (
+                  <View style={{ marginLeft: 4 }}>
+                    {exp.description.split('\n').map((desc, index) => (
+                      <View key={index} style={{ flexDirection: 'row' }}>
+                        <Text style={{ marginRight: 5 }}>•</Text>
+                        <Text>{desc}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            ))}
           </View>
+        </>
+      )}
+
+      {Object.keys(formData?.projects[0]).length > 0 && (
+        <>
+          <View
+            style={{
+              height: 0.5,
+              backgroundColor: '#000',
+              marginVertical: 2,
+            }}
+          />
+          <View style={{ marginBottom: 2 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontFamily: 'Helvetica-Bold',
+                textDecoration: 'underline',
+              }}
+            >
+              PROJECTS
+            </Text>
+            {formData.projects?.map((proj, index) => (
+              <View key={index} style={{ marginTop: 5, fontSize: 9 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'left',
+                  }}
+                >
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
+                    {proj.title}
+                  </Text>
+                  <View style={{ width: 5 }} />
+                  {proj?.project_Link && (
+                    <Link src={proj.project_Link}>Link</Link>
+                  )}
+                </View>
+
+                {proj.description && (
+                  <View style={{ marginLeft: 4 }}>
+                    {proj.description.split('\n').map((desc, index) => (
+                      <View key={index} style={{ flexDirection: 'row' }}>
+                        <Text style={{ marginRight: 5 }}>•</Text>
+                        <Text>{desc}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        </>
+      )}
+
+      {formData?.additional?.length > 0 && (
+        <>
+          {formData.additional.map((item, index) => (
+            <View key={index}>
+              <View
+                style={{
+                  height: 0.5,
+                  backgroundColor: '#000',
+                  marginVertical: 2,
+                }}
+              />
+              <View style={{ marginBottom: 2 }}>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontFamily: 'Helvetica-Bold',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  {item.section_Name}
+                </Text>
+                {item.entries?.map((exp, index) => (
+                  <View key={index} style={{ marginTop: 5, fontSize: 9 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <Text style={{ fontFamily: 'Helvetica-Bold' }}>
+                        {exp.title}
+                      </Text>
+                      <Text>
+                        {exp.start_Date} - {exp.end_Date}
+                      </Text>
+                    </View>
+                    {exp.description && (
+                      <View style={{ marginLeft: 4 }}>
+                        {exp.description.split('\n').map((desc, index) => (
+                          <View key={index} style={{ flexDirection: 'row' }}>
+                            <Text style={{ marginRight: 5 }}>•</Text>
+                            <Text>{desc}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            </View>
+          ))}
         </>
       )}
     </Page>
@@ -184,8 +340,32 @@ ResumePreview.propTypes = {
       }),
     ),
     skills: PropTypes.arrayOf(PropTypes.string),
-    technicalSkills: PropTypes.arrayOf(PropTypes.string),
-    experience: PropTypes.arrayOf(PropTypes.string),
+    categorialSkills: PropTypes.shape({}),
+    experience: PropTypes.arrayOf(
+      PropTypes.shape({
+        // Define the expected properties inside each experience object
+      }),
+    ),
+    projects: PropTypes.arrayOf(
+      PropTypes.shape({
+        projects: PropTypes.string,
+        project_Link: PropTypes.string,
+        description: PropTypes.string,
+      }),
+    ),
+    additional: PropTypes.arrayOf(
+      PropTypes.shape({
+        category: PropTypes.string,
+        entries: PropTypes.arrayOf(
+          PropTypes.shape({
+            title: PropTypes.string,
+            start_Date: PropTypes.string,
+            end_Date: PropTypes.string,
+            description: PropTypes.string,
+          }),
+        ),
+      }),
+    ).isRequired,
   }),
 };
 
