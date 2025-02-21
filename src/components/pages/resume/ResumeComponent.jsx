@@ -4,80 +4,38 @@ import {
   Stepper,
   Step,
   StepLabel,
-  TextField,
-  Checkbox,
-  FormControlLabel,
   Box,
-  // Paper,
-  Typography,
   useMediaQuery,
-  // Divider,
   Chip,
   Grid,
+  Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-// import { resumeTemplate } from './resumeTemplate';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
-// import { Document, Page, Text, View, Link } from '@react-pdf/renderer';
 import ResumePreview from './ResumePreview';
-
-const categories = [
-  {
-    id: 'personalInfo',
-    label: 'Personal Info',
-    fields: [
-      'name',
-      'email',
-      'phone',
-      'address',
-      'linkedIn',
-      'gitHub',
-      'portfolio',
-    ],
-    required: ['name', 'email', 'phone', 'address'],
-  },
-  {
-    id: 'education',
-    label: 'Education',
-    fields: [
-      'collegeName',
-      'location',
-      'degree',
-      'field',
-      'gpaScore',
-      'startDate',
-      'endDate',
-      'current',
-    ],
-    required: ['collegeName', 'location', 'degree', 'field', 'startDate'],
-  },
-  {
-    id: 'skills',
-    label: 'Technical Skills',
-    fields: [],
-    required: [],
-  },
-];
+import { fetchAi } from './AISuggestions';
+import PersonalInfo from './resumesteps/PersonalInfo';
+import Education from './resumesteps/Education';
+import Experience from './resumesteps/Experience';
+import Skills from './resumesteps/Skills';
+import { categories } from './Categories';
+import Projects from './resumesteps/Projects';
+import Additional from './resumesteps/Additional';
 
 const ResumeComponent = () => {
   const [activeStep, setActiveStep] = useState(0);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [formData, setFormData] = useState({ education: [{}], skills: [] });
+  const [formData, setFormData] = useState({
+    education: [{}],
+    experience: [{}],
+    projects: [{}],
+    skills: [],
+  });
   const [skillInput, setSkillInput] = useState('');
-  const suggestedSkills = [
-    'React',
-    'JavaScript',
-    'Python',
-    'Django',
-    'SQL',
-    'Node.js',
-    'TypeScript',
-    'AWS',
-    'Git',
-    'GraphQL',
-  ];
+  const [suggestedSkills, setSuggestedSkills] = useState([]);
+  console.log(setSuggestedSkills);
 
   const handleAddSuggestedSkill = (skill) => {
     if (!formData.skills.includes(skill)) {
@@ -87,13 +45,43 @@ const ResumeComponent = () => {
       }));
     }
   };
+  console.log(formData);
 
   const memoizedResume = useMemo(
     () => <ResumePreview formData={formData} />,
     [formData],
   );
 
-  const handleNext = () => setActiveStep((prev) => prev + 1);
+  const handleNext = async () => {
+    if (activeStep === 3 && suggestedSkills?.length === 0) {
+      const experienceDescriptions = formData.experience
+        ?.map((exp) => exp.description)
+        .filter(Boolean)
+        .join(', ');
+
+      const projectDescriptions = formData.projects
+        ?.map((proj) => proj.description)
+        .filter(Boolean)
+        .join(', ');
+
+      try {
+        const skills = await fetchAi(
+          `Give some suggested skill languages (top 10) for the user based on the experience: ${experienceDescriptions}, and projects: ${projectDescriptions}. Only give skills as numbered points without any description.`,
+        );
+
+        const skillList = skills
+          .split('\n')
+          .map((skill) => skill.replace(/^\d+\.\s*/, '').trim());
+
+        setSuggestedSkills(skillList);
+      } catch (error) {
+        console.error('Error fetching AI skills:', error);
+      }
+    }
+
+    setActiveStep((prev) => prev + 1);
+  };
+
   const handleBack = () => setActiveStep((prev) => prev - 1);
 
   const handleChange = (e, index = null) => {
@@ -108,7 +96,7 @@ const ResumeComponent = () => {
           ...prevData[categoryId],
           [name]: type === 'checkbox' ? checked : value,
         };
-      } else if (activeStep === 1) {
+      } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
         const existingArray = Array.isArray(prevData[categoryId])
           ? [...prevData[categoryId]]
           : [];
@@ -119,39 +107,37 @@ const ResumeComponent = () => {
             [name]: type === 'checkbox' ? checked : value,
           };
 
-          // If "current" is checked for this entry, set "endDate" to "Present"
+          // If "current" is checked for this entry, set "end_Date" to "Present"
           if (name === 'current') {
             if (checked) {
-              existingArray[index].endDate = 'Present';
+              existingArray[index].end_Date = 'Present';
             } else {
-              existingArray[index].endDate = ''; // Allow the user to enter an end date again
+              existingArray[index].end_Date = ''; // Allow the user to enter an end date again
             }
           }
         }
-
         values = existingArray;
-      } else if (activeStep === 2) {
+      } else if (activeStep === 4) {
         values = [...prevData[categoryId], value];
       }
-
       return { ...prevData, [categoryId]: values };
     });
   };
 
-  const addEducation = () => {
+  const addFieldEntry = (field) => {
     setFormData((prevData) => ({
       ...prevData,
-      education: [...(prevData.education || []), {}], // Add new empty education entry
+      [field]: [...(prevData[field] || []), {}], // Add a new empty entry to the specified field
     }));
   };
 
-  const removeEducation = (index) => {
+  const removeFieldEntry = (field, index) => {
     setFormData((prevData) => {
-      if (prevData.education.length === 1) return prevData;
+      if (prevData[field].length === 1) return prevData; // Prevent removing the last entry
 
       return {
         ...prevData,
-        education: prevData.education.filter((_, i) => i !== index),
+        [field]: prevData[field].filter((_, i) => i !== index),
       };
     });
   };
@@ -166,13 +152,34 @@ const ResumeComponent = () => {
     }
   };
 
-  console.log('active', activeStep);
-
   const handleRemoveSkill = (skillToRemove) => {
     setFormData((prevData) => ({
       ...prevData,
       skills: prevData.skills.filter((skill) => skill !== skillToRemove),
     }));
+  };
+
+  const addAdditional = () => {
+    setFormData((prevData) => {
+      const categoryId = categories[activeStep].id;
+      const existingArray = Array.isArray(prevData[categoryId])
+        ? [...prevData[categoryId]]
+        : [];
+
+      existingArray.push({ section_Name: '', entries: [] }); // Add a new section
+
+      return { ...prevData, [categoryId]: existingArray };
+    });
+  };
+
+  const removeAdditional = (sectionIndex) => {
+    setFormData((prevData) => {
+      const categoryId = categories[activeStep].id;
+      return {
+        ...prevData,
+        [categoryId]: prevData[categoryId].filter((_, i) => i !== sectionIndex),
+      };
+    });
   };
 
   const isNextDisabled = () => {
@@ -184,15 +191,18 @@ const ResumeComponent = () => {
       return requiredFields.some((field) => !formData[categoryId]?.[field]);
     }
 
-    if (activeStep === 1) {
-      // Education: Ensure at least one entry exists & all required fields are filled
+    if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
       return (
         !Array.isArray(formData[categoryId]) || // Check if education array exists
         formData[categoryId].length === 0 || // Ensure at least one entry
         formData[categoryId].some(
-          (edu) => requiredFields.some((field) => !edu[field]), // Ensure all required fields are filled
+          (step) => requiredFields.some((field) => !step[field]), // Ensure all required fields are filled
         )
       );
+    }
+
+    if (activeStep === 4) {
+      return !('categorialSkills' in formData);
     }
 
     return false; // Default to not disabled
@@ -211,7 +221,7 @@ const ResumeComponent = () => {
             ))}
           </Stepper>
 
-          {activeStep === 2 && (
+          {activeStep === 4 && (
             <Box
               sx={{
                 mt: 3,
@@ -259,130 +269,89 @@ const ResumeComponent = () => {
 
           <Box sx={{ mt: 3 }}>
             {/* Step 0: Personal Info */}
-            {activeStep === 0 &&
-              categories[activeStep].fields.map((field) => (
-                <TextField
-                  key={field}
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
-                  name={field}
-                  fullWidth
-                  margin="normal"
-                  onChange={handleChange}
-                  value={formData.personalInfo?.[field] ?? ''}
-                  required={categories[activeStep].required.includes(field)}
-                />
-              ))}
+            {activeStep === 0 && (
+              <PersonalInfo
+                categories={categories}
+                handleChange={handleChange}
+                formData={formData}
+              />
+            )}
 
             {/* Step 1: Education */}
             {activeStep === 1 && (
+              <Education
+                categories={categories}
+                handleChange={handleChange}
+                formData={formData}
+                removeEducation={removeFieldEntry}
+                addEducation={addFieldEntry}
+              />
+            )}
+
+            {/* Step 1: Experience */}
+            {activeStep === 2 && (
               <>
-                {formData.education?.map((edu, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      mb: 2,
-                      p: 2,
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      position: 'relative',
-                    }}
-                  >
-                    {categories[activeStep].fields.map((field) =>
-                      field === 'current' ? (
-                        <FormControlLabel
-                          key={field}
-                          control={
-                            <Checkbox
-                              name={field}
-                              checked={edu[field] || false}
-                              onChange={(e) => handleChange(e, index)}
-                            />
-                          }
-                          label="Currently Studying"
-                        />
-                      ) : (
-                        <TextField
-                          key={field}
-                          label={field.charAt(0).toUpperCase() + field.slice(1)}
-                          name={field}
-                          fullWidth
-                          margin="normal"
-                          onChange={(e) => handleChange(e, index)}
-                          value={edu[field] ?? ''}
-                          required={categories[activeStep].required.includes(
-                            field,
-                          )}
-                          disabled={field === 'endDate' && edu.current}
-                        />
-                      ),
-                    )}
-
-                    {/* Remove Education Entry (Disabled if only 1 entry remains) */}
-                    {formData.education.length > 1 && (
-                      <Typography
-                        onClick={() => removeEducation(index)}
-                        sx={{
-                          mt: 1,
-                          color: 'red',
-                          cursor: 'pointer',
-                          textAlign: 'right',
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          '&:hover': { textDecoration: 'underline' },
-                        }}
-                      >
-                        Remove
-                      </Typography>
-                    )}
-                  </Box>
-                ))}
-
-                {/* Add Education Button */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={addEducation}
-                  sx={{ mt: 2 }}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'right',
+                  }}
                 >
-                  Add Education
-                </Button>
+                  <Typography
+                    sx={{
+                      color: 'gray',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      margin: 2,
+                      fontStyle: 'italic',
+                      display: 'inline-block',
+                    }}
+                    onClick={() => setActiveStep((prev) => prev + 1)}
+                  >
+                    Skip Experience(if no experience)
+                  </Typography>
+                </Box>
+                <Experience
+                  categories={categories}
+                  handleChange={handleChange}
+                  formData={formData}
+                  removeExperience={removeFieldEntry}
+                  addExperience={addFieldEntry}
+                />
               </>
             )}
 
-            {/* Step 2: Skills */}
-            {activeStep === 2 && (
-              <>
-                <TextField
-                  label="Add Skill"
-                  fullWidth
-                  value={skillInput}
-                  onChange={(e) => setSkillInput(e.target.value)}
-                  margin="normal"
-                />
-                <Button
-                  onClick={handleAddSkill}
-                  variant="contained"
-                  sx={{ mt: 1 }}
-                >
-                  Add Skill
-                </Button>
+            {/* Step 1: Education */}
+            {activeStep === 3 && (
+              <Projects
+                categories={categories}
+                handleChange={handleChange}
+                formData={formData}
+                removeProjects={removeFieldEntry}
+                addProjects={addFieldEntry}
+              />
+            )}
 
-                <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {formData.skills.map((skill, index) => (
-                    <Chip
-                      key={index}
-                      label={skill}
-                      onDelete={() => handleRemoveSkill(skill)}
-                      variant="outlined"
-                      sx={{
-                        borderColor: 'primary.main',
-                        color: 'primary.main',
-                        fontWeight: 500,
-                      }}
-                    />
-                  ))}
-                </Box>
-              </>
+            {/* Step 2: Skills */}
+            {activeStep === 4 && (
+              <Skills
+                skillInput={skillInput}
+                setSkillInput={setSkillInput}
+                handleAddSkill={handleAddSkill}
+                formData={formData}
+                handleRemoveSkill={handleRemoveSkill}
+                setFormData={setFormData}
+              />
+            )}
+
+            {activeStep === 5 && (
+              <Additional
+                categories={categories}
+                formData={formData}
+                removeAdditional={removeAdditional}
+                addAdditional={addAdditional}
+                setFormData={setFormData}
+              />
             )}
           </Box>
 

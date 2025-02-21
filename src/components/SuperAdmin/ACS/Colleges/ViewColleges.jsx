@@ -1,5 +1,4 @@
 import React from 'react';
-import { useQuery } from 'react-query';
 import {
   useTable,
   usePagination,
@@ -9,12 +8,12 @@ import {
 import PropTypes from 'prop-types';
 import { useFetchData } from 'src/react-query/useFetchApis';
 
-const fetchColleges = async () => {
-  const {
-    data = [], // Provide a default value of an empty array
-  } = useFetchData('colleges', `/colleges/all/`);
-  return data;
-};
+// const fetchColleges = async () => {
+//   const {
+//     data = [], // Provide a default value of an empty array
+//   } = useFetchData('colleges', `/colleges/all/`);
+//   return data;
+// };
 
 const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
   <span>
@@ -229,7 +228,7 @@ Table.propTypes = {
 };
 
 export const ViewColleges = () => {
-  const { data, error, isLoading } = useQuery('colleges', fetchColleges);
+  const { data, error, isLoading } = useFetchData('colleges', `/colleges/all/`);
 
   const columns = React.useMemo(
     () => [

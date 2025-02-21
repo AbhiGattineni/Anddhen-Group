@@ -15,6 +15,7 @@ import TablePagination from '@mui/material/TablePagination';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import {
+  CircularProgress,
   FormControlLabel,
   MenuItem,
   Radio,
@@ -446,9 +447,7 @@ Row.propTypes = {
 };
 
 export const ViewCollege = () => {
-  const {
-    data = [], // Provide a default value of an empty array
-  } = useFetchData('colleges', `/colleges/all/`);
+  const { data = [], isLoading } = useFetchData('colleges', `/colleges/all/`);
   const [globalFilter, setGlobalFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -577,7 +576,6 @@ export const ViewCollege = () => {
         filter={editFilter}
         handleProgramChange={handleProgramChange}
       />
-
       {/* Buttons to apply or reset filters */}
       <Box
         sx={{
@@ -620,18 +618,22 @@ export const ViewCollege = () => {
           Reset Filters
         </button>
       </Box>
-
       {/* Render Table and other UI elements */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableBody>
-            {paginatedData.map((row) => (
-              <Row key={row.id} row={row} filter={filter} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
+      {isLoading ? (
+        <div className="flex justify-center items-center w-100">
+          <CircularProgress />
+        </div>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableBody>
+              {paginatedData.map((row) => (
+                <Row key={row.id} row={row} filter={filter} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       <TablePagination
         component="div"
         count={filteredData.length}
