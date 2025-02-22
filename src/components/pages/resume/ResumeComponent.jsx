@@ -35,7 +35,6 @@ const ResumeComponent = () => {
   });
   const [skillInput, setSkillInput] = useState('');
   const [suggestedSkills, setSuggestedSkills] = useState([]);
-  console.log(setSuggestedSkills);
 
   const handleAddSuggestedSkill = (skill) => {
     if (!formData.skills.includes(skill)) {
@@ -45,7 +44,6 @@ const ResumeComponent = () => {
       }));
     }
   };
-  console.log(formData);
 
   const memoizedResume = useMemo(
     () => <ResumePreview formData={formData} />,
