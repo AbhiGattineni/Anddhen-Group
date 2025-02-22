@@ -24,7 +24,7 @@ const ResumeHome = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         my: 5,
-        padding: { xs: 2, md: 5 },
+        px: { xs: 2, md: 5 },
         width: '100%',
       }}
     >
@@ -34,8 +34,8 @@ const ResumeHome = () => {
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
+          alignItems: { xs: 'center', md: 'flex-start' },
+          textAlign: { xs: 'center', md: 'left' },
           mb: { xs: 4, md: 0 },
         }}
       >
@@ -45,7 +45,6 @@ const ResumeHome = () => {
             fontWeight: 'bold',
             color: theme.palette.primary.main,
             fontSize: { xs: '2rem', md: '3rem' },
-            textAlign: { xs: 'center', md: 'left' },
           }}
         >
           Get Started with Your Resume
@@ -54,7 +53,6 @@ const ResumeHome = () => {
           sx={{
             mt: 2,
             fontSize: { xs: '1rem', md: '1.25rem' },
-            textAlign: { xs: 'center', md: 'left' },
             color: theme.palette.text.secondary,
           }}
         >
@@ -64,21 +62,30 @@ const ResumeHome = () => {
           let AI take care of the formatting and suggestions to make your resume
           shine.
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
+        <Box
           sx={{
-            mt: 3,
-            fontSize: '1rem',
-            padding: '10px 20px',
-            borderRadius: '50px',
-            boxShadow: 3,
-            width: { xs: '100%', md: 'auto' },
+            display: 'flex',
+            justifyContent: { xs: 'center', md: 'flex-start' },
+            width: '100%',
           }}
-          onClick={handleGetStartedClick}
         >
-          Start Building
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              mt: 3,
+              fontSize: '1rem',
+              padding: '10px 20px',
+              borderRadius: '50px',
+              textAlign: 'center',
+              boxShadow: 3,
+              width: 'auto',
+            }}
+            onClick={handleGetStartedClick}
+          >
+            Start Building
+          </Button>
+        </Box>
       </Box>
 
       {/* Right Side - Image of Sample Template */}
@@ -101,7 +108,7 @@ const ResumeHome = () => {
           }}
         >
           <img
-            src="\assets\images\resume template.jpg"
+            src="/assets/images/resume template.jpg"
             alt="Resume Template"
             style={{
               width: '100%',
