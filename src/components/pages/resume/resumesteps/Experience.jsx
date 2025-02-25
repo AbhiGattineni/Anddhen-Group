@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Chip,
   FormControlLabel,
   TextField,
   Typography,
@@ -26,7 +27,10 @@ const Experience = (props) => {
           if (!exp.description) return exp; // Skip if no description
 
           const response = await fetchAi(
-            `Generate an experience description based on the following points, which are separated by newlines. Use strong verbs and keywords to break down and expand on each point, adding new points where appropriate, and format the output with newlines without any additional description:\n${exp.description}`,
+            `Generate an experience description based on the following inputs:
+            Skills: ${exp.skills}
+            Description: ${exp.description}
+            Use strong verbs and relevant keywords to break down and expand on each point, incorporating the listed skills where appropriate. Format the output with clear paragraphs, ensuring readability and impact.`,
           );
 
           // Update description and call handleChange with the correct index
@@ -79,6 +83,56 @@ const Experience = (props) => {
                 }
                 label="Currently Working"
               />
+            ) : field === 'skills' ? (
+              <Box key={field}>
+                <TextField
+                  label="Add Skill *"
+                  fullWidth
+                  margin="normal"
+                  value={exp.newSkill || ''}
+                  onChange={(e) =>
+                    props.handleChange(
+                      { target: { name: 'newSkill', value: e.target.value } },
+                      index,
+                    )
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && exp.newSkill?.trim()) {
+                      e.preventDefault();
+                      const updatedSkills = [
+                        ...(exp.skills || []),
+                        exp.newSkill.trim(),
+                      ];
+                      props.handleChange(
+                        { target: { name: 'skills', value: updatedSkills } },
+                        index,
+                      );
+                      props.handleChange(
+                        { target: { name: 'newSkill', value: '' } },
+                        index,
+                      );
+                    }
+                  }}
+                />
+                {/* Display added skills as chips */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                  {exp.skills?.map((skill, skillIndex) => (
+                    <Chip
+                      key={skillIndex}
+                      label={skill}
+                      onDelete={() => {
+                        const updatedSkills = exp.skills.filter(
+                          (_, i) => i !== skillIndex,
+                        );
+                        props.handleChange(
+                          { target: { name: 'skills', value: updatedSkills } },
+                          index,
+                        );
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
             ) : (
               <TextField
                 key={field}
@@ -98,7 +152,7 @@ const Experience = (props) => {
             ),
           )}
 
-          {/* Remove experince Entry (Disabled if only 1 entry remains) */}
+          {/* Remove experience Entry (Disabled if only 1 entry remains) */}
           {props.formData.experience.length > 1 && (
             <Typography
               onClick={() => props.removeExperience('experience', index)}
