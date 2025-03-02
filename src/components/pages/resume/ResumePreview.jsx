@@ -292,9 +292,7 @@ const ResumePreview = ({ formData }) => (
                     >
                       <Text style={{ fontFamily: 'Helvetica-Bold' }}>
                         {exp.title}{' '}
-                        {exp?.link && (
-                          <Link src={proj.link}>Link</Link>
-                        )}
+                        {exp?.link && <Link src={exp.link}>Link</Link>}
                       </Text>
                       <Text>
                         {exp.start_Date} - {exp.end_Date}
