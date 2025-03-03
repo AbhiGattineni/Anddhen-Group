@@ -384,6 +384,10 @@ export const adminPlates = [
     child: 'Partimer Status',
     route: 'jobapplication/parttimerportal',
   },
+  {
+    child: 'Device Tracking',
+    route: 'Device Tracking Table',
+  },
 ];
 
 export const adminPortal = [
