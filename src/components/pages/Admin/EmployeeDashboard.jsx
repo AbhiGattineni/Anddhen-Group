@@ -64,6 +64,7 @@ export const EmployeeDashboard = () => {
   const { statusMutation, updateMutation } = useStatusUpdateMutation();
   const [search, setSearch] = useState('');
   const [searchedPlates, setSearchedPlates] = useState(adminPlates);
+  const [userSubsidaries, setUserSubsidaries] = useState([]);
 
   const { data } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(
@@ -167,17 +168,11 @@ export const EmployeeDashboard = () => {
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
     if (data && selectedAcsStatusDate) {
-      let found = false;
-      for (const status of data) {
-        if (formattedSelectedDate === status.date) {
-          found = true;
-          setDisableInputs(true);
-          const formStatus = restructureObject(status);
-          setFormValues(formStatus);
-          break;
-        }
-      }
-      if (!found) {
+      const filteredStatuses = data.filter(
+        (status) => formattedSelectedDate === status.date,
+      );
+      setUserSubsidaries(filteredStatuses);
+      if (!filteredStatuses) {
         setDisableInputs(false);
         setFormValues({
           ...initialFormState,
@@ -211,6 +206,22 @@ export const EmployeeDashboard = () => {
     } else {
       setFormValues((prev) => ({ ...prev, [name]: value }));
     }
+    if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
+      const filtered = userSubsidaries.filter((sub) => sub.subsidary === value);
+      if (filtered.length > 0) {
+        const currentStatus = restructureObject(filtered[0]);
+        setFormValues(currentStatus);
+        setDisableInputs(true);
+      } else {
+        setDisableInputs(false);
+        setFormValues({
+          ...initialFormState,
+          subsidary: value,
+          user_name: auth.currentUser.displayName,
+          user_id: auth.currentUser.uid,
+        });
+      }
+    }
   };
 
   const renderSubsidiaryFields = () => {
@@ -231,8 +242,9 @@ export const EmployeeDashboard = () => {
         <TextField
           fullWidth
           label={key
-            .replace(/_/g, ' ')
-            .replace(/\b\w/g, (char) => char.toUpperCase())}
+            .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before uppercase letters
+            .replace(/_/g, ' ') // Replace underscores with spaces
+            .replace(/\b\w/g, (char) => char.toUpperCase())} // Capitalize first letter of each word
           name={`${selectedSubsidiary}.${key}`}
           value={formValues[selectedSubsidiary]?.[key] || ''}
           onChange={handleChange}
@@ -289,8 +301,6 @@ export const EmployeeDashboard = () => {
       // };
 
       const postStatus = flattenObject(formValues);
-
-      console.log(postStatus);
 
       let response;
       try {
@@ -362,7 +372,6 @@ export const EmployeeDashboard = () => {
                   name="subsidary"
                   value={formValues.subsidary}
                   onChange={handleChange}
-                  disabled={disableInputs}
                 >
                   {subsidiaryOptions.map((option) => (
                     <MenuItem key={option} value={option}>
