@@ -166,6 +166,7 @@ const Additional = ({
                     value={entry[field] ?? ''}
                     required={categories[5].required.includes(field)}
                     disabled={field === 'end_Date' && entry.current}
+                    minRows={field === 'description' ? 3 : undefined}
                   />
                 ),
               )}

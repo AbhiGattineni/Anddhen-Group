@@ -18,7 +18,7 @@ import PersonalInfo from './resumesteps/PersonalInfo';
 import Education from './resumesteps/Education';
 import Experience from './resumesteps/Experience';
 import Skills from './resumesteps/Skills';
-import { categories } from './Categories';
+import { categories } from 'src/dataconfig';
 import Projects from './resumesteps/Projects';
 import Additional from './resumesteps/Additional';
 
