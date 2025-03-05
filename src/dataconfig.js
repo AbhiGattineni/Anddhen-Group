@@ -386,7 +386,7 @@ export const adminPlates = [
   },
   {
     child: 'Device Tracking',
-    route: 'Device Tracking Table',
+    route: 'devicetrackingtable',
   },
 ];
 

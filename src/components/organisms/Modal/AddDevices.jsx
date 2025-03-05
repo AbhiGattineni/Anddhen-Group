@@ -39,75 +39,69 @@ const AddDevice = ({ onClose }) => {
     });
   };
 
+  // Define the fields to be rendered
+  const fields = [
+    {
+      name: 'device_type',
+      label: 'Device Type',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'device_name',
+      label: 'Device Name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'about_device',
+      label: 'About Device',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'allocated_to',
+      label: 'Allocated To',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'from_date',
+      label: 'From Date',
+      type: 'date',
+      required: true,
+    },
+    {
+      name: 'to_date',
+      label: 'To Date',
+      type: 'date',
+      required: true,
+    },
+    {
+      name: 'purpose',
+      label: 'Purpose',
+      type: 'text',
+      required: true,
+    },
+  ];
+
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-      <TextField
-        fullWidth
-        label="Device Type"
-        name="device_type"
-        value={deviceData.device_type}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="Device Name"
-        name="device_name"
-        value={deviceData.device_name}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="About Device"
-        name="about_device"
-        value={deviceData.about_device}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="Allocated To"
-        name="allocated_to"
-        value={deviceData.allocated_to}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
-      <TextField
-        fullWidth
-        label="From Date"
-        name="from_date"
-        type="date"
-        value={deviceData.from_date}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-        required
-      />
-      <TextField
-        fullWidth
-        label="To Date"
-        name="to_date"
-        type="date"
-        value={deviceData.to_date}
-        onChange={handleChange}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-        required
-      />
-      <TextField
-        fullWidth
-        label="Purpose"
-        name="purpose"
-        value={deviceData.purpose}
-        onChange={handleChange}
-        margin="normal"
-        required
-      />
+      {/* Map over the fields array to render TextField components */}
+      {fields.map((field) => (
+        <TextField
+          key={field.name}
+          fullWidth
+          label={field.label}
+          name={field.name}
+          type={field.type}
+          value={deviceData[field.name]}
+          onChange={handleChange}
+          margin="normal"
+          required={field.required}
+          InputLabelProps={field.type === 'date' ? { shrink: true } : undefined}
+        />
+      ))}
 
       {error && (
         <Typography color="error" sx={{ mt: 2 }}>

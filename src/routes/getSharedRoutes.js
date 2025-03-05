@@ -18,7 +18,7 @@ export function getSharedRoutes() {
     { path: 'shopping', element: <Shooping /> },
     { path: 'ourTeam', element: <OurTeam /> },
     { path: 'jobapplication/parttimerportal', element: <PartTimerPortal /> },
-    { path: 'Device Tracking Table', element: <DeviceAllocation /> },
+    { path: 'devicetrackingtable', element: <DeviceAllocation /> },
     // Add other shared routes here
   ];
 }
