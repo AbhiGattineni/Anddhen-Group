@@ -295,14 +295,6 @@ export const EmployeeDashboard = () => {
         );
         return;
       }
-
-      // const postStatus = {
-      //   user_id: auth.currentUser.uid,
-      //   user_name: formValues.name,
-      //   date: formValues.date,
-      //   status: formValues.status,
-      // };
-
       const postStatus = flattenObject(formValues);
 
       let response;
