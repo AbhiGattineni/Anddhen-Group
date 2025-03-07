@@ -16,7 +16,7 @@ import {
   TextField,
 } from '@mui/material';
 
-const subsidiaryOptions = ['ACS', 'ASS', 'ATI', 'ANS', 'AMS'];
+const subsidaryOptions = ['ACS', 'ASS', 'ATI', 'ANS', 'AMS'];
 
 const initialFormState = {
   user_id: auth?.currentUser?.uid || '',
@@ -105,13 +105,18 @@ export const EmployeeDashboard = () => {
     setDisableInputs(false);
   };
 
+  const resetForm = () => {
+    setFormValues({
+      ...initialFormState,
+      date: formatDate(selectedAcsStatusDate),
+      user_id: auth.currentUser.uid,
+      user_name: auth.currentUser.displayName,
+    });
+  };
+
   useEffect(() => {
     if (auth.currentUser && auth.currentUser.displayName) {
-      setFormValues({
-        ...formValues,
-        user_id: auth.currentUser.uid,
-        user_name: auth.currentUser.displayName,
-      });
+      resetForm();
     }
   }, [auth.currentUser]);
 
@@ -165,6 +170,7 @@ export const EmployeeDashboard = () => {
   }
 
   useEffect(() => {
+    resetForm();
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
     if (data && selectedAcsStatusDate) {
@@ -174,34 +180,18 @@ export const EmployeeDashboard = () => {
       setUserSubsidaries(filteredStatuses);
       if (!filteredStatuses) {
         setDisableInputs(false);
-        setFormValues({
-          ...initialFormState,
-          user_name: auth.currentUser.displayName,
-          user_id: auth.currentUser.uid,
-        });
+        resetForm();
       }
-    }
-
-    const currentDate = new Date().toISOString().split('T')[0];
-    const isSelectedDateCurrent = formattedSelectedDate === currentDate;
-    if (
-      data &&
-      isSelectedDateCurrent &&
-      data.some((obj) => obj.date === currentDate)
-    ) {
-      setShowEdit(true);
-    } else {
-      setShowEdit(false);
     }
   }, [selectedAcsStatusDate, data]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name.includes('.')) {
-      const [subsidiary, field] = name.split('.');
+      const [subsidary, field] = name.split('.');
       setFormValues((prev) => ({
         ...prev,
-        [subsidiary]: { ...prev[subsidiary], [field]: value },
+        [subsidary]: { ...prev[subsidary], [field]: value },
       }));
     } else {
       setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -217,24 +207,37 @@ export const EmployeeDashboard = () => {
         setFormValues({
           ...initialFormState,
           subsidary: value,
+          date: formatDate(selectedAcsStatusDate),
           user_name: auth.currentUser.displayName,
           user_id: auth.currentUser.uid,
         });
       }
+      const formattedSelectedDate = formatDate(selectedAcsStatusDate);
+      const currentDate = formatDate(new Date());
+      const isSelectedDateCurrent = formattedSelectedDate === currentDate;
+      if (
+        data &&
+        isSelectedDateCurrent &&
+        data?.some((obj) => obj.date === currentDate && obj.subsidary === value)
+      ) {
+        setShowEdit(true);
+      } else {
+        setShowEdit(false);
+      }
     }
   };
 
-  const renderSubsidiaryFields = () => {
+  const renderSubsidaryFields = () => {
     if (!formValues.subsidary) return null;
 
-    const selectedSubsidiary = formValues.subsidary;
-    const fields = initialFormState[selectedSubsidiary];
+    const selectedSubsidary = formValues.subsidary;
+    const fields = initialFormState[selectedSubsidary];
 
     if (!fields) return null; // Ensure fields exist
 
-    // Initialize formValues[selectedSubsidiary] if undefined
-    if (!formValues[selectedSubsidiary]) {
-      formValues[selectedSubsidiary] = { ...fields };
+    // Initialize formValues[selectedSubsidary] if undefined
+    if (!formValues[selectedSubsidary]) {
+      formValues[selectedSubsidary] = { ...fields };
     }
 
     return Object.keys(fields).map((key) => (
@@ -245,8 +248,8 @@ export const EmployeeDashboard = () => {
             .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before uppercase letters
             .replace(/_/g, ' ') // Replace underscores with spaces
             .replace(/\b\w/g, (char) => char.toUpperCase())} // Capitalize first letter of each word
-          name={`${selectedSubsidiary}.${key}`}
-          value={formValues[selectedSubsidiary]?.[key] || ''}
+          name={`${selectedSubsidary}.${key}`}
+          value={formValues[selectedSubsidary]?.[key] || ''}
           onChange={handleChange}
           disabled={disableInputs}
           variant="outlined"
@@ -307,23 +310,17 @@ export const EmployeeDashboard = () => {
         if (!showEdit) {
           response = await statusMutation.mutateAsync(postStatus);
           setMsgResponse(response.message);
+          resetForm();
         } else {
           response = await updateMutation.mutateAsync(postStatus);
           setMsgResponse(response.message);
+          setShowEdit(false);
         }
 
         queryClient.invalidateQueries(['calendarData', formValues]);
       } catch (error) {
         setMsgResponse(response.message);
         console.error('Mutation error:', error);
-      }
-
-      if (!showEdit) {
-        setFormValues({
-          ...initialFormState,
-          user_name: auth.currentUser.displayName,
-          user_id: auth.currentUser.uid,
-        });
       }
     } catch (error) {
       console.error('Error posting status:', error);
@@ -367,13 +364,13 @@ export const EmployeeDashboard = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Subsidiary</InputLabel>
+                <InputLabel>Subsidary</InputLabel>
                 <Select
                   name="subsidary"
                   value={formValues.subsidary}
                   onChange={handleChange}
                 >
-                  {subsidiaryOptions.map((option) => (
+                  {subsidaryOptions.map((option) => (
                     <MenuItem key={option} value={option}>
                       {option}
                     </MenuItem>
@@ -396,7 +393,7 @@ export const EmployeeDashboard = () => {
               />
             </Grid>
             {/* Dynamic Fields */}
-            {renderSubsidiaryFields()}
+            {renderSubsidaryFields()}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -424,6 +421,7 @@ export const EmployeeDashboard = () => {
                 type="submit"
                 className="btn btn-primary"
                 onClick={handleEdit}
+                // disabled={showEdit}
               >
                 Edit
               </button>
