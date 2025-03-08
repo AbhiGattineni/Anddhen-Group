@@ -99,10 +99,18 @@ const Recruiter = () => {
       setEditData((prev) => ({ ...prev, [field]: value }));
     }
   };
-
   const handleDelete = async (id) => {
-    setSelectedId(id);
-    await deleteRecruiter(null, {
+    console.log('Deleting recruiter with ID:', id); // Debugging log
+
+    if (!id) {
+      showToast('Invalid recruiter ID!', '#E23636');
+      return;
+    }
+
+    setSelectedId(id); // Ensure state updates
+    await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for state update
+
+    deleteRecruiter(null, {
       onSuccess: () => {
         queryClient.invalidateQueries('recruiter');
         showToast('Details deleted successfully!', '#82DD55');
@@ -148,9 +156,7 @@ const Recruiter = () => {
               value={search}
               onChange={handleSearch}
               fullWidth
-              InputProps={{
-                startAdornment: <Search />,
-              }}
+              InputProps={{ startAdornment: <Search /> }}
             />
           </Grid>
         </Grid>

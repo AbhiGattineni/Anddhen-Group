@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -124,35 +124,43 @@ const Employer = () => {
     'employer',
     `/employers/${selectedId}/`,
   );
+
   const handleDelete = (id) => {
-    setSelectedId(id);
-    deleteEmployer(null, {
-      onSuccess: () => {
-        queryClient.invalidateQueries('employer');
-        setToast({
-          show: true,
-          message: 'Employer deleted successfully!',
-          color: '#82DD55',
-        });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
-      },
-      onError: (error) => {
-        console.error('An error occurred:', error);
-        setToast({
-          show: true,
-          message: 'Something went wrong!',
-          color: '#E23636',
-        });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
-      },
-    });
+    setSelectedId(id); // Set the selectedId first
   };
+
+  useEffect(() => {
+    if (selectedId !== null) {
+      deleteEmployer(null, {
+        onSuccess: () => {
+          queryClient.invalidateQueries('employer');
+          setToast({
+            show: true,
+            message: 'Employer deleted successfully!',
+            color: '#82DD55',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000,
+          );
+          setSelectedId(null); // Reset selectedId after successful deletion
+        },
+        onError: (error) => {
+          console.error('An error occurred:', error);
+          setToast({
+            show: true,
+            message: 'Something went wrong!',
+            color: '#E23636',
+          });
+          setTimeout(
+            () => setToast({ show: false, message: '', color: undefined }),
+            3000,
+          );
+          setSelectedId(null); // Reset selectedId after error
+        },
+      });
+    }
+  }, [selectedId, deleteEmployer, queryClient]);
 
   const filteredData = data.filter(
     (row) =>
