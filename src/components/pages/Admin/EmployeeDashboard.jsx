@@ -73,13 +73,13 @@ export const EmployeeDashboard = () => {
   const formattedData = data ? data.map((item) => [item.date, item.name]) : [];
 
   const currentRole = localStorage.getItem('roles');
-  const current_roles = currentRole.split(',');
-  const filteredPlates = current_roles.some(
+  const current_roles = currentRole?.split(',');
+  const filteredPlates = current_roles?.some(
     (role) => role.trim() === 'superadmin',
   )
     ? adminPlates
     : adminPlates.filter((plate) =>
-        current_roles.some((role) => role.trim() === plate.route.trim()),
+        current_roles?.some((role) => role.trim() === plate.route.trim()),
       );
 
   useEffect(() => {
