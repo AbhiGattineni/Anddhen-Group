@@ -11,6 +11,7 @@ import {
   List,
   ListItem,
   ListItemText,
+  Divider,
 } from '@mui/material';
 import { StatusCalendar } from '../templates/StatusCalender';
 import { useFetchData } from 'src/react-query/useFetchApis';
@@ -25,7 +26,7 @@ export const Status = () => {
   const [empId, setEmpId] = useState(''); // Selected employee ID
   const [empName, setEmpName] = useState(''); // Selected employee name
   const [formattedData, setFormattedData] = useState([]); // Calendar data (e.g., dates with statuses)
-  const [singleStatus, setSingleStatus] = useState(''); // Status of the selected date
+  const [singleStatus, setSingleStatus] = useState([]); // Status of the selected date
   const [allStatuses, setAllStatuses] = useState({}); // All statuses organized by employee ID
   const { data } = useStatusCalendar(empId);
   const [selectedDate, setSelectedDate] = useState('');
@@ -43,7 +44,9 @@ export const Status = () => {
       const formattedDate = `${year}-${month}-${day}`;
       setSelectedDate(formattedDate);
       const status = data.filter((item) => item.date === formattedDate);
-      setSingleStatus(status[0]?.status);
+      if (status.length > 0) {
+        setSingleStatus(status);
+      }
     }
   }, [selectedAcsStatusDate, data]);
 
@@ -68,11 +71,11 @@ export const Status = () => {
             // Check the response structure
             // Format the data
             const newStatuses = response.reduce((acc, item) => {
-              const { user_id, date, status } = item;
+              const { user_id, date, ...userStatus } = item;
               if (!acc[user_id]) {
                 acc[user_id] = [];
               }
-              acc[user_id].push({ date, status });
+              acc[user_id].push({ date, userStatus });
               return acc;
             }, {});
             setAllStatuses(newStatuses);
@@ -150,6 +153,7 @@ export const Status = () => {
           <Paper
             sx={{
               display: 'flex',
+              alignItems: 'start',
               flexDirection: {
                 xs: 'column', // mobile
                 sm: 'row', // small screens and up
@@ -171,9 +175,37 @@ export const Status = () => {
                   <Typography variant="h6">
                     Single Status ({selectedDate})
                   </Typography>
-                  <Typography>
-                    {singleStatus || 'Select a date to see status'}
-                  </Typography>
+                  {Array.isArray(singleStatus) && singleStatus.length > 0 ? (
+                    singleStatus.map((status, statusIndex) => {
+                      const filteredEntries = Object.entries(status).filter(
+                        ([key, value]) =>
+                          value !== '' &&
+                          value !== '0.00' &&
+                          value !== 0 &&
+                          value !== '0' &&
+                          value !== null &&
+                          key !== 'id' &&
+                          key !== 'user_id' &&
+                          key !== 'user_name',
+                      );
+
+                      return (
+                        <div key={statusIndex}>
+                          {filteredEntries.map(([key, value], index) => (
+                            <Typography key={index}>
+                              <strong>{key}:</strong> {value}
+                            </Typography>
+                          ))}
+                          {/* Add Divider after each status except the last one */}
+                          {statusIndex < singleStatus.length - 1 && (
+                            <Divider sx={{ my: 1 }} />
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <Typography>Select a date to see status</Typography>
+                  )}
                 </Paper>
               </Grid>
             </Grid>
@@ -198,13 +230,32 @@ export const Status = () => {
                 <Typography variant="h6">All Statuses of {empName}</Typography>
                 <List>
                   {formattedData.length > 0 ? (
-                    formattedData.map((status, index) => (
-                      <ListItem key={index}>
-                        <ListItemText
-                          primary={status.date}
-                          secondary={status.status}
-                        />
-                      </ListItem>
+                    formattedData.map((status, index, array) => (
+                      <div key={index}>
+                        <ListItem>
+                          <ListItemText
+                            primary={status.date}
+                            secondary={
+                              Object.entries(status.userStatus)
+                                .filter(
+                                  ([key, value]) =>
+                                    value !== '' &&
+                                    value !== '0.00' &&
+                                    value !== 0 &&
+                                    value !== '0' &&
+                                    value !== null &&
+                                    key !== 'id' &&
+                                    key !== 'user_id' &&
+                                    key !== 'user_name' &&
+                                    key !== 'date',
+                                )
+                                .map(([key, value]) => `${key}: ${value}`)
+                                .join(', ') || 'No relevant data available'
+                            }
+                          />
+                        </ListItem>
+                        {index < array.length - 1 && <Divider />}
+                      </div>
                     ))
                   ) : (
                     <Typography>
