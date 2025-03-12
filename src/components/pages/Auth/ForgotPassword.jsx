@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import InputField from '../../organisms/InputField';
 import Toast from '../../organisms/Toast';
-import { sendPasswordResetEmail } from 'firebase/auth';
+import {
+  fetchSignInMethodsForEmail,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 import { auth } from 'src/services/Authentication/firebase';
+import { useNavigate } from 'react-router-dom';
 
 export const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
@@ -11,6 +15,7 @@ export const ForgotPassword = () => {
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: '' });
+  const navigate = useNavigate();
   const handleChange = (field, value) => {
     setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
   };
@@ -31,21 +36,33 @@ export const ForgotPassword = () => {
     setLoading(true);
 
     try {
+      // Step 1: Check if the email exists
+      const signInMethods = await fetchSignInMethodsForEmail(
+        auth,
+        formData.email,
+      );
+      if (signInMethods.length === 0) {
+        setToast({ show: true, message: 'Email not found' });
+        setLoading(false);
+        return;
+      }
+
+      // Step 2: Send password reset email if email exists
       await sendPasswordResetEmail(auth, formData.email);
       setFormData({ email: '' });
       setToast({ show: true, message: 'Email sent successfully' });
+
+      // Redirect to login after 3 seconds
+      setTimeout(() => navigate('/login'), 3000);
     } catch (error) {
-      if (error.code === 'auth/user-not-found') {
-        setToast({ show: true, message: 'Email not found' });
-      } else {
-        setToast({ show: true, message: 'Something went wrong!' });
-        console.error('Error:', error);
-      }
+      setToast({ show: true, message: 'Something went wrong!' });
+      console.error('Error:', error);
     } finally {
       setLoading(false);
       setTimeout(() => setToast({ show: false, message: '' }), 3000);
     }
   };
+
   return (
     <div className="container my-3">
       <div className="w-100">
