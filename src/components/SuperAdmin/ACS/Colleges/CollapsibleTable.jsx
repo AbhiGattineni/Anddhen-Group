@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
@@ -43,7 +43,7 @@ GlobalFilter.propTypes = {
   setGlobalFilter: PropTypes.func.isRequired,
 };
 
-const FilterComponent = ({ filter, handleProgramChange }) => {
+const FilterComponent = ({ filter, handleProgramChange, states }) => {
   const isSmallScreen = useMediaQuery('(max-width:600px)'); // Use raw media query instead of theme
 
   return (
@@ -85,7 +85,7 @@ const FilterComponent = ({ filter, handleProgramChange }) => {
           type="number"
           value={filter.greScore}
           onChange={handleProgramChange('greScore')}
-          fullWidth={isSmallScreen} // Make inputs full width on small screens
+          fullWidth={isSmallScreen}
         />
 
         <TextField
@@ -153,6 +153,25 @@ const FilterComponent = ({ filter, handleProgramChange }) => {
           fullWidth={isSmallScreen}
         />
       </Box>
+
+      {/* Dropdown for selecting a state dynamically */}
+      <Select
+        value={filter.state}
+        onChange={handleProgramChange('state')}
+        displayEmpty
+        variant="outlined"
+        size="small"
+        fullWidth
+      >
+        <MenuItem value="">
+          <em>Select State</em>
+        </MenuItem>
+        {states?.map((state) => (
+          <MenuItem key={state} value={state}>
+            {state}
+          </MenuItem>
+        ))}
+      </Select>
     </Box>
   );
 };
@@ -166,8 +185,10 @@ FilterComponent.propTypes = {
     collegeType: PropTypes.string.isRequired,
     springDeadline: PropTypes.string.isRequired,
     fallDeadline: PropTypes.string.isRequired,
+    state: PropTypes.string.isRequired,
   }).isRequired,
   handleProgramChange: PropTypes.func.isRequired,
+  states: PropTypes.arrayOf(PropTypes.string).isRequired, // Ensure states array is passed
 };
 
 function Row({ row, filter }) {
@@ -251,6 +272,7 @@ function Row({ row, filter }) {
       'International Students Affairs Email': row.international_person_email,
       'International Students Affairs Links':
         row.international_person_email_link,
+      'College Location': row.state,
     },
     'Course Offerings': {
       ...(filter.selectedProgram === 'all' || filter.selectedProgram === 'ug'
@@ -436,6 +458,7 @@ Row.propTypes = {
     international_person_email_link: PropTypes.string,
     UG_courses: PropTypes.string,
     graduation_courses: PropTypes.string,
+    state: PropTypes.string,
   }).isRequired,
   filter: PropTypes.shape({
     selectedProgram: PropTypes.string.isRequired,
@@ -443,6 +466,7 @@ Row.propTypes = {
     toeflScore: PropTypes.string.isRequired,
     ieltsScore: PropTypes.string.isRequired,
     collegeType: PropTypes.string.isRequired,
+    state: PropTypes.string.isRequired,
   }).isRequired,
 };
 
@@ -451,6 +475,7 @@ export const ViewCollege = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [totalStates, setTotalStates] = useState([]);
 
   // Separate states for edited and applied filters
   const [filter, setFilter] = useState({
@@ -464,6 +489,21 @@ export const ViewCollege = () => {
   });
   const [editFilter, setEditFilter] = useState({ ...filter });
 
+  useEffect(() => {
+    if (data.length > 0) {
+      const seenStates = new Set();
+      const orderedUniqueStates = [];
+
+      data.forEach((college) => {
+        if (college.state && !seenStates.has(college.state)) {
+          seenStates.add(college.state);
+          orderedUniqueStates.push(college.state);
+        }
+      });
+
+      setTotalStates(orderedUniqueStates);
+    }
+  }, [data]);
   // Handler to update the edited filters
   const handleProgramChange = (key) => (e) => {
     setEditFilter((prevFilter) => ({ ...prevFilter, [key]: e.target.value }));
@@ -522,6 +562,12 @@ export const ViewCollege = () => {
           college.public_private?.toLowerCase() ===
             filter.collegeType.toLowerCase();
 
+        // New: Match state filter
+        const matchesState =
+          !filter.state ||
+          (college.state &&
+            college.state.toLowerCase() === filter.state.toLowerCase());
+
         // Calculate minimum dates for deadlines
         const minFallDeadline = new Date(
           Math.min(
@@ -552,6 +598,7 @@ export const ViewCollege = () => {
           matchesTOEFL &&
           matchesIELTS &&
           matchesCollegeType &&
+          matchesState && // New condition added here
           matchesFallDeadline &&
           matchesSpringDeadline
         );
@@ -575,6 +622,7 @@ export const ViewCollege = () => {
       <FilterComponent
         filter={editFilter}
         handleProgramChange={handleProgramChange}
+        states={totalStates}
       />
       {/* Buttons to apply or reset filters */}
       <Box
