@@ -24,7 +24,7 @@ const TransactionTable = () => {
   const [page, setPage] = useState(0);
   const rowsPerPage = 10; // Fixed rows per page
 
-  const { data: transactions = [] } = useFetchData(
+  const { data: transactions = [], error } = useFetchData(
     'apstransactions',
     `/transactions/aps/`,
   );
@@ -133,33 +133,49 @@ const TransactionTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredTransactions
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell>{transaction.receiver_name}</TableCell>
-                  <TableCell>{transaction.sender_name}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={`₹${transaction.credited_amount}`}
-                      color="success"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={`₹${transaction.debited_amount}`}
-                      color="error"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {new Date(
-                      transaction.transaction_datetime,
-                    ).toLocaleString()}
-                  </TableCell>
-                </TableRow>
-              ))}
+            {error ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  <Typography color="error">
+                    Failed to load transactions.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : filteredTransactions.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  <Typography>No records to show.</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredTransactions
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((transaction) => (
+                  <TableRow key={transaction.id}>
+                    <TableCell>{transaction.receiver_name}</TableCell>
+                    <TableCell>{transaction.sender_name}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={`₹${transaction.credited_amount}`}
+                        color="success"
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={`₹${transaction.debited_amount}`}
+                        color="error"
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {new Date(
+                        transaction.transaction_datetime,
+                      ).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
