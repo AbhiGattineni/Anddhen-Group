@@ -366,33 +366,46 @@ export const Transaction = () => {
                 </tr>
               ))}
             </thead>
-            <tbody {...getTableBodyProps()}>
-              {page.length === 0 ? (
+            {isLoading ? (
+              <tbody>
                 <tr>
                   <td
                     colSpan={headerGroups[0].headers.length}
                     className="text-center p-3"
                   >
-                    No transactions available
+                    <p className="p-3 fw-bold">Loading...</p>
                   </td>
                 </tr>
-              ) : (
-                page.map((row, index) => {
-                  prepareRow(row);
-                  return (
-                    <tr {...row.getRowProps()} key={index}>
-                      {row.cells.map((cell, index) => (
-                        <td {...cell.getCellProps()} key={index}>
-                          <div className="text-center p-1 rounded-pill">
-                            {cell.render('Cell')}
-                          </div>
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
+              </tbody>
+            ) : (
+              <tbody {...getTableBodyProps()}>
+                {page.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={headerGroups[0].headers.length}
+                      className="text-center p-3"
+                    >
+                      No transactions available
+                    </td>
+                  </tr>
+                ) : (
+                  page.map((row, index) => {
+                    prepareRow(row);
+                    return (
+                      <tr {...row.getRowProps()} key={index}>
+                        {row.cells.map((cell, index) => (
+                          <td {...cell.getCellProps()} key={index}>
+                            <div className="text-center p-1 rounded-pill">
+                              {cell.render('Cell')}
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            )}
           </table>
         </div>
 
