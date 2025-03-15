@@ -469,9 +469,12 @@ Row.propTypes = {
     state: PropTypes.string.isRequired,
   }).isRequired,
 };
-
 export const ViewCollege = () => {
-  const { data = [], isLoading } = useFetchData('colleges', `/colleges/all/`);
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useFetchData('colleges', `/colleges/all/`);
   const [globalFilter, setGlobalFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -504,6 +507,7 @@ export const ViewCollege = () => {
       setTotalStates(orderedUniqueStates);
     }
   }, [data]);
+
   // Handler to update the edited filters
   const handleProgramChange = (key) => (e) => {
     setEditFilter((prevFilter) => ({ ...prevFilter, [key]: e.target.value }));
@@ -613,6 +617,27 @@ export const ViewCollege = () => {
     );
   }, [filteredData, page, rowsPerPage]);
 
+  // Handle network errors
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', padding: '16px', color: 'error.main' }}>
+        <Typography variant="h6">
+          Error:{' '}
+          {error.message || 'Failed to fetch data. Please try again later.'}
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Handle no records
+  if (!isLoading && filteredData.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', padding: '16px' }}>
+        <Typography variant="h6">No records to display.</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <GlobalFilter
@@ -668,9 +693,16 @@ export const ViewCollege = () => {
       </Box>
       {/* Render Table and other UI elements */}
       {isLoading ? (
-        <div className="flex justify-center items-center w-100">
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '200px',
+          }}
+        >
           <CircularProgress />
-        </div>
+        </Box>
       ) : (
         <TableContainer component={Paper}>
           <Table>

@@ -40,7 +40,11 @@ const Employer = () => {
   const rowsPerPage = 15;
   const queryClient = useQueryClient();
 
-  const { data = [] } = useFetchData('employer', '/employers/');
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useFetchData('employer', '/employers/');
 
   const handleSearch = (e) => setSearch(e.target.value);
 
@@ -232,47 +236,71 @@ const Employer = () => {
                 </Button>
               </TableCell>
             </TableRow>
-            {paginatedData.map((row) => (
-              <TableRow key={row.id}>
-                {['name', 'address'].map((field) => (
-                  <TableCell key={field}>
-                    {editRowId === row.id ? (
-                      <TextField
-                        value={editValues[field]}
-                        onChange={(e) => handleInputChange(e, field)}
-                        fullWidth
-                      />
-                    ) : (
-                      row[field]
-                    )}
-                  </TableCell>
-                ))}
-                <TableCell>
-                  {editRowId === row.id ? (
-                    <IconButton onClick={handleSave} color="primary">
-                      {isUpdating ? <CircularProgress size={24} /> : <Save />}
-                    </IconButton>
-                  ) : (
-                    <IconButton
-                      onClick={() => handleEditId(row.id)}
-                      color="primary"
-                    >
-                      <Edit />
-                    </IconButton>
-                  )}
-                  <IconButton
-                    onClick={() => handleDelete(row.id)}
-                    color="secondary"
-                  >
-                    {isDeleting && selectedId === row.id ? (
-                      <CircularProgress size={24} />
-                    ) : (
-                      <Delete />
-                    )}
-                  </IconButton>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  <CircularProgress />
                 </TableCell>
               </TableRow>
-            ))}
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  <Typography color="error">
+                    An error occurred:{' '}
+                    {error.message ||
+                      'Failed to fetch data. Please try again later.'}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  <Typography>No records to display.</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedData.map((row) => (
+                <TableRow key={row.id}>
+                  {['name', 'address'].map((field) => (
+                    <TableCell key={field}>
+                      {editRowId === row.id ? (
+                        <TextField
+                          value={editValues[field]}
+                          onChange={(e) => handleInputChange(e, field)}
+                          fullWidth
+                        />
+                      ) : (
+                        row[field]
+                      )}
+                    </TableCell>
+                  ))}
+                  <TableCell>
+                    {editRowId === row.id ? (
+                      <IconButton onClick={handleSave} color="primary">
+                        {isUpdating ? <CircularProgress size={24} /> : <Save />}
+                      </IconButton>
+                    ) : (
+                      <IconButton
+                        onClick={() => handleEditId(row.id)}
+                        color="primary"
+                      >
+                        <Edit />
+                      </IconButton>
+                    )}
+                    <IconButton
+                      onClick={() => handleDelete(row.id)}
+                      color="secondary"
+                    >
+                      {isDeleting && selectedId === row.id ? (
+                        <CircularProgress size={24} />
+                      ) : (
+                        <Delete />
+                      )}
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
