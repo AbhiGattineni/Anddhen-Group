@@ -43,6 +43,7 @@ const AssignRole = () => {
       handleDelete();
     }
   }, [deleteRoleId]);
+
   const { mutate: deleteRole } = useDeleteData(
     'roles',
     `/deleteRole/${deleteRoleId}/`,
@@ -61,9 +62,9 @@ const AssignRole = () => {
     }
   };
 
-  function handleDeleteRole(roleId) {
+  const handleDeleteRole = (roleId) => {
     setDeleteRoleId(roleId);
-  }
+  };
 
   const handleAssign = (event) => {
     event.preventDefault();
@@ -85,8 +86,93 @@ const AssignRole = () => {
     }
   };
 
-  if (isLoading) return 'Loading...';
-  if (error) return 'An error has occurred: ' + error.message;
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle network errors
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        An error occurred:{' '}
+        {error.message || 'Failed to fetch data. Please try again later.'}
+      </div>
+    );
+  }
+
+  // Handle no records
+  if (!data?.assigned_roles || data.assigned_roles.length === 0) {
+    return (
+      <div className="container">
+        <h2 className="my-4">Assign Role</h2>
+        <form onSubmit={handleAssign} className="mb-4 row">
+          <div className={`mb-3 col-md-6 ${userError ? 'has-error' : ''}`}>
+            <label htmlFor="userSelect" className="form-label">
+              User
+            </label>
+            <select
+              id="userSelect"
+              className={`form-select ${userError ? 'is-invalid' : ''}`}
+              value={user || ''}
+              onChange={(e) => setUser(e.target.value)}
+            >
+              <option value="" disabled>
+                Select User
+              </option>
+              {data?.users.map((user) => (
+                <option key={user.user_id} value={user.user_id}>
+                  {user.full_name}
+                </option>
+              ))}
+            </select>
+            {userError && (
+              <div className="invalid-feedback">User is required.</div>
+            )}
+          </div>
+
+          <div className={`mb-3 col-md-6 ${roleError ? 'has-error' : ''}`}>
+            <label htmlFor="roleSelect" className="form-label">
+              Role
+            </label>
+            <select
+              id="roleSelect"
+              className={`form-select ${roleError ? 'is-invalid' : ''}`}
+              value={role || ''}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="" disabled>
+                Select Role
+              </option>
+              {data?.roles.map((role) => (
+                <option key={role.id} value={role.id}>
+                  {role.name_of_role}
+                </option>
+              ))}
+            </select>
+            {roleError && (
+              <div className="invalid-feedback">Role is required.</div>
+            )}
+          </div>
+
+          <div className="col-12">
+            <button type="submit" className="btn btn-primary">
+              Assign
+            </button>
+          </div>
+        </form>
+        <div className="alert alert-info" role="alert">
+          No records to display.
+        </div>
+      </div>
+    );
+  }
 
   const renderRow = (role, index) => (
     <tr key={index}>
