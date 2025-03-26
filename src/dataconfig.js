@@ -234,6 +234,20 @@ export const details = [
     GitHub: '',
   },
 ];
+
+export const teamImages = {
+  0: '/assets/images/dp.jpg',
+  1: '/assets/images/rushil.jpg',
+  2: '/assets/images/stephen.jpg',
+  3: '/assets/images/saiteja.png',
+  4: '/assets/images/vijetha.jpg',
+  5: '/assets/images/chandu.jpg',
+  6: '/assets/images/neha.jpg',
+  7: '/assets/images/charan.jpg',
+  8: '/assets/images/img1.jpg',
+  9: '/assets/images/sampreeth.jpg',
+};
+
 export const myworks = [
   {
     name: 'Anddhen Group',
