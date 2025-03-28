@@ -24,7 +24,11 @@ const RoleAccess = () => {
   });
   const [showModal, setShowModal] = useState(false);
 
-  const { data: roles = [], isLoading } = useFetchData('roles', `/roles/all/`);
+  const {
+    data: roles = [],
+    isLoading,
+    error,
+  } = useFetchData('roles', `/roles/all/`);
 
   const handleEditRole = (role) => {
     setEditingRole({
@@ -167,18 +171,72 @@ const RoleAccess = () => {
     }
   };
 
-  function handleDeleteRole(roleid) {
+  const handleDeleteRole = (roleid) => {
     setDeleteRoleId(roleid);
-  }
+  };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingRole({ id: null, name: '', admin_access_role: '' }); // Reset editing role
   };
 
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle network errors
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        An error occurred:{' '}
+        {error.message || 'Failed to fetch data. Please try again later.'}
+      </div>
+    );
+  }
+
+  // Handle no records
+  if (!roles || roles.length === 0) {
+    return (
+      <div className="container">
+        <h1 className="my-4">Role Access</h1>
+        <Button
+          setShowModal={setShowModal}
+          setEditingRole={setEditingRole}
+          buttonText="Add Role"
+        />
+        <div className="alert alert-info" role="alert">
+          No records to display.
+        </div>
+        <AddRoleModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          handleSave={handleSaveRole}
+          editingRole={editingRole}
+          setEditingRole={setEditingRole}
+          handleEditRole={handleEditRole}
+        />
+        <Toast
+          show={toast.show}
+          message={toast.message}
+          color={toast.color}
+          onClose={() =>
+            setToast({ show: false, message: '', color: undefined })
+          }
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="container">
-      <h1 className="my-4"> </h1>
+      <h1 className="my-4">Role Access</h1>
       <Button
         setShowModal={setShowModal}
         setEditingRole={setEditingRole}
@@ -202,51 +260,47 @@ const RoleAccess = () => {
             <th scope="col">Actions</th>
           </tr>
         </thead>
-        {isLoading ? (
-          <div>Loading...</div> // Or replace with a spinner component
-        ) : (
-          <tbody>
-            {roles.map((role, index) => (
-              <tr key={role.id}>
-                <th scope="row">{index + 1}</th>
-                <td>{role.name_of_role}</td>
-                <td>{role.admin_access_role}</td>
-                <td>
-                  <button
-                    className="btn btn-primary mr-2"
-                    onClick={() => handleEditRole(role)}
-                    disabled={editingRole.id === role} // Disable button during update
-                  >
-                    {editingRole.id === role ? (
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                    ) : (
-                      <i className="bi bi-pencil-fill"></i>
-                    )}
-                  </button>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleDeleteRole(role.id)}
-                    disabled={deletingRoleId === role.id} // Disable only the specific delete button
-                  >
-                    {deletingRoleId === role.id ? (
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                    ) : (
-                      <i className="bi bi-trash-fill"></i>
-                    )}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        )}
+        <tbody>
+          {roles.map((role, index) => (
+            <tr key={role.id}>
+              <th scope="row">{index + 1}</th>
+              <td>{role.name_of_role}</td>
+              <td>{role.admin_access_role}</td>
+              <td>
+                <button
+                  className="btn btn-primary mr-2"
+                  onClick={() => handleEditRole(role)}
+                  disabled={editingRole.id === role.id} // Disable button during update
+                >
+                  {editingRole.id === role.id ? (
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                  ) : (
+                    <i className="bi bi-pencil-fill"></i>
+                  )}
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDeleteRole(role.id)}
+                  disabled={deletingRoleId === role.id} // Disable only the specific delete button
+                >
+                  {deletingRoleId === role.id ? (
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                  ) : (
+                    <i className="bi bi-trash-fill"></i>
+                  )}
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
       <Toast
         show={toast.show}
