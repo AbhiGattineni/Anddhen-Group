@@ -24,20 +24,18 @@ export const Ass = () => {
           meet market, business and real-world requirements, Anddhen can help
           deliver the right technological solution.
         </p>
-        <Services />
-        <div className="col-md-12 mb-4 text-center">
-          <h3 className="main-heading">Our Works</h3>
-          <div className="underline mx-auto"></div>
-        </div>
-        <ImageSlider
-          title="Portfolio or Business Applications"
-          cards={myworks}
-        />
-        <ImageSlider title="Full Stack Applications" cards={myworks} />
-        <ImageSlider title="Mobile Applications" cards={myworks} />
-        <ImageSlider title="Web and Wordpress Applications" cards={myworks} />
-        <Cards />
       </div>
+      <Services />
+      <div className="col-md-12 mb-4 text-center">
+        <h3 className="main-heading">Our Works</h3>
+        <div className="underline mx-auto"></div>
+      </div>
+      <ImageSlider title="Portfolio or Business Applications" cards={myworks} />
+      <ImageSlider title="Full Stack Applications" cards={myworks} />
+      <ImageSlider title="Mobile Applications" cards={myworks} />
+      <ImageSlider title="Web and Wordpress Applications" cards={myworks} />
+      <Cards />
+
       <AssProjectModal />
       <AssTeamModal />
     </div>
