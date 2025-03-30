@@ -8,13 +8,6 @@ import {
 import PropTypes from 'prop-types';
 import { useFetchData } from 'src/react-query/useFetchApis';
 
-// const fetchColleges = async () => {
-//   const {
-//     data = [], // Provide a default value of an empty array
-//   } = useFetchData('colleges', `/colleges/all/`);
-//   return data;
-// };
-
 const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
   <span>
     Search:{' '}
@@ -33,7 +26,6 @@ GlobalFilter.propTypes = {
   setGlobalFilter: PropTypes.func.isRequired,
 };
 
-// Separate Cell component for handling row expansion
 const ExpanderCell = ({ row }) => (
   <span className="p-1" {...row.getToggleRowExpandedProps()}>
     {row.isExpanded ? (
@@ -229,7 +221,6 @@ Table.propTypes = {
 
 export const ViewColleges = () => {
   const { data, error, isLoading } = useFetchData('colleges', `/colleges/all/`);
-
   const columns = React.useMemo(
     () => [
       {
@@ -237,7 +228,6 @@ export const ViewColleges = () => {
         accessor: 'college_name',
       },
       {
-        // Add a column for the expandable rows
         Header: () => null,
         id: 'expander',
         Cell: ExpanderCell,
@@ -248,6 +238,7 @@ export const ViewColleges = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+  if (!data || data.length === 0) return <div>No records to display.</div>;
 
   return <Table columns={columns} data={data} />;
 };
