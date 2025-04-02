@@ -304,9 +304,20 @@ export const Transaction = () => {
             </div>
           </div>
         </nav>
-        <div className="table-responsive">
+        <div
+          className="table-responsive"
+          style={{ maxHeight: '500px', overflowY: 'auto' }}
+        >
           <table {...getTableProps()} className="table table-hover m-0">
-            <thead className="thead-dark">
+            <thead
+              className="thead-dark"
+              style={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 2,
+                background: '#fff',
+              }}
+            >
               {headerGroups.map((headerGroup, index) => (
                 <tr
                   className="text-center"
@@ -317,7 +328,13 @@ export const Transaction = () => {
                     <th
                       {...column.getHeaderProps()}
                       key={index}
-                      style={{ ...column.getHeaderProps().style }}
+                      style={{
+                        ...column.getHeaderProps().style,
+                        position: 'sticky',
+                        top: 0,
+                        background: '#fff',
+                        zIndex: 2,
+                      }}
                       data-bs-toggle="tooltip"
                       title={column.Tooltip || column.Header}
                     >
@@ -350,10 +367,19 @@ export const Transaction = () => {
               ))}
             </thead>
             {isLoading ? (
-              <p className="p-3 fw-bold">loading...</p>
+              <tbody>
+                <tr>
+                  <td
+                    colSpan={headerGroups[0].headers.length}
+                    className="text-center p-3"
+                  >
+                    <p className="p-3 fw-bold">Loading...</p>
+                  </td>
+                </tr>
+              </tbody>
             ) : (
               <tbody {...getTableBodyProps()}>
-                {page.length === 0 ? ( // Check if there are no rows
+                {page.length === 0 ? (
                   <tr>
                     <td
                       colSpan={headerGroups[0].headers.length}
@@ -367,15 +393,13 @@ export const Transaction = () => {
                     prepareRow(row);
                     return (
                       <tr {...row.getRowProps()} key={index}>
-                        {row.cells.map((cell, index) => {
-                          return (
-                            <td {...cell.getCellProps()} key={index}>
-                              <div className="text-center p-1 rounded-pill">
-                                {cell.render('Cell')}
-                              </div>
-                            </td>
-                          );
-                        })}
+                        {row.cells.map((cell, index) => (
+                          <td {...cell.getCellProps()} key={index}>
+                            <div className="text-center p-1 rounded-pill">
+                              {cell.render('Cell')}
+                            </div>
+                          </td>
+                        ))}
                       </tr>
                     );
                   })
@@ -384,6 +408,7 @@ export const Transaction = () => {
             )}
           </table>
         </div>
+
         <div className="d-flex justify-content-between align-items-center p-3 bg-light rounded-bottom">
           <div>
             <button

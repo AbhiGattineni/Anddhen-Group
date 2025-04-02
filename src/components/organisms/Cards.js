@@ -3,9 +3,10 @@ import './Card.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import useAuthStore from 'src/services/store/globalStore';
 import { useFetchData } from 'src/react-query/useFetchApis';
+import { teamImages } from 'src/dataconfig';
 
 const Cards = () => {
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  // const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const teamData = useAuthStore((state) => state.teamAllDetails);
   const {
     data: teamDetail = [],
@@ -48,7 +49,7 @@ const Cards = () => {
           <div className="border rounded row">
             {(teamData || teamDetail)
               .filter((detail) => detail.subsidiary === 'ass') // Filter by subsidiary
-              .map((detail) => (
+              .map((detail, i) => (
                 <div
                   className="col-lg-3 col-md-4 col-sm-6 mb-5"
                   key={detail.id}
@@ -58,10 +59,7 @@ const Cards = () => {
                     onClick={() => handleClick(detail)}
                   >
                     <div className="image">
-                      <img
-                        src={`${API_BASE_URL}${detail.image}`}
-                        alt={detail.name}
-                      />
+                      <img src={teamImages[i]} alt={detail.name} />
                     </div>
                     <div className="card-body text-center p-1">
                       <h5>{detail.name}</h5>
