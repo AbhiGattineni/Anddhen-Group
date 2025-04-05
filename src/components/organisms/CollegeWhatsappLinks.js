@@ -7,10 +7,11 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import FacebookIcon from '@mui/icons-material/Facebook';
 
 const CollegeWhatsappLinks = () => {
-  const { data = [], isLoading } = useFetchData(
-    'collegeswhatsapplinks',
-    '/college_details/',
-  );
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useFetchData('collegeswhatsapplinks', '/college_details/');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Group links by college ID
@@ -37,27 +38,12 @@ const CollegeWhatsappLinks = () => {
         onChange={(e) => setSearchQuery(e.target.value)}
         type="search"
         sx={{
-          width: {
-            xs: '100%',
-            sm: '300px',
-            md: '400px',
-            lg: '40%',
-          },
+          width: { xs: '100%', sm: '300px', md: '400px', lg: '40%' },
           marginBottom: '20px',
-          '& .MuiOutlinedInput-root': {
-            height: '40px',
-            padding: '0',
-          },
-          '& .MuiOutlinedInput-input': {
-            padding: '8px 14px',
-          },
-          '& .MuiInputLabel-root': {
-            top: '-7px',
-            fontSize: '16px',
-          },
-          '& .MuiInputLabel-shrink': {
-            top: '0',
-          },
+          '& .MuiOutlinedInput-root': { height: '40px', padding: '0' },
+          '& .MuiOutlinedInput-input': { padding: '8px 14px' },
+          '& .MuiInputLabel-root': { top: '-7px', fontSize: '16px' },
+          '& .MuiInputLabel-shrink': { top: '0' },
         }}
         InputProps={{
           endAdornment: (
@@ -78,51 +64,52 @@ const CollegeWhatsappLinks = () => {
         >
           <CircularProgress />
         </div>
+      ) : isError ? (
+        <Typography
+          variant="h6"
+          color="error"
+          style={{ textAlign: 'center', marginTop: '20px' }}
+        >
+          Network error! Please try again later.
+        </Typography>
+      ) : searchedData.length === 0 ? (
+        <Typography
+          variant="h6"
+          color="textSecondary"
+          style={{ textAlign: 'center', marginTop: '20px' }}
+        >
+          No fields to show.
+        </Typography>
       ) : (
-        <>
-          {searchedData.length === 0 ? (
-            <Typography
-              variant="h6"
-              color="textSecondary"
-              style={{
-                textAlign: 'center',
-                marginTop: '20px',
-              }}
-            >
-              No results found
-            </Typography>
-          ) : (
-            <ol style={{ lineHeight: '2em', fontSize: '18px' }}>
-              {searchedData.map((college, index) => (
-                <li key={index}>
-                  <span style={{ marginRight: '10px' }}>
-                    {college.college_name}
-                  </span>
-                  {college.links['whatsapp community link'] && (
-                    <a
-                      href={college.links['whatsapp community link']}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ marginRight: '10px', color: 'green' }}
-                    >
-                      <WhatsAppIcon />
-                    </a>
-                  )}
-                  {college.links['facebook group link'] && (
-                    <a
-                      href={college.links['facebook group link']}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#4267B2' }}
-                    >
-                      <FacebookIcon />
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ol>
-          )}
-        </>
+        <ol style={{ lineHeight: '2em', fontSize: '18px' }}>
+          {searchedData.map((college, index) => (
+            <li key={index}>
+              <span style={{ marginRight: '10px' }}>
+                {college.college_name}
+              </span>
+              {college.links['whatsapp community link'] && (
+                <a
+                  href={college.links['whatsapp community link']}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ marginRight: '10px', color: 'green' }}
+                >
+                  <WhatsAppIcon />
+                </a>
+              )}
+              {college.links['facebook group link'] && (
+                <a
+                  href={college.links['facebook group link']}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#4267B2' }}
+                >
+                  <FacebookIcon />
+                </a>
+              )}
+            </li>
+          ))}
+        </ol>
       )}
     </div>
   );

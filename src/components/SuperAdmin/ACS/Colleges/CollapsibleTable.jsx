@@ -44,7 +44,7 @@ GlobalFilter.propTypes = {
 };
 
 const FilterComponent = ({ filter, handleProgramChange, states }) => {
-  const isSmallScreen = useMediaQuery('(max-width:600px)'); // Use raw media query instead of theme
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
 
   return (
     <Box
@@ -69,11 +69,10 @@ const FilterComponent = ({ filter, handleProgramChange, states }) => {
         <FormControlLabel value="grad" control={<Radio />} label="Graduate" />
       </RadioGroup>
 
-      {/* Responsive Box for scores */}
       <Box
         sx={{
           display: 'flex',
-          flexDirection: isSmallScreen ? 'column' : 'row', // Stack on small screens
+          flexDirection: isSmallScreen ? 'column' : 'row',
           gap: '16px',
           marginBottom: '16px',
         }}
@@ -111,7 +110,7 @@ const FilterComponent = ({ filter, handleProgramChange, states }) => {
       <Box
         sx={{
           display: 'flex',
-          flexDirection: isSmallScreen ? 'column' : 'row', // Stack on small screens
+          flexDirection: isSmallScreen ? 'column' : 'row',
           gap: '16px',
           marginBottom: '16px',
         }}
@@ -154,7 +153,6 @@ const FilterComponent = ({ filter, handleProgramChange, states }) => {
         />
       </Box>
 
-      {/* Dropdown for selecting a state dynamically */}
       <Select
         value={filter.state}
         onChange={handleProgramChange('state')}
@@ -188,7 +186,7 @@ FilterComponent.propTypes = {
     state: PropTypes.string.isRequired,
   }).isRequired,
   handleProgramChange: PropTypes.func.isRequired,
-  states: PropTypes.arrayOf(PropTypes.string).isRequired, // Ensure states array is passed
+  states: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 function Row({ row, filter }) {
@@ -337,16 +335,15 @@ function Row({ row, filter }) {
                   </Typography>
                   <Box
                     display="flex"
-                    flexDirection={{ xs: 'column', md: 'row' }} // Column on small screens, row on larger screens
+                    flexDirection={{ xs: 'column', md: 'row' }}
                     justifyContent="space-between"
                   >
                     <Box
                       flex={1}
                       pr={1}
                       sx={{
-                        display: { xs: 'block', md: 'flex' }, // Block for small screens, flex for larger
-                        flexDirection: { md: 'column' }, // Stack vertically on larger screens
-                        // mb: { xs: 2, md: 0 }, // Margin bottom on small screens
+                        display: { xs: 'block', md: 'flex' },
+                        flexDirection: { md: 'column' },
                       }}
                     >
                       <ul
@@ -381,8 +378,8 @@ function Row({ row, filter }) {
                       flex={1}
                       pl={1}
                       sx={{
-                        display: { xs: 'block', md: 'flex' }, // Block for small screens, flex for larger
-                        flexDirection: { md: 'column' }, // Stack vertically on larger screens
+                        display: { xs: 'block', md: 'flex' },
+                        flexDirection: { md: 'column' },
                         p: 0,
                       }}
                     >
@@ -480,7 +477,6 @@ export const ViewCollege = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalStates, setTotalStates] = useState([]);
 
-  // Separate states for edited and applied filters
   const [filter, setFilter] = useState({
     selectedProgram: 'all',
     greScore: '',
@@ -489,6 +485,7 @@ export const ViewCollege = () => {
     collegeType: '',
     fallDeadline: '',
     springDeadline: '',
+    state: '',
   });
   const [editFilter, setEditFilter] = useState({ ...filter });
 
@@ -508,17 +505,14 @@ export const ViewCollege = () => {
     }
   }, [data]);
 
-  // Handler to update the edited filters
   const handleProgramChange = (key) => (e) => {
     setEditFilter((prevFilter) => ({ ...prevFilter, [key]: e.target.value }));
   };
 
-  // Apply Filters button: Apply the editFilter to the actual filter
   const applyFilters = () => {
     setFilter(editFilter);
   };
 
-  // Reset Filters button: Reset both filters and editFilter to default values
   const resetFilters = () => {
     const initialFilter = {
       selectedProgram: 'all',
@@ -528,6 +522,7 @@ export const ViewCollege = () => {
       collegeType: '',
       fallDeadline: '',
       springDeadline: '',
+      state: '',
     };
     setGlobalFilter('');
     setEditFilter(initialFilter);
@@ -566,13 +561,11 @@ export const ViewCollege = () => {
           college.public_private?.toLowerCase() ===
             filter.collegeType.toLowerCase();
 
-        // New: Match state filter
         const matchesState =
           !filter.state ||
           (college.state &&
             college.state.toLowerCase() === filter.state.toLowerCase());
 
-        // Calculate minimum dates for deadlines
         const minFallDeadline = new Date(
           Math.min(
             new Date(college.fall_deadline_UG || '9999-12-31'),
@@ -602,7 +595,7 @@ export const ViewCollege = () => {
           matchesTOEFL &&
           matchesIELTS &&
           matchesCollegeType &&
-          matchesState && // New condition added here
+          matchesState &&
           matchesFallDeadline &&
           matchesSpringDeadline
         );
@@ -649,7 +642,6 @@ export const ViewCollege = () => {
         handleProgramChange={handleProgramChange}
         states={totalStates}
       />
-      {/* Buttons to apply or reset filters */}
       <Box
         sx={{
           display: 'flex',
@@ -691,7 +683,7 @@ export const ViewCollege = () => {
           Reset Filters
         </button>
       </Box>
-      {/* Render Table and other UI elements */}
+
       {isLoading ? (
         <Box
           sx={{
@@ -714,16 +706,19 @@ export const ViewCollege = () => {
           </Table>
         </TableContainer>
       )}
-      <TablePagination
-        component="div"
-        count={filteredData.length}
-        page={page}
-        onPageChange={(event, newPage) => setPage(newPage)}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(event) =>
-          setRowsPerPage(parseInt(event.target.value, 10))
-        }
-      />
+
+      {!isLoading && !error && filteredData.length > 0 && (
+        <TablePagination
+          component="div"
+          count={filteredData.length}
+          page={page}
+          onPageChange={(event, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(event) =>
+            setRowsPerPage(parseInt(event.target.value, 10))
+          }
+        />
+      )}
     </Box>
   );
 };

@@ -14,16 +14,19 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  Box,
+  Typography,
+  CircularProgress,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditTeamMember from './editTeamMember'; // Ensure this is the correct path
+import EditTeamMember from './editTeamMember';
 import { useQueryClient } from 'react-query';
 
 const Cards = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const {
-    data: teamData,
+    data: teamData = [],
     isLoading,
     error,
   } = useFetchData('teamMembers', '/team_members/');
@@ -36,7 +39,6 @@ const Cards = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const queryClient = useQueryClient();
 
-  // Hook for deleting a team member
   const { mutate: deleteCollege } = useDeleteData(
     'teamMembers',
     `/team_members/delete/${deleteId}/`,
@@ -80,23 +82,15 @@ const Cards = () => {
     setDeleteId(null);
   }
 
-  const filteredTeamData = teamData?.filter((detail) => {
+  const filteredTeamData = teamData.filter((detail) => {
     const matchesSearchTerm = detail.name
-      .toLowerCase()
+      ?.toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesSubsidiary = filterSubsidiary
       ? detail.subsidiary === filterSubsidiary
       : true;
     return matchesSearchTerm && matchesSubsidiary;
   });
-
-  if (isLoading)
-    return (
-      <div className="spinner-border spinner-border-sm" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    );
-  if (error) return <div>Error loading data</div>;
 
   return (
     <section className="section">
@@ -160,7 +154,24 @@ const Cards = () => {
         </div>
 
         <div className="border rounded row">
-          {filteredTeamData &&
+          {isLoading ? (
+            <Box display="flex" justifyContent="center" width="100%" p={3}>
+              <CircularProgress />
+            </Box>
+          ) : error ? (
+            <Box p={3} textAlign="center" width="100%">
+              <Typography color="error">
+                Network Error: Unable to load team members. Please check your
+                internet connection.
+              </Typography>
+            </Box>
+          ) : filteredTeamData.length === 0 ? (
+            <Box p={3} textAlign="center" width="100%">
+              <Typography variant="body1">
+                No team members found matching your criteria.
+              </Typography>
+            </Box>
+          ) : (
             filteredTeamData.map((detail) => (
               <div className="col-lg-3 col-md-4 col-sm-6 mb-5" key={detail.id}>
                 <div
@@ -217,7 +228,8 @@ const Cards = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
 
         <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
