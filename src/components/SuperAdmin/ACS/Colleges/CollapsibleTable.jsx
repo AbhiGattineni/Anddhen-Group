@@ -686,16 +686,24 @@ export const ViewCollege = () => {
       </Box>
 
       {isLoading ? (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '200px',
-          }}
-        >
+        <Box display="flex" justifyContent="center" p={3}>
           <CircularProgress />
         </Box>
+      ) : error ? (
+        <TableContainer component={Paper}>
+          <Box p={3} textAlign="center">
+            <Typography color="error">
+              Network error: Unable to load data. Please check your internet
+              connection.
+            </Typography>
+          </Box>
+        </TableContainer>
+      ) : filteredData.length === 0 ? (
+        <TableContainer component={Paper}>
+          <Box p={3} textAlign="center">
+            <Typography>No fields to show matching your criteria.</Typography>
+          </Box>
+        </TableContainer>
       ) : (
         <TableContainer component={Paper}>
           <Table>
