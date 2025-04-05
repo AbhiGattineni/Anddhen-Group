@@ -505,7 +505,6 @@ export const ViewCollege = () => {
     }
   }, [data]);
 
-  // Handler to update the edited filters
   const handleProgramChange = (key) => (e) => {
     setEditFilter((prevFilter) => ({ ...prevFilter, [key]: e.target.value }));
   };
