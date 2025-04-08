@@ -13,9 +13,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { fetchAi } from '../resume/AISuggestions';
-import RouteMap from './RouteMap';
-import ItineraryPlan from './ItineraryPlan';
-// import backgroundImage from './assets/travel-bg.jpg';
+import MapFlow from './MapFlow';
 
 const formFields = [
   { label: 'From', name: 'from', type: 'text' },
@@ -55,7 +53,7 @@ const HeroSection = styled('div')({
   color: '#fff',
   textAlign: 'center',
   fontSize: '2rem',
-  fontWeight: 'bold',
+fontWeight: 'bold',
   textShadow: '2px 2px 10px rgba(0,0,0,0.6)',
 });
 
@@ -181,6 +179,8 @@ Accommodation: Total cost per night per person.
 Miscellaneous: Any additional expenses.
 
 Total Daily Cost: Ensure the total does not exceed ${formData.budget} per person.
+
+Note: The currency should be based on the country's local currency.
 
 Provide the response in JSON format with day-wise and activity-wise separation:
 
@@ -311,8 +311,8 @@ Provide the response in JSON format with day-wise and activity-wise separation:
           </form>
         </Card>
       </Container>
-      {itineraryPlan && <RouteMap itineraryPlan={itineraryPlan} />}
-      {itineraryPlan && <ItineraryPlan data={itineraryPlan} />}
+      <MapFlow />
+      {itineraryPlan && <MapFlow tripData={itineraryPlan} />}
     </>
   );
 };
