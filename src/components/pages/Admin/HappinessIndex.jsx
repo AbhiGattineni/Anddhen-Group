@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types'; // <-- Add this line
 import {
   Dialog,
   DialogTitle,
@@ -12,7 +13,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useAddData } from '../../../react-query/useFetchApis';
-import { auth } from '../../../services/Authentication/firebase'; // Import Firebase auth
+import { auth } from '../../../services/Authentication/firebase';
 
 const smileys = [
   { value: 1, src: '/assets/images/11.png', label: 'Very Poor' },
@@ -28,11 +29,8 @@ const HappinessIndex = ({ open, handleClose }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [submitError, setSubmitError] = useState(null);
-
-  // Get user ID from Firebase auth
   const user_id = auth.currentUser?.uid;
 
-  // Use the useAddData hook with the happiness index endpoint
   const {
     mutate: submitHappiness,
     isLoading,
@@ -58,7 +56,6 @@ const HappinessIndex = ({ open, handleClose }) => {
     submitHappiness(data, {
       onSuccess: () => {
         handleClose();
-        // Reset form on success
         setHappinessScore(3);
         setDescription('');
       },
@@ -153,6 +150,7 @@ const HappinessIndex = ({ open, handleClose }) => {
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
+
         <TextField
           fullWidth
           label="Description (Optional)"
@@ -196,6 +194,12 @@ const HappinessIndex = ({ open, handleClose }) => {
       )}
     </Dialog>
   );
+};
+
+// ✅ Add PropTypes for validation
+HappinessIndex.propTypes = {
+  open: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
 };
 
 export default HappinessIndex;

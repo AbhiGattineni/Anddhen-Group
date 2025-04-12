@@ -227,9 +227,11 @@ export const EmployeeDashboard = () => {
       const currentDate = formatDate(new Date());
       const isSelectedDateCurrent = formattedSelectedDate === currentDate;
       if (
-        data &&
+        statusUpdates &&
         isSelectedDateCurrent &&
-        data?.some((obj) => obj.date === currentDate && obj.subsidary === value)
+        statusUpdates?.some(
+          (obj) => obj.date === currentDate && obj.subsidary === value,
+        )
       ) {
         setShowEdit(true);
       } else {
