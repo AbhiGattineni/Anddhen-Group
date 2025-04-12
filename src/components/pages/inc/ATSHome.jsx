@@ -53,7 +53,7 @@ const HeroSection = styled('div')({
   color: '#fff',
   textAlign: 'center',
   fontSize: '2rem',
-fontWeight: 'bold',
+  fontWeight: 'bold',
   textShadow: '2px 2px 10px rgba(0,0,0,0.6)',
 });
 
