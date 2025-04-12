@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Carousel, Container, Row, Col, Card } from 'react-bootstrap';
-
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
+import ATSHome from './ATSHome';
 
 export const Ats = () => {
   const [showToast, setShowToast] = useState(false);
@@ -178,7 +178,7 @@ export const Ats = () => {
             </Col>
           </Row>
         </div>
-
+        <ATSHome />
         {/* Contact Form */}
         <EnquiryForm
           title="ATS: Anddhen Travel Services"
