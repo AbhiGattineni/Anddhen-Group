@@ -30,10 +30,7 @@ export const Ass = () => {
         <h3 className="main-heading">Our Works</h3>
         <div className="underline mx-auto"></div>
       </div>
-      <ImageSlider title="Portfolio or Business Applications" cards={myworks} />
-      <ImageSlider title="Full Stack Applications" cards={myworks} />
-      <ImageSlider title="Mobile Applications" cards={myworks} />
-      <ImageSlider title="Web and Wordpress Applications" cards={myworks} />
+      <ImageSlider cards={myworks} />
       <Cards />
 
       <AssProjectModal />

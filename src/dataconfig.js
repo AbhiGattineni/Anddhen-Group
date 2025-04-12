@@ -285,6 +285,14 @@ export const myworks = [
     link: 'http://www.aromarestaurant.com/',
     timeline: '2021 - 2023',
   },
+  {
+    name: 'K C SIVA REDDY Pure Ghee Sweets',
+    image: '/assets/images/kcshiva.jpg',
+    description:
+      'Developed a custom billing website for K C Siva Reddy Sweet Shop to simplify daily sales and invoice generation. The system includes product management, GST-compliant billing, and real-time sales tracking, helping the shop move from manual to digital operations.',
+    link: 'https://v1-demo.lightworks-services.com/#/home',
+    timeline: '2021 - 2023',
+  },
 ];
 
 export const videoLinks = [
