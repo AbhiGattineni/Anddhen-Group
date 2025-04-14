@@ -208,7 +208,7 @@ const HappinessIndexList = () => {
                           visibility: description ? 'visible' : 'hidden',
                         }}
                       >
-                        "{description || 'placeholder'}"
+                        {`"${description || 'placeholder'}"`}
                       </Typography>
                     </Box>
                   </CardContent>
