@@ -23,6 +23,7 @@ const initialFormState = {
   user_name: auth?.currentUser?.displayName || '',
   subsidary: '',
   date: '',
+  leave: false,
   description: '',
   AMS: { source: '' },
   ACS: {
@@ -70,7 +71,7 @@ export const EmployeeDashboard = () => {
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate,
   );
-  const formattedData = data ? data.map((item) => [item.date, item.name]) : [];
+  const formattedData = data ? data.map((item) => [item.date, item.leave]) : [];
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole?.split(',');
@@ -134,6 +135,7 @@ export const EmployeeDashboard = () => {
       user_name: flatObj.user_name || '',
       subsidary: flatObj.subsidary || '',
       date: flatObj.date || '',
+      leave: flatObj.leave || false,
       description: flatObj.description || null,
       AMS: { source: flatObj.source || null },
       ACS: {
@@ -195,6 +197,9 @@ export const EmployeeDashboard = () => {
       }));
     } else {
       setFormValues((prev) => ({ ...prev, [name]: value }));
+    }
+    if (name === 'leave' && value === true) {
+      setDisableInputs(true);
     }
     if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
       const filtered = userSubsidaries.filter((sub) => sub.subsidary === value);
@@ -383,6 +388,21 @@ export const EmployeeDashboard = () => {
                 variant="outlined"
                 inputProps={{ max: getMaxDate() }}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                label="Leave"
+                name="leave"
+                value={formValues.leave}
+                onChange={handleChange}
+                disabled={disableInputs}
+                variant="outlined"
+              >
+                <MenuItem value={true}>Yes</MenuItem>
+                <MenuItem value={false}>No</MenuItem>
+              </TextField>
             </Grid>
             {/* Dynamic Fields */}
             {renderSubsidaryFields()}
