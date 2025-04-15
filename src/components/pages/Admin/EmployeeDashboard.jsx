@@ -7,6 +7,7 @@ import { useQueryClient } from 'react-query';
 import useAuthStore from 'src/services/store/globalStore';
 import AssignCards from './AssignCards';
 import { adminPlates } from 'src/dataconfig';
+import HappinessIndex from './HappinessIndex';
 import {
   FormControl,
   Grid,
@@ -53,7 +54,6 @@ const initialFormState = {
     whatsapp_group_number: '',
   },
 };
-
 export const EmployeeDashboard = () => {
   const empName = '';
   const [formValues, setFormValues] = useState(initialFormState);
@@ -66,11 +66,18 @@ export const EmployeeDashboard = () => {
   const [searchedPlates, setSearchedPlates] = useState(adminPlates);
   const [userSubsidaries, setUserSubsidaries] = useState([]);
 
-  const { data } = useStatusCalendar(auth.currentUser?.uid);
+  const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid); // Use statusUpdates directly
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate,
   );
-  const formattedData = data ? data.map((item) => [item.date, item.name]) : [];
+  useEffect(() => {
+    console.log(statusUpdates);
+  }, [statusUpdates]);
+  const formattedData = statusUpdates
+    ? statusUpdates.status_updates.map((item) => [item.date, item.name])
+    : [];
+
+  // Rest of the component code...
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole?.split(',');
@@ -81,6 +88,10 @@ export const EmployeeDashboard = () => {
     : adminPlates.filter((plate) =>
         current_roles?.some((role) => role.trim() === plate.route.trim()),
       );
+  const [openHappinessDialog, setOpenHappinessDialog] = useState(false);
+  useEffect(() => {
+    setOpenHappinessDialog(true); // Open the popup when the page loads
+  }, []);
 
   useEffect(() => {
     if (searchedPlates !== filteredPlates) {
@@ -173,17 +184,17 @@ export const EmployeeDashboard = () => {
     resetForm();
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
-    if (data && selectedAcsStatusDate) {
-      const filteredStatuses = data.filter(
+    if (statusUpdates && selectedAcsStatusDate) {
+      const filteredStatuses = statusUpdates.status_updates.filter(
         (status) => formattedSelectedDate === status.date,
       );
       setUserSubsidaries(filteredStatuses);
-      if (!filteredStatuses) {
+      if (!filteredStatuses.length) {
         setDisableInputs(false);
         resetForm();
       }
     }
-  }, [selectedAcsStatusDate, data]);
+  }, [selectedAcsStatusDate, statusUpdates]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -216,9 +227,11 @@ export const EmployeeDashboard = () => {
       const currentDate = formatDate(new Date());
       const isSelectedDateCurrent = formattedSelectedDate === currentDate;
       if (
-        data &&
+        statusUpdates &&
         isSelectedDateCurrent &&
-        data?.some((obj) => obj.date === currentDate && obj.subsidary === value)
+        statusUpdates?.some(
+          (obj) => obj.date === currentDate && obj.subsidary === value,
+        )
       ) {
         setShowEdit(true);
       } else {
@@ -330,6 +343,12 @@ export const EmployeeDashboard = () => {
   return (
     <div className="container">
       <div className="my-3">
+        {statusUpdates && !statusUpdates?.has_submitted_happiness_today && (
+          <HappinessIndex
+            open={openHappinessDialog}
+            handleClose={() => setOpenHappinessDialog(false)}
+          />
+        )}
         <form className="form">
           <h2>Status Update Form</h2>
           <div className="row">
