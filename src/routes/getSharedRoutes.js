@@ -8,6 +8,7 @@ import { Shooping } from 'src/components/SuperAdmin/ACS/ShoopingProducts/Shoopin
 import OurTeam from 'src/components/SuperAdmin/OurTeam/ourTeam';
 import { PartTimerPortal } from 'src/components/pages/ACS/PartTimerPortal';
 import DeviceAllocation from 'src/components/organisms/Modal/DeviceAllocation';
+import HappinessIndexAdmin from 'src/components/pages/Admin/HappinessIndexAdmin ';
 export function getSharedRoutes() {
   return [
     { path: 'transactions', element: <Transaction /> },
@@ -19,6 +20,7 @@ export function getSharedRoutes() {
     { path: 'ourTeam', element: <OurTeam /> },
     { path: 'jobapplication/parttimerportal', element: <PartTimerPortal /> },
     { path: 'devicetrackingtable', element: <DeviceAllocation /> },
+    { path: 'HappinessIndexAdmin', element: <HappinessIndexAdmin /> },
     // Add other shared routes here
   ];
 }

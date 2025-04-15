@@ -410,6 +410,10 @@ export const adminPlates = [
     child: 'Device Tracking',
     route: 'devicetrackingtable',
   },
+  {
+    child: 'HappinessIndexAdmin',
+    route: 'HappinessIndexAdmin',
+  },
 ];
 
 export const adminPortal = [
