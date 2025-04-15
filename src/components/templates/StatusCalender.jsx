@@ -17,30 +17,27 @@ export const StatusCalendar = ({ data, empName }) => {
     useAuthStore.setState({ selectedAcsStatusDate: selectedDate });
   }, [selectedDate]);
 
-  const hasDataForDate = (date) => {
+  const getDayStatus = (date) => {
     const checkDate = new Date(date);
     checkDate.setHours(0, 0, 0, 0);
 
-    return data.some((entry) => {
+    for (const entry of data) {
       const entryDate = new Date(entry[0]);
       entryDate.setHours(0, 0, 0, 0);
 
-      const hasData =
-        entryDate.getTime() === checkDate.getTime() &&
-        (!empName || entry[1] === empName);
-      return hasData;
-    });
+      if (entryDate.getTime() === checkDate.getTime()) {
+        return entry[1] ? 'leave-day' : 'green-day';
+      }
+    }
+
+    return 'red-day';
   };
 
   const tileClassName = ({ date, view }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (view === 'month' && date <= today) {
-      if (hasDataForDate(date)) {
-        return 'green-day';
-      } else {
-        return 'red-day';
-      }
+      return getDayStatus(date);
     }
     return null;
   };
