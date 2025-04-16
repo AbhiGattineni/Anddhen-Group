@@ -72,7 +72,6 @@ export const EmployeeDashboard = () => {
     (state) => state.selectedAcsStatusDate,
   );
   const formattedData = data ? data.map((item) => [item.date, item.leave]) : [];
-
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole?.split(',');
   const filteredPlates = current_roles?.some(
