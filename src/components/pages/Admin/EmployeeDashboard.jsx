@@ -182,11 +182,11 @@ export const EmployeeDashboard = () => {
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
     if (statusUpdates && selectedAcsStatusDate) {
-      const filteredStatuses = statusUpdates.status_updates.filter(
+      const filteredStatuses = statusUpdates.status_updates?.filter(
         (status) => formattedSelectedDate === status.date,
       );
       setUserSubsidaries(filteredStatuses);
-      if (!filteredStatuses.length) {
+      if (!filteredStatuses?.length) {
         setDisableInputs(false);
         resetForm();
       }
