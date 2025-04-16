@@ -125,8 +125,7 @@ const TransactionTable = () => {
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Receiver Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Sender Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Credited Amount</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Debited Amount</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Amount</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>
                 Transaction Date
               </TableCell>
@@ -135,7 +134,7 @@ const TransactionTable = () => {
           <TableBody>
             {error ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={4} align="center">
                   <Typography color="error">
                     Failed to load transactions.
                   </Typography>
@@ -143,7 +142,7 @@ const TransactionTable = () => {
               </TableRow>
             ) : filteredTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={4} align="center">
                   <Typography>No records to show.</Typography>
                 </TableCell>
               </TableRow>
@@ -155,18 +154,21 @@ const TransactionTable = () => {
                     <TableCell>{transaction.receiver_name}</TableCell>
                     <TableCell>{transaction.sender_name}</TableCell>
                     <TableCell>
-                      <Chip
-                        label={`₹${transaction.credited_amount}`}
-                        color="success"
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={`₹${transaction.debited_amount}`}
-                        color="error"
-                        variant="outlined"
-                      />
+                      {transaction.credited_amount > 0 && (
+                        <Chip
+                          label={`₹${transaction.credited_amount}`}
+                          color="success"
+                          variant="outlined"
+                          sx={{ mr: 1 }}
+                        />
+                      )}
+                      {transaction.debited_amount > 0 && (
+                        <Chip
+                          label={`₹${transaction.debited_amount}`}
+                          color="error"
+                          variant="outlined"
+                        />
+                      )}
                     </TableCell>
                     <TableCell>
                       {new Date(
