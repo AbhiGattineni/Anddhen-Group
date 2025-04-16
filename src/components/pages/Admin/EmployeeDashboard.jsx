@@ -71,7 +71,9 @@ export const EmployeeDashboard = () => {
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate,
   );
-  const formattedData = statusUpdates ? statusUpdates.map((item) => [item.date, item.leave]) : [];
+  const formattedData = statusUpdates
+    ? statusUpdates.map((item) => [item.date, item.leave])
+    : [];
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole?.split(',');
