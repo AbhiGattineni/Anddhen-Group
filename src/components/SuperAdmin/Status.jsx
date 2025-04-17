@@ -51,7 +51,7 @@ export const Status = () => {
   }, [selectedAcsStatusDate, data]);
 
   const formattedCallenderData = data
-    ? data.map((item) => [item.date, item.name])
+    ? data.map((item) => [item.date, item.leave])
     : [];
 
   // Fetch employee data from API on component mount
@@ -193,7 +193,8 @@ export const Status = () => {
                         <div key={statusIndex}>
                           {filteredEntries.map(([key, value], index) => (
                             <Typography key={index}>
-                              <strong>{key}:</strong> {value}
+                              <strong>{key}:</strong>{' '}
+                              {key === 'leave' ? (value ? 'Yes' : 'No') : value}
                             </Typography>
                           ))}
                           {/* Add Divider after each status except the last one */}
@@ -249,7 +250,11 @@ export const Status = () => {
                                     key !== 'user_name' &&
                                     key !== 'date',
                                 )
-                                .map(([key, value]) => `${key}: ${value}`)
+                                .map(([key, value]) =>
+                                  key === 'leave'
+                                    ? `${key}: ${value ? 'Yes' : 'No'}`
+                                    : `${key}: ${value}`,
+                                )
                                 .join(', ') || 'No relevant data available'
                             }
                           />

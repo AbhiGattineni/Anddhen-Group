@@ -55,3 +55,8 @@
 .react-calendar .react-calendar__tile--active {
   background-color: rgb(91, 137, 255) !important;
 }
+
+.leave-day {
+  background-color: #fff59d;
+  /* soft yellow for leave */
+}

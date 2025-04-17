@@ -24,6 +24,7 @@ const initialFormState = {
   user_name: auth?.currentUser?.displayName || '',
   subsidary: '',
   date: '',
+  leave: false,
   description: '',
   AMS: { source: '' },
   ACS: {
@@ -70,14 +71,9 @@ export const EmployeeDashboard = () => {
   const selectedAcsStatusDate = useAuthStore(
     (state) => state.selectedAcsStatusDate,
   );
-  useEffect(() => {
-    console.log(statusUpdates);
-  }, [statusUpdates]);
   const formattedData = statusUpdates
-    ? statusUpdates.status_updates.map((item) => [item.date, item.name])
+    ? statusUpdates.map((item) => [item.date, item.leave])
     : [];
-
-  // Rest of the component code...
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole?.split(',');
@@ -145,6 +141,7 @@ export const EmployeeDashboard = () => {
       user_name: flatObj.user_name || '',
       subsidary: flatObj.subsidary || '',
       date: flatObj.date || '',
+      leave: flatObj.leave || false,
       description: flatObj.description || null,
       AMS: { source: flatObj.source || null },
       ACS: {
@@ -185,11 +182,11 @@ export const EmployeeDashboard = () => {
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
     if (statusUpdates && selectedAcsStatusDate) {
-      const filteredStatuses = statusUpdates.status_updates.filter(
+      const filteredStatuses = statusUpdates.status_updates?.filter(
         (status) => formattedSelectedDate === status.date,
       );
       setUserSubsidaries(filteredStatuses);
-      if (!filteredStatuses.length) {
+      if (!filteredStatuses?.length) {
         setDisableInputs(false);
         resetForm();
       }
@@ -206,6 +203,9 @@ export const EmployeeDashboard = () => {
       }));
     } else {
       setFormValues((prev) => ({ ...prev, [name]: value }));
+    }
+    if (name === 'leave' && value === true) {
+      setDisableInputs(true);
     }
     if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
       const filtered = userSubsidaries.filter((sub) => sub.subsidary === value);
@@ -402,6 +402,21 @@ export const EmployeeDashboard = () => {
                 variant="outlined"
                 inputProps={{ max: getMaxDate() }}
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                label="Leave"
+                name="leave"
+                value={formValues.leave}
+                onChange={handleChange}
+                disabled={disableInputs}
+                variant="outlined"
+              >
+                <MenuItem value={true}>Yes</MenuItem>
+                <MenuItem value={false}>No</MenuItem>
+              </TextField>
             </Grid>
             {/* Dynamic Fields */}
             {renderSubsidaryFields()}
