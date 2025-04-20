@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import {
   useTable,
@@ -12,6 +12,14 @@ import { TransactionModal } from 'src/components/organisms/Modal/TransactionModa
 import PropTypes from 'prop-types';
 import { useDeleteData } from 'src/react-query/useFetchApis';
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
+import ReactSelectDropdown from 'src/components/atoms/Search/ReactSelectDropdown';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+} from '@mui/material';
 
 export const Transaction = () => {
   const [startDate, setStartDate] = useState(null);
@@ -22,6 +30,13 @@ export const Transaction = () => {
   const [deleteTransactionId, setDeleteTransactionId] = useState(null);
   const [editTransaction, setEditTransaction] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [employeeSearch, setEmployeeSearch] = useState([]);
+  const [selectedColumn, setSelectedColumn] = useState('sender_name');
+  const [selectedName, setSelectedName] = useState('');
+  const [selectedPaymentType, setSelectedPaymentType] = useState('');
+  const [selectedSubsidiary, setSelectedSubsidiary] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const fetchTransactions = async () => {
@@ -43,6 +58,39 @@ export const Transaction = () => {
       setShowModal(true);
     }
   };
+
+  useEffect(() => {
+    if (!transactions) return;
+
+    // const key =
+    //   selectedColumn === 'sender_name' ? 'sender_name' : 'receiver_name';
+
+    const seen = new Set();
+    const empNames = transactions
+      .filter((tx) => tx[selectedColumn])
+      .map((tx) => ({
+        value: tx[selectedColumn].toLowerCase(),
+        label: tx[selectedColumn],
+      }))
+      .filter((item) => {
+        const id = `${item.value}:${item.label}`;
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+
+    setEmployeeSearch((prev) => {
+      const isEqual =
+        prev.length === empNames.length &&
+        prev.every(
+          (item, index) =>
+            item.value === empNames[index].value &&
+            item.label === empNames[index].label,
+        );
+
+      return isEqual ? prev : empNames;
+    });
+  }, [selectedColumn, transactions]);
 
   const { mutate: deleteTransaction, isLoading: isDeleting } = useDeleteData(
     'transactions',
@@ -69,6 +117,15 @@ export const Transaction = () => {
       setDeleteTransactionId(transactionId);
     }
   };
+
+  const { paymentTypes, subsidiaries, currencies } = useMemo(() => {
+    const getUnique = (key) => [...new Set(transactions?.map((tx) => tx[key]))];
+    return {
+      paymentTypes: getUnique('payment_type'),
+      subsidiaries: getUnique('subsidiary'),
+      currencies: getUnique('currency'),
+    };
+  }, [transactions]);
 
   const columns = useMemo(
     () => [
@@ -178,7 +235,6 @@ export const Transaction = () => {
     page,
     prepareRow,
     state,
-    setGlobalFilter,
     canPreviousPage,
     canNextPage,
     pageOptions,
@@ -199,31 +255,60 @@ export const Transaction = () => {
     useFlexLayout,
   );
 
-  const { globalFilter, pageIndex, pageSize } = state;
+  const { pageIndex, pageSize } = state;
 
-  const handleFilterByDate = () => {
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
+  const handleFilter = () => {
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
 
-      // Normalize startDate to the beginning of the day
-      start.setHours(0, 0, 0, 0);
+    if (start) start.setHours(0, 0, 0, 0);
+    if (end) end.setHours(23, 59, 59, 999);
 
-      // Normalize endDate to the end of the day
-      end.setHours(23, 59, 59, 999);
+    const filtered = transactions.filter((transaction) => {
+      const transactionDate = new Date(transaction.transaction_datetime);
 
-      const filtered = transactions.filter((transaction) => {
-        const transactionDate = new Date(transaction.transaction_datetime);
-        return transactionDate >= start && transactionDate <= end;
-      });
-      setFilteredTransactions(filtered);
-    }
+      const isWithinDateRange =
+        (!start || transactionDate >= start) &&
+        (!end || transactionDate <= end);
+
+      const matchesName =
+        !selectedName ||
+        (selectedColumn &&
+          transaction[selectedColumn]
+            ?.toLowerCase()
+            .includes(selectedName.toLowerCase()));
+
+      const matchesPaymentType =
+        !selectedPaymentType ||
+        transaction.payment_type === selectedPaymentType;
+
+      const matchesSubsidiary =
+        !selectedSubsidiary || transaction.subsidiary === selectedSubsidiary;
+
+      const matchesCurrency =
+        !selectedCurrency || transaction.currency === selectedCurrency;
+
+      return (
+        isWithinDateRange &&
+        matchesName &&
+        matchesPaymentType &&
+        matchesSubsidiary &&
+        matchesCurrency
+      );
+    });
+
+    setFilteredTransactions(filtered);
   };
 
   const handleResetData = () => {
     setStartDate(null);
     setEndDate(null);
-    setFilteredTransactions(null);
+    setSelectedColumn('sender_name'); // or default to '' if you prefer
+    setSelectedName('');
+    setSelectedPaymentType('');
+    setSelectedSubsidiary('');
+    setSelectedCurrency('');
+    setFilteredTransactions(transactions); // reset to full list
   };
 
   return (
@@ -237,71 +322,162 @@ export const Transaction = () => {
         </button>
       </div>
       <div className="border border-black border-2 rounded ">
-        <nav className="navbar navbar-expand-lg navbar-light bg-light rounded-top">
-          <div className="container-fluid">
-            <div className="row w-100 gap-3 p-2">
-              {/* Search input */}
-              <input
-                type="text"
-                className="form-control w-auto col"
-                placeholder="Search..."
-                value={globalFilter || ''}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-              />
+        <nav className="navbar navbar-light bg-light rounded-top flex-column">
+          <div className="container-fluid w-100 px-3 py-2 d-flex justify-content-between align-items-center">
+            <h5 className="m-0">Transactions</h5>
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={() => setShowFilters(!showFilters)}
+              aria-expanded={showFilters}
+              aria-controls="filterCollapse"
+            >
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </button>
+          </div>
 
-              {/* Start Date */}
-              <div className="d-flex align-items-center gap-2 col">
-                <label htmlFor="startDate" className="mb-0 text-nowrap">
-                  Start Date:
-                </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  className="form-control w-auto"
-                  value={startDate ? startDate.toISOString().split('T')[0] : ''}
-                  onChange={(e) => setStartDate(new Date(e.target.value))}
-                />
-              </div>
+          <div
+            className={`collapse w-100 ${showFilters ? 'show' : ''}`}
+            id="filterCollapse"
+          >
+            {/* make Paper full‑width so it spans below the header */}
+            <Paper elevation={0} className="w-100 mt-2 p-4 bg-light">
+              <div className="row gx-4 gy-3 align-items-end">
+                {/* Select Option */}
+                <div className="col-12 col-md-3">
+                  <FormControl fullWidth>
+                    <InputLabel id="dropdown-label">Select Option</InputLabel>
+                    <Select
+                      labelId="dropdown-label"
+                      value={selectedColumn}
+                      label="Select Option"
+                      onChange={(e) => setSelectedColumn(e.target.value)}
+                    >
+                      <MenuItem value="sender_name">Sender</MenuItem>
+                      <MenuItem value="receiver_name">Receiver</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
 
-              {/* End Date */}
-              <div className="d-flex align-items-center gap-2 col">
-                <label htmlFor="endDate" className="mb-0 text-nowrap">
-                  End Date:
-                </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  className="form-control w-auto"
-                  value={endDate ? endDate.toISOString().split('T')[0] : ''}
-                  onChange={(e) => setEndDate(new Date(e.target.value))}
-                />
-              </div>
+                {/* ReactSelectDropdown */}
+                <div className="col-12 col-md-9">
+                  <ReactSelectDropdown
+                    options={employeeSearch}
+                    value={selectedName}
+                    onChange={setSelectedName}
+                    placeholder={`Search ${selectedColumn
+                      .split('_')
+                      .map((w) => w[0].toUpperCase() + w.slice(1))
+                      .join(' ')}`}
+                    variant="mui"
+                  />
+                </div>
 
-              {/* Filter and Reset Buttons */}
-              <div className="d-flex gap-2 col text-nowrap">
-                <button
-                  className="btn btn-primary"
-                  onClick={handleFilterByDate}
-                >
-                  Filter by Date
-                </button>
-                <button className="btn btn-secondary" onClick={handleResetData}>
-                  Reset
-                </button>
-              </div>
+                {/* Start / End Dates */}
+                <div className="col-md-3 col-lg-2">
+                  <label htmlFor="startDate" className="form-label">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    className="form-control"
+                    value={
+                      startDate ? startDate.toISOString().split('T')[0] : ''
+                    }
+                    onChange={(e) => setStartDate(new Date(e.target.value))}
+                  />
+                </div>
+                <div className="col-md-3 col-lg-2">
+                  <label htmlFor="endDate" className="form-label">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    className="form-control"
+                    value={endDate ? endDate.toISOString().split('T')[0] : ''}
+                    onChange={(e) => setEndDate(new Date(e.target.value))}
+                  />
+                </div>
 
-              {/* Total display */}
-              <div className="col text-nowrap text-sm-start text-md-end">
-                <span className="nav-link">
-                  Total :
-                  <span
-                    className={`fs-5 px-1 fw-bold ${total < 0 ? 'text-danger' : ''}`}
+                {/* Payment Type / Subsidiary / Currency */}
+                <div className="col-md-3 col-lg-2">
+                  <FormControl fullWidth>
+                    <InputLabel id="payment-type-label">Pay Type</InputLabel>
+                    <Select
+                      labelId="payment-type-label"
+                      value={selectedPaymentType}
+                      onChange={(e) => setSelectedPaymentType(e.target.value)}
+                    >
+                      {paymentTypes.map((t) => (
+                        <MenuItem key={t} value={t}>
+                          {t}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="col-md-3 col-lg-2">
+                  <FormControl fullWidth>
+                    <InputLabel id="subsidiary-label">Subsidiary</InputLabel>
+                    <Select
+                      labelId="subsidiary-label"
+                      value={selectedSubsidiary}
+                      onChange={(e) => setSelectedSubsidiary(e.target.value)}
+                    >
+                      {subsidiaries.map((s) => (
+                        <MenuItem key={s} value={s}>
+                          {s}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="col-md-3 col-lg-2">
+                  <FormControl fullWidth>
+                    <InputLabel id="currency-label">Currency</InputLabel>
+                    <Select
+                      labelId="currency-label"
+                      value={selectedCurrency}
+                      onChange={(e) => setSelectedCurrency(e.target.value)}
+                    >
+                      {currencies.map((c) => (
+                        <MenuItem key={c} value={c}>
+                          {c}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+
+                {/* Actions */}
+                <div className="col-md-3 col-lg-2 d-flex gap-2">
+                  <button
+                    className="btn btn-success w-100"
+                    onClick={handleFilter}
                   >
-                    ₹ {total}
+                    Filter
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary w-100"
+                    onClick={handleResetData}
+                  >
+                    Reset
+                  </button>
+                </div>
+
+                {/* Total */}
+                <div className="col-12 text-end mt-3">
+                  <span className="fs-5">
+                    <strong>Total:</strong>{' '}
+                    <span className={total < 0 ? 'text-danger' : ''}>
+                      ₹ {total}
+                    </span>
                   </span>
-                </span>
+                </div>
               </div>
-            </div>
+            </Paper>
           </div>
         </nav>
         <div
