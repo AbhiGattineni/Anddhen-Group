@@ -50,7 +50,7 @@ export const AssProjectModal = () => {
     >
       {workData && (
         <div className="modal-content p-0 h-100">
-          <div className="modal-header py-2 px-3">
+          <div className="modal-header py-2 px-3 d-flex justify-content-between">
             <h1 className="modal-title fs-6" id="exampleModalLabel">
               Project Overview
             </h1>
