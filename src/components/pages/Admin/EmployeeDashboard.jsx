@@ -72,7 +72,7 @@ export const EmployeeDashboard = () => {
     (state) => state.selectedAcsStatusDate,
   );
   const formattedData = statusUpdates
-    ? statusUpdates.status_updates?.map((item) => [item.date, item.leave])
+    ? statusUpdates?.map((item) => [item.date, item.leave])
     : [];
 
   const currentRole = localStorage.getItem('roles');
@@ -357,7 +357,9 @@ export const EmployeeDashboard = () => {
           <h2>Status Update Form</h2>
           <div className="row">
             <div className="col-12">
-              <StatusCalendar data={formattedData} empName={empName} />
+              {formattedData && (
+                <StatusCalendar data={formattedData} empName={empName} />
+              )}
             </div>
           </div>
           {msgResponse && (
