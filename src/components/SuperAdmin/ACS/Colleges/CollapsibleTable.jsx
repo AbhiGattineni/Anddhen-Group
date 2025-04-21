@@ -466,7 +466,6 @@ Row.propTypes = {
     state: PropTypes.string.isRequired,
   }).isRequired,
 };
-
 export const ViewCollege = () => {
   const {
     data = [],
@@ -610,6 +609,27 @@ export const ViewCollege = () => {
       page * rowsPerPage + rowsPerPage,
     );
   }, [filteredData, page, rowsPerPage]);
+
+  // Handle network errors
+  if (error) {
+    return (
+      <Box sx={{ textAlign: 'center', padding: '16px', color: 'error.main' }}>
+        <Typography variant="h6">
+          Error:{' '}
+          {error.message || 'Failed to fetch data. Please try again later.'}
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Handle no records
+  if (!isLoading && filteredData.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', padding: '16px' }}>
+        <Typography variant="h6">No records to display.</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box>
