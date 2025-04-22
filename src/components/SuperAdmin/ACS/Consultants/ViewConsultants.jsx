@@ -19,10 +19,12 @@ function ViewConsultants() {
   const [isEditable, setIsEditable] = useState(false);
   const [visaStatus, setVisaStatus] = useState([]);
 
-  const { data = [], isLoading } = useFetchData(
-    'consultant',
-    `/api/consultants/`,
-  );
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useFetchData('consultant', `/api/consultants/`);
+
   useEffect(() => {
     setConsultants(data);
     if (data && data.length > 0) {
@@ -78,6 +80,7 @@ function ViewConsultants() {
     setSelectedConsultant(consultant);
     setIsModalVisible(true);
   };
+
   useEffect(() => {
     if (consultantId) {
       deleteConsultant(null, {
@@ -268,53 +271,53 @@ function ViewConsultants() {
             <h5 className="mb-0 mr-3">Loading Data...</h5>
           </div>
         </div>
-      ) : (
-        <div className="row">
-          {consultants.length === 0 ? (
-            <div className="col-12 text-center">
-              <p className="fw-semibold">No consultants available.</p>
-            </div>
-          ) : (
-            (() => {
-              const filteredConsultants = consultants.filter(
-                (consultant) =>
-                  consultant.full_name
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) &&
-                  applyFilters(consultant),
-              );
-
-              return filteredConsultants.length > 0 ? (
-                filteredConsultants.map((consultant) => (
-                  <div key={consultant.id} className="col-12 col-sm-6 col-md-4">
-                    <ConsultantCard
-                      consultant={consultant}
-                      onViewDetails={handleViewDetails}
-                      isDeleting={consultantId === consultant.id}
-                      onDelete={handleDeleteConsultant}
-                    />
-                  </div>
-                ))
-              ) : (
-                <div className="col-12 text-center">
-                  <p className="fw-semibold">
-                    No consultants match your search or filters.
-                  </p>
-                </div>
-              );
-            })()
-          )}
-          <ConsultantDetailsModal
-            show={isModalVisible}
-            onHide={handleClose}
-            consultant={selectedConsultant}
-            isUpdating={isUpdating}
-            isEditable={isEditable}
-            setIsEditable={setIsEditable}
-            onSave={handleSaveChanges}
-          />
+      ) : error ? (
+        <div className="alert alert-danger" role="alert">
+          An error occurred:{' '}
+          {error.message || 'Failed to fetch data. Please try again later.'}
         </div>
+      ) : consultants.length === 0 ? (
+        <div className="col-12 text-center">
+          <p className="fw-semibold">No consultants available.</p>
+        </div>
+      ) : (
+        (() => {
+          const filteredConsultants = consultants.filter(
+            (consultant) =>
+              consultant.full_name
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase()) && applyFilters(consultant),
+          );
+
+          return filteredConsultants.length > 0 ? (
+            filteredConsultants.map((consultant) => (
+              <div key={consultant.id} className="col-12 col-sm-6 col-md-4">
+                <ConsultantCard
+                  consultant={consultant}
+                  onViewDetails={handleViewDetails}
+                  isDeleting={consultantId === consultant.id}
+                  onDelete={handleDeleteConsultant}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="col-12 text-center">
+              <p className="fw-semibold">
+                No consultants match your search or filters.
+              </p>
+            </div>
+          );
+        })()
       )}
+      <ConsultantDetailsModal
+        show={isModalVisible}
+        onHide={handleClose}
+        consultant={selectedConsultant}
+        isUpdating={isUpdating}
+        isEditable={isEditable}
+        setIsEditable={setIsEditable}
+        onSave={handleSaveChanges}
+      />
     </div>
   );
 }
