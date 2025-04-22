@@ -91,7 +91,6 @@ export const TransactionModal = ({
     {
       onSuccess: () => {
         queryClient.invalidateQueries('transactions');
-        resetForm();
         toggleModal();
       },
       onError: (error) => {
@@ -122,9 +121,7 @@ export const TransactionModal = ({
       await updateCollege(submitData, {
         onSuccess: () => {
           queryClient.invalidateQueries('transactions');
-          resetForm();
           toggleModal();
-          setEditTransaction(null);
         },
         onError: (error) => {
           console.error('An error occurred:', error);
@@ -163,7 +160,6 @@ export const TransactionModal = ({
     }
 
     createTransaction(upload_data);
-    resetForm();
     toggleModal();
   };
 
@@ -199,19 +195,28 @@ export const TransactionModal = ({
   }, [showModal]);
 
   useEffect(() => {
-    if (showModal || toggleModal) {
-      const handleClickOutside = (event) => {
-        if (showModal && !event.target.closest('.modal-content')) {
-          toggleModal();
-        }
-      };
+    if (!showModal) return;
 
-      document.addEventListener('click', handleClickOutside);
+    const handleClickOutside = (event) => {
+      // 1) Click inside the modal? → ignore
+      if (event.target.closest('.modal-content')) return;
 
-      return () => {
-        document.removeEventListener('click', handleClickOutside);
-      };
-    }
+      // 2) Click inside react-select’s menu or menu-list? → ignore
+      if (
+        event.target.closest('.react-select__menu') ||
+        event.target.closest('.react-select__menu-list')
+      ) {
+        return;
+      }
+
+      // 3) Otherwise it really is outside → close the modal
+      toggleModal();
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [showModal, toggleModal]);
 
   return (
