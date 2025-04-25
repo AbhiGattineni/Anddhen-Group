@@ -72,7 +72,7 @@ export const EmployeeDashboard = () => {
     (state) => state.selectedAcsStatusDate,
   );
   const formattedData = statusUpdates
-    ? statusUpdates.map((item) => [item.date, item.leave])
+    ? statusUpdates?.map((item) => [item.date, item.leave])
     : [];
 
   const currentRole = localStorage.getItem('roles');
@@ -85,6 +85,8 @@ export const EmployeeDashboard = () => {
         current_roles?.some((role) => role.trim() === plate.route.trim()),
       );
   const [openHappinessDialog, setOpenHappinessDialog] = useState(false);
+  console.log(openHappinessDialog);
+
   useEffect(() => {
     setOpenHappinessDialog(true); // Open the popup when the page loads
   }, []);
@@ -208,8 +210,10 @@ export const EmployeeDashboard = () => {
       setDisableInputs(true);
     }
     if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
-      const filtered = userSubsidaries.filter((sub) => sub.subsidary === value);
-      if (filtered.length > 0) {
+      const filtered = userSubsidaries?.filter(
+        (sub) => sub.subsidary === value,
+      );
+      if (filtered?.length > 0) {
         const currentStatus = restructureObject(filtered[0]);
         setFormValues(currentStatus);
         setDisableInputs(true);
@@ -253,7 +257,7 @@ export const EmployeeDashboard = () => {
       formValues[selectedSubsidary] = { ...fields };
     }
 
-    return Object.keys(fields).map((key) => (
+    return Object.keys(fields)?.map((key) => (
       <Grid item xs={12} sm={6} key={key}>
         <TextField
           fullWidth
@@ -289,7 +293,7 @@ export const EmployeeDashboard = () => {
     e.preventDefault();
     try {
       const requiredFields = ['date', 'subsidary'];
-      const missingField = requiredFields.find((field) => !formValues[field]);
+      const missingField = requiredFields?.find((field) => !formValues[field]);
 
       if (missingField) {
         let missingFieldName = missingField;
@@ -353,7 +357,9 @@ export const EmployeeDashboard = () => {
           <h2>Status Update Form</h2>
           <div className="row">
             <div className="col-12">
-              <StatusCalendar data={formattedData} empName={empName} />
+              {formattedData && (
+                <StatusCalendar data={formattedData} empName={empName} />
+              )}
             </div>
           </div>
           {msgResponse && (
@@ -381,7 +387,7 @@ export const EmployeeDashboard = () => {
                   value={formValues.subsidary}
                   onChange={handleChange}
                 >
-                  {subsidaryOptions.map((option) => (
+                  {subsidaryOptions?.map((option) => (
                     <MenuItem key={option} value={option}>
                       {option}
                     </MenuItem>
@@ -456,7 +462,7 @@ export const EmployeeDashboard = () => {
         </form>
       </div>
       {/* Conditionally render search bar if cards are available */}
-      {searchedPlates.length > 0 && (
+      {searchedPlates?.length > 0 && (
         <div className="input-group px-5 mt-4">
           <input
             type="text"
