@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   Stepper,
@@ -21,8 +21,9 @@ import Skills from './resumesteps/Skills';
 import { categories } from 'src/dataconfig';
 import Projects from './resumesteps/Projects';
 import Additional from './resumesteps/Additional';
+import PropTypes from 'prop-types';
 
-const ResumeComponent = () => {
+const ResumeComponent = ({ resume_data }) => {
   const [activeStep, setActiveStep] = useState(0);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -33,6 +34,19 @@ const ResumeComponent = () => {
     projects: [{}],
     skills: [],
   });
+
+  useEffect(() => {
+    if (resume_data) {
+      try {
+        const parsedData = JSON.parse(resume_data);
+        setFormData(parsedData);
+        console.log(parsedData);
+      } catch (error) {
+        console.error('Invalid JSON in resume_data:', error);
+      }
+    }
+  }, [resume_data]);
+
   const [skillInput, setSkillInput] = useState('');
   const [suggestedSkills, setSuggestedSkills] = useState([]);
 
@@ -393,6 +407,10 @@ const ResumeComponent = () => {
       </Grid>
     </Box>
   );
+};
+
+ResumeComponent.propTypes = {
+  resume_data: PropTypes.object, // or a more specific shape if you want
 };
 
 export default ResumeComponent;
