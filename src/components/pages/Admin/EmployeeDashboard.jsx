@@ -72,7 +72,7 @@ export const EmployeeDashboard = () => {
     (state) => state.selectedAcsStatusDate,
   );
   const formattedData = statusUpdates
-    ? statusUpdates?.map((item) => [item.date, item.leave])
+    ? statusUpdates?.status_updates?.map((item) => [item.date, item.leave])
     : [];
 
   const currentRole = localStorage.getItem('roles');
