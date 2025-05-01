@@ -85,7 +85,6 @@ export const EmployeeDashboard = () => {
         current_roles?.some((role) => role.trim() === plate.route.trim()),
       );
   const [openHappinessDialog, setOpenHappinessDialog] = useState(false);
-  console.log(openHappinessDialog);
 
   useEffect(() => {
     setOpenHappinessDialog(true); // Open the popup when the page loads
@@ -183,7 +182,7 @@ export const EmployeeDashboard = () => {
     resetForm();
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
-    if (statusUpdates && selectedAcsStatusDate) {
+    if (statusUpdates?.status_updates && selectedAcsStatusDate) {
       const filteredStatuses = statusUpdates.status_updates?.filter(
         (status) => formattedSelectedDate === status.date,
       );
@@ -193,7 +192,7 @@ export const EmployeeDashboard = () => {
         resetForm();
       }
     }
-  }, [selectedAcsStatusDate, statusUpdates]);
+  }, [selectedAcsStatusDate, statusUpdates?.status_updates]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -230,10 +229,11 @@ export const EmployeeDashboard = () => {
       const formattedSelectedDate = formatDate(selectedAcsStatusDate);
       const currentDate = formatDate(new Date());
       const isSelectedDateCurrent = formattedSelectedDate === currentDate;
+
       if (
-        statusUpdates &&
+        statusUpdates?.status_updates &&
         isSelectedDateCurrent &&
-        statusUpdates?.some(
+        statusUpdates?.status_updates?.some(
           (obj) => obj.date === currentDate && obj.subsidary === value,
         )
       ) {
@@ -314,7 +314,7 @@ export const EmployeeDashboard = () => {
       }
       const postStatus = flattenObject(formValues);
 
-      let response;
+      let response = '';
       try {
         if (!showEdit) {
           response = await statusMutation.mutateAsync(postStatus);
