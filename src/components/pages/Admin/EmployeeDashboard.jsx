@@ -229,11 +229,6 @@ export const EmployeeDashboard = () => {
       const formattedSelectedDate = formatDate(selectedAcsStatusDate);
       const currentDate = formatDate(new Date());
       const isSelectedDateCurrent = formattedSelectedDate === currentDate;
-      console.log(
-        'statusUpdates:',
-        statusUpdates?.status_updates,
-        typeof statusUpdates?.status_updates,
-      );
 
       if (
         statusUpdates?.status_updates &&
