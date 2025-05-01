@@ -70,7 +70,8 @@ export const useStatusUpdateMutation = () => {
         ['calendarData', auth.currentUser.uid],
         (oldData) => {
           if (oldData) {
-            return [...oldData, auth.currentUser.uid];
+            const statsusOldData = oldData?.status_updates;
+            return [...statsusOldData, auth.currentUser.uid];
           }
           return [newStatus];
         },
