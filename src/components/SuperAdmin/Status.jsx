@@ -36,22 +36,24 @@ export const Status = () => {
   );
 
   useEffect(() => {
-    if (data) {
+    if (data?.status_updates) {
       const inputDate = new Date(selectedAcsStatusDate);
       const year = inputDate.getFullYear();
       const month = String(inputDate.getMonth() + 1).padStart(2, '0');
       const day = String(inputDate.getDate()).padStart(2, '0');
       const formattedDate = `${year}-${month}-${day}`;
       setSelectedDate(formattedDate);
-      const status = data.filter((item) => item.date === formattedDate);
+      const status = data?.status_updates?.filter(
+        (item) => item.date === formattedDate,
+      );
       if (status.length > 0) {
         setSingleStatus(status);
       }
     }
   }, [selectedAcsStatusDate, data]);
 
-  const formattedCallenderData = data
-    ? data.map((item) => [item.date, item.leave])
+  const formattedCallenderData = data?.status_updates
+    ? data?.status_updates?.map((item) => [item.date, item.leave])
     : [];
 
   // Fetch employee data from API on component mount
@@ -98,7 +100,7 @@ export const Status = () => {
   // Handle employee selection from dropdown
   const handleEmployeeChange = (event) => {
     const selectedEmpId = event.target.value;
-    const selectedEmpName = employees.find(
+    const selectedEmpName = employees?.find(
       (emp) => emp.user_id === selectedEmpId,
     )?.user_name;
 
@@ -132,7 +134,7 @@ export const Status = () => {
             <MenuItem value="">
               <em>Select an Employee</em>
             </MenuItem>
-            {employees.map((employee) => (
+            {employees?.map((employee) => (
               <MenuItem key={employee.user_id} value={employee.user_id}>
                 {employee.user_name}
               </MenuItem>
@@ -175,9 +177,9 @@ export const Status = () => {
                   <Typography variant="h6">
                     Single Status ({selectedDate})
                   </Typography>
-                  {Array.isArray(singleStatus) && singleStatus.length > 0 ? (
-                    singleStatus.map((status, statusIndex) => {
-                      const filteredEntries = Object.entries(status).filter(
+                  {Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
+                    singleStatus?.map((status, statusIndex) => {
+                      const filteredEntries = Object.entries(status)?.filter(
                         ([key, value]) =>
                           value !== '' &&
                           value !== '0.00' &&
@@ -191,7 +193,7 @@ export const Status = () => {
 
                       return (
                         <div key={statusIndex}>
-                          {filteredEntries.map(([key, value], index) => (
+                          {filteredEntries?.map(([key, value], index) => (
                             <Typography key={index}>
                               <strong>{key}:</strong>{' '}
                               {key === 'leave' ? (value ? 'Yes' : 'No') : value}
@@ -230,8 +232,8 @@ export const Status = () => {
               >
                 <Typography variant="h6">All Statuses of {empName}</Typography>
                 <List>
-                  {formattedData.length > 0 ? (
-                    formattedData.map((status, index, array) => (
+                  {formattedData?.length > 0 ? (
+                    formattedData?.map((status, index, array) => (
                       <div key={index}>
                         <ListItem>
                           <ListItemText
