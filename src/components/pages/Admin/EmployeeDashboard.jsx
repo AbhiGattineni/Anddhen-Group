@@ -84,11 +84,15 @@ export const EmployeeDashboard = () => {
     : adminPlates.filter((plate) =>
         current_roles?.some((role) => role.trim() === plate.route.trim()),
       );
-  const [openHappinessDialog, setOpenHappinessDialog] = useState(false);
+  const [openHappinessDialog, setOpenHappinessDialog] = useState(
+    !statusUpdates?.has_submitted_happiness_today,
+  );
 
   useEffect(() => {
-    setOpenHappinessDialog(true); // Open the popup when the page loads
-  }, []);
+    if (statusUpdates?.has_submitted_happiness_today !== undefined) {
+      statusUpdates['has_submitted_happiness_today'] = true;
+    }
+  }, [openHappinessDialog]);
 
   useEffect(() => {
     if (searchedPlates !== filteredPlates) {
