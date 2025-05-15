@@ -366,6 +366,11 @@ export const videoLinks = [
     title: 'Video to apply jobs in careers portal',
     description: 'Video to apply jobs in careers portal',
   },
+  {
+    link: 'https://youtu.be/ewSnLP9_Smw',
+    title: 'Video to use resume tool to build your resume',
+    description: 'Video to use resume tool to build your resume',
+  },
 ];
 
 export const adminPlates = [
