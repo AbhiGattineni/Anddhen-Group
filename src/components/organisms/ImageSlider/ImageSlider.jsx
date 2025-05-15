@@ -17,16 +17,17 @@ const ImageSlider = ({ title, cards }) => {
   const theme = useTheme();
   const sliderRef = useRef(null);
 
-  // Responsive breakpoints
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up('md')); // 3 images
-  const isMediumScreen = useMediaQuery(theme.breakpoints.only('sm')); // 2 images
+  // Updated responsive breakpoints
+  const isExtraLargeScreen = useMediaQuery(theme.breakpoints.up('lg')); // 4 images
+  const isLargeScreen = useMediaQuery(theme.breakpoints.between('md', 'lg')); // 3 images
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'md')); // 2 images
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm')); // 1 image
 
   useEffect(() => {
     setStartIndex(0);
-  }, [isLargeScreen, isMediumScreen, isSmallScreen]);
+  }, [isExtraLargeScreen, isLargeScreen, isMediumScreen, isSmallScreen]);
 
-  const imagesPerPage = isLargeScreen ? 3 : isMediumScreen ? 2 : 1;
+  const imagesPerPage = isExtraLargeScreen ? 4 : isLargeScreen ? 3 : isMediumScreen ? 2 : 1;
   const totalImages = cards.length;
 
   // Scroll Functionality for Mouse Wheel
@@ -55,9 +56,6 @@ const ImageSlider = ({ title, cards }) => {
         mt: 4,
         p: 2,
         position: 'relative',
-        backgroundColor: '#f9f9f9',
-        borderRadius: 0,
-        boxShadow: 3,
         overflow: 'hidden',
       }}
     >
@@ -142,19 +140,23 @@ const ImageSlider = ({ title, cards }) => {
                 xs={12}
                 sm={6}
                 md={4}
+                lg={3}
                 key={index}
                 sx={{
                   flex: `0 0 ${100 / imagesPerPage}%`,
                   textAlign: 'center',
                   p: 1,
+                  maxWidth: `${100 / imagesPerPage}%`, // Ensure consistent width
                 }}
               >
                 <Box
                   sx={{
                     borderRadius: 2,
-                    objectFit: 'cover',
                     boxShadow: 2,
                     transition: 'all 0.3s ease',
+                    height: '100%', // Ensure consistent height
+                    display: 'flex',
+                    flexDirection: 'column',
                     '&:hover': {
                       transform: 'scale(1.02)',
                       boxShadow: 4,
