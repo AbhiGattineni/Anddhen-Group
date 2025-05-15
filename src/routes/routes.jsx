@@ -29,6 +29,7 @@ import { Profile } from 'src/components/pages/Auth/Profile';
 import Ats from 'src/components/pages/inc/Ats';
 import Ans from 'src/components/pages/inc/Ans';
 import ResumeHome from 'src/components/pages/resume/ResumeHome';
+import FinanceDataUpload from 'src/components/pages/inc/FinanceDataUpload';
 
 const router = createBrowserRouter([
   {
@@ -71,7 +72,10 @@ const router = createBrowserRouter([
   {
     path: '/ati',
     element: <Layout />,
-    children: [{ index: true, element: <Ati /> }],
+    children: [
+      { index: true, element: <Ati /> },
+      { path: 'finance-data', element: <FinanceDataUpload /> },
+    ],
   },
   {
     path: '/ats',
