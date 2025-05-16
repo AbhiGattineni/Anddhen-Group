@@ -69,6 +69,7 @@ export const TransactionModal = ({
   };
 
   // ... existing code ...
+  // ... existing code ...
   const handleChange = (field, value) => {
     if (field === 'amount') {
       // Convert to number and validate
