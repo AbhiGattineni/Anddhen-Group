@@ -68,7 +68,18 @@ export const TransactionModal = ({
     setFieldErrors({});
   };
 
+  // ... existing code ...
   const handleChange = (field, value) => {
+    if (field === 'amount') {
+      // Convert to number and validate
+      const numValue = parseFloat(value);
+      if (numValue <= 0) {
+        handleFieldError('amount', 'Amount must be greater than 0');
+        return;
+      }
+      // Clear any previous error if value is valid
+      handleFieldError('amount', null);
+    }
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -201,7 +212,7 @@ export const TransactionModal = ({
       // 1) Click inside the modal? → ignore
       if (event.target.closest('.modal-content')) return;
 
-      // 2) Click inside react-select’s menu or menu-list? → ignore
+      // 2) Click inside react-select's menu or menu-list? → ignore
       if (
         event.target.closest('.react-select__menu') ||
         event.target.closest('.react-select__menu-list')
