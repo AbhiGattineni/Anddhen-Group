@@ -69,7 +69,6 @@ export const TransactionModal = ({
   };
 
   // ... existing code ...
-  // ... existing code ...
   const handleChange = (field, value) => {
     if (field === 'amount') {
       // Convert to number and validate
@@ -211,6 +210,7 @@ export const TransactionModal = ({
       // 1) Click inside the modal? → ignore
       if (event.target.closest('.modal-content')) return;
 
+      // 2) Click inside react-select's menu or menu-list? → ignore
       // 2) Click inside react-select's menu or menu-list? → ignore
       if (
         event.target.closest('.react-select__menu') ||
