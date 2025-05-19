@@ -46,49 +46,59 @@ export const Acs = () => {
           })}
         </script>
       </Helmet>
-      <div className="container mt-3">
-        <h1 className="main-heading">Anddhen Consulting Services</h1>
-        <p>
-          Welcome to Anddhen Consulting Services, the emerging leader in
-          next-gen business solutions. As a startup, we understand the nuances
-          and agility required in today&apos;s fast-paced world. Our fresh,
-          innovative approach ensures that we&apos;re not just meeting your
-          expectations, but exceeding them. Whether you&apos;re a fellow startup
-          seeking guidance, or an established enterprise aiming for
-          revitalization, Anddhen is poised to propel your business into the
-          future. Let&apos;s embark on journey together and redefine success.
-        </p>
-        <div className="row justify-content-md-center">
-          {acsCards.map((data, index) => (
-            <div key={index} className="col-lg-4 col-md-6 mb-4">
-              <div className="card card-cascade shadow">
-                <div className="view view-cascade overlay shadow">
-                  <LazyLoadImage
-                    effect="blur"
-                    height="250px"
-                    width="100%"
-                    className="card-img-top object-fit-fill"
-                    src={data.image}
-                    alt={`${data.heading} image`}
-                  />
+
+      <div>
+        <section className="section border-top">
+          <h1 className="text-center">Anddhen Consulting Services</h1>
+          <div className="underline mx-auto"></div>
+          <div className="container mt-3">
+            <p>
+              Welcome to Anddhen Consulting Services, the emerging leader in
+              next-gen business solutions. As a startup, we understand the
+              nuances and agility required in today&apos;s fast-paced world. Our
+              fresh, innovative approach ensures that we&apos;re not just
+              meeting your expectations, but exceeding them. Whether you&apos;re
+              a fellow startup seeking guidance, or an established enterprise
+              aiming for revitalization, Anddhen is poised to propel your
+              business into the future. Let&apos;s embark on journey together
+              and redefine success.
+            </p>
+            <div className="row justify-content-md-center">
+              {acsCards.map((data, index) => (
+                <div key={index} className="col-lg-4 col-md-6 mb-4">
+                  <div className="card card-cascade shadow">
+                    <div className="view view-cascade overlay shadow">
+                      <LazyLoadImage
+                        effect="blur"
+                        height="250px"
+                        width="100%"
+                        className="card-img-top object-fit-fill"
+                        src={data.image}
+                        alt={`${data.heading} image`}
+                      />
+                    </div>
+                    <div className="card-body card-body-cascade text-center">
+                      <Link to={data.path} className="text-decoration-none">
+                        <h4 className="card-title text-black">
+                          {data.heading}
+                        </h4>
+                      </Link>
+                      <p className="card-text">{data.description}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="card-body card-body-cascade text-center">
-                  <Link to={data.path} className="text-decoration-none">
-                    <h4 className="card-title text-black">{data.heading}</h4>
-                  </Link>
-                  <p className="card-text">{data.description}</p>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <h4 className="text-center pt-4">
-          WhatsApp groups links according to the US university 2024-25
-        </h4>
-        <div className="row justify-content-md-center px-0">
-          <CollegeWhatsappLinks />
-        </div>
+            <h4 className="text-center pt-4">
+              WhatsApp groups links according to the US university 2024-25
+            </h4>
+            <div className="row justify-content-md-center px-0">
+              <CollegeWhatsappLinks />
+            </div>
+          </div>
+        </section>
       </div>
+
       <div className="bg-c-light py-1">
         <div className="container">
           <h4 className="row justify-content-md-left ps-3 ps-md-0">
