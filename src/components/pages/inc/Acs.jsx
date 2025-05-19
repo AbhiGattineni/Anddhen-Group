@@ -53,15 +53,13 @@ export const Acs = () => {
           <div className="underline mx-auto"></div>
           <div className="container mt-3">
             <p>
-              Welcome to Anddhen Consulting Services, the emerging leader in
-              next-gen business solutions. As a startup, we understand the
-              nuances and agility required in today&apos;s fast-paced world. Our
-              fresh, innovative approach ensures that we&apos;re not just
-              meeting your expectations, but exceeding them. Whether you&apos;re
-              a fellow startup seeking guidance, or an established enterprise
-              aiming for revitalization, Anddhen is poised to propel your
-              business into the future. Let&apos;s embark on journey together
-              and redefine success.
+              Welcome to Anddhen Consulting Services, the emerging leader in next-gen business
+              solutions. As a startup, we understand the nuances and agility required in
+              today&apos;s fast-paced world. Our fresh, innovative approach ensures that we&apos;re
+              not just meeting your expectations, but exceeding them. Whether you&apos;re a fellow
+              startup seeking guidance, or an established enterprise aiming for revitalization,
+              Anddhen is poised to propel your business into the future. Let&apos;s embark on
+              journey together and redefine success.
             </p>
             <div className="row justify-content-md-center">
               {acsCards.map((data, index) => (
@@ -79,9 +77,7 @@ export const Acs = () => {
                     </div>
                     <div className="card-body card-body-cascade text-center">
                       <Link to={data.path} className="text-decoration-none">
-                        <h4 className="card-title text-black">
-                          {data.heading}
-                        </h4>
+                        <h4 className="card-title text-black">{data.heading}</h4>
                       </Link>
                       <p className="card-text">{data.description}</p>
                     </div>
