@@ -147,27 +147,27 @@ const TransactionTable = () => {
                     <TableCell>{transaction.receiver_name}</TableCell>
                     <TableCell>{transaction.sender_name}</TableCell>
                     <TableCell>
-  {transaction.credited_amount > 0 ? (
-    <Chip
-      label={`₹${transaction.credited_amount}`}
-      color="success"
-      variant="outlined"
-      sx={{ mr: 1 }}
-    />
-  ) : transaction.debited_amount > 0 ? (
-    <Chip
-      label={`₹${transaction.debited_amount}`}
-      color="error"
-      variant="outlined"
-    />
-  ) : (
-    <Chip
-      label="₹0"
-      variant="outlined"
-      sx={{ color: '000000DE', borderColor: '000000DE' }}
-    />
-  )}
-</TableCell>
+                      {transaction.credited_amount > 0 ? (
+                        <Chip
+                          label={`₹${transaction.credited_amount}`}
+                          color="success"
+                          variant="outlined"
+                          sx={{ mr: 1 }}
+                        />
+                      ) : transaction.debited_amount > 0 ? (
+                        <Chip
+                          label={`₹${transaction.debited_amount}`}
+                          color="error"
+                          variant="outlined"
+                        />
+                      ) : (
+                        <Chip
+                          label="₹0"
+                          variant="outlined"
+                          sx={{ color: '000000DE', borderColor: '000000DE' }}
+                        />
+                      )}
+                    </TableCell>
                     <TableCell>
                       {new Date(transaction.transaction_datetime).toLocaleString()}
                     </TableCell>
