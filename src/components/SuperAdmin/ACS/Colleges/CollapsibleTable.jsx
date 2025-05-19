@@ -347,34 +347,36 @@ function Row({ row, filter }) {
                       }}
                     >
                       <ul
-  style={{
-    margin: 0,
-  }}
->
-  {Object.entries(details)
-    .slice(0, Math.ceil(Object.entries(details).length / 2))
-    .map(([key, value]) => (
-      <li key={key}>
-        <strong>{key}:</strong>{' '}
-        {key.includes('Link') ? (
-          value ? (
-            <a
-              href={value}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Link
-            </a>
-          ) : (
-            'No Link Available'
-          )
-        ) : (
-          value
-        )}
-      </li>
-    ))}
-</ul>
-
+                        style={{
+                          margin: 0,
+                        }}
+                      >
+                        {Object.entries(details)
+                          .slice(
+                            0,
+                            Math.ceil(Object.entries(details).length / 2),
+                          )
+                          .map(([key, value]) => (
+                            <li key={key}>
+                              <strong>{key}:</strong>{' '}
+                              {key.includes('Link') ? (
+                                value ? (
+                                  <a
+                                    href={value}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    Link
+                                  </a>
+                                ) : (
+                                  'No Link Available'
+                                )
+                              ) : (
+                                value
+                              )}
+                            </li>
+                          ))}
+                      </ul>
                     </Box>
                     <Box
                       flex={1}
@@ -386,26 +388,29 @@ function Row({ row, filter }) {
                       }}
                     >
                       <ul>
-  {Object.entries(details)
-    .slice(Math.ceil(Object.entries(details).length / 2))
-    .map(([key, value]) => (
-      <li key={key}>
-        <strong>{key}:</strong>{' '}
-        {key.includes('Link') ? (
-          value ? (
-            <a href={value} target="_blank" rel="noopener noreferrer">
-              Link
-            </a>
-          ) : (
-            'No Link Available'
-          )
-        ) : (
-          value
-        )}
-      </li>
-    ))}
-</ul>
-
+                        {Object.entries(details)
+                          .slice(Math.ceil(Object.entries(details).length / 2))
+                          .map(([key, value]) => (
+                            <li key={key}>
+                              <strong>{key}:</strong>{' '}
+                              {key.includes('Link') ? (
+                                value ? (
+                                  <a
+                                    href={value}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    Link
+                                  </a>
+                                ) : (
+                                  'No Link Available'
+                                )
+                              ) : (
+                                value
+                              )}
+                            </li>
+                          ))}
+                      </ul>
                     </Box>
                   </Box>
                 </Box>
