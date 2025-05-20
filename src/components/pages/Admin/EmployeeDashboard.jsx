@@ -211,6 +211,8 @@ export const EmployeeDashboard = () => {
     }
     if (name === 'leave' && value === true) {
       setDisableInputs(true);
+    } else if (name === 'leave' && value === false) {
+      setDisableInputs(false);
     }
     if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
       const filtered = userSubsidaries?.filter(
@@ -390,6 +392,7 @@ export const EmployeeDashboard = () => {
                   name="subsidary"
                   value={formValues.subsidary}
                   onChange={handleChange}
+                  disabled={false}
                 >
                   {subsidaryOptions?.map((option) => (
                     <MenuItem key={option} value={option}>
@@ -421,7 +424,7 @@ export const EmployeeDashboard = () => {
                 name="leave"
                 value={formValues.leave}
                 onChange={handleChange}
-                disabled={disableInputs}
+                disabled={false}
                 variant="outlined"
               >
                 <MenuItem value={true}>Yes</MenuItem>
@@ -437,7 +440,7 @@ export const EmployeeDashboard = () => {
                 name="description"
                 value={formValues.description}
                 onChange={handleChange}
-                disabled={disableInputs}
+                disabled={false}
                 multiline
                 rows={4}
                 variant="outlined"

@@ -322,11 +322,6 @@ export const videoLinks = [
       "Some quick example text to build on the card title and make up the bulk of the card's content.",
   },
   {
-    link: 'https://www.youtube.com/embed/nLWmNMtxAYU?si=CBOB-6ZqigNeHVu8 ',
-    title: 'How to use simplify chrome extension',
-    description: 'How to use simplify chrome extension',
-  },
-  {
     link: 'https://www.youtube.com/embed/3CFm4lvkRtY?si=qGH_QK-Bi1m83yrr',
     title: 'Avoid same job links and How to check reposted jobs',
     description: 'Avoid same job links and How to check reposted jobs',
@@ -370,6 +365,11 @@ export const videoLinks = [
     link: 'https://www.youtube.com/embed/uwuBixRDFrU?si=akNdeqXTwXNbjg2u',
     title: 'Video to apply jobs in careers portal',
     description: 'Video to apply jobs in careers portal',
+  },
+  {
+    link: 'https://youtu.be/ewSnLP9_Smw',
+    title: 'Video to use resume tool to build your resume',
+    description: 'Video to use resume tool to build your resume',
   },
 ];
 
