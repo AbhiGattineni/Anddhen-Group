@@ -32,10 +32,12 @@ const ExtensionView = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
   const fetchDefaultWords = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/default-words/');
+      const response = await fetch(`${API_BASE_URL}/api/default-words/`);
       const data = await response.json();
       setWords(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -79,7 +81,7 @@ const ExtensionView = () => {
   const sendFullDataToBackend = async updatedWords => {
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:8000/api/default-words/', {
+      const response = await fetch(`${API_BASE_URL}/api/default-words/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedWords),
