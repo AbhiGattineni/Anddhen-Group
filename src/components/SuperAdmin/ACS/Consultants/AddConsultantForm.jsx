@@ -5,7 +5,7 @@ import { useFetchData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
 import { z } from 'zod';
 
-const calculateAge = (dob) => {
+const calculateAge = dob => {
   const birthDate = new Date(dob);
   const age = new Date().getFullYear() - birthDate.getFullYear();
   const monthDifference = new Date().getMonth() - birthDate.getMonth();
@@ -28,23 +28,17 @@ const schema = z.object({
     .min(1, 'Phone Number is required')
     .length(10, 'Phone Number must be exactly 10 characters'),
 
-  email_id: z
-    .string()
-    .min(1, 'Email ID is required')
-    .email('Invalid email address'),
+  email_id: z.string().min(1, 'Email ID is required').email('Invalid email address'),
 
   dob: z
     .string()
     .min(1, 'Date of Birth is required')
-    .refine(
-      (dob) => calculateAge(dob) >= 18,
-      'DOB must be at least 18 years old',
-    ),
+    .refine(dob => calculateAge(dob) >= 18, 'DOB must be at least 18 years old'),
   btech_graduation_date: z
     .string()
     .optional()
     .nullable()
-    .refine((date) => {
+    .refine(date => {
       if (date) {
         const graduationDate = new Date(date);
         const currentDate = new Date();
@@ -56,7 +50,7 @@ const schema = z.object({
     .string()
     .optional()
     .nullable()
-    .refine((date) => {
+    .refine(date => {
       if (date) {
         const graduationDate = new Date(date);
         const currentDate = new Date();
@@ -68,78 +62,56 @@ const schema = z.object({
   visa_validity: z.string().min(1, 'Visa Validity is required'),
   technologies: z.string().min(1, 'Technologies are required'),
   current_location: z.string().min(1, 'Current Location is required'),
-  relocation: z.boolean().refine((val) => val !== null, {
+  relocation: z.boolean().refine(val => val !== null, {
     message: 'Relocation is required',
   }),
   experience_in_us: z
     .string()
     .min(1, 'Experience in US is required')
-    .refine(
-      (value) => !isNaN(Number(value)),
-      'Experience in US must be a number',
-    ),
+    .refine(value => !isNaN(Number(value)), 'Experience in US must be a number'),
   experience_in_india: z
     .string()
     .min(1, 'Experience in India is required')
-    .refine(
-      (value) => !isNaN(Number(value)),
-      'Experience in India must be a number',
-    ),
+    .refine(value => !isNaN(Number(value)), 'Experience in India must be a number'),
   passport_number: z
     .string()
     .min(1, 'Passport Number is required')
     .length(8, 'Passport Number must be exactly 8 characters')
     .max(15, 'Passport Number must be no more than 15 characters')
-    .regex(
-      /^[A-Za-z0-9]+$/,
-      'Passport Number must contain only alphanumeric characters',
-    ),
+    .regex(/^[A-Za-z0-9]+$/, 'Passport Number must contain only alphanumeric characters'),
 
   linkedin_url: z
     .string()
     .min(1, 'LinkedIn URL is required')
     .url('Invalid LinkedIn URL')
     .refine(
-      (value) => value.startsWith('https://www.linkedin.com/'),
-      'LinkedIn URL must start with https://www.linkedin.com/',
+      value => value.startsWith('https://www.linkedin.com/'),
+      'LinkedIn URL must start with https://www.linkedin.com/'
     ),
   driving_licence: z
     .string()
     .optional()
-    .refine((val) => !val || (val.length >= 6 && val.length <= 16), {
+    .refine(val => !val || (val.length >= 6 && val.length <= 16), {
       message: 'Driving Licence number must be between 6 and 16 characters',
     })
-    .refine((val) => !val || /^[A-Za-z0-9-]+$/.test(val), {
-      message:
-        'Driving Licence must contain only alphanumeric characters and dashes',
+    .refine(val => !val || /^[A-Za-z0-9-]+$/.test(val), {
+      message: 'Driving Licence must contain only alphanumeric characters and dashes',
     }),
 
   last_4_ssn: z
     .string()
     .optional()
-    .refine((val) => !val || /^\d{4}$/.test(val), {
+    .refine(val => !val || /^\d{4}$/.test(val), {
       message: 'SSN Last 4 digits must be a 4-digit number',
     }),
 
-  linkedin_url_verified: z
-    .string()
-    .min(1, 'LinkedIn URL verification is required'),
+  linkedin_url_verified: z.string().min(1, 'LinkedIn URL verification is required'),
   full_name_verified: z.string().min(1, 'Full Name verification is required'),
-  visa_status_verified: z
-    .string()
-    .min(1, 'Visa Status verification is required'),
-  visa_validity_verified: z
-    .string()
-    .min(1, 'Visa Validity verification is required'),
-  experience_in_us_verified: z
-    .string()
-    .min(1, 'Experience in US verification is required'),
-  experience_in_india_verified: z
-    .string()
-    .min(1, 'Experience in India verification is required'),
-  passport_number_verified: z
-    .string()
-    .min(1, 'Passport verification is required'),
+  visa_status_verified: z.string().min(1, 'Visa Status verification is required'),
+  visa_validity_verified: z.string().min(1, 'Visa Validity verification is required'),
+  experience_in_us_verified: z.string().min(1, 'Experience in US verification is required'),
+  experience_in_india_verified: z.string().min(1, 'Experience in India verification is required'),
+  passport_number_verified: z.string().min(1, 'Passport verification is required'),
 });
 
 function AddConsultantForm() {
@@ -195,27 +167,27 @@ function AddConsultantForm() {
   const { data: employers = [] } = useFetchData('employer', `/employers/`);
   const { data: recruiters = [] } = useFetchData('recruiter', `/recruiters/`);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value, type, checked } = e.target;
 
     if (type === 'file') {
-      setFormData((prevState) => ({
+      setFormData(prevState => ({
         ...prevState,
         [name]: e.target.files[0] || null,
       }));
     } else if (name === 'technologies') {
-      const technologiesArray = value.split(',').map((item) => item.trim());
-      setFormData((prevState) => ({
+      const technologiesArray = value.split(',').map(item => item.trim());
+      setFormData(prevState => ({
         ...prevState,
         [name]: JSON.stringify(technologiesArray),
       }));
     } else if (name === 'relocation') {
-      setFormData((prevState) => ({
+      setFormData(prevState => ({
         ...prevState,
         relocation: value === 'yes',
       }));
     } else if (name === 'description') {
-      setFormData((prevData) => ({
+      setFormData(prevData => ({
         ...prevData,
         status_consultant: {
           ...prevData.status_consultant,
@@ -223,7 +195,7 @@ function AddConsultantForm() {
         },
       }));
     } else if (name === 'date') {
-      setFormData((prevData) => ({
+      setFormData(prevData => ({
         ...prevData,
         status_consultant: {
           ...prevData.status_consultant,
@@ -231,14 +203,14 @@ function AddConsultantForm() {
         },
       }));
     } else {
-      setFormData((prevState) => ({
+      setFormData(prevState => ({
         ...prevState,
         [name]: type === 'checkbox' ? checked : value,
       }));
     }
   };
 
-  const renderVerificationRadioButtons = (fieldName) => (
+  const renderVerificationRadioButtons = fieldName => (
     <>
       <div>
         <input
@@ -267,21 +239,17 @@ function AddConsultantForm() {
     </>
   );
 
-  const { mutate: addConsultant, isLoading } = useAddData(
-    'consultant',
-    `/api/consultant/`,
-  );
+  const { mutate: addConsultant, isLoading } = useAddData('consultant', `/api/consultant/`);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
     setErrorMessages({});
     try {
       schema.parse(formData); // Validate formData using Zod schema
       if (!formData['consulting_resume'] && !formData['original_resume']) {
-        setErrorMessages((prev) => ({
+        setErrorMessages(prev => ({
           ...prev,
-          resume:
-            'At least one resume (Original or Consulting) must be uploaded',
+          resume: 'At least one resume (Original or Consulting) must be uploaded',
         }));
         return;
       }
@@ -290,7 +258,7 @@ function AddConsultantForm() {
       const submitData = new FormData();
 
       // Append each field to FormData
-      Object.keys(formData).forEach((key) => {
+      Object.keys(formData).forEach(key => {
         if (key === 'technologies') {
           // Ensure technologies data remains a JSON string
           submitData.append(key, formData[key]);
@@ -305,7 +273,7 @@ function AddConsultantForm() {
               employer_id: formData.employer_id,
               date: new Date().toISOString().split('T')[0],
               ...formData.status_consultant, // Merges the dynamic fields from formData.status_consultant
-            }),
+            })
           );
         } else if (formData[key] !== null && formData[key] !== undefined) {
           // submitData.append(key, formData[key]);
@@ -322,17 +290,14 @@ function AddConsultantForm() {
             message: 'Details added successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           document.getElementById('original_resume').value = null;
           document.getElementById('consulting_resume').value = null;
           document.getElementById('technologies').value = '';
         },
-        onError: (error) => {
+        onError: error => {
           if (error.response?.data) {
-            setErrorMessages((prev) => {
+            setErrorMessages(prev => {
               const newErrors = { ...prev };
               Object.entries(error.response.data).forEach(([key, messages]) => {
                 // Ensure messages is an array
@@ -352,10 +317,7 @@ function AddConsultantForm() {
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
       });
     } catch (e) {
@@ -365,8 +327,7 @@ function AddConsultantForm() {
           return acc;
         }, {});
         if (!formData.original_resume && !formData.consulting_resume) {
-          formattedErrors.resume =
-            'At least one resume (Original or Consulting) must be uploaded';
+          formattedErrors.resume = 'At least one resume (Original or Consulting) must be uploaded';
         }
         setErrorMessages(formattedErrors);
       }
@@ -391,7 +352,7 @@ function AddConsultantForm() {
               onChange={handleChange}
             >
               <option value="">Select Employer</option>
-              {employers.map((employer) => (
+              {employers.map(employer => (
                 <option key={employer.id} value={employer.id}>
                   {employer.name}
                 </option>
@@ -411,7 +372,7 @@ function AddConsultantForm() {
               onChange={handleChange}
             >
               <option value="">Select Recruiter</option>
-              {recruiters.map((recruiter) => (
+              {recruiters.map(recruiter => (
                 <option key={recruiter.id} value={recruiter.id}>
                   {recruiter.name}
                 </option>
@@ -434,9 +395,7 @@ function AddConsultantForm() {
               value={formData.full_name}
               onChange={handleChange}
             />
-            {errorMessages.full_name && (
-              <p className="text-danger">{errorMessages.full_name}</p>
-            )}
+            {errorMessages.full_name && <p className="text-danger">{errorMessages.full_name}</p>}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="phone_number">Phone Number *</label>
@@ -462,9 +421,7 @@ function AddConsultantForm() {
               value={formData.email_id}
               onChange={handleChange}
             />
-            {errorMessages.email_id && (
-              <p className="text-danger">{errorMessages.email_id}</p>
-            )}
+            {errorMessages.email_id && <p className="text-danger">{errorMessages.email_id}</p>}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="dob">Date of Birth *</label>
@@ -476,9 +433,7 @@ function AddConsultantForm() {
               value={formData.dob}
               onChange={handleChange}
             />
-            {errorMessages.dob && (
-              <p className="text-danger">{errorMessages.dob}</p>
-            )}
+            {errorMessages.dob && <p className="text-danger">{errorMessages.dob}</p>}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="visa_status">Visa Status *</label>
@@ -556,9 +511,7 @@ function AddConsultantForm() {
               onChange={handleChange}
             />
             {errorMessages.btech_graduation_date && (
-              <p className="text-danger">
-                {errorMessages.btech_graduation_date}
-              </p>
+              <p className="text-danger">{errorMessages.btech_graduation_date}</p>
             )}
           </div>
         </div>
@@ -594,9 +547,7 @@ function AddConsultantForm() {
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
-            <label htmlFor="masters_graduation_date">
-              Masters Graduation Date
-            </label>
+            <label htmlFor="masters_graduation_date">Masters Graduation Date</label>
             <input
               type="date"
               className="form-control"
@@ -606,9 +557,7 @@ function AddConsultantForm() {
               onChange={handleChange}
             />
             {errorMessages.masters_graduation_date && (
-              <p className="text-danger">
-                {errorMessages.masters_graduation_date}
-              </p>
+              <p className="text-danger">{errorMessages.masters_graduation_date}</p>
             )}
           </div>
         </div>
@@ -669,9 +618,7 @@ function AddConsultantForm() {
               />
               <label htmlFor="relocationNo">No</label>
             </div>
-            {errorMessages.relocation && (
-              <p className="text-danger">{errorMessages.relocation}</p>
-            )}
+            {errorMessages.relocation && <p className="text-danger">{errorMessages.relocation}</p>}
           </div>
         </div>
         <div className="row my-5">
@@ -707,9 +654,7 @@ function AddConsultantForm() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="relocation_preference">
-            Relocation Preference (Cities and States)
-          </label>
+          <label htmlFor="relocation_preference">Relocation Preference (Cities and States)</label>
           <textarea
             className="form-control"
             id="relocation_preference"
@@ -776,9 +721,7 @@ function AddConsultantForm() {
               value={formData.last_4_ssn}
               onChange={handleChange}
             />
-            {errorMessages.last_4_ssn && (
-              <p className="text-danger">{errorMessages.last_4_ssn}</p>
-            )}
+            {errorMessages.last_4_ssn && <p className="text-danger">{errorMessages.last_4_ssn}</p>}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label htmlFor="linkedin_url">LinkedIn URL *</label>
@@ -798,10 +741,7 @@ function AddConsultantForm() {
 
         {/* Resume Fields Section */}
         <div className="form-group" style={{ margin: '10px 0' }}>
-          <label
-            htmlFor="original_resume"
-            style={{ display: 'block', marginBottom: '5px' }}
-          >
+          <label htmlFor="original_resume" style={{ display: 'block', marginBottom: '5px' }}>
             Original Resume (At least one resume is required)
           </label>
           <input
@@ -817,16 +757,12 @@ function AddConsultantForm() {
               backgroundColor: '#f8f9fa',
               border: '1px solid #ced4da',
               borderRadius: '4px',
-              transition:
-                'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
+              transition: 'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
             }}
           />
         </div>
         <div className="form-group" style={{ margin: '10px 0' }}>
-          <label
-            htmlFor="consulting_resume"
-            style={{ display: 'block', marginBottom: '5px' }}
-          >
+          <label htmlFor="consulting_resume" style={{ display: 'block', marginBottom: '5px' }}>
             Consulting Resume
           </label>
           <input
@@ -842,14 +778,11 @@ function AddConsultantForm() {
               backgroundColor: '#f8f9fa',
               border: '1px solid #ced4da',
               borderRadius: '4px',
-              transition:
-                'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
+              transition: 'border-color .15s ease-in-out,box-shadow .15s ease-in-out',
             }}
           />
         </div>
-        {errorMessages.resume && (
-          <p className="text-danger">{errorMessages.resume}</p>
-        )}
+        {errorMessages.resume && <p className="text-danger">{errorMessages.resume}</p>}
         <div className="row my-5">
           {/* Verification fields */}
           <div className="col-md-6 form-group mb-3">
@@ -863,54 +796,42 @@ function AddConsultantForm() {
             <label>Visa Status Verified *</label>
             {renderVerificationRadioButtons('visa_status_verified')}
             {errorMessages.visa_status_verified && (
-              <p className="text-danger">
-                {errorMessages.visa_status_verified}
-              </p>
+              <p className="text-danger">{errorMessages.visa_status_verified}</p>
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Visa Validity Verified *</label>
             {renderVerificationRadioButtons('visa_validity_verified')}
             {errorMessages.visa_validity_verified && (
-              <p className="text-danger">
-                {errorMessages.visa_validity_verified}
-              </p>
+              <p className="text-danger">{errorMessages.visa_validity_verified}</p>
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Experience in US Verified *</label>
             {renderVerificationRadioButtons('experience_in_us_verified')}
             {errorMessages.experience_in_us_verified && (
-              <p className="text-danger">
-                {errorMessages.experience_in_us_verified}
-              </p>
+              <p className="text-danger">{errorMessages.experience_in_us_verified}</p>
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Experience in India Verified *</label>
             {renderVerificationRadioButtons('experience_in_india_verified')}
             {errorMessages.experience_in_india_verified && (
-              <p className="text-danger">
-                {errorMessages.experience_in_india_verified}
-              </p>
+              <p className="text-danger">{errorMessages.experience_in_india_verified}</p>
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>Passport Number Verified *</label>
             {renderVerificationRadioButtons('passport_number_verified')}
             {errorMessages.passport_number_verified && (
-              <p className="text-danger">
-                {errorMessages.passport_number_verified}
-              </p>
+              <p className="text-danger">{errorMessages.passport_number_verified}</p>
             )}
           </div>
           <div className="col-md-6 form-group mb-3">
             <label>LinkedIn URL Verified *</label>
             {renderVerificationRadioButtons('linkedin_url_verified')}
             {errorMessages.linkedin_url_verified && (
-              <p className="text-danger">
-                {errorMessages.linkedin_url_verified}
-              </p>
+              <p className="text-danger">{errorMessages.linkedin_url_verified}</p>
             )}
           </div>
         </div>

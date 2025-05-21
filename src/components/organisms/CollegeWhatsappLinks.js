@@ -25,8 +25,8 @@ const CollegeWhatsappLinks = () => {
   }, {});
 
   // Filter based on search query
-  const searchedData = Object.values(groupedData).filter((college) =>
-    college.college_name.toLowerCase().includes(searchQuery.toLowerCase()),
+  const searchedData = Object.values(groupedData).filter(college =>
+    college.college_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -35,7 +35,7 @@ const CollegeWhatsappLinks = () => {
         id="outlined-search"
         label="Search university"
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={e => setSearchQuery(e.target.value)}
         type="search"
         sx={{
           width: { xs: '100%', sm: '300px', md: '400px', lg: '40%' },
@@ -65,11 +65,7 @@ const CollegeWhatsappLinks = () => {
           <CircularProgress />
         </div>
       ) : isError ? (
-        <Typography
-          variant="h6"
-          color="error"
-          style={{ textAlign: 'center', marginTop: '20px' }}
-        >
+        <Typography variant="h6" color="error" style={{ textAlign: 'center', marginTop: '20px' }}>
           Network error! Please try again later.
         </Typography>
       ) : searchedData.length === 0 ? (
@@ -84,9 +80,7 @@ const CollegeWhatsappLinks = () => {
         <ol style={{ lineHeight: '2em', fontSize: '18px' }}>
           {searchedData.map((college, index) => (
             <li key={index}>
-              <span style={{ marginRight: '10px' }}>
-                {college.college_name}
-              </span>
+              <span style={{ marginRight: '10px' }}>{college.college_name}</span>
               {college.links['whatsapp community link'] && (
                 <a
                   href={college.links['whatsapp community link']}

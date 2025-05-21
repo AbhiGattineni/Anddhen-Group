@@ -13,9 +13,7 @@ export const PriceCard = ({ data }) => {
         <div className="p-4">
           <div
             className={
-              window.innerWidth <= 768
-                ? ''
-                : 'd-flex justify-content-center align-self-center'
+              window.innerWidth <= 768 ? '' : 'd-flex justify-content-center align-self-center'
             }
           >
             <h4>{data.package_name}</h4>

@@ -31,9 +31,7 @@ export const Status = () => {
   const { data } = useStatusCalendar(empId);
   const [selectedDate, setSelectedDate] = useState('');
 
-  const selectedAcsStatusDate = useAuthStore(
-    (state) => state.selectedAcsStatusDate,
-  );
+  const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
 
   useEffect(() => {
     if (data?.status_updates) {
@@ -43,9 +41,7 @@ export const Status = () => {
       const day = String(inputDate.getDate()).padStart(2, '0');
       const formattedDate = `${year}-${month}-${day}`;
       setSelectedDate(formattedDate);
-      const status = data?.status_updates?.filter(
-        (item) => item.date === formattedDate,
-      );
+      const status = data?.status_updates?.filter(item => item.date === formattedDate);
       if (status.length > 0) {
         setSingleStatus(status);
       }
@@ -53,7 +49,7 @@ export const Status = () => {
   }, [selectedAcsStatusDate, data]);
 
   const formattedCallenderData = data?.status_updates
-    ? data?.status_updates?.map((item) => [item.date, item.leave])
+    ? data?.status_updates?.map(item => [item.date, item.leave])
     : [];
 
   // Fetch employee data from API on component mount
@@ -69,7 +65,7 @@ export const Status = () => {
       getAllStatus(
         { user_id: empId },
         {
-          onSuccess: (response) => {
+          onSuccess: response => {
             // Check the response structure
             // Format the data
             const newStatuses = response.reduce((acc, item) => {
@@ -83,10 +79,10 @@ export const Status = () => {
             setAllStatuses(newStatuses);
             queryClient.invalidateQueries('status'); // Ensure no infinite loop
           },
-          onError: (error) => {
+          onError: error => {
             setAllStatuses({});
           },
-        },
+        }
       );
     }
   }, [empId]);
@@ -98,11 +94,9 @@ export const Status = () => {
   }, [allStatuses, empId]);
 
   // Handle employee selection from dropdown
-  const handleEmployeeChange = (event) => {
+  const handleEmployeeChange = event => {
     const selectedEmpId = event.target.value;
-    const selectedEmpName = employees?.find(
-      (emp) => emp.user_id === selectedEmpId,
-    )?.user_name;
+    const selectedEmpName = employees?.find(emp => emp.user_id === selectedEmpId)?.user_name;
 
     setEmpId(selectedEmpId);
     setEmpName(selectedEmpName);
@@ -134,7 +128,7 @@ export const Status = () => {
             <MenuItem value="">
               <em>Select an Employee</em>
             </MenuItem>
-            {employees?.map((employee) => (
+            {employees?.map(employee => (
               <MenuItem key={employee.user_id} value={employee.user_id}>
                 {employee.user_name}
               </MenuItem>
@@ -145,10 +139,7 @@ export const Status = () => {
         {/* Conditional rendering based on employee selection */}
         {empId.length === 0 ? (
           // Show message when no employee is selected
-          <Typography
-            variant="h6"
-            sx={{ marginTop: 2, textAlign: 'center', color: 'black' }}
-          >
+          <Typography variant="h6" sx={{ marginTop: 2, textAlign: 'center', color: 'black' }}>
             Please select an employee to view their status.
           </Typography>
         ) : (
@@ -174,9 +165,7 @@ export const Status = () => {
               </Grid>
               <Grid item xs={12}>
                 <Paper elevation={3} sx={{ padding: 2 }}>
-                  <Typography variant="h6">
-                    Single Status ({selectedDate})
-                  </Typography>
+                  <Typography variant="h6">Single Status ({selectedDate})</Typography>
                   {Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
                     singleStatus?.map((status, statusIndex) => {
                       const filteredEntries = Object.entries(status)?.filter(
@@ -188,7 +177,7 @@ export const Status = () => {
                           value !== null &&
                           key !== 'id' &&
                           key !== 'user_id' &&
-                          key !== 'user_name',
+                          key !== 'user_name'
                       );
 
                       return (
@@ -200,9 +189,7 @@ export const Status = () => {
                             </Typography>
                           ))}
                           {/* Add Divider after each status except the last one */}
-                          {statusIndex < singleStatus.length - 1 && (
-                            <Divider sx={{ my: 1 }} />
-                          )}
+                          {statusIndex < singleStatus.length - 1 && <Divider sx={{ my: 1 }} />}
                         </div>
                       );
                     })
@@ -250,12 +237,12 @@ export const Status = () => {
                                     key !== 'id' &&
                                     key !== 'user_id' &&
                                     key !== 'user_name' &&
-                                    key !== 'date',
+                                    key !== 'date'
                                 )
                                 .map(([key, value]) =>
                                   key === 'leave'
                                     ? `${key}: ${value ? 'Yes' : 'No'}`
-                                    : `${key}: ${value}`,
+                                    : `${key}: ${value}`
                                 )
                                 .join(', ') || 'No relevant data available'
                             }
@@ -265,9 +252,7 @@ export const Status = () => {
                       </div>
                     ))
                   ) : (
-                    <Typography>
-                      No statuses available for this employee.
-                    </Typography>
+                    <Typography>No statuses available for this employee.</Typography>
                   )}
                 </List>
               </Paper>

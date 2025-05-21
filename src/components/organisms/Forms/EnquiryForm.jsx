@@ -27,7 +27,7 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
@@ -58,10 +58,10 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [id]: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, [id]: '' }));
+    setFormData(prevData => ({ ...prevData, [id]: value }));
+    setErrors(prevErrors => ({ ...prevErrors, [id]: '' }));
   };
 
   return (
@@ -85,9 +85,7 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
                   onChange={handleChange}
                   required
                 />
-                {errors.name && (
-                  <div className="invalid-feedback">{errors.name}</div>
-                )}
+                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
               </div>
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
@@ -102,9 +100,7 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
                   onChange={handleChange}
                   required
                 />
-                {errors.email && (
-                  <div className="invalid-feedback">{errors.email}</div>
-                )}
+                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
               </div>
               <Row>
                 <Col xs={4}>
@@ -138,9 +134,7 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
                       onChange={handleChange}
                       required
                     />
-                    {errors.phone && (
-                      <div className="invalid-feedback">{errors.phone}</div>
-                    )}
+                    {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
                   </div>
                 </Col>
               </Row>
@@ -157,9 +151,7 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
                   onChange={handleChange}
                   required
                 ></textarea>
-                {errors.message && (
-                  <div className="invalid-feedback">{errors.message}</div>
-                )}
+                {errors.message && <div className="invalid-feedback">{errors.message}</div>}
               </div>
               <div className="d-flex justify-content-center">
                 <button type="submit" className="btn btn-primary">

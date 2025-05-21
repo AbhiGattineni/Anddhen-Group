@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Grid,
-  IconButton,
-  useMediaQuery,
-} from '@mui/material';
+import { Box, Typography, Grid, IconButton, useMediaQuery } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -37,7 +31,7 @@ const ImageSlider = ({ title, cards }) => {
   const totalImages = cards.length;
 
   // Scroll Functionality for Mouse Wheel
-  const handleScroll = (e) => {
+  const handleScroll = e => {
     e.preventDefault();
     if (sliderRef.current) {
       sliderRef.current.scrollLeft += e.deltaY;
@@ -45,13 +39,13 @@ const ImageSlider = ({ title, cards }) => {
   };
 
   const nextImages = () => {
-    setStartIndex((prevIndex) =>
-      prevIndex + imagesPerPage < totalImages ? prevIndex + 1 : prevIndex,
+    setStartIndex(prevIndex =>
+      prevIndex + imagesPerPage < totalImages ? prevIndex + 1 : prevIndex
     );
   };
 
   const prevImages = () => {
-    setStartIndex((prevIndex) => (prevIndex - 1 >= 0 ? prevIndex - 1 : 0));
+    setStartIndex(prevIndex => (prevIndex - 1 >= 0 ? prevIndex - 1 : 0));
   };
 
   return (
@@ -197,6 +191,6 @@ ImageSlider.propTypes = {
       description: PropTypes.string,
       link: PropTypes.string,
       timeline: PropTypes.string,
-    }),
+    })
   ).isRequired,
 };

@@ -28,7 +28,7 @@ const StudentRegistrationForm = () => {
   };
 
   const allFieldsFilled = Object.values(fields).every(Boolean);
-  const hasErrors = Object.values(fieldErrors).some((error) => error);
+  const hasErrors = Object.values(fieldErrors).some(error => error);
   const disableButton = !allFieldsFilled || hasErrors || loading;
 
   const resetForm = () => {
@@ -41,13 +41,13 @@ const StudentRegistrationForm = () => {
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.append('sheetName', 'Student Registration');
@@ -95,8 +95,8 @@ const StudentRegistrationForm = () => {
                 placeholder="Full Name"
                 type="text"
                 value={name}
-                onChange={(e) => setname(e.target.value)}
-                setError={(error) => handleFieldError('name', error)}
+                onChange={e => setname(e.target.value)}
+                setError={error => handleFieldError('name', error)}
               />
               <InputField
                 name="email"
@@ -104,8 +104,8 @@ const StudentRegistrationForm = () => {
                 placeholder="Email"
                 type="email"
                 value={email}
-                onChange={(e) => setemail(e.target.value)}
-                setError={(error) => handleFieldError('email', error)}
+                onChange={e => setemail(e.target.value)}
+                setError={error => handleFieldError('email', error)}
               />
               <InputField
                 name="phone"
@@ -113,8 +113,8 @@ const StudentRegistrationForm = () => {
                 placeholder="Phone"
                 type="tel"
                 value={phone}
-                onChange={(e) => setphone(e.target.value)}
-                setError={(error) => handleFieldError('phone', error)}
+                onChange={e => setphone(e.target.value)}
+                setError={error => handleFieldError('phone', error)}
               />
               <InputField
                 name="college"
@@ -122,8 +122,8 @@ const StudentRegistrationForm = () => {
                 placeholder="College"
                 type="text"
                 value={college}
-                onChange={(e) => setcollege(e.target.value)}
-                setError={(error) => handleFieldError('college', error)}
+                onChange={e => setcollege(e.target.value)}
+                setError={error => handleFieldError('college', error)}
               />
               <InputField
                 name="reference"
@@ -131,8 +131,8 @@ const StudentRegistrationForm = () => {
                 placeholder="Referrer Name"
                 type="text"
                 value={reference}
-                onChange={(e) => setreference(e.target.value)}
-                setError={(error) => handleFieldError('reference', error)}
+                onChange={e => setreference(e.target.value)}
+                setError={error => handleFieldError('reference', error)}
               />
               <div className="d-md-flex my-3 gap-5">
                 <label className="">Job Type</label>
@@ -163,19 +163,13 @@ const StudentRegistrationForm = () => {
                 >
                   {loading ? 'loading...' : 'Submit'}
                 </button>
-                {submissionError && (
-                  <p className="text-danger mt-3">{submissionError}</p>
-                )}
+                {submissionError && <p className="text-danger mt-3">{submissionError}</p>}
               </div>
             </form>
           </div>
         </div>
       </div>
-      <Toast
-        show={showToast}
-        message={toastMsg}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

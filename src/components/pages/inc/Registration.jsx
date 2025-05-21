@@ -56,7 +56,7 @@ export const Registration = () => {
         {
           method: 'POST',
           body: formData,
-        },
+        }
       );
 
       if (!response.ok) {
@@ -91,14 +91,14 @@ export const Registration = () => {
           <div className="col-md-6">
             <h5 className="">Student Registration</h5>
             <div className="underline"></div>
-            <form onSubmit={(e) => handleSubmit(e, 'Sheet1', resetStudentForm)}>
+            <form onSubmit={e => handleSubmit(e, 'Sheet1', resetStudentForm)}>
               <InputField
                 name="name"
                 label="Name"
                 placeholder="Full Name"
                 type="text"
                 value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
+                onChange={e => setStudentName(e.target.value)}
               />
               <InputField
                 name="email"
@@ -106,7 +106,7 @@ export const Registration = () => {
                 placeholder="Email"
                 type="email"
                 value={studentEmail}
-                onChange={(e) => setStudentEmail(e.target.value)}
+                onChange={e => setStudentEmail(e.target.value)}
               />
               <InputField
                 name="phone"
@@ -114,7 +114,7 @@ export const Registration = () => {
                 placeholder="Phone"
                 type="tel"
                 value={studentPhone}
-                onChange={(e) => setStudentPhone(e.target.value)}
+                onChange={e => setStudentPhone(e.target.value)}
               />
               <InputField
                 name="college"
@@ -122,7 +122,7 @@ export const Registration = () => {
                 placeholder="College"
                 type="text"
                 value={studentCollege}
-                onChange={(e) => setStudentCollege(e.target.value)}
+                onChange={e => setStudentCollege(e.target.value)}
               />
               <InputField
                 name="reference"
@@ -130,7 +130,7 @@ export const Registration = () => {
                 placeholder="Referrer Name"
                 type="text"
                 value={studentReference}
-                onChange={(e) => setStudentReference(e.target.value)}
+                onChange={e => setStudentReference(e.target.value)}
               />
               <div className="d-md-flex my-3 gap-5">
                 <label className="">Job Type</label>
@@ -163,16 +163,14 @@ export const Registration = () => {
           <div className="col-md-5">
             <h5 className=""> Part Timer Registration</h5>
             <div className="underline"></div>
-            <form
-              onSubmit={(e) => handleSubmit(e, 'Sheet2', resetPartTimerForm)}
-            >
+            <form onSubmit={e => handleSubmit(e, 'Sheet2', resetPartTimerForm)}>
               <InputField
                 name="name"
                 label="Name"
                 placeholder="Full Name"
                 type="text"
                 value={partTimerName}
-                onChange={(e) => setPartTimerName(e.target.value)}
+                onChange={e => setPartTimerName(e.target.value)}
               />
               <InputField
                 name="email"
@@ -180,7 +178,7 @@ export const Registration = () => {
                 placeholder="Email"
                 type="email"
                 value={partTimerEmail}
-                onChange={(e) => setPartTimerEmail(e.target.value)}
+                onChange={e => setPartTimerEmail(e.target.value)}
               />
               <InputField
                 name="phone"
@@ -188,7 +186,7 @@ export const Registration = () => {
                 placeholder="Phone"
                 type="tel"
                 value={partTimerPhone}
-                onChange={(e) => setPartTimerPhone(e.target.value)}
+                onChange={e => setPartTimerPhone(e.target.value)}
               />
               <InputField
                 name="college"
@@ -196,7 +194,7 @@ export const Registration = () => {
                 placeholder="College"
                 type="text"
                 value={partTimerCollege}
-                onChange={(e) => setPartTimerCollege(e.target.value)}
+                onChange={e => setPartTimerCollege(e.target.value)}
               />
               <InputField
                 name="reference"
@@ -204,7 +202,7 @@ export const Registration = () => {
                 placeholder="Referrer Name"
                 type="text"
                 value={partTimerReference}
-                onChange={(e) => setPartTimerReference(e.target.value)}
+                onChange={e => setPartTimerReference(e.target.value)}
               />
               <InputField
                 name="status"
@@ -212,7 +210,7 @@ export const Registration = () => {
                 placeholder="Current Status"
                 type="text"
                 value={partTimerStatus}
-                onChange={(e) => setPartTimerStatus(e.target.value)}
+                onChange={e => setPartTimerStatus(e.target.value)}
               />
               <div className="form-group py-3">
                 <button type="submit" className="btn btn-warning shadow w-100">
@@ -223,11 +221,7 @@ export const Registration = () => {
           </div>
         </div>
       </div>
-      <Toast
-        show={showToast}
-        message={toastMsg}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

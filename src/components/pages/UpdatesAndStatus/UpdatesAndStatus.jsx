@@ -21,8 +21,7 @@ export const UpdatesAndStatus = () => {
                     {/* Made the text bold and large */}
                   </div>
                   <div className="d-flex justify-content-center">
-                    <code>{data.route}</code>{' '}
-                    {/* Used code styling for the route */}
+                    <code>{data.route}</code> {/* Used code styling for the route */}
                   </div>
                 </div>
               </div>

@@ -43,8 +43,7 @@ githubAuthProvider.addScope('read:user');
 
 // Exported sign-in methods
 export const signInWithGoogle = () => signInWithPopup(auth, googleAuthProvider);
-export const signInWithFacebook = () =>
-  signInWithPopup(auth, facebookAuthProvider);
+export const signInWithFacebook = () => signInWithPopup(auth, facebookAuthProvider);
 export const signInWithGitHub = () => signInWithPopup(auth, githubAuthProvider);
 export const signInWithEmailPassword = (email, password) =>
   signInWithEmailAndPassword(auth, email, password);

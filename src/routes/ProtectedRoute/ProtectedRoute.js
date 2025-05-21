@@ -12,10 +12,7 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
   const storedEmptyFields = localStorage.getItem('empty_fields');
 
   // Extract roles from local storage
-  const userRoles = useMemo(
-    () => localStorage.getItem('roles')?.split(',') || [],
-    [],
-  );
+  const userRoles = useMemo(() => localStorage.getItem('roles')?.split(',') || [], []);
 
   useEffect(() => {
     if (storedEmptyFields && location.pathname !== '/profile') {
@@ -44,21 +41,15 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
   }
 
   // Check if the user has the required role for the route (like "superadmin")
-  if (
-    requiredRoles.length &&
-    !requiredRoles.every((role) => userRoles.includes(role))
-  ) {
+  if (requiredRoles.length && !requiredRoles.every(role => userRoles.includes(role))) {
     return <Navigate to="/not-authorized" replace />;
   }
 
   // For shared routes, check if the current path is allowed for the user
-  const sharedRoutesPaths = getSharedRoutes().map((route) => route.path);
+  const sharedRoutesPaths = getSharedRoutes().map(route => route.path);
   const currentPath = location.pathname.split('/').pop();
 
-  if (
-    sharedRoutesPaths.includes(currentPath) &&
-    !userRoles.includes(currentPath)
-  ) {
+  if (sharedRoutesPaths.includes(currentPath) && !userRoles.includes(currentPath)) {
     return <Navigate to="/not-authorized" replace />;
   }
 

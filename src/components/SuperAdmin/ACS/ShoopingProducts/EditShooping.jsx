@@ -38,7 +38,7 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
 
   const { mutate: updateProduct, isLoading } = useUpdateData(
     'products',
-    `/products/update/${product?.id}/`,
+    `/products/update/${product?.id}/`
   );
 
   useEffect(() => {
@@ -53,25 +53,25 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
     }
   }, [product]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleAgeGroupChange = (e) => {
-    setFormData((prev) => ({
+  const handleAgeGroupChange = e => {
+    setFormData(prev => ({
       ...prev,
       age_group: e.target.value,
     }));
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         image: file,
       }));
@@ -87,11 +87,11 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     const submitData = new FormData();
 
-    Object.keys(formData).forEach((key) => {
+    Object.keys(formData).forEach(key => {
       if (key === 'image' && formData[key]) {
         submitData.append(key, formData[key]);
       } else if (formData[key] !== '') {
@@ -108,9 +108,8 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
         onUpdateSuccess();
         onClose();
       },
-      onError: (error) => {
-        const errorMessage =
-          error.response?.data?.message || error.message || 'An error occurred';
+      onError: error => {
+        const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
         setSnackbarMessage(`Error: ${errorMessage}`);
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
@@ -140,25 +139,18 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: theme => theme.palette.grey[500],
             }}
           >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Typography
-            variant="body2"
-            gutterBottom
-            sx={{ mb: 2, fontSize: '0.875rem' }}
-          >
+          <Typography variant="body2" gutterBottom sx={{ mb: 2, fontSize: '0.875rem' }}>
             Modify the product details below:
           </Typography>
           <form onSubmit={handleSubmit}>
-            <Box
-              mb={2}
-              sx={{ '& .MuiTextField-root': { fontSize: '0.875rem' } }}
-            >
+            <Box mb={2} sx={{ '& .MuiTextField-root': { fontSize: '0.875rem' } }}>
               <TextField
                 label="Product Name"
                 variant="outlined"
@@ -273,11 +265,7 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
               />
             </Box>
             <DialogActions>
-              <Button
-                onClick={onClose}
-                color="primary"
-                sx={{ fontSize: '0.875rem' }}
-              >
+              <Button onClick={onClose} color="primary" sx={{ fontSize: '0.875rem' }}>
                 Cancel
               </Button>
               <Button
@@ -297,16 +285,8 @@ const EditShopping = ({ product, onClose, onUpdateSuccess }) => {
           </form>
         </DialogContent>
       </Dialog>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
-          sx={{ width: '100%' }}
-        >
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

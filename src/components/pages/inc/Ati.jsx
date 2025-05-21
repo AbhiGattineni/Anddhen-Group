@@ -18,10 +18,7 @@ export const Ati = () => {
             <>
               <h1 className="text-center">Anddhen Trading and Investment </h1>
               <div className="underline mx-auto"></div>
-              <Carousel
-                className="mt-4 mx-auto"
-                style={{ maxWidth: '80%', maxHeight: '60%' }}
-              >
+              <Carousel className="mt-4 mx-auto" style={{ maxWidth: '80%', maxHeight: '60%' }}>
                 <Carousel.Item>
                   <img
                     className="d-block w-100"
@@ -64,14 +61,8 @@ export const Ati = () => {
                     <Card className="shadow border-0">
                       <Card.Body className="text-center">
                         <Card.Title>House Price Predictor</Card.Title>
-                        <Card.Text>
-                          Enter house features to predict its price instantly.
-                        </Card.Text>
-                        <Button
-                          as={Link}
-                          to="house-price-predictor"
-                          variant="primary"
-                        >
+                        <Card.Text>Enter house features to predict its price instantly.</Card.Text>
+                        <Button as={Link} to="house-price-predictor" variant="primary">
                           Predict Now
                         </Button>
                       </Card.Body>
@@ -81,9 +72,7 @@ export const Ati = () => {
                     <Card className="shadow border-0">
                       <Card.Body className="text-center">
                         <Card.Title>Finance Data Management</Card.Title>
-                        <Card.Text>
-                          Upload and analyze your financial statements.
-                        </Card.Text>
+                        <Card.Text>Upload and analyze your financial statements.</Card.Text>
                         <Button as={Link} to="finance-data" variant="primary">
                           Manage Finance Data
                         </Button>
@@ -96,18 +85,15 @@ export const Ati = () => {
               <div className="mt-5 p-3 rounded bg-light">
                 <Container>
                   <p className="p-2" style={{ textAlign: 'justify' }}>
-                    Unlock the true potential of your investments with our
-                    expert stock market management services. Specializing in
-                    short-term gains, we manage diverse portfolios across the
-                    Indian and U.S. stock markets, focusing on equities, ETFs,
-                    and other high-potential assets. Our team uses advanced
-                    market analysis, trend predictions, and proven strategies to
-                    maximize profits quickly while minimizing risk. Whether you
-                    are an experienced investor or just starting, we tailor our
-                    approach to your financial goals and risk tolerance. With
-                    us, you get personalized insights and cutting-edge
-                    strategies designed to capitalize on short-term
-                    opportunities for rapid growth.
+                    Unlock the true potential of your investments with our expert stock market
+                    management services. Specializing in short-term gains, we manage diverse
+                    portfolios across the Indian and U.S. stock markets, focusing on equities, ETFs,
+                    and other high-potential assets. Our team uses advanced market analysis, trend
+                    predictions, and proven strategies to maximize profits quickly while minimizing
+                    risk. Whether you are an experienced investor or just starting, we tailor our
+                    approach to your financial goals and risk tolerance. With us, you get
+                    personalized insights and cutting-edge strategies designed to capitalize on
+                    short-term opportunities for rapid growth.
                   </p>
                 </Container>
               </div>

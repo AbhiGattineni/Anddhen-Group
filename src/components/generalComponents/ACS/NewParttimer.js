@@ -7,11 +7,7 @@ const NewParttimer = () => {
   return (
     <div>
       <div className="justify-content-center ">
-        {showForm ? (
-          <PartTimerRegistrationForm />
-        ) : (
-          'This is the new parttimer page.'
-        )}
+        {showForm ? <PartTimerRegistrationForm /> : 'This is the new parttimer page.'}
       </div>
     </div>
   );

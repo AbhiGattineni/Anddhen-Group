@@ -16,15 +16,14 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
 
   if (isLoading) return <LoadingSpinner />;
 
-  if (isError)
-    return <ErrorPage errorCode={errorCode} title={title} message={message} />;
+  if (isError) return <ErrorPage errorCode={errorCode} title={title} message={message} />;
 
-  const handleAnswer = (selectedAnswer) => {
+  const handleAnswer = selectedAnswer => {
     setBtnDisable(true);
-    setSelectedAnswers((prev) => [...prev, selectedAnswer]);
+    setSelectedAnswers(prev => [...prev, selectedAnswer]);
     setTimeout(() => {
       setBtnDisable(false);
-      setCurrentQuestionIndex((prev) => prev + 1);
+      setCurrentQuestionIndex(prev => prev + 1);
     }, 500); // Add a delay before moving to the next question
   };
 
@@ -37,7 +36,7 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
     setMessage(
       allCorrect
         ? 'Fill form to proceed with registration'
-        : 'You are not matching with our requirements!',
+        : 'You are not matching with our requirements!'
     );
   };
 
@@ -55,29 +54,23 @@ export const QuestionCard = ({ setShowForm, setMessage }) => {
         style={{ height: '300px', width: '300px' }}
       >
         {currentQuestionIndex < questions.length ? (
-          <div
-            className={`card-body d-flex flex-column justify-content-between`}
-          >
+          <div className={`card-body d-flex flex-column justify-content-between`}>
             <div className="">
               <h5 className="card-title">Q{currentQuestionIndex + 1}.</h5>
-              <p className="card-text fs-5">
-                {questions[currentQuestionIndex].question}
-              </p>
+              <p className="card-text fs-5">{questions[currentQuestionIndex].question}</p>
             </div>
             <div className="d-flex justify-content-between">
-              {questions[currentQuestionIndex].ans_options.map(
-                (option, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleAnswer(option)}
-                    disabled={btnDisable}
-                    className="border cursor-pointer text-nowrap border-2 rounded-3 px-2 py-1 w-25 text-center text-decoration-none fw-bold"
-                  >
-                    {option}
-                  </button>
-                ),
-              )}
+              {questions[currentQuestionIndex].ans_options.map((option, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleAnswer(option)}
+                  disabled={btnDisable}
+                  className="border cursor-pointer text-nowrap border-2 rounded-3 px-2 py-1 w-25 text-center text-decoration-none fw-bold"
+                >
+                  {option}
+                </button>
+              ))}
             </div>
           </div>
         ) : (

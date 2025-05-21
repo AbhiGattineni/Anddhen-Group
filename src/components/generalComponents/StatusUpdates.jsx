@@ -22,9 +22,7 @@ const StatusUpdates = () => {
     description: '',
   });
   const { data } = useCalendarData(auth.currentUser.uid);
-  const selectedAcsStatusDate = useAuthStore(
-    (state) => state.selectedAcsStatusDate,
-  );
+  const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
   const [msgResponse, setMsgResponse] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [disableInputs, setDisableInputs] = useState(false);
@@ -46,11 +44,7 @@ const StatusUpdates = () => {
 
   useEffect(() => {
     // Get the department from the URL (you can replace this with your actual logic)
-    const currentDepartment = window.location.pathname.includes(
-      '/parttimerportal',
-    )
-      ? 'ACS'
-      : '';
+    const currentDepartment = window.location.pathname.includes('/parttimerportal') ? 'ACS' : '';
     updateFieldsToShow(currentDepartment);
 
     if (auth.currentUser.displayName) {
@@ -65,7 +59,7 @@ const StatusUpdates = () => {
     setMsgResponse(null);
     if (data && selectedAcsStatusDate) {
       let found = false; // Flag to indicate if a match is found
-      data.forEach((status) => {
+      data.forEach(status => {
         if (formattedSelectedDate === status.date) {
           found = true; // Set flag to true if a match is found
           setDisableInputs(true);
@@ -116,7 +110,7 @@ const StatusUpdates = () => {
     }
   }, [selectedAcsStatusDate, data]);
 
-  const updateFieldsToShow = (currentDepartment) => {
+  const updateFieldsToShow = currentDepartment => {
     if (currentDepartment === 'ACS') {
       // Show ACS-related fields
       setFieldsToShow({
@@ -148,15 +142,15 @@ const StatusUpdates = () => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { id, value } = e.target;
     setFormValues({
       ...formValues,
       [id]: value,
     });
   };
-  const formattedData = data ? data.map((item) => [item.date, item.name]) : [];
-  const formatDate = (date) => {
+  const formattedData = data ? data.map(item => [item.date, item.name]) : [];
+  const formatDate = date => {
     const inputDate = new Date(date);
     const year = inputDate.getFullYear();
     const month = String(inputDate.getMonth() + 1).padStart(2, '0');
@@ -165,12 +159,12 @@ const StatusUpdates = () => {
     return formattedDate;
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = e => {
     e.preventDefault();
     setDisableInputs(false);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       const requiredFields = [
@@ -183,7 +177,7 @@ const StatusUpdates = () => {
         'connectMessages',
         'recruiterMessages',
       ];
-      const missingField = requiredFields.find((field) => !formValues[field]);
+      const missingField = requiredFields.find(field => !formValues[field]);
 
       if (missingField) {
         // Convert field ID to a user-friendly name (if needed)
@@ -457,19 +451,11 @@ const StatusUpdates = () => {
           )}
         </div>
         <div className="col-12 d-flex justify-content-center gap-3">
-          <button
-            type="submit"
-            className="btn btn-primary"
-            onClick={handleSubmit}
-          >
+          <button type="submit" className="btn btn-primary" onClick={handleSubmit}>
             Submit
           </button>
           {showEdit && (
-            <button
-              type="submit"
-              className="btn btn-primary"
-              onClick={handleEdit}
-            >
+            <button type="submit" className="btn btn-primary" onClick={handleEdit}>
               Edit
             </button>
           )}

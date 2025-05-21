@@ -36,18 +36,15 @@ export const AddTeamMember = ({ open, onClose }) => {
     severity: 'success',
   });
 
-  const { mutate: addTeamMember, isLoading } = useAddData(
-    'teamMembers',
-    '/team_members/add/',
-  );
+  const { mutate: addTeamMember, isLoading } = useAddData('teamMembers', '/team_members/add/');
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
+  const handleImageChange = e => {
+    setFormData(prev => ({ ...prev, image: e.target.files[0] }));
     setSnackbar({
       open: true,
       message: 'Image added successfully!',
@@ -55,13 +52,13 @@ export const AddTeamMember = ({ open, onClose }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length === 0) {
       const submitData = new FormData();
-      Object.keys(formData).forEach((key) => {
+      Object.keys(formData).forEach(key => {
         if (formData[key] instanceof File) {
           // For file inputs, append the actual file
           submitData.append(key, formData[key]);
@@ -94,7 +91,7 @@ export const AddTeamMember = ({ open, onClose }) => {
           setErrors({});
           onClose();
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
           setSnackbar({
             open: true,
@@ -111,8 +108,7 @@ export const AddTeamMember = ({ open, onClose }) => {
   const validateForm = () => {
     const errors = {};
     if (!formData.name) errors.name = 'Name is required';
-    if (!formData.work_time_from)
-      errors.work_time_from = 'Start date is required';
+    if (!formData.work_time_from) errors.work_time_from = 'Start date is required';
     if (!formData.work_time_to) errors.work_time_to = 'End date is required';
     if (!formData.role) errors.role = 'Role is required';
     if (!formData.subsidiary) errors.subsidiary = 'Subsidiary is required';
@@ -134,7 +130,7 @@ export const AddTeamMember = ({ open, onClose }) => {
             position: 'absolute',
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            color: theme => theme.palette.grey[500],
           }}
         >
           <CloseIcon />
@@ -200,19 +196,9 @@ export const AddTeamMember = ({ open, onClose }) => {
             value={formData.description}
             onChange={handleChange}
           />
-          <Button
-            variant="contained"
-            component="label"
-            fullWidth
-            sx={{ mt: 2, mb: 2 }}
-          >
+          <Button variant="contained" component="label" fullWidth sx={{ mt: 2, mb: 2 }}>
             Upload Image
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={handleImageChange}
-            />
+            <input type="file" accept="image/*" hidden onChange={handleImageChange} />
           </Button>
           <TextField
             label="Facebook Link"
@@ -250,7 +236,7 @@ export const AddTeamMember = ({ open, onClose }) => {
             error={!!errors.subsidiary}
             helperText={errors.subsidiary}
           >
-            {['acs', 'ass', 'ans', 'ams', 'ats', 'ati', 'aps'].map((option) => (
+            {['acs', 'ass', 'ans', 'ams', 'ats', 'ati', 'aps'].map(option => (
               <MenuItem key={option} value={option}>
                 {option.toUpperCase()}
               </MenuItem>
@@ -285,11 +271,7 @@ export const AddTeamMember = ({ open, onClose }) => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>

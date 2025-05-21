@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  CircularProgress,
-  Snackbar,
-} from '@mui/material';
+import { TextField, Button, Box, Typography, CircularProgress, Snackbar } from '@mui/material';
 import { useUpdateData } from 'src/react-query/useFetchApis'; // Use useUpdateData instead of useEditData
 
 const EditDevice = ({ device, onClose }) => {
@@ -28,18 +21,18 @@ const EditDevice = ({ device, onClose }) => {
   // Use the useUpdateData hook for the update API call
   const { isLoading, error, mutate } = useUpdateData(
     'devices',
-    device ? `/devices/update/${device.id}/` : null, // Only set the URL if device is defined
+    device ? `/devices/update/${device.id}/` : null // Only set the URL if device is defined
   );
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setDeviceData((prevData) => ({
+    setDeviceData(prevData => ({
       ...prevData,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     // Ensure device is defined before proceeding
@@ -62,7 +55,7 @@ const EditDevice = ({ device, onClose }) => {
         setSnackbarOpen(true); // Show the snackbar
         onClose(); // Close the dialog on successful submission
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Error updating device:', error);
         setSnackbarMessage('Failed to update device'); // Set the error message
         setSnackbarOpen(true); // Show the snackbar
@@ -154,12 +147,7 @@ const EditDevice = ({ device, onClose }) => {
       )}
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isLoading}
-        >
+        <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
           {isLoading ? <CircularProgress size={24} /> : 'Update Device'}
         </Button>
       </Box>

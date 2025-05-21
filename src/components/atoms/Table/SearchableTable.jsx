@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const SearchableTable = ({ data, searchTerm, setSearchTerm, renderRow }) => {
-  const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredData = data.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -13,7 +13,7 @@ const SearchableTable = ({ data, searchTerm, setSearchTerm, renderRow }) => {
         className="form-control w-25 mb-3"
         placeholder="Search roles..."
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={e => setSearchTerm(e.target.value)}
       />
 
       <table className="table">

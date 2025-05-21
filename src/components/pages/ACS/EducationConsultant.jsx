@@ -151,9 +151,7 @@ export const EducationConsultant = () => {
   // };
   return (
     <div className="container my-3">
-      <h2 className="main-heading">
-        Enter details to check eligible colleges list
-      </h2>
+      <h2 className="main-heading">Enter details to check eligible colleges list</h2>
       {/* <div className="">
         <form onSubmit={handleSubmit}>
           <div className="my-3">

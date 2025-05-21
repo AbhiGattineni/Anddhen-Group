@@ -20,20 +20,16 @@ const ResumeHome = () => {
     return <ResumeComponent resume_data={parsed} />;
   }
 
-  const handleResumeUpload = async (event) => {
+  const handleResumeUpload = async event => {
     const file = event.target.files[0];
     if (file) {
       const formData = new FormData();
       formData.append('resume', file);
 
       try {
-        const res = await axios.post(
-          `${API_BASE_URL}/api/parse-resume/`,
-          formData,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          },
-        );
+        const res = await axios.post(`${API_BASE_URL}/api/parse-resume/`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
 
         const resume_data = await fetchAi(
           `Given the following resume text:
@@ -90,7 +86,7 @@ Extract the following fields in valid JSON format:
   }}
 }}
 Note: In categorialSkills skills are added in categorially(like Languages, Frameworks, Tools, Databases, etc) anf for description analyze and complete relevant description
-Only return valid JSON. Do not add explanations.`,
+Only return valid JSON. Do not add explanations.`
         );
         setParsed(resume_data);
         console.log(resume_data);
@@ -140,11 +136,10 @@ Only return valid JSON. Do not add explanations.`,
             color: theme.palette.text.secondary,
           }}
         >
-          Choose from a variety of fixed, professional templates and let our
-          AI-powered resume builder help you create a standout resume in
-          minutes. Customize your details, optimize for the job you want, and
-          let AI take care of the formatting and suggestions to make your resume
-          shine.
+          Choose from a variety of fixed, professional templates and let our AI-powered resume
+          builder help you create a standout resume in minutes. Customize your details, optimize for
+          the job you want, and let AI take care of the formatting and suggestions to make your
+          resume shine.
         </Typography>
 
         {/* Button Section */}
@@ -188,12 +183,7 @@ Only return valid JSON. Do not add explanations.`,
             }}
           >
             Upload Resume
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx"
-              hidden
-              onChange={handleResumeUpload}
-            />
+            <input type="file" accept=".pdf,.doc,.docx" hidden onChange={handleResumeUpload} />
           </Button>
         </Box>
 
@@ -206,9 +196,8 @@ Only return valid JSON. Do not add explanations.`,
             textAlign: { xs: 'center', md: 'left' },
           }}
         >
-          Already have a resume? Upload your existing document, and our AI will
-          help you refine and optimize it for the job you want. Supported file
-          formats: PDF, DOC, DOCX.
+          Already have a resume? Upload your existing document, and our AI will help you refine and
+          optimize it for the job you want. Supported file formats: PDF, DOC, DOCX.
         </Typography>
       </Box>
 

@@ -16,13 +16,13 @@ export const Quiz = () => {
       try {
         setLoading(true);
         await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${TAB_NAME}!A1:F10?key=${API_KEY}`,
+          `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${TAB_NAME}!A1:F10?key=${API_KEY}`
         )
-          .then((response) => response.json())
-          .then((data) => {
+          .then(response => response.json())
+          .then(data => {
             setQuiz(data.values);
           })
-          .catch((error) => console.error('Error fetching data:', error));
+          .catch(error => console.error('Error fetching data:', error));
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -36,7 +36,7 @@ export const Quiz = () => {
     setUserAnswers(updatedAnswers);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     let score = 0;
@@ -64,7 +64,7 @@ export const Quiz = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data),
-        },
+        }
       );
 
       if (!response.ok) {
@@ -75,10 +75,7 @@ export const Quiz = () => {
       const responseBody = await response.json();
       console.log('Fetch response:', responseBody);
     } catch (error) {
-      console.error(
-        'There was a problem with the fetch operation:',
-        error.message,
-      );
+      console.error('There was a problem with the fetch operation:', error.message);
     }
   };
 
@@ -97,9 +94,7 @@ export const Quiz = () => {
         <>
           <nav className="navbar bg-dark">
             <div className="container-fluid">
-              <span className="navbar-brand mb-0 h1 text-white">
-                Anddhen Group
-              </span>
+              <span className="navbar-brand mb-0 h1 text-white">Anddhen Group</span>
             </div>
           </nav>
           <div className="container">
@@ -118,7 +113,7 @@ export const Quiz = () => {
                       className="me-2"
                       type="radio"
                       value={data[1]}
-                      onChange={(e) => handleAnswerChange(e, index)}
+                      onChange={e => handleAnswerChange(e, index)}
                       name={`question${index}`}
                     />
                     {data[1]}
@@ -128,7 +123,7 @@ export const Quiz = () => {
                       className="me-2"
                       type="radio"
                       value={data[2]}
-                      onChange={(e) => handleAnswerChange(e, index)}
+                      onChange={e => handleAnswerChange(e, index)}
                       name={`question${index}`}
                     />
                     {data[2]}
@@ -138,7 +133,7 @@ export const Quiz = () => {
                       className="me-2"
                       type="radio"
                       value={data[3]}
-                      onChange={(e) => handleAnswerChange(e, index)}
+                      onChange={e => handleAnswerChange(e, index)}
                       name={`question${index}`}
                     />
                     {data[3]}
@@ -148,7 +143,7 @@ export const Quiz = () => {
                       className="me-2"
                       type="radio"
                       value={data[4]}
-                      onChange={(e) => handleAnswerChange(e, index)}
+                      onChange={e => handleAnswerChange(e, index)}
                       name={`question${index}`}
                     />
                     {data[4]}

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  useTable,
-  usePagination,
-  useExpanded,
-  useGlobalFilter,
-} from 'react-table';
+import { useTable, usePagination, useExpanded, useGlobalFilter } from 'react-table';
 import PropTypes from 'prop-types';
 import { useFetchData } from 'src/react-query/useFetchApis';
 
@@ -13,7 +8,7 @@ const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
     Search:{' '}
     <input
       value={globalFilter || ''}
-      onChange={(e) => setGlobalFilter(e.target.value)}
+      onChange={e => setGlobalFilter(e.target.value)}
       className="form-control"
       placeholder="search college . . ."
       style={{ display: 'inline', width: 'auto', marginLeft: '10px' }}
@@ -28,11 +23,7 @@ GlobalFilter.propTypes = {
 
 const ExpanderCell = ({ row }) => (
   <span className="p-1" {...row.getToggleRowExpandedProps()}>
-    {row.isExpanded ? (
-      <i className="bi bi-chevron-up"></i>
-    ) : (
-      <i className="bi bi-chevron-down"></i>
-    )}
+    {row.isExpanded ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
   </span>
 );
 
@@ -64,16 +55,13 @@ const Table = ({ columns, data }) => {
     },
     useGlobalFilter,
     useExpanded,
-    usePagination,
+    usePagination
   );
 
   return (
     <>
       <div className="container d-flex justify-content-between border py-3 rounded bg-light">
-        <GlobalFilter
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
-        />
+        <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
         <div>
           Page{' '}
           <strong>
@@ -83,18 +71,14 @@ const Table = ({ columns, data }) => {
       </div>
       <table {...getTableProps()} className="w-100 my-2">
         <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
+          {page.map(row => {
             prepareRow(row);
             return (
               <React.Fragment key={row.id}>
                 <tr {...row.getRowProps()}>
                   <div className="p-4 w-100 d-flex align-item-center justify-content-between border rounded bg-grey mt-2">
                     {row.cells.map((cell, index) => (
-                      <td
-                        className="fw-bold"
-                        {...cell.getCellProps()}
-                        key={index}
-                      >
+                      <td className="fw-bold" {...cell.getCellProps()} key={index}>
                         {cell.render('Cell')}
                       </td>
                     ))}
@@ -116,65 +100,44 @@ const Table = ({ columns, data }) => {
                           <div className="col-12 col-md-6">
                             <ul className="list-group">
                               {Object.entries(row.original)
-                                .slice(
-                                  0,
-                                  Math.ceil(
-                                    Object.entries(row.original).length / 2,
-                                  ),
-                                )
+                                .slice(0, Math.ceil(Object.entries(row.original).length / 2))
                                 .map(
                                   ([key, value]) =>
                                     key !== 'id' &&
                                     key !== 'college_name' && (
                                       <li key={key} className="list-group-item">
-                                        <strong>
-                                          {key.replace(/_/g, ' ')}:
-                                        </strong>{' '}
+                                        <strong>{key.replace(/_/g, ' ')}:</strong>{' '}
                                         {value.toString().includes('http') ? (
-                                          <a
-                                            href={value}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                          >
+                                          <a href={value} target="_blank" rel="noopener noreferrer">
                                             {value}
                                           </a>
                                         ) : (
                                           value
                                         )}
                                       </li>
-                                    ),
+                                    )
                                 )}
                             </ul>
                           </div>
                           <div className="col-12 col-md-6">
                             <ul className="list-group">
                               {Object.entries(row.original)
-                                .slice(
-                                  Math.ceil(
-                                    Object.entries(row.original).length / 2,
-                                  ),
-                                )
+                                .slice(Math.ceil(Object.entries(row.original).length / 2))
                                 .map(
                                   ([key, value]) =>
                                     key !== 'id' &&
                                     key !== 'college_name' && (
                                       <li key={key} className="list-group-item">
-                                        <strong>
-                                          {key.replace(/_/g, ' ')}:
-                                        </strong>{' '}
+                                        <strong>{key.replace(/_/g, ' ')}:</strong>{' '}
                                         {value.toString().includes('http') ? (
-                                          <a
-                                            href={value}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                          >
+                                          <a href={value} target="_blank" rel="noopener noreferrer">
                                             {value}
                                           </a>
                                         ) : (
                                           value
                                         )}
                                       </li>
-                                    ),
+                                    )
                                 )}
                             </ul>
                           </div>
@@ -196,11 +159,7 @@ const Table = ({ columns, data }) => {
         >
           Previous
         </button>{' '}
-        <button
-          className="btn btn-primary"
-          onClick={() => nextPage()}
-          disabled={!canNextPage}
-        >
+        <button className="btn btn-primary" onClick={() => nextPage()} disabled={!canNextPage}>
           Next
         </button>{' '}
         <span>
@@ -233,7 +192,7 @@ export const ViewColleges = () => {
         Cell: ExpanderCell,
       },
     ],
-    [],
+    []
   );
 
   if (isLoading) return <div>Loading...</div>;

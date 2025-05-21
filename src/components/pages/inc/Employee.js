@@ -45,7 +45,7 @@ const Employee = () => {
     },
   ];
 
-  const Card = (card) => {
+  const Card = card => {
     return (
       <div className="col-md-4 col-lg-3 col-sm-6">
         <div className="card">
@@ -74,6 +74,6 @@ const Employee = () => {
     );
   };
 
-  return <div className="row">{details.map((data) => Card(data))}</div>;
+  return <div className="row">{details.map(data => Card(data))}</div>;
 };
 export default Employee;

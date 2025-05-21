@@ -62,11 +62,11 @@ const ItineraryForm = () => {
   const [itineraryPlan, setItineraryPlan] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     const prompt = `
@@ -258,9 +258,7 @@ Provide the response in JSON format with day-wise and activity-wise separation:
     <>
       <Container>
         <HeroSection>Plan Your Dream Trip Effortlessly!</HeroSection>
-        <Card
-          sx={{ padding: 4, boxShadow: 5, marginTop: -5, background: '#fff' }}
-        >
+        <Card sx={{ padding: 4, boxShadow: 5, marginTop: -5, background: '#fff' }}>
           <Typography variant="h5" gutterBottom>
             Enter Your Travel Details
           </Typography>
@@ -270,12 +268,8 @@ Provide the response in JSON format with day-wise and activity-wise separation:
                 <Grid item xs={12} md={6} key={name}>
                   <FormControl fullWidth sx={{ mb: 2 }}>
                     <InputLabel>{label}</InputLabel>
-                    <Select
-                      name={name}
-                      value={formData[name]}
-                      onChange={handleChange}
-                    >
-                      {options.map((option) => (
+                    <Select name={name} value={formData[name]} onChange={handleChange}>
+                      {options.map(option => (
                         <MenuItem key={option} value={option.toLowerCase()}>
                           {option}
                         </MenuItem>
@@ -284,7 +278,7 @@ Provide the response in JSON format with day-wise and activity-wise separation:
                   </FormControl>
                 </Grid>
               ))}
-              {formFields.map((field) => (
+              {formFields.map(field => (
                 <Grid item xs={12} md={6} key={field.name}>
                   <TextField
                     fullWidth

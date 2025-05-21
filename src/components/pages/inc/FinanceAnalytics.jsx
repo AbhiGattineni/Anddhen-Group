@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Card,
   CardBody,
@@ -20,7 +21,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 
@@ -154,20 +154,13 @@ const FinanceAnalytics = ({ transactions }) => {
                       cx="50%"
                       cy="50%"
                       outerRadius={100}
-                      label={({ name, percent }) =>
-                        `${name} (${(percent * 100).toFixed(0)}%)`
-                      }
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                     >
                       {categoryData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip
-                      formatter={(value) => `$${parseFloat(value).toFixed(2)}`}
-                    />
+                    <Tooltip formatter={value => `$${parseFloat(value).toFixed(2)}`} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -186,19 +179,15 @@ const FinanceAnalytics = ({ transactions }) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                       dataKey="month"
-                      tickFormatter={(month) =>
+                      tickFormatter={month =>
                         new Date(month).toLocaleDateString('en-US', {
                           month: 'short',
                           year: '2-digit',
                         })
                       }
                     />
-                    <YAxis
-                      tickFormatter={(value) => `$${value.toLocaleString()}`}
-                    />
-                    <Tooltip
-                      formatter={(value) => `$${parseFloat(value).toFixed(2)}`}
-                    />
+                    <YAxis tickFormatter={value => `$${value.toLocaleString()}`} />
+                    <Tooltip formatter={value => `$${parseFloat(value).toFixed(2)}`} />
                     <Bar dataKey="total" fill="#8884d8" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -269,6 +258,17 @@ const FinanceAnalytics = ({ transactions }) => {
       </Card>
     </div>
   );
+};
+
+FinanceAnalytics.propTypes = {
+  transactions: PropTypes.arrayOf(
+    PropTypes.shape({
+      date: PropTypes.string.isRequired,
+      merchant: PropTypes.string.isRequired,
+      category: PropTypes.string,
+      amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    })
+  ).isRequired,
 };
 
 export default FinanceAnalytics;

@@ -32,11 +32,11 @@ export const AddLinks = () => {
     link: '',
   });
 
-  const collegesList = useAuthStore((state) => state.collegesList);
+  const collegesList = useAuthStore(state => state.collegesList);
   console.log(disablebutton);
 
   useEffect(() => {
-    const collegeNames = collegesList.map((college) => ({
+    const collegeNames = collegesList.map(college => ({
       value: college.id,
       label: college.college_name,
     }));
@@ -44,15 +44,13 @@ export const AddLinks = () => {
   }, [collegesList]);
 
   useEffect(() => {
-    const allFieldsFilled = Object.values(formData).every(
-      (value) => value !== '',
-    );
-    const hasErrors = Object.values(fieldErrors).some((error) => error);
+    const allFieldsFilled = Object.values(formData).every(value => value !== '');
+    const hasErrors = Object.values(fieldErrors).some(error => error);
     setDisableButton(!allFieldsFilled || hasErrors);
   }, [formData, fieldErrors]);
 
   const handleChange = (field, value) => {
-    setFormData((prevFormData) => ({
+    setFormData(prevFormData => ({
       ...prevFormData,
       [field]: value,
     }));
@@ -62,9 +60,7 @@ export const AddLinks = () => {
 
   useEffect(() => {
     if (selectedcollege && selectedcollege.value) {
-      const filteredLinks = data.filter(
-        (link) => link.college === selectedcollege.value,
-      );
+      const filteredLinks = data.filter(link => link.college === selectedcollege.value);
       setSelectedLinks(filteredLinks);
     }
     if (selectedLinks) {
@@ -73,28 +69,28 @@ export const AddLinks = () => {
   }, [data, selectedcollege, selectedLinks]);
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     // Implement form submission logic here
   };
 
   const { mutate: updateLinks, isLoading: editLoading } = useUpdateData(
     'links',
-    `/college_details/${editedLink?.id}/update/`,
+    `/college_details/${editedLink?.id}/update/`
   );
 
   const { mutate: addLink, isLoading: addLoading } = useAddData(
     'links',
-    `/college_details/create/`,
+    `/college_details/create/`
   );
 
-  const handleEdit = async (index) => {
+  const handleEdit = async index => {
     setEditingIndex(index);
     setEditedLink({ ...selectedLinks[index] });
     setFormData({
@@ -117,29 +113,23 @@ export const AddLinks = () => {
         await addLink(newData, {
           onSuccess: () => {
             queryClient.invalidateQueries('links');
-            setSelectedLinks((prevLinks) => [...prevLinks, formData]);
+            setSelectedLinks(prevLinks => [...prevLinks, formData]);
             setNewRow(null);
             setToast({
               show: true,
               message: 'Link added successfully!',
               color: '#82DD55',
             });
-            setTimeout(
-              () => setToast({ show: false, message: '', color: undefined }),
-              3000,
-            );
+            setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           },
-          onError: (error) => {
+          onError: error => {
             console.error('An error occurred:', error);
             setToast({
               show: true,
               message: 'Something went wrong!',
               color: '#E23636',
             });
-            setTimeout(
-              () => setToast({ show: false, message: '', color: undefined }),
-              3000,
-            );
+            setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           },
         });
       } else {
@@ -153,9 +143,7 @@ export const AddLinks = () => {
           onSuccess: () => {
             queryClient.invalidateQueries('links');
             const updatedLinks = selectedLinks.map((link, index) =>
-              index === editingIndex
-                ? { ...formData, id: editedLink.id }
-                : link,
+              index === editingIndex ? { ...formData, id: editedLink.id } : link
             );
             setSelectedLinks(updatedLinks);
             setEditingIndex(null);
@@ -165,22 +153,16 @@ export const AddLinks = () => {
               message: 'Link updated successfully!',
               color: '#82DD55',
             });
-            setTimeout(
-              () => setToast({ show: false, message: '', color: undefined }),
-              3000,
-            );
+            setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           },
-          onError: (error) => {
+          onError: error => {
             console.error('An error occurred:', error);
             setToast({
               show: true,
               message: 'Something went wrong!',
               color: '#E23636',
             });
-            setTimeout(
-              () => setToast({ show: false, message: '', color: undefined }),
-              3000,
-            );
+            setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           },
         });
       }
@@ -191,10 +173,7 @@ export const AddLinks = () => {
         message: `Operation failed: ${error.message}`,
         color: '#E23636',
       });
-      setTimeout(
-        () => setToast({ show: false, message: '', color: undefined }),
-        3000,
-      );
+      setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
     }
   };
 
@@ -214,10 +193,10 @@ export const AddLinks = () => {
   // const { mutate: deleteLink }
   const { mutate: deleteLink, isLoading: deleteLoading } = useDeleteData(
     'links',
-    `/college_details/${deleteIndex}/delete/`,
+    `/college_details/${deleteIndex}/delete/`
   );
 
-  const handleDeleteLink = (e) => {
+  const handleDeleteLink = e => {
     e.preventDefault();
     deleteLink(null, {
       onSuccess: () => {
@@ -229,27 +208,21 @@ export const AddLinks = () => {
           message: 'Link deleted successfully!',
           color: '#82DD55',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('An error occurred:', error);
         setToast({
           show: true,
           message: 'Something went wrong!',
           color: '#E23636',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
       },
     });
   };
 
-  const handleDelete = async (index) => {
+  const handleDelete = async index => {
     setShowConfirmation(true);
     const linkId = selectedLinks[index].id;
     setDeleteIndex(linkId);
@@ -288,11 +261,9 @@ export const AddLinks = () => {
                         label="Label"
                         type="text"
                         className="col-12 col-md"
-                        value={
-                          index === editingIndex ? formData.label : link.label
-                        }
-                        onChange={(e) => handleChange('label', e.target.value)}
-                        setError={(error) => handleFieldError('label', error)}
+                        value={index === editingIndex ? formData.label : link.label}
+                        onChange={e => handleChange('label', e.target.value)}
+                        setError={error => handleFieldError('label', error)}
                       />
                       <InputField
                         disabled={inputDisabled || editingIndex !== index}
@@ -300,11 +271,9 @@ export const AddLinks = () => {
                         label="Link"
                         type="url"
                         className="col-12 col-md"
-                        value={
-                          index === editingIndex ? formData.link : link.link
-                        }
-                        onChange={(e) => handleChange('link', e.target.value)}
-                        setError={(error) => handleFieldError('link', error)}
+                        value={index === editingIndex ? formData.link : link.link}
+                        onChange={e => handleChange('link', e.target.value)}
+                        setError={error => handleFieldError('link', error)}
                       />
                       <div className="col-12 col-md-auto d-flex align-items-end justify-content-md-start justify-content-between mt-2 mt-md-0">
                         {editingIndex === index ? (
@@ -353,10 +322,8 @@ export const AddLinks = () => {
                         type="text"
                         className="col-12 col-md"
                         value={newRow.label}
-                        onChange={(e) =>
-                          setNewRow({ ...newRow, label: e.target.value })
-                        }
-                        setError={(error) => handleFieldError('label', error)}
+                        onChange={e => setNewRow({ ...newRow, label: e.target.value })}
+                        setError={error => handleFieldError('label', error)}
                       />
                       <InputField
                         name="link"
@@ -364,17 +331,11 @@ export const AddLinks = () => {
                         type="url"
                         className="col-12 col-md"
                         value={newRow.link}
-                        onChange={(e) =>
-                          setNewRow({ ...newRow, link: e.target.value })
-                        }
-                        setError={(error) => handleFieldError('link', error)}
+                        onChange={e => setNewRow({ ...newRow, link: e.target.value })}
+                        setError={error => handleFieldError('link', error)}
                       />
                       <div className="col-12 col-md-auto d-flex align-items-end justify-content-md-start justify-content-between mt-2 mt-md-0">
-                        <button
-                          type="button"
-                          className="btn btn-success mx-1"
-                          onClick={handleSave}
-                        >
+                        <button type="button" className="btn btn-success mx-1" onClick={handleSave}>
                           {addLoading || editLoading ? 'loading...' : 'Save'}
                         </button>
                         <button

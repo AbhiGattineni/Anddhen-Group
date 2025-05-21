@@ -13,24 +13,21 @@ const LoginForm = ({ onSubmit }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [focus, setFocus] = useState(false);
-  const loading = useAuthStore((state) => state.loading);
+  const loading = useAuthStore(state => state.loading);
 
   const handleChange = (field, value) => {
-    setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
+    setFormData(prevFormData => ({ ...prevFormData, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
+    setFieldErrors(prevErrors => ({ ...prevErrors, [fieldName]: error }));
   };
 
   const isFormValid = () => {
-    return (
-      Object.values(formData).every(Boolean) &&
-      !Object.values(fieldErrors).some(Boolean)
-    );
+    return Object.values(formData).every(Boolean) && !Object.values(fieldErrors).some(Boolean);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (!isFormValid()) return;
     onSubmit(formData.email, formData.password);
@@ -44,8 +41,8 @@ const LoginForm = ({ onSubmit }) => {
         placeholder="Enter valid email address"
         type="email"
         value={formData.email}
-        onChange={(e) => handleChange('email', e.target.value)}
-        setError={(error) => handleFieldError('email', error)}
+        onChange={e => handleChange('email', e.target.value)}
+        setError={error => handleFieldError('email', error)}
       />
       <div className="position-relative">
         <InputField
@@ -54,9 +51,9 @@ const LoginForm = ({ onSubmit }) => {
           placeholder="Enter password"
           type={showPassword ? 'text' : 'password'}
           value={formData.password}
-          onChange={(e) => handleChange('password', e.target.value)}
+          onChange={e => handleChange('password', e.target.value)}
           onFocus={() => setFocus(true)}
-          setError={(error) => handleFieldError('password', error)}
+          setError={error => handleFieldError('password', error)}
         />
         {focus && formData.password.length ? (
           <i

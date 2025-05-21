@@ -1,13 +1,7 @@
 import React from 'react';
 //import {addTeamMember} from './addTeamMember';
 import ViewTeam from './viewTeamMember';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
-  Button,
-} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, IconButton, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { AddTeamMember } from './addTeamMember';
 import { AssTeamModal } from 'src/components/organisms/Modal/AssTeamModel';
@@ -54,7 +48,7 @@ export const OurTeam = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: theme => theme.palette.grey[500],
             }}
           >
             <CloseIcon />
@@ -63,10 +57,7 @@ export const OurTeam = () => {
 
         <DialogContent sx={{ paddingLeft: 2, paddingRight: 2 }}>
           {/* Reduced padding */}
-          <AddTeamMember
-            open={showAddTeamMember}
-            onClose={handleCloseDialog}
-          />{' '}
+          <AddTeamMember open={showAddTeamMember} onClose={handleCloseDialog} />{' '}
           {/* Pass the close function */}
         </DialogContent>
       </Dialog>

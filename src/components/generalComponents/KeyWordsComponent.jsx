@@ -13,10 +13,7 @@ export const KeyWordsComponent = () => {
             <div className="card-header">
               <h5 className="card-title">STAFFING</h5>
             </div>
-            <div
-              className="card-body overflow-auto"
-              style={{ maxHeight: '350px' }}
-            >
+            <div className="card-body overflow-auto" style={{ maxHeight: '350px' }}>
               <ul className="list-unstyled">
                 {STAFFING.map((data, index) => (
                   <li key={index}>{data}</li>
@@ -30,10 +27,7 @@ export const KeyWordsComponent = () => {
             <div className="card-header">
               <h5 className="card-title">CONSULTING</h5>
             </div>
-            <div
-              className="card-body overflow-auto"
-              style={{ maxHeight: '350px' }}
-            >
+            <div className="card-body overflow-auto" style={{ maxHeight: '350px' }}>
               <ul className="list-unstyled">
                 {CONSULTING.map((data, index) => (
                   <li key={index}>{data}</li>
@@ -47,10 +41,7 @@ export const KeyWordsComponent = () => {
             <div className="card-header">
               <h5 className="card-title">FILTER</h5>
             </div>
-            <div
-              className="card-body overflow-auto"
-              style={{ maxHeight: '350px' }}
-            >
+            <div className="card-body overflow-auto" style={{ maxHeight: '350px' }}>
               <ul className="list-unstyled">
                 {Filter.map((data, index) => (
                   <li key={index}>{data}</li>

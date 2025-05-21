@@ -101,17 +101,12 @@ export const Acs = () => {
 
       <div className="bg-c-light py-1">
         <div className="container">
-          <h4 className="row justify-content-md-left ps-3 ps-md-0">
-            Contact Us
-          </h4>
+          <h4 className="row justify-content-md-left ps-3 ps-md-0">Contact Us</h4>
           <div className="ps-2 ps-md-0">
             <div className="underline"></div>
           </div>
           <div className="d-flex flex-column flex-md-row justify-content-between">
-            <p
-              style={{ marginBottom: 5 }}
-              className="fw-bold d-flex align-items-center"
-            >
+            <p style={{ marginBottom: 5 }} className="fw-bold d-flex align-items-center">
               <i className="bi bi-envelope-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
               <a
                 href="mailto:anddhenconsulting@gmail.com"
@@ -120,10 +115,7 @@ export const Acs = () => {
                 anddhenconsulting@gmail.com
               </a>
             </p>
-            <p
-              style={{ marginBottom: 5 }}
-              className="fw-bold d-flex align-items-center"
-            >
+            <p style={{ marginBottom: 5 }} className="fw-bold d-flex align-items-center">
               <i className="bi bi-telephone-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
               +91 9110736115
             </p>

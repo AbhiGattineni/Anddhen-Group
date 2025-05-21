@@ -21,30 +21,26 @@ const FinanceDataUpload = () => {
   const [currentTransactions, setCurrentTransactions] = useState([]);
 
   const uploadMutation = useMutation(
-    async (formData) => {
+    async formData => {
       console.log('Selected file:', selectedFile);
       console.log('FormData contents:');
       for (let pair of formData.entries()) {
         console.log(pair[0], pair[1]);
       }
 
-      const response = await axios.post(
-        'http://localhost:8000/api/finance/upload/',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      const response = await axios.post('http://localhost:8000/api/finance/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         },
-      );
+      });
       return response.data;
     },
     {
-      onSuccess: (data) => {
+      onSuccess: data => {
         console.log('Upload successful:', data);
         if (Array.isArray(data.transactions)) {
           setCurrentTransactions(data.transactions);
-          setUploadHistory((prev) => [
+          setUploadHistory(prev => [
             {
               id: Date.now(),
               filename: selectedFile.name,
@@ -59,17 +55,17 @@ const FinanceDataUpload = () => {
         }
         setSelectedFile(null);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('Upload error details:', {
           message: error.message,
           response: error.response?.data,
           status: error.response?.status,
         });
       },
-    },
+    }
   );
 
-  const handleFileChange = (event) => {
+  const handleFileChange = event => {
     const file = event.target.files[0];
     if (file) {
       if (file.type === 'text/csv' || file.type === 'application/pdf') {
@@ -80,17 +76,14 @@ const FinanceDataUpload = () => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault();
     if (!selectedFile) return;
 
     const formData = new FormData();
     formData.append('statement', selectedFile);
     formData.append('persist', persistData);
-    formData.append(
-      'file_type',
-      selectedFile.name.endsWith('.pdf') ? 'pdf' : 'csv',
-    );
+    formData.append('file_type', selectedFile.name.endsWith('.pdf') ? 'pdf' : 'csv');
 
     uploadMutation.mutate(formData);
   };
@@ -112,11 +105,7 @@ const FinanceDataUpload = () => {
                   <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                       <Form.Label>Select File (CSV or PDF)</Form.Label>
-                      <Form.Control
-                        type="file"
-                        onChange={handleFileChange}
-                        accept=".csv,.pdf"
-                      />
+                      <Form.Control type="file" onChange={handleFileChange} accept=".csv,.pdf" />
                     </Form.Group>
 
                     <Form.Group className="mb-3">
@@ -124,7 +113,7 @@ const FinanceDataUpload = () => {
                         type="checkbox"
                         label="Save data for future use"
                         checked={persistData}
-                        onChange={(e) => setPersistData(e.target.checked)}
+                        onChange={e => setPersistData(e.target.checked)}
                       />
                     </Form.Group>
 
@@ -166,19 +155,15 @@ const FinanceDataUpload = () => {
                   </CardHeader>
                   <CardBody>
                     <div className="upload-history">
-                      {uploadHistory.map((upload) => (
+                      {uploadHistory.map(upload => (
                         <div key={upload.id} className="mb-3">
                           <h6>{upload.filename}</h6>
-                          <p className="mb-1">
-                            Uploaded: {new Date(upload.date).toLocaleString()}
-                          </p>
+                          <p className="mb-1">Uploaded: {new Date(upload.date).toLocaleString()}</p>
                           <p className="mb-0">Transactions: {upload.count}</p>
                           <Button
                             variant="link"
                             size="sm"
-                            onClick={() =>
-                              setCurrentTransactions(upload.transactions)
-                            }
+                            onClick={() => setCurrentTransactions(upload.transactions)}
                           >
                             View Analysis
                           </Button>
@@ -190,8 +175,7 @@ const FinanceDataUpload = () => {
               )}
             </Col>
             <Col md={8}>
-              {Array.isArray(currentTransactions) &&
-              currentTransactions.length > 0 ? (
+              {Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
                 <FinanceAnalytics transactions={currentTransactions} />
               ) : (
                 <Alert variant="info">Upload a file to see analytics</Alert>

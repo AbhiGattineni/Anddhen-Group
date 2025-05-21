@@ -2,13 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const AddRoleModal = ({
-  show,
-  handleClose,
-  handleSave,
-  editingRole,
-  handleEditRole,
-}) => {
+const AddRoleModal = ({ show, handleClose, handleSave, editingRole, handleEditRole }) => {
   const [roleForm, setRoleForm] = useState({ roleName: '', accessRole: '' });
 
   useEffect(() => {
@@ -42,9 +36,9 @@ const AddRoleModal = ({
     setRoleForm({ roleName: '', accessRole: '' });
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setRoleForm((prevState) => ({ ...prevState, [name]: value }));
+    setRoleForm(prevState => ({ ...prevState, [name]: value }));
   };
 
   return (
@@ -60,14 +54,8 @@ const AddRoleModal = ({
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">
-              {editingRole?.id ? 'Edit Role' : 'Add New Role'}
-            </h5>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={handleClose}
-            ></button>
+            <h5 className="modal-title">{editingRole?.id ? 'Edit Role' : 'Add New Role'}</h5>
+            <button type="button" className="btn-close" onClick={handleClose}></button>
           </div>
           <div className="modal-body">
             <input
@@ -88,18 +76,10 @@ const AddRoleModal = ({
             />
           </div>
           <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={handleClose}
-            >
+            <button type="button" className="btn btn-secondary" onClick={handleClose}>
               Close
             </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={saveRole}
-            >
+            <button type="button" className="btn btn-primary" onClick={saveRole}>
               {editingRole?.id ? 'Update Role' : 'Save Role'}
             </button>
           </div>

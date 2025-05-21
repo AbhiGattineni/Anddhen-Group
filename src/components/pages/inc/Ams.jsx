@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { marketingData } from '../../../dataconfig';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  CardMedia,
-  Box,
-} from '@mui/material';
+import { Card, CardContent, Typography, Grid, CardMedia, Box } from '@mui/material';
 
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';

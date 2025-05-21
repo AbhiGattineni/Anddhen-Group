@@ -19,18 +19,12 @@ function ViewConsultants() {
   const [isEditable, setIsEditable] = useState(false);
   const [visaStatus, setVisaStatus] = useState([]);
 
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useFetchData('consultant', `/api/consultants/`);
+  const { data = [], isLoading, error } = useFetchData('consultant', `/api/consultants/`);
 
   useEffect(() => {
     setConsultants(data);
     if (data && data.length > 0) {
-      const visaStatuses = Array.from(
-        new Set(data.map((consultant) => consultant.visa_status)),
-      );
+      const visaStatuses = Array.from(new Set(data.map(consultant => consultant.visa_status)));
       setVisaStatus(visaStatuses);
     }
   }, [data]);
@@ -41,8 +35,8 @@ function ViewConsultants() {
     setFilters({ ...filters, [filterKey]: value });
   };
 
-  const applyFilters = (consultant) => {
-    return Object.keys(filters).every((key) => {
+  const applyFilters = consultant => {
+    return Object.keys(filters).every(key => {
       if (filters[key] === 'all') {
         // For 'relocation', 'visa_status', 'verified' keys, return true if value is 'all'
         if (['relocation', 'visa_status', 'verified'].includes(key)) {
@@ -53,30 +47,24 @@ function ViewConsultants() {
         return true;
       }
       if (key === 'verified') {
-        const verifiedKeys = Object.keys(consultant).filter((consultantKey) =>
-          consultantKey.includes('verified'),
+        const verifiedKeys = Object.keys(consultant).filter(consultantKey =>
+          consultantKey.includes('verified')
         );
 
         if (filters[key] === 'true') {
-          return verifiedKeys.every(
-            (consultantKey) => consultant[consultantKey] === true,
-          );
+          return verifiedKeys.every(consultantKey => consultant[consultantKey] === true);
         } else if (filters[key] === 'false') {
-          return verifiedKeys.some(
-            (consultantKey) => consultant[consultantKey] === false,
-          );
+          return verifiedKeys.some(consultantKey => consultant[consultantKey] === false);
         }
       } else if (key === 'current_location') {
-        return consultant.current_location
-          .toLowerCase()
-          .includes(filters[key].toLowerCase());
+        return consultant.current_location.toLowerCase().includes(filters[key].toLowerCase());
       } else {
         return String(consultant[key]) === filters[key];
       }
     });
   };
 
-  const handleViewDetails = (consultant) => {
+  const handleViewDetails = consultant => {
     setSelectedConsultant(consultant);
     setIsModalVisible(true);
   };
@@ -87,7 +75,7 @@ function ViewConsultants() {
         onSuccess: () => {
           queryClient.invalidateQueries('consultant');
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
         },
       });
@@ -96,10 +84,10 @@ function ViewConsultants() {
 
   const { mutate: deleteConsultant } = useDeleteData(
     'consultant',
-    `/consultants/delete/${consultantId}/`,
+    `/consultants/delete/${consultantId}/`
   );
 
-  const handleDeleteConsultant = (consultantId) => {
+  const handleDeleteConsultant = consultantId => {
     if (consultantId) {
       setConsultantId(consultantId);
     }
@@ -112,13 +100,13 @@ function ViewConsultants() {
 
   const { mutate: updateConsultant, isLoading: isUpdating } = useUpdateData(
     'colleges',
-    `/api/consultants/${updatedConsultant?.id}/`,
+    `/api/consultants/${updatedConsultant?.id}/`
   );
 
-  const handleSaveChanges = async (updatedConsultant) => {
+  const handleSaveChanges = async updatedConsultant => {
     setUpdatedConsultant(updatedConsultant);
     const submitData = new FormData();
-    Object.keys(updatedConsultant).forEach((key) => {
+    Object.keys(updatedConsultant).forEach(key => {
       if (key !== 'consulting_resume' && key !== 'original_resume') {
         if (key === 'technologies') {
           // Stringify the array before appending it to FormData
@@ -136,7 +124,7 @@ function ViewConsultants() {
           setIsModalVisible(false);
           setIsEditable(false);
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
         },
       });
@@ -152,14 +140,10 @@ function ViewConsultants() {
           type="text"
           className="form-control"
           placeholder="Search Consultants"
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
         />
         <div className="input-group-append">
-          <button
-            onClick={toggleFilters}
-            className="btn btn-outline-secondary"
-            type="button"
-          >
+          <button onClick={toggleFilters} className="btn btn-outline-secondary" type="button">
             <i className="bi bi-funnel-fill"></i> Filters
           </button>
         </div>
@@ -172,9 +156,7 @@ function ViewConsultants() {
               <select
                 className="form-select"
                 value={filters.visa_status || 'all'}
-                onChange={(e) =>
-                  handleFilterChange('visa_status', e.target.value)
-                }
+                onChange={e => handleFilterChange('visa_status', e.target.value)}
               >
                 <option value="all">All</option>
                 {visaStatus.map((status, index) => (
@@ -189,7 +171,7 @@ function ViewConsultants() {
               <select
                 className="form-select"
                 value={filters.verified || 'all'}
-                onChange={(e) => handleFilterChange('verified', e.target.value)}
+                onChange={e => handleFilterChange('verified', e.target.value)}
               >
                 <option value="all">All</option>
                 <option value={true}>Verified</option>
@@ -201,9 +183,7 @@ function ViewConsultants() {
               <select
                 className="form-select"
                 value={filters.relocation || 'all'}
-                onChange={(e) =>
-                  handleFilterChange('relocation', e.target.value)
-                }
+                onChange={e => handleFilterChange('relocation', e.target.value)}
               >
                 <option value="all">All</option>
                 <option value={true}>Willing to Relocate</option>
@@ -217,9 +197,7 @@ function ViewConsultants() {
                 className="form-control"
                 placeholder="Experience in US"
                 value={filters.experience_in_us || ''}
-                onChange={(e) =>
-                  handleFilterChange('experience_in_us', e.target.value)
-                }
+                onChange={e => handleFilterChange('experience_in_us', e.target.value)}
               />
             </div>
             <div className="col-md-3">
@@ -229,9 +207,7 @@ function ViewConsultants() {
                 className="form-control"
                 placeholder="Current Location"
                 value={filters.current_location || ''}
-                onChange={(e) =>
-                  handleFilterChange('current_location', e.target.value)
-                }
+                onChange={e => handleFilterChange('current_location', e.target.value)}
               />
             </div>
             <div className="col-md-3">
@@ -240,9 +216,7 @@ function ViewConsultants() {
                 type="date"
                 className="form-control"
                 value={filters.uploaded_date || ''}
-                onChange={(e) =>
-                  handleFilterChange('uploaded_date', e.target.value)
-                }
+                onChange={e => handleFilterChange('uploaded_date', e.target.value)}
               />
             </div>
             <div className="col-md-3 d-flex align-items-end">
@@ -273,8 +247,7 @@ function ViewConsultants() {
         </div>
       ) : error ? (
         <div className="alert alert-danger" role="alert">
-          An error occurred:{' '}
-          {error.message || 'Failed to fetch data. Please try again later.'}
+          An error occurred: {error.message || 'Failed to fetch data. Please try again later.'}
         </div>
       ) : consultants.length === 0 ? (
         <div className="col-12 text-center">
@@ -283,14 +256,13 @@ function ViewConsultants() {
       ) : (
         (() => {
           const filteredConsultants = consultants.filter(
-            (consultant) =>
-              consultant.full_name
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) && applyFilters(consultant),
+            consultant =>
+              consultant.full_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+              applyFilters(consultant)
           );
 
           return filteredConsultants.length > 0 ? (
-            filteredConsultants.map((consultant) => (
+            filteredConsultants.map(consultant => (
               <div key={consultant.id} className="col-12 col-sm-6 col-md-4">
                 <ConsultantCard
                   consultant={consultant}
@@ -302,9 +274,7 @@ function ViewConsultants() {
             ))
           ) : (
             <div className="col-12 text-center">
-              <p className="fw-semibold">
-                No consultants match your search or filters.
-              </p>
+              <p className="fw-semibold">No consultants match your search or filters.</p>
             </div>
           );
         })()

@@ -3,7 +3,7 @@ import Navbar from 'src/components/organisms/Navbar';
 import Footer from 'src/components/organisms/Footer';
 import { Outlet } from 'react-router-dom';
 
-const Layout = (logout) => {
+const Layout = logout => {
   return (
     <div>
       <Navbar logout={logout.logout == false ? false : true} />

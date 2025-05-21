@@ -16,7 +16,7 @@ export const Login = () => {
 
   const { loading } = useAuthStore();
 
-  const handleSignIn = async (signInMethod) => {
+  const handleSignIn = async signInMethod => {
     const result = await signInMethod();
     if (result && !result.success) {
       setError(result.error); // Set the raw error for processing
@@ -37,10 +37,7 @@ export const Login = () => {
       ) : (
         <div className="bg-light min-vh-100 d-flex align-items-center user-select-none">
           <div className="container">
-            <div
-              className="card shadow-lg rounded p-4 mx-auto"
-              style={{ maxWidth: '600px' }}
-            >
+            <div className="card shadow-lg rounded p-4 mx-auto" style={{ maxWidth: '600px' }}>
               <div className="text-center mb-4">
                 <h2>Sign In</h2>
               </div>
@@ -114,10 +111,7 @@ export const Login = () => {
               <LoginForm onSubmit={handleEmailPasswordSignIn} />
               <div className="d-flex justify-content-center mt-3">
                 <span>Don&apos;t have an account? </span>
-                <Link
-                  to="/register"
-                  className="text-primary fw-bold text-decoration-none ms-1"
-                >
+                <Link to="/register" className="text-primary fw-bold text-decoration-none ms-1">
                   Register
                 </Link>
               </div>

@@ -15,10 +15,7 @@ export const Ats = () => {
         <div className="underline mx-auto"></div>
 
         {/* Image Slider */}
-        <Carousel
-          className="mt-4 mx-auto"
-          style={{ maxWidth: '80%', maxHeight: '60%' }}
-        >
+        <Carousel className="mt-4 mx-auto" style={{ maxWidth: '80%', maxHeight: '60%' }}>
           <Carousel.Item>
             <img
               className="d-block w-100"
@@ -58,19 +55,16 @@ export const Ats = () => {
         <div className="mt-5 p-3 rounded bg-light">
           <Container>
             <p className="p-2" style={{ textAlign: 'justify' }}>
-              If you are an individual, group, couple, or family wanting to
-              travel for a few days or just over the weekend, planning
-              everything from the travel route, places to visit, flights, car
-              rentals, hotels, restaurants, sightseeing, and timings can be
-              overwhelming as a working individual. We understand the hassle and
-              stress involved in organizing a trip, and that&rsquo;s where we to
-              to help you. Whether it&rsquo;s finding the best flight options,
-              comfortable accommodations, arranging car rentals, or recommending
-              top-notch restaurants, we take care of everything. We also provide
-              detailed itineraries that include must-see attractions and hidden
-              gems, along with optimal timings to visit each place. Our goal is
-              to make your travel experience as smooth and enjoyable as
-              possible, allowing you to focus on making memories rather than
+              If you are an individual, group, couple, or family wanting to travel for a few days or
+              just over the weekend, planning everything from the travel route, places to visit,
+              flights, car rentals, hotels, restaurants, sightseeing, and timings can be
+              overwhelming as a working individual. We understand the hassle and stress involved in
+              organizing a trip, and that&rsquo;s where we to to help you. Whether it&rsquo;s
+              finding the best flight options, comfortable accommodations, arranging car rentals, or
+              recommending top-notch restaurants, we take care of everything. We also provide
+              detailed itineraries that include must-see attractions and hidden gems, along with
+              optimal timings to visit each place. Our goal is to make your travel experience as
+              smooth and enjoyable as possible, allowing you to focus on making memories rather than
               worrying about logistics.
             </p>
           </Container>
@@ -88,10 +82,7 @@ export const Ats = () => {
                     className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
                     style={{ width: '60px', height: '60px' }}
                   >
-                    <i
-                      className="bi bi-geo-alt"
-                      style={{ fontSize: '1.5rem' }}
-                    ></i>
+                    <i className="bi bi-geo-alt" style={{ fontSize: '1.5rem' }}></i>
                   </div>
                   <Card.Title className="text-dark">Decide</Card.Title>
                   <Card.Text className="text-secondary">
@@ -107,15 +98,10 @@ export const Ats = () => {
                     className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
                     style={{ width: '60px', height: '60px' }}
                   >
-                    <i
-                      className="bi bi-envelope"
-                      style={{ fontSize: '1.5rem' }}
-                    ></i>
+                    <i className="bi bi-envelope" style={{ fontSize: '1.5rem' }}></i>
                   </div>
                   <Card.Title className="text-dark">Message</Card.Title>
-                  <Card.Text className="text-secondary">
-                    Message us using the form below
-                  </Card.Text>
+                  <Card.Text className="text-secondary">Message us using the form below</Card.Text>
                 </Card.Body>
               </Card>
             </Col>
@@ -126,10 +112,7 @@ export const Ats = () => {
                     className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
                     style={{ width: '60px', height: '60px' }}
                   >
-                    <i
-                      className="bi bi-phone"
-                      style={{ fontSize: '1.5rem' }}
-                    ></i>
+                    <i className="bi bi-phone" style={{ fontSize: '1.5rem' }}></i>
                   </div>
                   <Card.Title className="text-dark">Relax</Card.Title>
                   <Card.Text className="text-secondary">
@@ -145,10 +128,7 @@ export const Ats = () => {
                     className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
                     style={{ width: '60px', height: '60px' }}
                   >
-                    <i
-                      className="bi bi-pencil-square"
-                      style={{ fontSize: '1.5rem' }}
-                    ></i>
+                    <i className="bi bi-pencil-square" style={{ fontSize: '1.5rem' }}></i>
                   </div>
                   <Card.Title className="text-dark">Customize</Card.Title>
                   <Card.Text className="text-secondary">
@@ -164,10 +144,7 @@ export const Ats = () => {
                     className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
                     style={{ width: '60px', height: '60px' }}
                   >
-                    <i
-                      className="bi bi-send"
-                      style={{ fontSize: '1.5rem' }}
-                    ></i>
+                    <i className="bi bi-send" style={{ fontSize: '1.5rem' }}></i>
                   </div>
                   <Card.Title className="text-dark">Start</Card.Title>
                   <Card.Text className="text-secondary">
@@ -185,11 +162,7 @@ export const Ats = () => {
           setShowToast={setShowToast}
           setToastMsg={setToastMsg}
         />
-        <CustomToast
-          showToast={showToast}
-          setShowToast={setShowToast}
-          toastMsg={toastMsg}
-        />
+        <CustomToast showToast={showToast} setShowToast={setShowToast} toastMsg={toastMsg} />
       </section>
     </div>
   );

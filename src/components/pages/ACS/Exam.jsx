@@ -58,7 +58,7 @@ export const Exam = () => {
           placeholder="Full Name"
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={e => setName(e.target.value)}
           className="w-50"
         />
         <InputField
@@ -67,7 +67,7 @@ export const Exam = () => {
           placeholder="Email"
           type="text"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           className="w-50"
         />
       </form>
@@ -75,9 +75,7 @@ export const Exam = () => {
         <Link
           to="/quiz"
           onClick={startExam}
-          className={`btn btn-warning ${
-            name.length && email.length ? 'shadow' : 'disabled'
-          }`}
+          className={`btn btn-warning ${name.length && email.length ? 'shadow' : 'disabled'}`}
         >
           Start Test
         </Link>

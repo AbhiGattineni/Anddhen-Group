@@ -28,10 +28,10 @@ export const EditColleges = () => {
     setLoading(true);
 
     fetch(`${API_BASE_URL}/colleges/all/`)
-      .then((response) => response.json())
-      .then((data) => {
-        data.forEach((element) => {
-          setCollegesData((college) => [
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(element => {
+          setCollegesData(college => [
             {
               value: element.id,
               label: element.college_name,
@@ -41,7 +41,7 @@ export const EditColleges = () => {
         });
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching data:', error.message);
         setToast({ show: true, message: 'Something went wrong!' });
         setTimeout(() => setToast({ show: false, message: '' }), 3000);
@@ -52,12 +52,12 @@ export const EditColleges = () => {
     setLoading(true);
 
     fetch(`${API_BASE_URL}/colleges/${selectedCollege.value}/`)
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         setCollegeData(data);
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching data:', error.message);
         setToast({ show: true, message: 'Something went wrong!' });
         setTimeout(() => setToast({ show: false, message: '' }), 3000);
@@ -66,11 +66,11 @@ export const EditColleges = () => {
   };
 
   const handleChange = (field, value) => {
-    setCollegeData((prevFormData) => ({ ...prevFormData, [field]: value }));
+    setCollegeData(prevFormData => ({ ...prevFormData, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
+    setFieldErrors(prevErrors => ({ ...prevErrors, [fieldName]: error }));
   };
 
   const isFormValid = () => {
@@ -81,7 +81,7 @@ export const EditColleges = () => {
     );
   };
 
-  const handleUpdate = (event) => {
+  const handleUpdate = event => {
     event.preventDefault();
 
     const jsonPayload = JSON.stringify(collegeData);
@@ -93,9 +93,9 @@ export const EditColleges = () => {
         'Content-Type': 'application/json',
       },
     })
-      .then((response) => {
+      .then(response => {
         if (!response.ok) {
-          return response.json().then((err) => {
+          return response.json().then(err => {
             setToast({
               show: true,
               message: `Check the ${Object.keys(err)[0]} field`,
@@ -106,7 +106,7 @@ export const EditColleges = () => {
         }
         return response.json();
       })
-      .then((data) => {
+      .then(data => {
         setToast({ show: true, message: 'College successfully updated!' });
         setTimeout(() => {
           setToast({ show: false, message: '' });
@@ -117,7 +117,7 @@ export const EditColleges = () => {
         setSelectedCollege({});
         setEditField({});
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error:', error.message);
         setToast({ show: true, message: 'Something went wrong!' });
         setTimeout(() => setToast({ show: false, message: '' }), 3000);
@@ -127,7 +127,7 @@ export const EditColleges = () => {
     fetch(`${API_BASE_URL}/colleges/${selectedCollege.value}/delete/`, {
       method: 'DELETE',
     })
-      .then((response) => {
+      .then(response => {
         if (!response.ok) {
           throw new Error('Server error');
         }
@@ -140,7 +140,7 @@ export const EditColleges = () => {
 
         return response.json();
       })
-      .then((data) => {
+      .then(data => {
         setSelectedCollege({});
         setCollegeData([]);
         setCollegesData([]);
@@ -151,7 +151,7 @@ export const EditColleges = () => {
           navigate('/acs');
         }, 3000);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error:', error.message);
         setToast({ show: true, message: 'Something went wrong!' });
         setTimeout(() => setToast({ show: false, message: '' }), 3000);
@@ -183,11 +183,7 @@ export const EditColleges = () => {
           />
           {Object.keys(selectedCollege).length !== 0 && (
             <div className="mt-2">
-              <button
-                type="button"
-                className="btn btn-danger shadow w-auto"
-                onClick={handleDelete}
-              >
+              <button type="button" className="btn btn-danger shadow w-auto" onClick={handleDelete}>
                 Delete
               </button>
               <form className="">
@@ -202,15 +198,11 @@ export const EditColleges = () => {
                       placeholder="College Name"
                       type="text"
                       value={collegeData.college_name}
-                      onChange={(e) =>
-                        handleChange('college_name', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('college_name', error)
-                      }
+                      onChange={e => handleChange('college_name', e.target.value)}
+                      setError={error => handleFieldError('college_name', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('college_name');
                       }}
@@ -229,15 +221,11 @@ export const EditColleges = () => {
                       placeholder="Website Link"
                       type="url"
                       value={collegeData.website_link}
-                      onChange={(e) =>
-                        handleChange('website_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('website_link', error)
-                      }
+                      onChange={e => handleChange('website_link', e.target.value)}
+                      setError={error => handleFieldError('website_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('website_link');
                       }}
@@ -259,15 +247,11 @@ export const EditColleges = () => {
                       placeholder="International UG Link"
                       type="url"
                       value={collegeData.international_UG_link}
-                      onChange={(e) =>
-                        handleChange('international_UG_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('international_UG_link', error)
-                      }
+                      onChange={e => handleChange('international_UG_link', e.target.value)}
+                      setError={error => handleFieldError('international_UG_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('international_UG_link');
                       }}
@@ -286,18 +270,11 @@ export const EditColleges = () => {
                       placeholder="International Graduation Link"
                       type="url"
                       value={collegeData.international_graduation_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'international_graduation_link',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('international_graduation_link', error)
-                      }
+                      onChange={e => handleChange('international_graduation_link', e.target.value)}
+                      setError={error => handleFieldError('international_graduation_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('international_graduation_link');
                       }}
@@ -319,15 +296,11 @@ export const EditColleges = () => {
                       placeholder="Application UG Link"
                       type="url"
                       value={collegeData.application_UG_link}
-                      onChange={(e) =>
-                        handleChange('application_UG_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('application_UG_link', error)
-                      }
+                      onChange={e => handleChange('application_UG_link', e.target.value)}
+                      setError={error => handleFieldError('application_UG_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('application_UG_link');
                       }}
@@ -346,18 +319,11 @@ export const EditColleges = () => {
                       placeholder="Application Graduation Link"
                       type="url"
                       value={collegeData.application_graduation_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'application_graduation_link',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('application_graduation_link', error)
-                      }
+                      onChange={e => handleChange('application_graduation_link', e.target.value)}
+                      setError={error => handleFieldError('application_graduation_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('application_graduation_link');
                       }}
@@ -376,15 +342,11 @@ export const EditColleges = () => {
                       placeholder="Application UG fee"
                       type="text"
                       value={collegeData.application_UG_fee}
-                      onChange={(e) =>
-                        handleChange('application_UG_fee', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('application_UG_fee', error)
-                      }
+                      onChange={e => handleChange('application_UG_fee', e.target.value)}
+                      setError={error => handleFieldError('application_UG_fee', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('application_UG_fee');
                       }}
@@ -403,15 +365,11 @@ export const EditColleges = () => {
                       placeholder="Application UG fee link"
                       type="url"
                       value={collegeData.application_UG_fee_link}
-                      onChange={(e) =>
-                        handleChange('application_UG_fee_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('application_UG_fee_link', error)
-                      }
+                      onChange={e => handleChange('application_UG_fee_link', e.target.value)}
+                      setError={error => handleFieldError('application_UG_fee_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('application_UG_fee_link');
                       }}
@@ -430,18 +388,11 @@ export const EditColleges = () => {
                       placeholder="Application Graduation fee"
                       type="text"
                       value={collegeData.application_graduation_fee}
-                      onChange={(e) =>
-                        handleChange(
-                          'application_graduation_fee',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('application_graduation_fee', error)
-                      }
+                      onChange={e => handleChange('application_graduation_fee', e.target.value)}
+                      setError={error => handleFieldError('application_graduation_fee', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('application_graduation_fee');
                       }}
@@ -460,21 +411,13 @@ export const EditColleges = () => {
                       placeholder="Application Graduation fee link"
                       type="url"
                       value={collegeData.application_graduation_fee_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'application_graduation_fee_link',
-                          e.target.value,
-                        )
+                      onChange={e =>
+                        handleChange('application_graduation_fee_link', e.target.value)
                       }
-                      setError={(error) =>
-                        handleFieldError(
-                          'application_graduation_fee_link',
-                          error,
-                        )
-                      }
+                      setError={error => handleFieldError('application_graduation_fee_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('application_graduation_fee_link');
                       }}
@@ -496,13 +439,11 @@ export const EditColleges = () => {
                       placeholder="GRE Score"
                       type="text"
                       value={collegeData.gre_score}
-                      onChange={(e) =>
-                        handleChange('gre_score', e.target.value)
-                      }
-                      setError={(error) => handleFieldError('gre_score', error)}
+                      onChange={e => handleChange('gre_score', e.target.value)}
+                      setError={error => handleFieldError('gre_score', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('gre_score');
                       }}
@@ -521,15 +462,11 @@ export const EditColleges = () => {
                       placeholder="GRE Score Link"
                       type="url"
                       value={collegeData.gre_score_link}
-                      onChange={(e) =>
-                        handleChange('gre_score_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('gre_score_link', error)
-                      }
+                      onChange={e => handleChange('gre_score_link', e.target.value)}
+                      setError={error => handleFieldError('gre_score_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('gre_score_link');
                       }}
@@ -548,15 +485,11 @@ export const EditColleges = () => {
                       placeholder="Toefl UG Score"
                       type="text"
                       value={collegeData.toefl_UG_score}
-                      onChange={(e) =>
-                        handleChange('toefl_UG_score', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('toefl_UG_score', error)
-                      }
+                      onChange={e => handleChange('toefl_UG_score', e.target.value)}
+                      setError={error => handleFieldError('toefl_UG_score', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('toefl_UG_score');
                       }}
@@ -575,15 +508,11 @@ export const EditColleges = () => {
                       placeholder="Toefl UG Score Link"
                       type="url"
                       value={collegeData.toefl_UG_score_link}
-                      onChange={(e) =>
-                        handleChange('toefl_UG_score_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('toefl_UG_score_link', error)
-                      }
+                      onChange={e => handleChange('toefl_UG_score_link', e.target.value)}
+                      setError={error => handleFieldError('toefl_UG_score_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('toefl_UG_score_link');
                       }}
@@ -602,15 +531,11 @@ export const EditColleges = () => {
                       placeholder="Toefl Graduation Score"
                       type="text"
                       value={collegeData.toefl_graduation_score}
-                      onChange={(e) =>
-                        handleChange('toefl_graduation_score', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('toefl_graduation_score', error)
-                      }
+                      onChange={e => handleChange('toefl_graduation_score', e.target.value)}
+                      setError={error => handleFieldError('toefl_graduation_score', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('toefl_UG_score_link');
                       }}
@@ -629,18 +554,11 @@ export const EditColleges = () => {
                       placeholder="Toefl Graduation Score Link"
                       type="url"
                       value={collegeData.toefl_graduation_score_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'toefl_graduation_score_link',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('toefl_graduation_score_link', error)
-                      }
+                      onChange={e => handleChange('toefl_graduation_score_link', e.target.value)}
+                      setError={error => handleFieldError('toefl_graduation_score_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('toefl_graduation_score_link');
                       }}
@@ -659,15 +577,11 @@ export const EditColleges = () => {
                       placeholder="IELTS UG score"
                       type="text"
                       value={collegeData.ielts_ug_score}
-                      onChange={(e) =>
-                        handleChange('ielts_ug_score', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('ielts_ug_score', error)
-                      }
+                      onChange={e => handleChange('ielts_ug_score', e.target.value)}
+                      setError={error => handleFieldError('ielts_ug_score', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('ielts_ug_score');
                       }}
@@ -686,15 +600,11 @@ export const EditColleges = () => {
                       placeholder="IELTS UG score Link"
                       type="url"
                       value={collegeData.ielts_ug_score_link}
-                      onChange={(e) =>
-                        handleChange('ielts_ug_score_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('ielts_ug_score_link', error)
-                      }
+                      onChange={e => handleChange('ielts_ug_score_link', e.target.value)}
+                      setError={error => handleFieldError('ielts_ug_score_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('ielts_ug_score_link');
                       }}
@@ -713,15 +623,11 @@ export const EditColleges = () => {
                       placeholder="IELTS graduation score"
                       type="text"
                       value={collegeData.ielts_graduation_score}
-                      onChange={(e) =>
-                        handleChange('ielts_graduation_score', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('ielts_graduation_score', error)
-                      }
+                      onChange={e => handleChange('ielts_graduation_score', e.target.value)}
+                      setError={error => handleFieldError('ielts_graduation_score', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('ielts_graduation_score');
                       }}
@@ -740,18 +646,11 @@ export const EditColleges = () => {
                       placeholder="IELTS graduation score link"
                       type="url"
                       value={collegeData.ielts_graduation_score_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'ielts_graduation_score_link',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('ielts_graduation_score_link', error)
-                      }
+                      onChange={e => handleChange('ielts_graduation_score_link', e.target.value)}
+                      setError={error => handleFieldError('ielts_graduation_score_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('ielts_graduation_score_link');
                       }}
@@ -772,15 +671,11 @@ export const EditColleges = () => {
                       label="Fall Deadline UG"
                       type="date"
                       value={collegeData.fall_deadline_UG}
-                      onChange={(e) =>
-                        handleChange('fall_deadline_UG', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('fall_deadline_UG', error)
-                      }
+                      onChange={e => handleChange('fall_deadline_UG', e.target.value)}
+                      setError={error => handleFieldError('fall_deadline_UG', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('fall_deadline_UG');
                       }}
@@ -798,15 +693,11 @@ export const EditColleges = () => {
                       label="Fall Deadline UG Link"
                       type="url"
                       value={collegeData.fall_deadline_UG_link}
-                      onChange={(e) =>
-                        handleChange('fall_deadline_UG_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('fall_deadline_UG_link', error)
-                      }
+                      onChange={e => handleChange('fall_deadline_UG_link', e.target.value)}
+                      setError={error => handleFieldError('fall_deadline_UG_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('fall_deadline_UG_link');
                       }}
@@ -824,15 +715,11 @@ export const EditColleges = () => {
                       label="Fall Deadline Graduation"
                       type="date"
                       value={collegeData.fall_deadline_graduation}
-                      onChange={(e) =>
-                        handleChange('fall_deadline_graduation', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('fall_deadline_graduation', error)
-                      }
+                      onChange={e => handleChange('fall_deadline_graduation', e.target.value)}
+                      setError={error => handleFieldError('fall_deadline_graduation', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('fall_deadline_graduation');
                       }}
@@ -850,18 +737,11 @@ export const EditColleges = () => {
                       label="Fall Deadline Graduation Link"
                       type="url"
                       value={collegeData.fall_deadline_graduation_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'fall_deadline_graduation_link',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('fall_deadline_graduation_link', error)
-                      }
+                      onChange={e => handleChange('fall_deadline_graduation_link', e.target.value)}
+                      setError={error => handleFieldError('fall_deadline_graduation_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('fall_deadline_graduation_link');
                       }}
@@ -879,15 +759,11 @@ export const EditColleges = () => {
                       label="Spring Deadline UG"
                       type="date"
                       value={collegeData.spring_deadline_UG}
-                      onChange={(e) =>
-                        handleChange('spring_deadline_UG', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('spring_deadline_UG', error)
-                      }
+                      onChange={e => handleChange('spring_deadline_UG', e.target.value)}
+                      setError={error => handleFieldError('spring_deadline_UG', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('spring_deadline_UG');
                       }}
@@ -905,15 +781,11 @@ export const EditColleges = () => {
                       label="Spring Deadline UG Link"
                       type="url"
                       value={collegeData.spring_deadline_UG_link}
-                      onChange={(e) =>
-                        handleChange('spring_deadline_UG_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('spring_deadline_UG_link', error)
-                      }
+                      onChange={e => handleChange('spring_deadline_UG_link', e.target.value)}
+                      setError={error => handleFieldError('spring_deadline_UG_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('spring_deadline_UG_link');
                       }}
@@ -931,18 +803,11 @@ export const EditColleges = () => {
                       label="Spring Deadline Graduation"
                       type="date"
                       value={collegeData.spring_deadline_graduation}
-                      onChange={(e) =>
-                        handleChange(
-                          'spring_deadline_graduation',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('spring_deadline_graduation', error)
-                      }
+                      onChange={e => handleChange('spring_deadline_graduation', e.target.value)}
+                      setError={error => handleFieldError('spring_deadline_graduation', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('spring_deadline_graduation');
                       }}
@@ -960,21 +825,13 @@ export const EditColleges = () => {
                       label="Spring Deadline Graduation Link"
                       type="url"
                       value={collegeData.spring_deadline_graduation_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'spring_deadline_graduation_link',
-                          e.target.value,
-                        )
+                      onChange={e =>
+                        handleChange('spring_deadline_graduation_link', e.target.value)
                       }
-                      setError={(error) =>
-                        handleFieldError(
-                          'spring_deadline_graduation_link',
-                          error,
-                        )
-                      }
+                      setError={error => handleFieldError('spring_deadline_graduation_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('spring_deadline_graduation_link');
                       }}
@@ -996,15 +853,11 @@ export const EditColleges = () => {
                       placeholder="College Email"
                       type="email"
                       value={collegeData.college_email}
-                      onChange={(e) =>
-                        handleChange('college_email', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('college_email', error)
-                      }
+                      onChange={e => handleChange('college_email', e.target.value)}
+                      setError={error => handleFieldError('college_email', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('college_email');
                       }}
@@ -1023,15 +876,11 @@ export const EditColleges = () => {
                       placeholder="College Email Link"
                       type="url"
                       value={collegeData.college_email_link}
-                      onChange={(e) =>
-                        handleChange('college_email_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('college_email_link', error)
-                      }
+                      onChange={e => handleChange('college_email_link', e.target.value)}
+                      setError={error => handleFieldError('college_email_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('college_email_link');
                       }}
@@ -1050,15 +899,11 @@ export const EditColleges = () => {
                       placeholder="College phone"
                       type="tel"
                       value={collegeData.college_phone}
-                      onChange={(e) =>
-                        handleChange('college_phone', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('college_phone', error)
-                      }
+                      onChange={e => handleChange('college_phone', e.target.value)}
+                      setError={error => handleFieldError('college_phone', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('college_phone');
                       }}
@@ -1077,15 +922,11 @@ export const EditColleges = () => {
                       placeholder="College phone link"
                       type="url"
                       value={collegeData.college_phone_link}
-                      onChange={(e) =>
-                        handleChange('college_phone_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('college_phone_link', error)
-                      }
+                      onChange={e => handleChange('college_phone_link', e.target.value)}
+                      setError={error => handleFieldError('college_phone_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('college_phone_link');
                       }}
@@ -1104,18 +945,11 @@ export const EditColleges = () => {
                       placeholder="International Person Email"
                       type="email"
                       value={collegeData.international_person_email}
-                      onChange={(e) =>
-                        handleChange(
-                          'international_person_email',
-                          e.target.value,
-                        )
-                      }
-                      setError={(error) =>
-                        handleFieldError('international_person_email', error)
-                      }
+                      onChange={e => handleChange('international_person_email', e.target.value)}
+                      setError={error => handleFieldError('international_person_email', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('international_person_email');
                       }}
@@ -1134,21 +968,13 @@ export const EditColleges = () => {
                       placeholder="International Person Email Link"
                       type="url"
                       value={collegeData.international_person_email_link}
-                      onChange={(e) =>
-                        handleChange(
-                          'international_person_email_link',
-                          e.target.value,
-                        )
+                      onChange={e =>
+                        handleChange('international_person_email_link', e.target.value)
                       }
-                      setError={(error) =>
-                        handleFieldError(
-                          'international_person_email_link',
-                          error,
-                        )
-                      }
+                      setError={error => handleFieldError('international_person_email_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('international_person_email_link');
                       }}
@@ -1167,15 +993,11 @@ export const EditColleges = () => {
                       placeholder="Public/Private"
                       type="text"
                       value={collegeData.public_private}
-                      onChange={(e) =>
-                        handleChange('public_private', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('public_private', error)
-                      }
+                      onChange={e => handleChange('public_private', e.target.value)}
+                      setError={error => handleFieldError('public_private', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('public_private');
                       }}
@@ -1197,15 +1019,11 @@ export const EditColleges = () => {
                       placeholder="UG courses"
                       type="text"
                       value={collegeData.UG_courses}
-                      onChange={(e) =>
-                        handleChange('UG_courses', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('UG_courses', error)
-                      }
+                      onChange={e => handleChange('UG_courses', e.target.value)}
+                      setError={error => handleFieldError('UG_courses', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('UG_courses');
                       }}
@@ -1224,15 +1042,11 @@ export const EditColleges = () => {
                       placeholder="UG courses link"
                       type="url"
                       value={collegeData.UG_courses_link}
-                      onChange={(e) =>
-                        handleChange('UG_courses_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('UG_courses_link', error)
-                      }
+                      onChange={e => handleChange('UG_courses_link', e.target.value)}
+                      setError={error => handleFieldError('UG_courses_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('UG_courses_link');
                       }}
@@ -1251,15 +1065,11 @@ export const EditColleges = () => {
                       placeholder="Graduation courses"
                       type="text"
                       value={collegeData.graduation_courses}
-                      onChange={(e) =>
-                        handleChange('graduation_courses', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('graduation_courses', error)
-                      }
+                      onChange={e => handleChange('graduation_courses', e.target.value)}
+                      setError={error => handleFieldError('graduation_courses', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('graduation_courses');
                       }}
@@ -1278,15 +1088,11 @@ export const EditColleges = () => {
                       placeholder="Graduation courses link"
                       type="url"
                       value={collegeData.graduation_courses_link}
-                      onChange={(e) =>
-                        handleChange('graduation_courses_link', e.target.value)
-                      }
-                      setError={(error) =>
-                        handleFieldError('graduation_courses_link', error)
-                      }
+                      onChange={e => handleChange('graduation_courses_link', e.target.value)}
+                      setError={error => handleFieldError('graduation_courses_link', error)}
                     />
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.preventDefault();
                         setEditField('graduation_courses_link');
                       }}

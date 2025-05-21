@@ -39,18 +39,10 @@ export const Modal = ({ isModalOpen, setIsModalOpen }) => {
             </h1>
             <div className="modal-body">Are sure you want to submit?</div>
             <div className="d-flex justify-content-between">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={closeModal}
-              >
+              <button type="button" className="btn btn-secondary" onClick={closeModal}>
                 Close
               </button>
-              <Link
-                to="/test"
-                className="btn btn-warning"
-                onClick={() => setIsModalOpen(false)}
-              >
+              <Link to="/test" className="btn btn-warning" onClick={() => setIsModalOpen(false)}>
                 Submit
               </Link>
             </div>

@@ -5,7 +5,7 @@ export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const callApi = async (formData) => {
+  const callApi = async formData => {
     setLoading(true);
     setError(null);
     try {

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-export const fetchData = async (url) => {
+export const fetchData = async url => {
   const response = await axios.get(`${API_BASE_URL}${url}`);
   return response.data;
 };
@@ -17,7 +17,7 @@ export const updateData = async (url, updatedData) => {
   return response.data;
 };
 
-export const deleteData = async (url) => {
+export const deleteData = async url => {
   await axios.delete(`${API_BASE_URL}${url}`);
   return url;
 };

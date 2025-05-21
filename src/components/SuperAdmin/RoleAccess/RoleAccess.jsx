@@ -24,13 +24,9 @@ const RoleAccess = () => {
   });
   const [showModal, setShowModal] = useState(false);
 
-  const {
-    data: roles = [],
-    isLoading,
-    error,
-  } = useFetchData('roles', `/roles/all/`);
+  const { data: roles = [], isLoading, error } = useFetchData('roles', `/roles/all/`);
 
-  const handleEditRole = (role) => {
+  const handleEditRole = role => {
     setEditingRole({
       id: role.id,
       name_of_role: role.name_of_role,
@@ -64,31 +60,22 @@ const RoleAccess = () => {
             message: 'Role added successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Error adding role:', error);
           setToast({
             show: true,
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
-      },
+      }
     );
   };
 
-  const { mutate: updateRole } = useUpdateData(
-    'roles',
-    `/roles/update/${editingRole?.id}/`,
-  );
+  const { mutate: updateRole } = useUpdateData('roles', `/roles/update/${editingRole?.id}/`);
 
   const handleUpdateRole = (id, roleName, accessRole) => {
     updateRole(
@@ -105,24 +92,18 @@ const RoleAccess = () => {
             message: 'Role updated successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Error updating role:', error);
           setToast({
             show: true,
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
-      },
+      }
     );
   };
 
@@ -132,10 +113,7 @@ const RoleAccess = () => {
     }
   }, [deleteRoleId]);
 
-  const { mutate: deleteRole } = useDeleteData(
-    'roles',
-    `/roles/delete/${deleteRoleId}/`,
-  );
+  const { mutate: deleteRole } = useDeleteData('roles', `/roles/delete/${deleteRoleId}/`);
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this role?')) {
@@ -149,12 +127,9 @@ const RoleAccess = () => {
             message: 'Role deleted successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Error deleting role:', error);
           setDeletingRoleId(null); // Reset deleting role ID on error
           setToast({
@@ -162,16 +137,13 @@ const RoleAccess = () => {
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
       });
     }
   };
 
-  const handleDeleteRole = (roleid) => {
+  const handleDeleteRole = roleid => {
     setDeleteRoleId(roleid);
   };
 
@@ -195,8 +167,7 @@ const RoleAccess = () => {
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
-        An error occurred:{' '}
-        {error.message || 'Failed to fetch data. Please try again later.'}
+        An error occurred: {error.message || 'Failed to fetch data. Please try again later.'}
       </div>
     );
   }
@@ -206,11 +177,7 @@ const RoleAccess = () => {
     return (
       <div className="container">
         <h1 className="my-4">Role Access</h1>
-        <Button
-          setShowModal={setShowModal}
-          setEditingRole={setEditingRole}
-          buttonText="Add Role"
-        />
+        <Button setShowModal={setShowModal} setEditingRole={setEditingRole} buttonText="Add Role" />
         <div className="alert alert-info" role="alert">
           No records to display.
         </div>
@@ -226,9 +193,7 @@ const RoleAccess = () => {
           show={toast.show}
           message={toast.message}
           color={toast.color}
-          onClose={() =>
-            setToast({ show: false, message: '', color: undefined })
-          }
+          onClose={() => setToast({ show: false, message: '', color: undefined })}
         />
       </div>
     );
@@ -237,11 +202,7 @@ const RoleAccess = () => {
   return (
     <div className="container">
       <h1 className="my-4">Role Access</h1>
-      <Button
-        setShowModal={setShowModal}
-        setEditingRole={setEditingRole}
-        buttonText="Add Role"
-      />
+      <Button setShowModal={setShowModal} setEditingRole={setEditingRole} buttonText="Add Role" />
       <AddRoleModal
         show={showModal}
         handleClose={handleCloseModal}
