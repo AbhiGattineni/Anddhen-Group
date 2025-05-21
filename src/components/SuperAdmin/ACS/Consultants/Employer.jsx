@@ -40,23 +40,19 @@ const Employer = () => {
   const rowsPerPage = 15;
   const queryClient = useQueryClient();
 
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useFetchData('employer', '/employers/');
+  const { data = [], isLoading, error } = useFetchData('employer', '/employers/');
 
-  const handleSearch = (e) => setSearch(e.target.value);
+  const handleSearch = e => setSearch(e.target.value);
 
-  const handleEditId = (id) => {
-    const row = data.find((row) => row.id === id);
+  const handleEditId = id => {
+    const row = data.find(row => row.id === id);
     setEditValues({ name: row.name, address: row.address });
     setEditRowId(id);
   };
 
   const { mutate: updateEmployer, isLoading: isUpdating } = useUpdateData(
     'employer',
-    `/employers/${editRowId}/`,
+    `/employers/${editRowId}/`
   );
 
   const handleSave = () => {
@@ -68,29 +64,23 @@ const Employer = () => {
           message: 'Employer updated successfully!',
           color: '#82DD55',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         setEditRowId(null);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('An error occurred:', error);
         setToast({
           show: true,
           message: 'Something went wrong!',
           color: '#E23636',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
       },
     });
   };
 
   const handleInputChange = (e, field) => {
-    setEditValues((prev) => ({ ...prev, [field]: e.target.value }));
+    setEditValues(prev => ({ ...prev, [field]: e.target.value }));
   };
 
   const { mutate: addEmployer } = useAddData('employer', '/employers/');
@@ -104,32 +94,26 @@ const Employer = () => {
           message: 'Employer added successfully!',
           color: '#82DD55',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('An error occurred:', error);
         setToast({
           show: true,
           message: 'Something went wrong!',
           color: '#E23636',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
       },
     });
   };
 
   const { mutate: deleteEmployer, isLoading: isDeleting } = useDeleteData(
     'employer',
-    `/employers/${selectedId}/`,
+    `/employers/${selectedId}/`
   );
 
-  const handleDelete = (id) => {
+  const handleDelete = id => {
     setSelectedId(id); // Set the selectedId first
   };
 
@@ -143,23 +127,17 @@ const Employer = () => {
             message: 'Employer deleted successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           setSelectedId(null); // Reset selectedId after successful deletion
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
           setToast({
             show: true,
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           setSelectedId(null); // Reset selectedId after error
         },
       });
@@ -167,15 +145,12 @@ const Employer = () => {
   }, [selectedId, deleteEmployer, queryClient]);
 
   const filteredData = data.filter(
-    (row) =>
+    row =>
       row.name.toLowerCase().includes(search.toLowerCase()) ||
-      row.address.toLowerCase().includes(search.toLowerCase()),
+      row.address.toLowerCase().includes(search.toLowerCase())
   );
 
-  const paginatedData = filteredData.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage,
-  );
+  const paginatedData = filteredData.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   const handlePageChange = (event, value) => setPage(value);
 
@@ -214,13 +189,11 @@ const Employer = () => {
           </TableHead>
           <TableBody>
             <TableRow>
-              {['name', 'address'].map((field) => (
+              {['name', 'address'].map(field => (
                 <TableCell key={field}>
                   <TextField
                     value={newRow[field]}
-                    onChange={(e) =>
-                      setNewRow({ ...newRow, [field]: e.target.value })
-                    }
+                    onChange={e => setNewRow({ ...newRow, [field]: e.target.value })}
                     fullWidth
                   />
                 </TableCell>
@@ -247,8 +220,7 @@ const Employer = () => {
                 <TableCell colSpan={3} align="center">
                   <Typography color="error">
                     An error occurred:{' '}
-                    {error.message ||
-                      'Failed to fetch data. Please try again later.'}
+                    {error.message || 'Failed to fetch data. Please try again later.'}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -259,14 +231,14 @@ const Employer = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedData.map((row) => (
+              paginatedData.map(row => (
                 <TableRow key={row.id}>
-                  {['name', 'address'].map((field) => (
+                  {['name', 'address'].map(field => (
                     <TableCell key={field}>
                       {editRowId === row.id ? (
                         <TextField
                           value={editValues[field]}
-                          onChange={(e) => handleInputChange(e, field)}
+                          onChange={e => handleInputChange(e, field)}
                           fullWidth
                         />
                       ) : (
@@ -280,17 +252,11 @@ const Employer = () => {
                         {isUpdating ? <CircularProgress size={24} /> : <Save />}
                       </IconButton>
                     ) : (
-                      <IconButton
-                        onClick={() => handleEditId(row.id)}
-                        color="primary"
-                      >
+                      <IconButton onClick={() => handleEditId(row.id)} color="primary">
                         <Edit />
                       </IconButton>
                     )}
-                    <IconButton
-                      onClick={() => handleDelete(row.id)}
-                      color="secondary"
-                    >
+                    <IconButton onClick={() => handleDelete(row.id)} color="secondary">
                       {isDeleting && selectedId === row.id ? (
                         <CircularProgress size={24} />
                       ) : (

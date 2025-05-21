@@ -51,11 +51,7 @@ const useUnifiedAuth = () => {
   const handleAuth = async (authPromise, first_name, last_name) => {
     try {
       const usersData = await authPromise;
-      const userData = await postUserData(
-        usersData.user,
-        first_name,
-        last_name,
-      );
+      const userData = await postUserData(usersData.user, first_name, last_name);
       if (userData.empty_fields.length > 0) {
         localStorage.setItem('empty_fields', userData.empty_fields);
         navigate('/profile');
@@ -77,17 +73,8 @@ const useUnifiedAuth = () => {
   const onGitHubSignIn = () => handleAuth(signInWithGitHub());
   const onEmailPasswordSignIn = (email, password) =>
     handleAuth(signInWithEmailPassword(email, password));
-  const onEmailPasswordUserCreation = (
-    email,
-    password,
-    first_name,
-    last_name,
-  ) =>
-    handleAuth(
-      createUserWithEmailPassword(email, password),
-      first_name,
-      last_name,
-    );
+  const onEmailPasswordUserCreation = (email, password, first_name, last_name) =>
+    handleAuth(createUserWithEmailPassword(email, password), first_name, last_name);
 
   return {
     onGoogleSignIn,

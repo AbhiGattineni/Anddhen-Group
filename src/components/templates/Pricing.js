@@ -10,7 +10,7 @@ export const Pricing = () => {
         <div className="underline mx-auto"></div>
       </div>
       <div className="row gap-lg-0 gap-4 mt-3 align-items-center">
-        {priceData.map((data) => (
+        {priceData.map(data => (
           <div key={data.id} className="col-12 col-lg-4 p-2">
             <PriceCard data={data} />
           </div>

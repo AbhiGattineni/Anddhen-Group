@@ -33,17 +33,17 @@ export const PartTimerRegistrationForm = () => {
       return !!value;
     });
     // Check for field errors
-    const hasErrors = Object.values(fieldErrors).some((error) => error);
+    const hasErrors = Object.values(fieldErrors).some(error => error);
     // Update disableButton state
     setDisableButton(!allFieldsFilled || hasErrors);
   }, [formData, fieldErrors]);
 
   const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
@@ -62,7 +62,7 @@ export const PartTimerRegistrationForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       sendEmail('parttimer', {
@@ -99,8 +99,8 @@ export const PartTimerRegistrationForm = () => {
             placeholder="Year of Study"
             type="text"
             value={formData.studyYear}
-            onChange={(e) => handleChange('studyYear', e.target.value)}
-            setError={(error) => handleFieldError('studyYear', error)}
+            onChange={e => handleChange('studyYear', e.target.value)}
+            setError={error => handleFieldError('studyYear', error)}
           />
           <InputField
             name="course_name"
@@ -108,8 +108,8 @@ export const PartTimerRegistrationForm = () => {
             placeholder="Course Name"
             type="text"
             value={formData.course_name}
-            onChange={(e) => handleChange('course_name', e.target.value)}
-            setError={(error) => handleFieldError('course_name', error)}
+            onChange={e => handleChange('course_name', e.target.value)}
+            setError={error => handleFieldError('course_name', error)}
           />
         </>
       );
@@ -131,8 +131,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="First Name"
           type="text"
           value={formData.first_name}
-          onChange={(e) => handleChange('first_name', e.target.value)}
-          setError={(error) => handleFieldError('first_name', error)}
+          onChange={e => handleChange('first_name', e.target.value)}
+          setError={error => handleFieldError('first_name', error)}
         />
 
         <InputField
@@ -141,8 +141,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Last Name"
           type="text"
           value={formData.last_name}
-          onChange={(e) => handleChange('last_name', e.target.value)}
-          setError={(error) => handleFieldError('last_name', error)}
+          onChange={e => handleChange('last_name', e.target.value)}
+          setError={error => handleFieldError('last_name', error)}
         />
 
         <InputField
@@ -151,8 +151,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Email"
           type="email"
           value={formData.email}
-          onChange={(e) => handleChange('email', e.target.value)}
-          setError={(error) => handleFieldError('email', error)}
+          onChange={e => handleChange('email', e.target.value)}
+          setError={error => handleFieldError('email', error)}
         />
 
         <InputField
@@ -161,8 +161,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Phone Number"
           type="tel"
           value={formData.phone}
-          onChange={(e) => handleChange('phone', e.target.value)}
-          setError={(error) => handleFieldError('phone', error)}
+          onChange={e => handleChange('phone', e.target.value)}
+          setError={error => handleFieldError('phone', error)}
         />
 
         <InputField
@@ -171,8 +171,8 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Current Occupation"
           type="text"
           value={formData.current_occupation}
-          onChange={(e) => handleChange('current_occupation', e.target.value)}
-          setError={(error) => handleFieldError('current_occupation', error)}
+          onChange={e => handleChange('current_occupation', e.target.value)}
+          setError={error => handleFieldError('current_occupation', error)}
         />
 
         {renderOccupationSpecificFields()}
@@ -183,25 +183,17 @@ export const PartTimerRegistrationForm = () => {
           placeholder="Referrer Name"
           type="text"
           value={formData.reference}
-          onChange={(e) => handleChange('reference', e.target.value)}
-          setError={(error) => handleFieldError('reference', error)}
+          onChange={e => handleChange('reference', e.target.value)}
+          setError={error => handleFieldError('reference', error)}
         />
 
         <div className="form-group py-3 w-100 d-flex justify-content-center">
-          <button
-            type="submit"
-            className="btn btn-warning shadow px-5"
-            disabled={disableButton}
-          >
+          <button type="submit" className="btn btn-warning shadow px-5" disabled={disableButton}>
             {loading ? 'loading...' : 'Submit'}
           </button>
         </div>
       </form>
-      <Toast
-        show={showToast}
-        message={toastMsg}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

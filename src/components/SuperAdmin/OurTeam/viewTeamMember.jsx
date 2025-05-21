@@ -25,11 +25,7 @@ import { useQueryClient } from 'react-query';
 
 const Cards = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const {
-    data: teamData = [],
-    isLoading,
-    error,
-  } = useFetchData('teamMembers', '/team_members/');
+  const { data: teamData = [], isLoading, error } = useFetchData('teamMembers', '/team_members/');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSubsidiary, setFilterSubsidiary] = useState('');
@@ -41,7 +37,7 @@ const Cards = () => {
 
   const { mutate: deleteCollege } = useDeleteData(
     'teamMembers',
-    `/team_members/delete/${deleteId}/`,
+    `/team_members/delete/${deleteId}/`
   );
 
   const handleDeleteTeam = () => {
@@ -51,7 +47,7 @@ const Cards = () => {
         setDeleteId(null);
         setOpenDialog(false);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('An error occurred:', error);
       },
     });
@@ -82,13 +78,9 @@ const Cards = () => {
     setDeleteId(null);
   }
 
-  const filteredTeamData = teamData.filter((detail) => {
-    const matchesSearchTerm = detail.name
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesSubsidiary = filterSubsidiary
-      ? detail.subsidiary === filterSubsidiary
-      : true;
+  const filteredTeamData = teamData.filter(detail => {
+    const matchesSearchTerm = detail.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSubsidiary = filterSubsidiary ? detail.subsidiary === filterSubsidiary : true;
     return matchesSearchTerm && matchesSubsidiary;
   });
 
@@ -97,19 +89,14 @@ const Cards = () => {
       <div className="container">
         <div className="row mb-4">
           <div className="col-md-12 mx-auto">
-            <Grid
-              container
-              spacing={2}
-              alignItems="center"
-              justifyContent="flex-start"
-            >
+            <Grid container spacing={2} alignItems="center" justifyContent="flex-start">
               <Grid item>
                 <TextField
                   fullWidth
                   label="Search by Name"
                   variant="outlined"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   margin="normal"
                   sx={{
                     borderRadius: '20px',
@@ -129,7 +116,7 @@ const Cards = () => {
                   label="Subsidiary"
                   variant="outlined"
                   value={filterSubsidiary}
-                  onChange={(e) => setFilterSubsidiary(e.target.value)}
+                  onChange={e => setFilterSubsidiary(e.target.value)}
                   margin="normal"
                   sx={{
                     borderRadius: '20px',
@@ -140,13 +127,11 @@ const Cards = () => {
                   <MenuItem value="">
                     <em>All</em>
                   </MenuItem>
-                  {['acs', 'ass', 'ans', 'ams', 'ats', 'ati', 'aps'].map(
-                    (option) => (
-                      <MenuItem key={option} value={option}>
-                        {option.toUpperCase()}
-                      </MenuItem>
-                    ),
-                  )}
+                  {['acs', 'ass', 'ans', 'ams', 'ats', 'ati', 'aps'].map(option => (
+                    <MenuItem key={option} value={option}>
+                      {option.toUpperCase()}
+                    </MenuItem>
+                  ))}
                 </TextField>
               </Grid>
             </Grid>
@@ -161,18 +146,15 @@ const Cards = () => {
           ) : error ? (
             <Box p={3} textAlign="center" width="100%">
               <Typography color="error">
-                Network Error: Unable to load team members. Please check your
-                internet connection.
+                Network Error: Unable to load team members. Please check your internet connection.
               </Typography>
             </Box>
           ) : filteredTeamData.length === 0 ? (
             <Box p={3} textAlign="center" width="100%">
-              <Typography variant="body1">
-                No team members found matching your criteria.
-              </Typography>
+              <Typography variant="body1">No team members found matching your criteria.</Typography>
             </Box>
           ) : (
-            filteredTeamData.map((detail) => (
+            filteredTeamData.map(detail => (
               <div className="col-lg-3 col-md-4 col-sm-6 mb-5" key={detail.id}>
                 <div
                   className="card shadow mt-2 p-1 border border-1 cursor-pointer"
@@ -183,7 +165,7 @@ const Cards = () => {
                       aria-label="edit"
                       size="small"
                       color="primary"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleEdit(detail);
                       }}
@@ -194,7 +176,7 @@ const Cards = () => {
                       aria-label="delete"
                       size="small"
                       color="error"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleOpenDeleteDialog(detail.id);
                       }}
@@ -203,10 +185,7 @@ const Cards = () => {
                     </IconButton>
                   </div>
                   <div className="image">
-                    <img
-                      src={`${API_BASE_URL}${detail.image}`}
-                      alt={detail.name}
-                    />
+                    <img src={`${API_BASE_URL}${detail.image}`} alt={detail.name} />
                   </div>
                   <div className="card-body text-center p-1">
                     <h5>{detail.name}</h5>
@@ -233,18 +212,13 @@ const Cards = () => {
         </div>
 
         <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-          <EditTeamMember
-            member={editedMember}
-            onClose={handleCloseEditDialog}
-          />
+          <EditTeamMember member={editedMember} onClose={handleCloseEditDialog} />
         </Dialog>
 
         <Dialog open={openDialog} onClose={handleCloseDialog}>
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete this profile?
-            </DialogContentText>
+            <DialogContentText>Are you sure you want to delete this profile?</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} color="primary">

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import SparkleIcon from '@mui/icons-material/AutoAwesome';
 import { fetchAi } from '../AISuggestions';
 
-const Skills = (props) => {
+const Skills = props => {
   const [loading, setLoading] = useState(false);
   const handleGenerate = async () => {
     const { formData, setFormData } = props;
@@ -15,7 +15,7 @@ const Skills = (props) => {
     try {
       const categorizationResponse = await fetchAi(
         `Categorize the following skills into relevant groups such as Languages, Frameworks, Tools, Databases, etc(related category). Provide the response in JSON format without additional explanation:
-        ${JSON.stringify(formData.skills)}`,
+        ${JSON.stringify(formData.skills)}`
       );
       // const categorizationResponse = JSON.stringify({
       //   Languages: ['JavaScript', 'TypeScript', 'Python', 'Java'],
@@ -23,7 +23,7 @@ const Skills = (props) => {
       //   Tools: ['Git', 'Docker', 'Webpack', 'ESLint'],
       //   Databases: ['MySQL', 'MongoDB', 'PostgreSQL'],
       // });
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         categorialSkills: JSON.parse(categorizationResponse),
       }));
@@ -39,15 +39,11 @@ const Skills = (props) => {
         label="Add Skill"
         fullWidth
         value={props.skillInput}
-        onChange={(e) => props.setSkillInput(e.target.value)}
+        onChange={e => props.setSkillInput(e.target.value)}
         margin="normal"
       />
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          onClick={props.handleAddSkill}
-          variant="contained"
-          sx={{ mt: 1 }}
-        >
+        <Button onClick={props.handleAddSkill} variant="contained" sx={{ mt: 1 }}>
           Add Skill
         </Button>
         <Button

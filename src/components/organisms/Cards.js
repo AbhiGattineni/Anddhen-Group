@@ -7,12 +7,8 @@ import { teamImages } from 'src/dataconfig';
 
 const Cards = () => {
   // const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const teamData = useAuthStore((state) => state.teamAllDetails);
-  const {
-    data: teamDetail = [],
-    isLoading,
-    error,
-  } = useFetchData('teamMembers', '/team_members/');
+  const teamData = useAuthStore(state => state.teamAllDetails);
+  const { data: teamDetail = [], isLoading, error } = useFetchData('teamMembers', '/team_members/');
 
   // Use effect to set the fetched data to the store if `teamData` is not already populated
   useEffect(() => {
@@ -48,12 +44,9 @@ const Cards = () => {
           </div>
           <div className="border rounded row">
             {(teamData || teamDetail)
-              .filter((detail) => detail.subsidiary === 'ass') // Filter by subsidiary
+              .filter(detail => detail.subsidiary === 'ass') // Filter by subsidiary
               .map((detail, i) => (
-                <div
-                  className="col-lg-3 col-md-4 col-sm-6 mb-5"
-                  key={detail.id}
-                >
+                <div className="col-lg-3 col-md-4 col-sm-6 mb-5" key={detail.id}>
                   <div
                     className="card shadow mt-2 p-1 border border-1 cursor-pointer"
                     onClick={() => handleClick(detail)}

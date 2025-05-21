@@ -13,7 +13,7 @@ const Subsidiaries = () => {
             <h3 className="main-heading">Our Subsidiaries</h3>
             <div className="underline mx-auto"></div>
           </div>
-          {subsidiaries.map((subsidiary) => (
+          {subsidiaries.map(subsidiary => (
             <div className="col-md-4 mb-3" key={subsidiary.Name}>
               <div className="card">
                 <LazyLoadImage
@@ -22,10 +22,7 @@ const Subsidiaries = () => {
                   className="w-100 border-bottom"
                   alt="subsidiary"
                   style={{
-                    height:
-                      window.innerWidth < 768 && window.innerWidth >= 576
-                        ? '150px'
-                        : '200px', // Set height for tablets and larger screens
+                    height: window.innerWidth < 768 && window.innerWidth >= 576 ? '150px' : '200px', // Set height for tablets and larger screens
                     objectFit: 'cover',
                   }}
                 />
@@ -43,10 +40,7 @@ const Subsidiaries = () => {
                       height: '1.8em', // Fixes height for 2 lines (2 * line-height)
                     }}
                   >
-                    <Link
-                      to={subsidiary.link}
-                      className="text-black text-decoration-none"
-                    >
+                    <Link to={subsidiary.link} className="text-black text-decoration-none">
                       {subsidiary.Name}
                     </Link>
                   </h6>

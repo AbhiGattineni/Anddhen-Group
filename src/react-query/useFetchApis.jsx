@@ -9,7 +9,7 @@ export const useFetchData = (key, url) => {
 
 export const useAddData = (key, url) => {
   const queryClient = useQueryClient();
-  const mutation = useMutation((newData) => addData(url, newData), {
+  const mutation = useMutation(newData => addData(url, newData), {
     onSuccess: () => {
       queryClient.invalidateQueries([key, url]);
     },
@@ -22,7 +22,7 @@ export const useAddData = (key, url) => {
 
 export const useUpdateData = (key, url) => {
   const queryClient = useQueryClient();
-  const mutation = useMutation((updatedData) => updateData(url, updatedData), {
+  const mutation = useMutation(updatedData => updateData(url, updatedData), {
     onSuccess: () => {
       queryClient.invalidateQueries([key, url]);
     },

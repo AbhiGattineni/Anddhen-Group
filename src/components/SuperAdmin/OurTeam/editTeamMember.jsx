@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import MenuItem from '@mui/material/MenuItem';
-import {
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Snackbar,
-  Alert,
-} from '@mui/material';
+import { DialogContent, DialogActions, Button, TextField, Snackbar, Alert } from '@mui/material';
 import { useUpdateData } from 'src/react-query/useFetchApis';
 import { useQueryClient } from 'react-query';
 
@@ -40,14 +33,14 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
 
   const { mutate: updateTeamMember, isLoading } = useUpdateData(
     'teamMembers',
-    `/team_members/update/${member?.id}/`,
+    `/team_members/update/${member?.id}/`
   );
 
   const handleSnackbarClose = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const file = e.target.files[0];
     if (file) {
       setFormData({ ...formData, image: file });
@@ -59,11 +52,11 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       const updatedData = new FormData();
-      Object.keys(formData).forEach((key) => {
+      Object.keys(formData).forEach(key => {
         updatedData.append(key, formData[key]);
       });
 
@@ -76,10 +69,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
             message: 'Team member updated successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           setSnackbar({
             open: true,
             message: 'Form updated successfully!',
@@ -87,17 +77,14 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
           });
           onClose();
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
           setToast({
             show: true,
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           setSnackbar({
             open: true,
             message: 'Update failed!',
@@ -112,10 +99,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
         message: `Update failed: ${error.message}`,
         color: '#E23636',
       });
-      setTimeout(
-        () => setToast({ show: false, message: '', color: undefined }),
-        3000,
-      );
+      setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
       setSnackbar({
         open: true,
         message: `Update failed: ${error.message}`,
@@ -124,7 +108,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -195,13 +179,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
           }}
         >
           Upload Image (Optional)
-          <input
-            type="file"
-            hidden
-            accept="image/*"
-            name="image"
-            onChange={handleImageChange}
-          />
+          <input type="file" hidden accept="image/*" name="image" onChange={handleImageChange} />
         </Button>
         <TextField
           label="Facebook Link"
@@ -237,7 +215,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
           value={formData.subsidiary}
           onChange={handleChange}
         >
-          {['acs', 'ass', 'ans', 'ams', 'ats', 'ati', 'aps'].map((option) => (
+          {['acs', 'ass', 'ans', 'ams', 'ats', 'ati', 'aps'].map(option => (
             <MenuItem key={option} value={option}>
               {option.toUpperCase()}
             </MenuItem>
@@ -248,12 +226,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
         <Button onClick={onClose} color="secondary">
           Cancel
         </Button>
-        <Button
-          onClick={handleSubmit}
-          color="primary"
-          variant="contained"
-          disabled={isLoading}
-        >
+        <Button onClick={handleSubmit} color="primary" variant="contained" disabled={isLoading}>
           {isLoading ? 'Saving...' : 'Save Changes'}
         </Button>
       </DialogActions>
@@ -263,11 +236,7 @@ const EditTeamMember = ({ member, onClose, setToast, resetForm }) => {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>

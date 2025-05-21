@@ -7,8 +7,8 @@ const NotAuthorizedPage = () => {
       <div className="text-center">
         <h1 className="display-1 fw-bold">403</h1>
         <p className="fs-3">
-          <span className="text-danger">Access Denied</span> You do not have
-          permission to view this page.
+          <span className="text-danger">Access Denied</span> You do not have permission to view this
+          page.
         </p>
         <Link to="/" className="btn btn-primary">
           Go Home

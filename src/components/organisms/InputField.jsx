@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 const InputField = ({ value, ...props }) => {
   const [error, setError] = useState(null);
   const emailPattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-  const phonePattern =
-    /^[+]?[(]?[0-9]{3}[)]?[-\s.?]?[0-9]{3}[-\s.?]?[0-9]{4,6}$/im;
+  const phonePattern = /^[+]?[(]?[0-9]{3}[)]?[-\s.?]?[0-9]{3}[-\s.?]?[0-9]{4,6}$/im;
   const linkRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
   const scoreRegex = /^\d{1,3}(?:\.\d*)?$/;
   const ref = useRef(null);
@@ -121,9 +120,7 @@ const InputField = ({ value, ...props }) => {
     }
 
     if (
-      ['email', 'international_person_email', 'college_email'].includes(
-        props.name,
-      ) &&
+      ['email', 'international_person_email', 'college_email'].includes(props.name) &&
       !emailPattern.test(value)
     ) {
       return 'Enter a valid email address';
@@ -163,12 +160,7 @@ const InputField = ({ value, ...props }) => {
       return 'Score should not be greater that 3 digits';
     }
 
-    if (
-      ['application_UG_fee', 'application_graduation_fee'].includes(
-        props.name,
-      ) &&
-      !value
-    ) {
+    if (['application_UG_fee', 'application_graduation_fee'].includes(props.name) && !value) {
       return 'Fee should be valid';
     }
 
@@ -176,10 +168,7 @@ const InputField = ({ value, ...props }) => {
       return 'Date cannot be in the future';
     }
 
-    if (
-      ['transaction_datetime'].includes(props.name) &&
-      new Date(value) > new Date()
-    ) {
+    if (['transaction_datetime'].includes(props.name) && new Date(value) > new Date()) {
       return 'DateTime cannot be in the future';
     }
 

@@ -45,7 +45,7 @@ function Contact() {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
@@ -73,10 +73,10 @@ function Contact() {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [id]: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, [id]: '' }));
+    setFormData(prevData => ({ ...prevData, [id]: value }));
+    setErrors(prevErrors => ({ ...prevErrors, [id]: '' }));
   };
 
   return (
@@ -111,9 +111,7 @@ function Contact() {
                     value={formData.fullName}
                     onChange={handleChange}
                   />
-                  {errors.fullName && (
-                    <div className="invalid-feedback">{errors.fullName}</div>
-                  )}
+                  {errors.fullName && <div className="invalid-feedback">{errors.fullName}</div>}
                 </div>
                 <div className="form-group">
                   <label className="mb-1">Phone Number</label>
@@ -125,9 +123,7 @@ function Contact() {
                     value={formData.phone}
                     onChange={handleChange}
                   />
-                  {errors.phone && (
-                    <div className="invalid-feedback">{errors.phone}</div>
-                  )}
+                  {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
                 </div>
                 <div className="form-group">
                   <label className="mb-1">Email Address</label>
@@ -139,9 +135,7 @@ function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                   />
-                  {errors.email && (
-                    <div className="invalid-feedback">{errors.email}</div>
-                  )}
+                  {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                 </div>
                 <div className="form-group">
                   <label className="mb-1">Message</label>
@@ -153,22 +147,15 @@ function Contact() {
                     value={formData.message}
                     onChange={handleChange}
                   ></textarea>
-                  {errors.message && (
-                    <div className="invalid-feedback">{errors.message}</div>
-                  )}
+                  {errors.message && <div className="invalid-feedback">{errors.message}</div>}
                 </div>
                 <div className="form-group py-3">
-                  <button
-                    type="submit"
-                    className="btn btn-warning shadow w-100"
-                  >
+                  <button type="submit" className="btn btn-warning shadow w-100">
                     Send Message
                   </button>
                 </div>
               </form>
-              {toastMsg && (
-                <div className="alert alert-info mt-3">{toastMsg}</div>
-              )}
+              {toastMsg && <div className="alert alert-info mt-3">{toastMsg}</div>}
             </div>
           </div>
         </div>

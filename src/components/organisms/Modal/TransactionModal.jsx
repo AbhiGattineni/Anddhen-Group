@@ -69,42 +69,42 @@ export const TransactionModal = ({
   };
 
   const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
   };
 
   const { mutate: createTransaction, isLoading } = useMutation(
-    (formData) =>
+    formData =>
       fetch(`${API_BASE_URL}/transactions/create/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-      }).then((res) => res.json()),
+      }).then(res => res.json()),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('transactions');
         toggleModal();
       },
-      onError: (error) => {
+      onError: error => {
         console.error('An error occurred:', error);
       },
-    },
+    }
   );
 
   const { mutate: updateCollege, isLoading: isUpdating } = useUpdateData(
     'transactions',
-    `/transactions/${editTransaction?.id}/update/`,
+    `/transactions/${editTransaction?.id}/update/`
   );
 
-  const handleEdit = async (e) => {
+  const handleEdit = async e => {
     e.preventDefault();
     try {
       const submitData = { ...editTransaction, ...formData };
@@ -123,7 +123,7 @@ export const TransactionModal = ({
           queryClient.invalidateQueries('transactions');
           toggleModal();
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
         },
       });
@@ -132,7 +132,7 @@ export const TransactionModal = ({
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     let upload_data = {
       accountant_id: auth.currentUser.uid,
@@ -165,10 +165,8 @@ export const TransactionModal = ({
 
   useEffect(() => {
     if (formData || fieldErrors) {
-      const allFieldsFilled = Object.values(formData).every(
-        (value) => value !== '',
-      );
-      const hasErrors = Object.values(fieldErrors).some((error) => error);
+      const allFieldsFilled = Object.values(formData).every(value => value !== '');
+      const hasErrors = Object.values(fieldErrors).some(error => error);
       setDisableButton(!allFieldsFilled || hasErrors);
     }
   }, [formData, fieldErrors]);
@@ -197,7 +195,7 @@ export const TransactionModal = ({
   useEffect(() => {
     if (!showModal) return;
 
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       // 1) Click inside the modal? → ignore
       if (event.target.closest('.modal-content')) return;
 
@@ -236,16 +234,9 @@ export const TransactionModal = ({
           <h1 className="modal-title fs-6" id="exampleModalLabel">
             {editTransaction ? 'Edit' : 'Add'} Transaction
           </h1>
-          <button
-            type="button"
-            className="btn-close"
-            onClick={toggleModal}
-          ></button>
+          <button type="button" className="btn-close" onClick={toggleModal}></button>
         </div>
-        <div
-          className="modal-body row px-3 py-2"
-          style={{ overflowY: 'auto', maxHeight: '80vh' }}
-        >
+        <div className="modal-body row px-3 py-2" style={{ overflowY: 'auto', maxHeight: '80vh' }}>
           <form className="w-100">
             <div className="row">
               <InputField
@@ -255,8 +246,8 @@ export const TransactionModal = ({
                 placeholder="Receiver Name"
                 type="text"
                 value={formData.receiver_name}
-                onChange={(e) => handleChange('receiver_name', e.target.value)}
-                setError={(error) => handleFieldError('receiver_name', error)}
+                onChange={e => handleChange('receiver_name', e.target.value)}
+                setError={error => handleFieldError('receiver_name', error)}
               />
               <InputField
                 className="col-12 col-md-6 mb-3"
@@ -265,8 +256,8 @@ export const TransactionModal = ({
                 placeholder="Sender Name"
                 type="text"
                 value={formData.sender_name}
-                onChange={(e) => handleChange('sender_name', e.target.value)}
-                setError={(error) => handleFieldError('sender_name', error)}
+                onChange={e => handleChange('sender_name', e.target.value)}
+                setError={error => handleFieldError('sender_name', error)}
               />
               {/* <InputField
                 className="col-12 col-md-6 mb-3"
@@ -300,8 +291,8 @@ export const TransactionModal = ({
                 placeholder="Amount"
                 type="number"
                 value={formData.amount}
-                onChange={(e) => handleChange('amount', e.target.value)}
-                setError={(error) => handleFieldError('amount', error)}
+                onChange={e => handleChange('amount', e.target.value)}
+                setError={error => handleFieldError('amount', error)}
               />
               <InputField
                 className="col-12 col-md-6 mb-3"
@@ -310,12 +301,8 @@ export const TransactionModal = ({
                 placeholder="Transaction Date & Time"
                 type="datetime-local"
                 value={formData.transaction_datetime}
-                onChange={(e) =>
-                  handleChange('transaction_datetime', e.target.value)
-                }
-                setError={(error) =>
-                  handleFieldError('transaction_datetime', error)
-                }
+                onChange={e => handleChange('transaction_datetime', e.target.value)}
+                setError={error => handleFieldError('transaction_datetime', error)}
               />
             </div>
             <div className="row">
@@ -332,9 +319,7 @@ export const TransactionModal = ({
                   name="transaction_type"
                   className="form-select"
                   value={formData.transaction_type}
-                  onChange={(e) =>
-                    handleChange('transaction_type', e.target.value)
-                  }
+                  onChange={e => handleChange('transaction_type', e.target.value)}
                 >
                   <option value="">Select</option>
                   <option value="credit">Credit</option>
@@ -354,7 +339,7 @@ export const TransactionModal = ({
                   name="payment_type"
                   className="form-select"
                   value={formData.payment_type}
-                  onChange={(e) => handleChange('payment_type', e.target.value)}
+                  onChange={e => handleChange('payment_type', e.target.value)}
                 >
                   <option value="">Select</option>
                   <option value="cash">Cash</option>
@@ -377,7 +362,7 @@ export const TransactionModal = ({
                   name="subsidiary"
                   className="form-select"
                   value={formData.subsidiary}
-                  onChange={(e) => handleChange('subsidiary', e.target.value)}
+                  onChange={e => handleChange('subsidiary', e.target.value)}
                 >
                   <option value="">Select</option>
                   <option value="AMS">AMS</option>
@@ -400,7 +385,7 @@ export const TransactionModal = ({
                   name="currency"
                   className="form-select"
                   value={formData.currency}
-                  onChange={(e) => handleChange('currency', e.target.value)}
+                  onChange={e => handleChange('currency', e.target.value)}
                 >
                   <option value="">Select</option>
                   <option value="INR">INR</option>
@@ -414,8 +399,8 @@ export const TransactionModal = ({
                 placeholder="Description"
                 type="text"
                 value={formData.description}
-                onChange={(e) => handleChange('description', e.target.value)}
-                setError={(error) => handleFieldError('description', error)}
+                onChange={e => handleChange('description', e.target.value)}
+                setError={error => handleFieldError('description', error)}
               />
             </div>
             <div className="form-group py-3 w-100 d-flex justify-content-center">

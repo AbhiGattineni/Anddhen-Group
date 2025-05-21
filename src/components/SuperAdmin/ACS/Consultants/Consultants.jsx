@@ -8,7 +8,7 @@ import Recruiter from './Recruiter';
 const Consultants = () => {
   const [activeView, setActiveView] = useState('add');
 
-  const getNavLinkClass = (path) => {
+  const getNavLinkClass = path => {
     return activeView === path ? 'nav-link active' : 'nav-link';
   };
 

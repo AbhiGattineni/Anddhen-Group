@@ -33,7 +33,7 @@ const MapFlow = ({ tripData }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const handleOpen = (activity) => {
+  const handleOpen = activity => {
     setSelectedActivity(activity);
     setOpen(true);
   };
@@ -43,7 +43,7 @@ const MapFlow = ({ tripData }) => {
     setSelectedActivity(null);
   };
 
-  const allActivities = tripData?.days.flatMap((day) => day.activities);
+  const allActivities = tripData?.days.flatMap(day => day.activities);
 
   return (
     <Container
@@ -88,18 +88,10 @@ const MapFlow = ({ tripData }) => {
                 <Typography variant="h6" fontWeight="bold">
                   {item.activity}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 1 }}
-                >
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   📍Location : {item.location}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 1 }}
-                >
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   ⌚Time : {item.time}
                 </Typography>
               </CardContent>
@@ -113,11 +105,7 @@ const MapFlow = ({ tripData }) => {
                 preserveAspectRatio="none"
               >
                 <path
-                  d={
-                    index % 2 === 0
-                      ? 'M0,0 C0,100,100,0,98,100'
-                      : 'M98,0 C100,100,0,0,0,100'
-                  }
+                  d={index % 2 === 0 ? 'M0,0 C0,100,100,0,98,100' : 'M98,0 C100,100,0,0,0,100'}
                   stroke="#FF5733"
                   strokeWidth="3"
                   fill="transparent"
@@ -161,8 +149,7 @@ const MapFlow = ({ tripData }) => {
             {/* HEADER WITH BRIGHT COLOR */}
             <Box
               sx={{
-                background:
-                  'linear-gradient(135deg,rgb(42, 60, 78),rgb(76, 106, 133))',
+                background: 'linear-gradient(135deg,rgb(42, 60, 78),rgb(76, 106, 133))',
                 color: 'white',
                 borderTopLeftRadius: 6,
                 borderTopRightRadius: 6,
@@ -184,73 +171,56 @@ const MapFlow = ({ tripData }) => {
             <Box sx={{ padding: '20px' }}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <LocationOnIcon
-                    sx={{ color: '#007bff', fontSize: 28, marginRight: 1 }}
-                  />
+                  <LocationOnIcon sx={{ color: '#007bff', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body1">
                     <strong>Location:</strong> {selectedActivity?.location}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <AccessTimeIcon
-                    sx={{ color: '#00c853', fontSize: 28, marginRight: 1 }}
-                  />
+                  <AccessTimeIcon sx={{ color: '#00c853', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body1">
                     <strong>Time:</strong> {selectedActivity?.time}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <DescriptionIcon
-                    sx={{ color: '#ff1744', fontSize: 28, marginRight: 1 }}
-                  />
+                  <DescriptionIcon sx={{ color: '#ff1744', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body2">
-                    <strong>Description:</strong>{' '}
-                    {selectedActivity?.description}
+                    <strong>Description:</strong> {selectedActivity?.description}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <AttachMoneyIcon
-                    sx={{ color: '#2e7d32', fontSize: 28, marginRight: 1 }}
-                  />
+                  <AttachMoneyIcon sx={{ color: '#2e7d32', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body2">
                     <strong>Entry Fee:</strong> {selectedActivity?.entry_fee}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <DirectionsCarIcon
-                    sx={{ color: '#ff9100', fontSize: 28, marginRight: 1 }}
-                  />
+                  <DirectionsCarIcon sx={{ color: '#ff9100', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body2">
                     <strong>Transport:</strong> {selectedActivity?.transport}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <TimerIcon
-                    sx={{ color: '#651fff', fontSize: 28, marginRight: 1 }}
-                  />
+                  <TimerIcon sx={{ color: '#651fff', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body2">
                     <strong>Duration:</strong> {selectedActivity?.duration}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <LocalParkingIcon
-                    sx={{ color: '#ffea00', fontSize: 28, marginRight: 1 }}
-                  />
+                  <LocalParkingIcon sx={{ color: '#ffea00', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body2">
                     <strong>Parking:</strong> {selectedActivity?.parking}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} display="flex" alignItems="center">
-                  <SavingsIcon
-                    sx={{ color: '#009688', fontSize: 28, marginRight: 1 }}
-                  />
+                  <SavingsIcon sx={{ color: '#009688', fontSize: 28, marginRight: 1 }} />
                   <Typography variant="body2">
                     <strong>Budget-Friendly Alternative:</strong>{' '}
                     {selectedActivity?.budget_friendly_alternative}
@@ -280,9 +250,9 @@ MapFlow.propTypes = {
             duration: PropTypes.string,
             parking: PropTypes.string,
             budget_friendly_alternative: PropTypes.string,
-          }),
+          })
         ).isRequired,
-      }),
+      })
     ).isRequired,
   }).isRequired,
 };

@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  CircularProgress,
-} from '@mui/material';
+import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
 import { useAddData } from 'src/react-query/useFetchApis'; // Import the useAddData hook
 
 const AddDevice = ({ onClose }) => {
@@ -22,15 +16,15 @@ const AddDevice = ({ onClose }) => {
 
   const { isLoading, error, mutate } = useAddData('devices', '/devices/add/');
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setDeviceData((prevData) => ({
+    setDeviceData(prevData => ({
       ...prevData,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     mutate(deviceData, {
       onSuccess: () => {
@@ -88,7 +82,7 @@ const AddDevice = ({ onClose }) => {
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
       {/* Map over the fields array to render TextField components */}
-      {fields.map((field) => (
+      {fields.map(field => (
         <TextField
           key={field.name}
           fullWidth
@@ -110,12 +104,7 @@ const AddDevice = ({ onClose }) => {
       )}
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={isLoading}
-        >
+        <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
           {isLoading ? <CircularProgress size={24} /> : 'Add Device'}
         </Button>
       </Box>

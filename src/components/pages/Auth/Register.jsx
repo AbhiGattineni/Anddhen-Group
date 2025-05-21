@@ -15,7 +15,7 @@ export const Register = () => {
     confirmpassword: '',
   });
   // const [loading, setLoading] = useState(false);
-  const loading = useAuthStore((state) => state.loading);
+  const loading = useAuthStore(state => state.loading);
   const [showPassword1, setShowPassword1] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -27,20 +27,15 @@ export const Register = () => {
   const { errorCode, title, message } = useErrorHandling(error);
 
   const handleChange = (field, value) => {
-    setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
+    setFormData(prevFormData => ({ ...prevFormData, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
+    setFieldErrors(prevErrors => ({ ...prevErrors, [fieldName]: error }));
   };
 
   const isFormValid = () => {
-    const requiredFields = (({
-      first_name,
-      email,
-      password,
-      confirmpassword,
-    }) => ({
+    const requiredFields = (({ first_name, email, password, confirmpassword }) => ({
       first_name,
       email,
       password,
@@ -63,26 +58,21 @@ export const Register = () => {
 
   // Wrapper functions for sign-up methods
   const handleEmailPasswordSignUp = (email, password, first_name, last_name) =>
-    handleSignUp(() =>
-      onEmailPasswordUserCreation(email, password, first_name, last_name),
-    );
+    handleSignUp(() => onEmailPasswordUserCreation(email, password, first_name, last_name));
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!isFormValid()) return;
     handleEmailPasswordSignUp(
       formData.email,
       formData.password,
       formData.first_name,
-      formData.last_name,
+      formData.last_name
     );
   };
   return (
     <div className="bg-light min-vh-100 d-flex justify-content-center align-items-center user-select-none">
-      <div
-        className="bg-white rounded shadow p-4"
-        style={{ maxWidth: '800px', width: '100%' }}
-      >
+      <div className="bg-white rounded shadow p-4" style={{ maxWidth: '800px', width: '100%' }}>
         <div className="row g-0">
           <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center">
             <img
@@ -134,8 +124,8 @@ export const Register = () => {
                   placeholder="First Name"
                   type="text"
                   value={formData.first_name}
-                  onChange={(e) => handleChange('first_name', e.target.value)}
-                  setError={(error) => handleFieldError('first_name', error)}
+                  onChange={e => handleChange('first_name', e.target.value)}
+                  setError={error => handleFieldError('first_name', error)}
                 />
                 <InputField
                   name="last_name"
@@ -143,8 +133,8 @@ export const Register = () => {
                   placeholder="Last Name"
                   type="text"
                   value={formData.last_name}
-                  onChange={(e) => handleChange('last_name', e.target.value)}
-                  setError={(error) => handleFieldError('last_name', error)}
+                  onChange={e => handleChange('last_name', e.target.value)}
+                  setError={error => handleFieldError('last_name', error)}
                   notRequired={true}
                 />
                 <InputField
@@ -153,8 +143,8 @@ export const Register = () => {
                   placeholder="Enter valid email address"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  setError={(error) => handleFieldError('email', error)}
+                  onChange={e => handleChange('email', e.target.value)}
+                  setError={error => handleFieldError('email', error)}
                 />
                 <div className="position-relative">
                   <InputField
@@ -163,9 +153,9 @@ export const Register = () => {
                     placeholder="Enter password"
                     type={showPassword1 ? 'text' : 'password'}
                     value={formData.password}
-                    onChange={(e) => handleChange('password', e.target.value)}
+                    onChange={e => handleChange('password', e.target.value)}
                     onFocus={() => setFocus(true)}
-                    setError={(error) => handleFieldError('password', error)}
+                    setError={error => handleFieldError('password', error)}
                   />
                   {focus && formData.password.length ? (
                     <i
@@ -184,13 +174,9 @@ export const Register = () => {
                     placeholder="Enter password"
                     type={showPassword2 ? 'text' : 'password'}
                     value={formData.confirmpassword}
-                    onChange={(e) =>
-                      handleChange('confirmpassword', e.target.value)
-                    }
+                    onChange={e => handleChange('confirmpassword', e.target.value)}
                     onFocus={() => setFocus(true)}
-                    setError={(error) =>
-                      handleFieldError('confirmpassword', error)
-                    }
+                    setError={error => handleFieldError('confirmpassword', error)}
                     data={formData.password}
                   />
                   {focus && formData.confirmpassword.length ? (
@@ -215,10 +201,7 @@ export const Register = () => {
               </form>
               <div className="d-flex justify-content-center align-items-center gap-2 mt-3">
                 <div>Already have an account?</div>
-                <Link
-                  to="/login"
-                  className="text-primary fw-bold text-decoration-none"
-                >
+                <Link to="/login" className="text-primary fw-bold text-decoration-none">
                   Login
                 </Link>
               </div>

@@ -8,14 +8,7 @@ import useAuthStore from 'src/services/store/globalStore';
 import AssignCards from './AssignCards';
 import { adminPlates } from 'src/dataconfig';
 import HappinessIndex from './HappinessIndex';
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from '@mui/material';
+import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 
 const subsidaryOptions = ['ACS', 'ASS', 'ATI', 'ANS', 'AMS'];
 
@@ -68,24 +61,18 @@ export const EmployeeDashboard = () => {
   const [userSubsidaries, setUserSubsidaries] = useState([]);
 
   const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid); // Use statusUpdates directly
-  const selectedAcsStatusDate = useAuthStore(
-    (state) => state.selectedAcsStatusDate,
-  );
+  const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
   const formattedData = statusUpdates
-    ? statusUpdates?.status_updates?.map((item) => [item.date, item.leave])
+    ? statusUpdates?.status_updates?.map(item => [item.date, item.leave])
     : [];
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole?.split(',');
-  const filteredPlates = current_roles?.some(
-    (role) => role.trim() === 'superadmin',
-  )
+  const filteredPlates = current_roles?.some(role => role.trim() === 'superadmin')
     ? adminPlates
-    : adminPlates.filter((plate) =>
-        current_roles?.some((role) => role.trim() === plate.route.trim()),
-      );
+    : adminPlates.filter(plate => current_roles?.some(role => role.trim() === plate.route.trim()));
   const [openHappinessDialog, setOpenHappinessDialog] = useState(
-    !statusUpdates?.has_submitted_happiness_today,
+    !statusUpdates?.has_submitted_happiness_today
   );
 
   useEffect(() => {
@@ -100,19 +87,18 @@ export const EmployeeDashboard = () => {
     }
   }, []);
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     const query = e.target.value.toLowerCase();
     setSearch(query);
     setSearchedPlates(
       filteredPlates.filter(
-        (plate) =>
-          plate.child.toLowerCase().includes(query) ||
-          plate.route.toLowerCase().includes(query),
-      ),
+        plate =>
+          plate.child.toLowerCase().includes(query) || plate.route.toLowerCase().includes(query)
+      )
     );
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = e => {
     e.preventDefault();
     setDisableInputs(false);
   };
@@ -132,7 +118,7 @@ export const EmployeeDashboard = () => {
     }
   }, [auth.currentUser]);
 
-  const formatDate = (date) => {
+  const formatDate = date => {
     const inputDate = new Date(date);
     const year = inputDate.getFullYear();
     const month = String(inputDate.getMonth() + 1).padStart(2, '0');
@@ -188,7 +174,7 @@ export const EmployeeDashboard = () => {
     setMsgResponse(null);
     if (statusUpdates?.status_updates && selectedAcsStatusDate) {
       const filteredStatuses = statusUpdates.status_updates?.filter(
-        (status) => formattedSelectedDate === status.date,
+        status => formattedSelectedDate === status.date
       );
       setUserSubsidaries(filteredStatuses);
       if (!filteredStatuses?.length) {
@@ -198,16 +184,16 @@ export const EmployeeDashboard = () => {
     }
   }, [selectedAcsStatusDate, statusUpdates?.status_updates]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     if (name.includes('.')) {
       const [subsidary, field] = name.split('.');
-      setFormValues((prev) => ({
+      setFormValues(prev => ({
         ...prev,
         [subsidary]: { ...prev[subsidary], [field]: value },
       }));
     } else {
-      setFormValues((prev) => ({ ...prev, [name]: value }));
+      setFormValues(prev => ({ ...prev, [name]: value }));
     }
     if (name === 'leave' && value === true) {
       setDisableInputs(true);
@@ -215,9 +201,7 @@ export const EmployeeDashboard = () => {
       setDisableInputs(false);
     }
     if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
-      const filtered = userSubsidaries?.filter(
-        (sub) => sub.subsidary === value,
-      );
+      const filtered = userSubsidaries?.filter(sub => sub.subsidary === value);
       if (filtered?.length > 0) {
         const currentStatus = restructureObject(filtered[0]);
         setFormValues(currentStatus);
@@ -240,7 +224,7 @@ export const EmployeeDashboard = () => {
         statusUpdates?.status_updates &&
         isSelectedDateCurrent &&
         statusUpdates?.status_updates?.some(
-          (obj) => obj.date === currentDate && obj.subsidary === value,
+          obj => obj.date === currentDate && obj.subsidary === value
         )
       ) {
         setShowEdit(true);
@@ -263,14 +247,14 @@ export const EmployeeDashboard = () => {
       formValues[selectedSubsidary] = { ...fields };
     }
 
-    return Object.keys(fields)?.map((key) => (
+    return Object.keys(fields)?.map(key => (
       <Grid item xs={12} sm={6} key={key}>
         <TextField
           fullWidth
           label={key
             .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before uppercase letters
             .replace(/_/g, ' ') // Replace underscores with spaces
-            .replace(/\b\w/g, (char) => char.toUpperCase())} // Capitalize first letter of each word
+            .replace(/\b\w/g, char => char.toUpperCase())} // Capitalize first letter of each word
           name={`${selectedSubsidary}.${key}`}
           value={formValues[selectedSubsidary]?.[key] || ''}
           onChange={handleChange}
@@ -281,13 +265,9 @@ export const EmployeeDashboard = () => {
     ));
   };
 
-  const flattenObject = (obj) => {
+  const flattenObject = obj => {
     return Object.keys(obj).reduce((acc, key) => {
-      if (
-        typeof obj[key] === 'object' &&
-        obj[key] !== null &&
-        !Array.isArray(obj[key])
-      ) {
+      if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
         return { ...acc, ...obj[key] }; // Spread nested object properties
       }
       acc[key] = obj[key]; // Keep top-level properties
@@ -295,11 +275,11 @@ export const EmployeeDashboard = () => {
     }, {});
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       const requiredFields = ['date', 'subsidary'];
-      const missingField = requiredFields?.find((field) => !formValues[field]);
+      const missingField = requiredFields?.find(field => !formValues[field]);
 
       if (missingField) {
         let missingFieldName = missingField;
@@ -313,9 +293,7 @@ export const EmployeeDashboard = () => {
           default:
             break;
         }
-        setMsgResponse(
-          `Please fill in the required field: ${missingFieldName}`,
-        );
+        setMsgResponse(`Please fill in the required field: ${missingFieldName}`);
         return;
       }
       const postStatus = flattenObject(formValues);
@@ -363,9 +341,7 @@ export const EmployeeDashboard = () => {
           <h2>Status Update Form</h2>
           <div className="row">
             <div className="col-12">
-              {formattedData && (
-                <StatusCalendar data={formattedData} empName={empName} />
-              )}
+              {formattedData && <StatusCalendar data={formattedData} empName={empName} />}
             </div>
           </div>
           {msgResponse && (
@@ -394,7 +370,7 @@ export const EmployeeDashboard = () => {
                   onChange={handleChange}
                   disabled={false}
                 >
-                  {subsidaryOptions?.map((option) => (
+                  {subsidaryOptions?.map(option => (
                     <MenuItem key={option} value={option}>
                       {option}
                     </MenuItem>
@@ -448,11 +424,7 @@ export const EmployeeDashboard = () => {
             </Grid>
           </Grid>
           <div className="col-12 d-flex justify-content-center gap-3 py-2">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              onClick={handleSubmit}
-            >
+            <button type="submit" className="btn btn-primary" onClick={handleSubmit}>
               Submit
             </button>
             {showEdit && (

@@ -22,7 +22,7 @@ export const Profile = () => {
         parsedEmptyFields.reduce((acc, field) => {
           acc[field] = '';
           return acc;
-        }, {}),
+        }, {})
       );
     } else {
       navigate('/login');
@@ -30,24 +30,21 @@ export const Profile = () => {
   }, [navigate]);
 
   const isFormValid = () => {
-    return (
-      Object.values(formData).every(Boolean) &&
-      !Object.values(fieldErrors).some(Boolean)
-    );
+    return Object.values(formData).every(Boolean) && !Object.values(fieldErrors).some(Boolean);
   };
 
   const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -78,10 +75,7 @@ export const Profile = () => {
       ) : (
         <div className="bg-light py-5 d-flex align-items-center user-select-none">
           <div className="container">
-            <div
-              className="card shadow-lg rounded p-4 mx-auto"
-              style={{ maxWidth: '600px' }}
-            >
+            <div className="card shadow-lg rounded p-4 mx-auto" style={{ maxWidth: '600px' }}>
               <div className="text-center mb-4">
                 <h2>Profile</h2>
               </div>
@@ -95,8 +89,8 @@ export const Profile = () => {
                       placeholder={field.replace(/_/g, ' ')}
                       type="text"
                       value={formData[field]}
-                      onChange={(e) => handleChange(field, e.target.value)}
-                      setError={(error) => handleFieldError(field, error)}
+                      onChange={e => handleChange(field, e.target.value)}
+                      setError={error => handleFieldError(field, error)}
                     />
                   ))}
                   <div className="form-group py-3 text-center">

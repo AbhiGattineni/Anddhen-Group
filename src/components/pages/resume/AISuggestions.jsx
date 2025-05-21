@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const fetchAi = async (prompt) => {
+export const fetchAi = async prompt => {
   try {
     const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
@@ -17,21 +17,18 @@ export const fetchAi = async (prompt) => {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
-      },
+      }
     );
 
     const result = response.data.choices[0].message.content
       .trim()
       .split('\n')
-      .map((line) => line.replace(/^-\s*/, ''))
+      .map(line => line.replace(/^-\s*/, ''))
       .join('\n');
 
     return result;
   } catch (error) {
-    console.error(
-      'Error fetching AI response:',
-      error.response?.data || error.message,
-    );
+    console.error('Error fetching AI response:', error.response?.data || error.message);
     return [];
   }
 };

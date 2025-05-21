@@ -51,11 +51,7 @@ const ShoppingPage = () => {
   const [editedProduct, setEditedProduct] = useState(null); // State for the product being edited
   const [products, setProducts] = useState([]);
 
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useFetchData('products', '/products/');
+  const { data = [], isLoading, error } = useFetchData('products', '/products/');
 
   useEffect(() => {
     setProducts(data); // Set the products state to the fetched data
@@ -63,30 +59,25 @@ const ShoppingPage = () => {
 
   const { mutate: deleteProduct } = useDeleteData(
     'products',
-    `/products/delete/${selectedProductId}/`,
+    `/products/delete/${selectedProductId}/`
   );
 
   if (isLoading) return <p>Loading products...</p>;
   if (error) return <p>Error loading products</p>;
 
   const filteredProducts = products
-    .filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
-    .filter((product) => (ageGroup ? product.age_group === ageGroup : true)); // Change agegroup to age_group
+    .filter(product => product.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter(product => (ageGroup ? product.age_group === ageGroup : true)); // Change agegroup to age_group
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct,
-  );
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  const handleDeleteClick = (productId) => {
+  const handleDeleteClick = productId => {
     setSelectedProductId(productId);
     setOpenDialog(true);
   };
@@ -107,7 +98,7 @@ const ShoppingPage = () => {
     });
   };
 
-  const handleEditClick = (product) => {
+  const handleEditClick = product => {
     setEditedProduct(product); // Set the product data to be edited
     setEditDialogOpen(true); // Open the edit dialog
   };
@@ -124,10 +115,7 @@ const ShoppingPage = () => {
   return (
     <section>
       <Container>
-        <Typography
-          variant="h4"
-          sx={{ textAlign: 'center', marginBottom: '0px' }}
-        >
+        <Typography variant="h4" sx={{ textAlign: 'center', marginBottom: '0px' }}>
           NRI Shopping
         </Typography>
 
@@ -145,7 +133,7 @@ const ShoppingPage = () => {
             id="outlined-search"
             label="Search Products"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             type="search"
             sx={{
               flex: 1,
@@ -175,7 +163,7 @@ const ShoppingPage = () => {
             <Select
               labelId="filter-label"
               value={ageGroup}
-              onChange={(e) => setAgeGroup(e.target.value)}
+              onChange={e => setAgeGroup(e.target.value)}
               label="Filter"
               IconComponent={FilterAltIcon}
             >
@@ -244,7 +232,7 @@ const ShoppingPage = () => {
                         }}
                       >
                         <IconButton
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation(); // Prevent triggering onClick of Card
                             handleEditClick(product);
                           }}
@@ -258,7 +246,7 @@ const ShoppingPage = () => {
                         </IconButton>
 
                         <IconButton
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation(); // Prevent triggering onClick of Card
                             handleDeleteClick(product.id);
                           }}
@@ -299,9 +287,7 @@ const ShoppingPage = () => {
         <Dialog open={openDialog} onClose={handleCloseDialog}>
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Are you sure you want to delete this product?
-            </DialogContentText>
+            <DialogContentText>Are you sure you want to delete this product?</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} color="primary">
@@ -321,10 +307,7 @@ const ShoppingPage = () => {
         />
 
         <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-          <EditShopping
-            product={editedProduct}
-            onClose={handleCloseEditDialog}
-          />
+          <EditShopping product={editedProduct} onClose={handleCloseEditDialog} />
         </Dialog>
       </Container>
     </section>

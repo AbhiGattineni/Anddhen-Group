@@ -135,7 +135,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      ...getSharedRoutes().map((route) => ({
+      ...getSharedRoutes().map(route => ({
         ...route,
         element: <ProtectedRoute>{route.element}</ProtectedRoute>,
       })),
@@ -168,9 +168,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/updatesandstatus',
-    element: (
-      <MainLayout>{/* Add your Update and Status component here */}</MainLayout>
-    ),
+    element: <MainLayout>{/* Add your Update and Status component here */}</MainLayout>,
   },
   {
     path: '/test',
@@ -178,9 +176,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/admin_portal',
-    element: (
-      <MainLayout>{/* Add your AdminPortal component here */}</MainLayout>
-    ),
+    element: <MainLayout>{/* Add your AdminPortal component here */}</MainLayout>,
   },
   {
     path: '/quiz',

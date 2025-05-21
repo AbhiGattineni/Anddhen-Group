@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import InputField from '../../organisms/InputField';
 import Toast from '../../organisms/Toast';
-import {
-  fetchSignInMethodsForEmail,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
+import { fetchSignInMethodsForEmail, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from 'src/services/Authentication/firebase';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,11 +14,11 @@ export const ForgotPassword = () => {
   const [toast, setToast] = useState({ show: false, message: '' });
   const navigate = useNavigate();
   const handleChange = (field, value) => {
-    setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
+    setFormData(prevFormData => ({ ...prevFormData, [field]: value }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
+    setFieldErrors(prevErrors => ({ ...prevErrors, [fieldName]: error }));
   };
   const isFormValid = () => {
     return (
@@ -30,17 +27,14 @@ export const ForgotPassword = () => {
       !loading
     );
   };
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!isFormValid()) return;
     setLoading(true);
 
     try {
       // Step 1: Check if the email exists
-      const signInMethods = await fetchSignInMethodsForEmail(
-        auth,
-        formData.email,
-      );
+      const signInMethods = await fetchSignInMethodsForEmail(auth, formData.email);
       if (signInMethods.length === 0) {
         setToast({ show: true, message: 'Email not found' });
         setLoading(false);
@@ -78,8 +72,8 @@ export const ForgotPassword = () => {
                 type="email"
                 className="text-start p-1"
                 value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                setError={(error) => handleFieldError('email', error)}
+                onChange={e => handleChange('email', e.target.value)}
+                setError={error => handleFieldError('email', error)}
               />
               <div className="form-group py-3">
                 <button

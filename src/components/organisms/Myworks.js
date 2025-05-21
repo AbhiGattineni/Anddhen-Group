@@ -4,7 +4,7 @@ import { myworks } from '../../dataconfig'; // Importing your data from the conf
 
 import PropTypes from 'prop-types';
 
-const Myworks = (props) => {
+const Myworks = props => {
   return (
     <div className="container mb-5">
       <p className="fs-5 fw-bold">{props.title}</p>

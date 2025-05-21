@@ -29,7 +29,7 @@ import { useFetchData } from 'src/react-query/useFetchApis';
 const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
   <TextField
     value={globalFilter || ''}
-    onChange={(e) => setGlobalFilter(e.target.value)}
+    onChange={e => setGlobalFilter(e.target.value)}
     label="Search"
     variant="outlined"
     size="small"
@@ -61,11 +61,7 @@ const FilterComponent = ({ filter, handleProgramChange, states }) => {
         onChange={handleProgramChange('selectedProgram')}
       >
         <FormControlLabel value="all" control={<Radio />} label="All" />
-        <FormControlLabel
-          value="ug"
-          control={<Radio />}
-          label="Undergraduate"
-        />
+        <FormControlLabel value="ug" control={<Radio />} label="Undergraduate" />
         <FormControlLabel value="grad" control={<Radio />} label="Graduate" />
       </RadioGroup>
 
@@ -164,7 +160,7 @@ const FilterComponent = ({ filter, handleProgramChange, states }) => {
         <MenuItem value="">
           <em>Select State</em>
         </MenuItem>
-        {states?.map((state) => (
+        {states?.map(state => (
           <MenuItem key={state} value={state}>
             {state}
           </MenuItem>
@@ -217,8 +213,7 @@ function Row({ row, filter }) {
       ...(filter.selectedProgram === 'all' || filter.selectedProgram === 'grad'
         ? {
             'Application Graduation Fee': row.application_graduation_fee,
-            'Application Graduation Fee Link':
-              row.application_graduation_fee_link,
+            'Application Graduation Fee Link': row.application_graduation_fee_link,
           }
         : {}),
     },
@@ -256,8 +251,7 @@ function Row({ row, filter }) {
             'Fall Deadline Graduation': row.fall_deadline_graduation,
             'Fall Deadline Graduation Link': row.fall_deadline_graduation_link,
             'Spring Deadline Graduation': row.spring_deadline_graduation,
-            'Spring Deadline Graduation Link':
-              row.spring_deadline_graduation_link,
+            'Spring Deadline Graduation Link': row.spring_deadline_graduation_link,
           }
         : {}),
     },
@@ -268,8 +262,7 @@ function Row({ row, filter }) {
       'College Phone': row.college_phone,
       'College Phone Link': row.college_phone_link,
       'International Students Affairs Email': row.international_person_email,
-      'International Students Affairs Links':
-        row.international_person_email_link,
+      'International Students Affairs Links': row.international_person_email_link,
       'College Location': row.state,
     },
     'Course Offerings': {
@@ -352,19 +345,12 @@ function Row({ row, filter }) {
                         }}
                       >
                         {Object.entries(details)
-                          .slice(
-                            0,
-                            Math.ceil(Object.entries(details).length / 2),
-                          )
+                          .slice(0, Math.ceil(Object.entries(details).length / 2))
                           .map(([key, value]) => (
                             <li key={key}>
                               <strong>{key}:</strong>{' '}
                               {key.includes('Link') ? (
-                                <a
-                                  href={value}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
+                                <a href={value} target="_blank" rel="noopener noreferrer">
                                   {value}
                                 </a>
                               ) : (
@@ -390,11 +376,7 @@ function Row({ row, filter }) {
                             <li key={key}>
                               <strong>{key}:</strong>{' '}
                               {key.includes('Link') ? (
-                                <a
-                                  href={value}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
+                                <a href={value} target="_blank" rel="noopener noreferrer">
                                   {value}
                                 </a>
                               ) : (
@@ -467,11 +449,7 @@ Row.propTypes = {
   }).isRequired,
 };
 export const ViewCollege = () => {
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useFetchData('colleges', `/colleges/all/`);
+  const { data = [], isLoading, error } = useFetchData('colleges', `/colleges/all/`);
   const [globalFilter, setGlobalFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -494,7 +472,7 @@ export const ViewCollege = () => {
       const seenStates = new Set();
       const orderedUniqueStates = [];
 
-      data.forEach((college) => {
+      data.forEach(college => {
         if (college.state && !seenStates.has(college.state)) {
           seenStates.add(college.state);
           orderedUniqueStates.push(college.state);
@@ -505,8 +483,8 @@ export const ViewCollege = () => {
     }
   }, [data]);
 
-  const handleProgramChange = (key) => (e) => {
-    setEditFilter((prevFilter) => ({ ...prevFilter, [key]: e.target.value }));
+  const handleProgramChange = key => e => {
+    setEditFilter(prevFilter => ({ ...prevFilter, [key]: e.target.value }));
   };
 
   const applyFilters = () => {
@@ -531,52 +509,47 @@ export const ViewCollege = () => {
 
   const filteredData = useMemo(() => {
     return (
-      data?.filter((college) => {
+      data?.filter(college => {
         const matchesCollege = college.college_name
-          ? college.college_name
-              .toLowerCase()
-              .includes(globalFilter.toLowerCase())
+          ? college.college_name.toLowerCase().includes(globalFilter.toLowerCase())
           : false;
 
         const matchesGRE =
-          !filter.greScore ||
-          parseInt(college.gre_score, 10) <= parseInt(filter.greScore, 10);
+          !filter.greScore || parseInt(college.gre_score, 10) <= parseInt(filter.greScore, 10);
 
         const matchesTOEFL =
           !filter.toeflScore ||
           Math.min(
             parseInt(college.toefl_graduation_score, 10) || Infinity,
-            parseInt(college.toefl_UG_score, 10) || Infinity,
+            parseInt(college.toefl_UG_score, 10) || Infinity
           ) <= parseInt(filter.toeflScore, 10);
 
         const matchesIELTS =
           !filter.ieltsScore ||
           Math.min(
             parseInt(college.ielts_graduation_score, 10) || Infinity,
-            parseInt(college.ielts_ug_score, 10) || Infinity,
+            parseInt(college.ielts_ug_score, 10) || Infinity
           ) <= parseInt(filter.ieltsScore, 10);
 
         const matchesCollegeType =
           !filter.collegeType ||
-          college.public_private?.toLowerCase() ===
-            filter.collegeType.toLowerCase();
+          college.public_private?.toLowerCase() === filter.collegeType.toLowerCase();
 
         const matchesState =
           !filter.state ||
-          (college.state &&
-            college.state.toLowerCase() === filter.state.toLowerCase());
+          (college.state && college.state.toLowerCase() === filter.state.toLowerCase());
 
         const minFallDeadline = new Date(
           Math.min(
             new Date(college.fall_deadline_UG || '9999-12-31'),
-            new Date(college.fall_deadline_graduation || '9999-12-31'),
-          ),
+            new Date(college.fall_deadline_graduation || '9999-12-31')
+          )
         );
         const minSpringDeadline = new Date(
           Math.min(
             new Date(college.spring_deadline_UG || '9999-12-31'),
-            new Date(college.spring_deadline_graduation || '9999-12-31'),
-          ),
+            new Date(college.spring_deadline_graduation || '9999-12-31')
+          )
         );
         const selectedFallDeadline = filter.fallDeadline
           ? new Date(filter.fallDeadline)
@@ -586,8 +559,7 @@ export const ViewCollege = () => {
           : new Date('9999-12-31');
 
         const matchesFallDeadline = minFallDeadline <= selectedFallDeadline;
-        const matchesSpringDeadline =
-          minSpringDeadline <= selectedSpringDeadline;
+        const matchesSpringDeadline = minSpringDeadline <= selectedSpringDeadline;
 
         return (
           matchesCollege &&
@@ -604,10 +576,7 @@ export const ViewCollege = () => {
   }, [data, filter, globalFilter]);
 
   const paginatedData = useMemo(() => {
-    return filteredData.slice(
-      page * rowsPerPage,
-      page * rowsPerPage + rowsPerPage,
-    );
+    return filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   }, [filteredData, page, rowsPerPage]);
 
   // Handle network errors
@@ -615,8 +584,7 @@ export const ViewCollege = () => {
     return (
       <Box sx={{ textAlign: 'center', padding: '16px', color: 'error.main' }}>
         <Typography variant="h6">
-          Error:{' '}
-          {error.message || 'Failed to fetch data. Please try again later.'}
+          Error: {error.message || 'Failed to fetch data. Please try again later.'}
         </Typography>
       </Box>
     );
@@ -633,10 +601,7 @@ export const ViewCollege = () => {
 
   return (
     <Box>
-      <GlobalFilter
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
       <FilterComponent
         filter={editFilter}
         handleProgramChange={handleProgramChange}
@@ -661,8 +626,8 @@ export const ViewCollege = () => {
             cursor: 'pointer',
             transition: 'background-color 0.3s',
           }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = '#115293')}
-          onMouseOut={(e) => (e.target.style.backgroundColor = '#1976d2')}
+          onMouseOver={e => (e.target.style.backgroundColor = '#115293')}
+          onMouseOut={e => (e.target.style.backgroundColor = '#1976d2')}
         >
           Apply Filters
         </button>
@@ -677,8 +642,8 @@ export const ViewCollege = () => {
             cursor: 'pointer',
             transition: 'background-color 0.3s',
           }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = '#bdbdbd')}
-          onMouseOut={(e) => (e.target.style.backgroundColor = '#e0e0e0')}
+          onMouseOver={e => (e.target.style.backgroundColor = '#bdbdbd')}
+          onMouseOut={e => (e.target.style.backgroundColor = '#e0e0e0')}
         >
           Reset Filters
         </button>
@@ -692,8 +657,7 @@ export const ViewCollege = () => {
         <TableContainer component={Paper}>
           <Box p={3} textAlign="center">
             <Typography color="error">
-              Network error: Unable to load data. Please check your internet
-              connection.
+              Network error: Unable to load data. Please check your internet connection.
             </Typography>
           </Box>
         </TableContainer>
@@ -707,7 +671,7 @@ export const ViewCollege = () => {
         <TableContainer component={Paper}>
           <Table>
             <TableBody>
-              {paginatedData.map((row) => (
+              {paginatedData.map(row => (
                 <Row key={row.id} row={row} filter={filter} />
               ))}
             </TableBody>
@@ -722,9 +686,7 @@ export const ViewCollege = () => {
           page={page}
           onPageChange={(event, newPage) => setPage(newPage)}
           rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={(event) =>
-            setRowsPerPage(parseInt(event.target.value, 10))
-          }
+          onRowsPerPageChange={event => setRowsPerPage(parseInt(event.target.value, 10))}
         />
       )}
     </Box>

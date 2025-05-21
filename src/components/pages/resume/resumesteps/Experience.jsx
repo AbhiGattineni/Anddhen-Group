@@ -13,7 +13,7 @@ import SparkleIcon from '@mui/icons-material/AutoAwesome';
 import { fetchAi } from '../AISuggestions';
 import { CircularProgress } from '@mui/material';
 
-const Experience = (props) => {
+const Experience = props => {
   const [loading, setLoading] = useState(false);
   const handleGenerate = async () => {
     const { formData, handleChange } = props;
@@ -30,20 +30,17 @@ const Experience = (props) => {
             `Generate an experience description based on the following inputs:
             Skills: ${exp.skills}
             Description: ${exp.description}
-            Use strong verbs and relevant keywords to break down and expand on each point, incorporating the listed skills where appropriate. Format the output with clear paragraphs, ensuring readability and impact.`,
+            Use strong verbs and relevant keywords to break down and expand on each point, incorporating the listed skills where appropriate. Format the output with clear paragraphs, ensuring readability and impact.`
           );
 
           // Update description and call handleChange with the correct index
           const updatedExp = { ...exp, description: response };
 
           // Now call handleChange to update the state
-          handleChange(
-            { target: { name: 'description', value: response } },
-            index,
-          );
+          handleChange({ target: { name: 'description', value: response } }, index);
 
           return updatedExp; // Return the updated experience
-        }),
+        })
       );
 
       // Update the formData after all AI responses
@@ -70,7 +67,7 @@ const Experience = (props) => {
             position: 'relative',
           }}
         >
-          {props.categories[2].fields.map((field) =>
+          {props.categories[2].fields.map(field =>
             field === 'current' ? (
               <FormControlLabel
                 key={field}
@@ -78,7 +75,7 @@ const Experience = (props) => {
                   <Checkbox
                     name={field}
                     checked={exp[field] || false}
-                    onChange={(e) => props.handleChange(e, index)}
+                    onChange={e => props.handleChange(e, index)}
                   />
                 }
                 label="Currently Working"
@@ -90,27 +87,21 @@ const Experience = (props) => {
                   fullWidth
                   margin="normal"
                   value={exp.newSkill || ''}
-                  onChange={(e) =>
+                  onChange={e =>
                     props.handleChange(
                       { target: { name: 'newSkill', value: e.target.value } },
-                      index,
+                      index
                     )
                   }
-                  onKeyDown={(e) => {
+                  onKeyDown={e => {
                     if (e.key === 'Enter' && exp.newSkill?.trim()) {
                       e.preventDefault();
-                      const updatedSkills = [
-                        ...(exp.skills || []),
-                        exp.newSkill.trim(),
-                      ];
+                      const updatedSkills = [...(exp.skills || []), exp.newSkill.trim()];
                       props.handleChange(
                         { target: { name: 'skills', value: updatedSkills } },
-                        index,
+                        index
                       );
-                      props.handleChange(
-                        { target: { name: 'newSkill', value: '' } },
-                        index,
-                      );
+                      props.handleChange({ target: { name: 'newSkill', value: '' } }, index);
                     }
                   }}
                 />
@@ -121,12 +112,10 @@ const Experience = (props) => {
                       key={skillIndex}
                       label={skill}
                       onDelete={() => {
-                        const updatedSkills = exp.skills.filter(
-                          (_, i) => i !== skillIndex,
-                        );
+                        const updatedSkills = exp.skills.filter((_, i) => i !== skillIndex);
                         props.handleChange(
                           { target: { name: 'skills', value: updatedSkills } },
-                          index,
+                          index
                         );
                       }}
                     />
@@ -136,20 +125,18 @@ const Experience = (props) => {
             ) : (
               <TextField
                 key={field}
-                label={field
-                  .replace(/_/g, ' ')
-                  .replace(/\b\w/g, (char) => char.toUpperCase())}
+                label={field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())}
                 name={field}
                 fullWidth
                 margin="normal"
-                onChange={(e) => props.handleChange(e, index)}
+                onChange={e => props.handleChange(e, index)}
                 value={exp[field] ?? ''}
                 required={props.categories[2].required.includes(field)}
                 disabled={field === 'end_Date' && exp.current}
                 multiline={field === 'description'}
                 minRows={field === 'description' ? 3 : undefined}
               />
-            ),
+            )
           )}
 
           {/* Remove experience Entry (Disabled if only 1 entry remains) */}
@@ -223,14 +210,14 @@ Experience.propTypes = {
     experience: PropTypes.arrayOf(
       PropTypes.shape({
         // Define the expected properties inside each experience object
-      }),
+      })
     ),
   }),
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       fields: PropTypes.arrayOf(PropTypes.object),
       required: PropTypes.arrayOf(PropTypes.string),
-    }),
+    })
   ),
   handleChange: PropTypes.func.isRequired,
   removeExperience: PropTypes.func.isRequired,

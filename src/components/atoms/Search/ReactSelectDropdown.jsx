@@ -5,53 +5,47 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const ReactSelectDropdown = ({
-  options,
-  onChange,
-  value,
-  placeholder,
-  variant,
-}) => {
+const ReactSelectDropdown = ({ options, onChange, value, placeholder, variant }) => {
   const customStyles = {
     react: {
-      control: (base) => ({
+      control: base => ({
         ...base,
         minHeight: 55, // Increased height
         height: 55,
       }),
-      indicatorsContainer: (base) => ({
+      indicatorsContainer: base => ({
         ...base,
         height: 55,
       }),
-      valueContainer: (base) => ({
+      valueContainer: base => ({
         ...base,
         height: 55,
         padding: '0 8px',
       }),
-      input: (base) => ({
+      input: base => ({
         ...base,
         margin: 0,
         padding: 0,
       }),
     },
     bootstrap: {
-      control: (base) => ({
+      control: base => ({
         ...base,
         borderRadius: '.25rem',
         border: '1px solid #ced4da',
         minHeight: 55, // Increased height
         fontSize: '1rem',
       }),
-      indicatorsContainer: (base) => ({
+      indicatorsContainer: base => ({
         ...base,
         height: 55,
       }),
-      valueContainer: (base) => ({
+      valueContainer: base => ({
         ...base,
         height: 55,
         padding: '0 8px',
       }),
-      input: (base) => ({
+      input: base => ({
         ...base,
         margin: 0,
         padding: 0,
@@ -64,10 +58,10 @@ const ReactSelectDropdown = ({
       <Autocomplete
         disablePortal
         options={options}
-        getOptionLabel={(option) => option.label || ''}
-        value={options.find((opt) => opt.value === value) || null}
+        getOptionLabel={option => option.label || ''}
+        value={options.find(opt => opt.value === value) || null}
         onChange={(event, newValue) => onChange(newValue?.value || '')}
-        renderInput={(params) => (
+        renderInput={params => (
           <TextField
             {...params}
             label={placeholder}
@@ -85,8 +79,8 @@ const ReactSelectDropdown = ({
     <Select
       styles={customStyles[variant] || {}}
       options={options}
-      onChange={(selected) => onChange(selected?.value)}
-      value={options.find((o) => o.value === value) || null}
+      onChange={selected => onChange(selected?.value)}
+      value={options.find(o => o.value === value) || null}
       placeholder={placeholder}
       isClearable
       isSearchable={true}
@@ -99,7 +93,7 @@ ReactSelectDropdown.propTypes = {
     PropTypes.shape({
       value: PropTypes.any.isRequired,
       label: PropTypes.string.isRequired,
-    }),
+    })
   ).isRequired,
   onChange: PropTypes.func.isRequired,
   value: PropTypes.any,

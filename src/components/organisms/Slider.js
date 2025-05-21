@@ -9,11 +9,7 @@ const ResponsiveImage = ({ src, alt }) => (
 
 function Slider() {
   return (
-    <div
-      id="carouselExampleCaptions"
-      className="carousel slide"
-      data-bs-ride="carousel"
-    >
+    <div id="carouselExampleCaptions" className="carousel slide" data-bs-ride="carousel">
       <div className="carousel-indicators">
         <button
           type="button"
@@ -50,15 +46,9 @@ function Slider() {
       </div>
       <div className="carousel-inner">
         <div className="carousel-item active">
-          <ResponsiveImage
-            src="/assets/images/marketingupdated.jpg"
-            alt="Slide 1"
-          />
+          <ResponsiveImage src="/assets/images/marketingupdated.jpg" alt="Slide 1" />
           <div className="carousel-caption d-none d-md-block ">
-            <h5
-              className="bg-white rounded-pill d-inline-block p-2 "
-              style={{ color: 'tomato' }}
-            >
+            <h5 className="bg-white rounded-pill d-inline-block p-2 " style={{ color: 'tomato' }}>
               Anddhen Marketing Services
             </h5>
           </div>
@@ -67,10 +57,7 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage
-            src="/assets/images/consultingUpdated.jpg"
-            alt="Slide 2"
-          />
+          <ResponsiveImage src="/assets/images/consultingUpdated.jpg" alt="Slide 2" />
           <div className="carousel-caption d-none d-md-block text-danger">
             <h5 className="bg-white rounded-pill d-inline-block p-2">
               Anddhen Consulting Services
@@ -83,10 +70,7 @@ function Slider() {
         <div className="carousel-item">
           <ResponsiveImage src="/assets/images/software.jpg" alt="Slide 3" />
           <div className="carousel-caption d-none d-md-block">
-            <h5
-              className="bg-white rounded-pill d-inline-block p-2"
-              style={{ color: 'tomato' }}
-            >
+            <h5 className="bg-white rounded-pill d-inline-block p-2" style={{ color: 'tomato' }}>
               Anddhen Software Services
             </h5>
           </div>
@@ -106,15 +90,9 @@ function Slider() {
           </div>
         </div>
         <div className="carousel-item">
-          <ResponsiveImage
-            src="/assets/images/tradingupdated.jpg"
-            alt="Slide 5"
-          />
+          <ResponsiveImage src="/assets/images/tradingupdated.jpg" alt="Slide 5" />
           <div className="carousel-caption d-none d-md-block ">
-            <h5
-              className="bg-white rounded-pill d-inline-block p-2  "
-              style={{ color: 'tomato' }}
-            >
+            <h5 className="bg-white rounded-pill d-inline-block p-2  " style={{ color: 'tomato' }}>
               Anddhen Trading & Investment
             </h5>
           </div>

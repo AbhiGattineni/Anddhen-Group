@@ -17,8 +17,7 @@ const errorConfig = {
   'auth/invalid-login-credentials': {
     code: 'ACS502',
     title: 'Invalid Credentials',
-    message:
-      'The email address/password is not valid. Please check and try again.',
+    message: 'The email address/password is not valid. Please check and try again.',
   },
   'auth/email-already-in-use': {
     code: 'ACS503',
@@ -28,12 +27,9 @@ const errorConfig = {
   // Add more error configurations as needed
 };
 
-const useErrorHandling = (error) => {
+const useErrorHandling = error => {
   let errorCode = error?.code || 'ACS999'; // Default error code if not found in config
-  if (
-    errorCode ===
-    'auth/invalid-value-(email),-starting-an-object-on-a-scalar-field'
-  ) {
+  if (errorCode === 'auth/invalid-value-(email),-starting-an-object-on-a-scalar-field') {
     errorCode = 'auth/invalid-value-(email)';
   }
   let config = errorConfig[errorCode] || {

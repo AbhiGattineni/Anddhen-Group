@@ -3,7 +3,7 @@ import useAuthStore from 'src/services/store/globalStore';
 
 export const AssProjectModal = () => {
   const [showModal, setShowModal] = useState(false);
-  const workData = useAuthStore((state) => state.myWorkData);
+  const workData = useAuthStore(state => state.myWorkData);
 
   const toggleModal = useCallback(() => {
     useAuthStore.setState({ myWorkData: null });
@@ -24,7 +24,7 @@ export const AssProjectModal = () => {
   }, [showModal]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (showModal && !event.target.closest('.modal-content')) {
         toggleModal();
       }
@@ -54,11 +54,7 @@ export const AssProjectModal = () => {
             <h1 className="modal-title fs-6" id="exampleModalLabel">
               Project Overview
             </h1>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={toggleModal}
-            ></button>
+            <button type="button" className="btn-close" onClick={toggleModal}></button>
           </div>
           <div
             className="modal-body p-0 h-100 overflow-auto"
@@ -69,9 +65,7 @@ export const AssProjectModal = () => {
               className="modal-background d-flex align-items-end text-white"
               style={{ backgroundImage: `url(${workData.image})` }}
             >
-              <h2 className="fw-bold px-3 px-md-5 fs-4 fs-md-2">
-                {workData.title}
-              </h2>
+              <h2 className="fw-bold px-3 px-md-5 fs-4 fs-md-2">{workData.title}</h2>
             </div>
             <div className="p-4">
               <p className="fw-bold">

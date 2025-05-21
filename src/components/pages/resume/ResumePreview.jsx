@@ -46,9 +46,7 @@ const ResumePreview = ({ formData }) => (
           {formData.personalInfo?.email && (
             <>
               <Text style={{ marginHorizontal: 5 }}>|</Text>
-              <Link src={formData.personalInfo?.email}>
-                {formData.personalInfo?.email}
-              </Link>
+              <Link src={formData.personalInfo?.email}>{formData.personalInfo?.email}</Link>
             </>
           )}
           {formData.personalInfo?.linkedIn_Link && (
@@ -87,9 +85,7 @@ const ResumePreview = ({ formData }) => (
                 }}
               >
                 <Text>
-                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
-                    {educ.college_Name}
-                  </Text>{' '}
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>{educ.college_Name}</Text>{' '}
                   {educ.gpa_Score && <Text>(GPA: {educ.gpa_Score} / 4.0)</Text>}
                 </Text>
                 <Text>{educ.location}</Text>
@@ -132,16 +128,12 @@ const ResumePreview = ({ formData }) => (
               TECHNICAL SKILLS
             </Text>
             {formData.categorialSkills &&
-              Object.entries(formData.categorialSkills).map(
-                ([category, skills], index) => (
-                  <Text key={index} style={{ fontSize: 9 }}>
-                    <Text style={{ fontFamily: 'Helvetica-Bold' }}>
-                      {category}:
-                    </Text>{' '}
-                    {skills.join(', ')}
-                  </Text>
-                ),
-              )}
+              Object.entries(formData.categorialSkills).map(([category, skills], index) => (
+                <Text key={index} style={{ fontSize: 9 }}>
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>{category}:</Text>{' '}
+                  {skills.join(', ')}
+                </Text>
+              ))}
           </View>
         </>
       )}
@@ -174,9 +166,7 @@ const ResumePreview = ({ formData }) => (
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
-                    {exp.company_Name}
-                  </Text>
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>{exp.company_Name}</Text>
                   <Text style={{ fontStyle: 'italic' }}>{exp.location}</Text>
                 </View>
                 <View
@@ -186,9 +176,7 @@ const ResumePreview = ({ formData }) => (
                     fontStyle: 'italic',
                   }}
                 >
-                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
-                    {exp.role}
-                  </Text>
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>{exp.role}</Text>
                   <Text>
                     {exp.start_Date} - {exp.end_Date}
                   </Text>
@@ -236,13 +224,9 @@ const ResumePreview = ({ formData }) => (
                     justifyContent: 'left',
                   }}
                 >
-                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>
-                    {proj.title}
-                  </Text>
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>{proj.title}</Text>
                   <View style={{ width: 5 }} />
-                  {proj?.project_Link && (
-                    <Link src={proj.project_Link}>Link</Link>
-                  )}
+                  {proj?.project_Link && <Link src={proj.project_Link}>Link</Link>}
                 </View>
 
                 {proj.description && (
@@ -291,8 +275,7 @@ const ResumePreview = ({ formData }) => (
                       }}
                     >
                       <Text style={{ fontFamily: 'Helvetica-Bold' }}>
-                        {exp.title}{' '}
-                        {exp?.link && <Link src={exp.link}>Link</Link>}
+                        {exp.title} {exp?.link && <Link src={exp.link}>Link</Link>}
                       </Text>
                       <Text>
                         {exp.start_Date} - {exp.end_Date}
@@ -338,21 +321,21 @@ ResumePreview.propTypes = {
         start_Date: PropTypes.string,
         end_Date: PropTypes.string,
         gpa_Score: PropTypes.string,
-      }),
+      })
     ),
     skills: PropTypes.arrayOf(PropTypes.string),
     categorialSkills: PropTypes.shape({}),
     experience: PropTypes.arrayOf(
       PropTypes.shape({
         // Define the expected properties inside each experience object
-      }),
+      })
     ),
     projects: PropTypes.arrayOf(
       PropTypes.shape({
         projects: PropTypes.string,
         project_Link: PropTypes.string,
         description: PropTypes.string,
-      }),
+      })
     ),
     additional: PropTypes.arrayOf(
       PropTypes.shape({
@@ -363,9 +346,9 @@ ResumePreview.propTypes = {
             start_Date: PropTypes.string,
             end_Date: PropTypes.string,
             description: PropTypes.string,
-          }),
+          })
         ),
-      }),
+      })
     ).isRequired,
   }),
 };

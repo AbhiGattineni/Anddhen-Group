@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Card,
-  Button,
-  Form,
-  Row,
-  Col,
-  Spinner,
-  Alert,
-  Container,
-} from 'react-bootstrap';
+import { Card, Button, Form, Row, Col, Spinner, Alert, Container } from 'react-bootstrap';
 
 export default function HousePricePredictor() {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -35,14 +26,14 @@ export default function HousePricePredictor() {
   const [error, setError] = useState(null);
   const [debug, setDebug] = useState(null);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     // Ensure empty values are converted to 0 instead of empty string
     const numericValue = value === '' ? 0 : parseFloat(value);
-    setForm((prev) => ({ ...prev, [name]: numericValue }));
+    setForm(prev => ({ ...prev, [name]: numericValue }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -52,10 +43,7 @@ export default function HousePricePredictor() {
     try {
       // Create a new object with all values explicitly converted to numbers
       const numericForm = Object.fromEntries(
-        Object.entries(form).map(([key, value]) => [
-          key,
-          parseFloat(value) || 0,
-        ]),
+        Object.entries(form).map(([key, value]) => [key, parseFloat(value) || 0])
       );
 
       // Validate all values are numbers
@@ -72,7 +60,7 @@ export default function HousePricePredictor() {
         Object.entries(numericForm).reduce((acc, [key, value]) => {
           acc[key] = typeof value;
           return acc;
-        }, {}),
+        }, {})
       );
 
       const res = await fetch(`${API_BASE_URL}/api/predict-house-price/`, {
@@ -110,9 +98,7 @@ export default function HousePricePredictor() {
         <Col md={8} lg={6}>
           <Card className="shadow border-0">
             <Card.Body>
-              <Card.Title className="text-center mb-4">
-                House Price Predictor
-              </Card.Title>
+              <Card.Title className="text-center mb-4">House Price Predictor</Card.Title>
               <Form onSubmit={handleSubmit}>
                 <Row>
                   {[
@@ -159,7 +145,7 @@ export default function HousePricePredictor() {
                       min: 0,
                       max: 100,
                     },
-                  ].map((field) => (
+                  ].map(field => (
                     <Col xs={6} className="mb-2" key={field.name}>
                       <Form.Group>
                         <Form.Label>{field.label}</Form.Label>
@@ -197,11 +183,7 @@ export default function HousePricePredictor() {
                 )}
                 <div className="d-flex justify-content-end mt-3">
                   <Button type="submit" variant="primary" disabled={loading}>
-                    {loading ? (
-                      <Spinner size="sm" animation="border" />
-                    ) : (
-                      'Predict'
-                    )}
+                    {loading ? <Spinner size="sm" animation="border" /> : 'Predict'}
                   </Button>
                 </div>
               </Form>

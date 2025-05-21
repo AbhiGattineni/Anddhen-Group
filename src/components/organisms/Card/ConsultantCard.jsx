@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   // Function to render verification badge
-  const renderVerifiedBadge = (verified) => {
+  const renderVerifiedBadge = verified => {
     const badgeStyle = {
       display: 'inline-block',
       fontSize: '75%',
@@ -29,9 +29,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
     );
   };
   const handleDeleteClick = () => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this consultant?',
-    );
+    const confirmed = window.confirm('Are you sure you want to delete this consultant?');
     if (confirmed) {
       onDelete(consultant.id);
     }
@@ -72,11 +70,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
             {renderVerifiedBadge(consultant.experience_in_us_verified)}
             <br />
             <strong>LinkedIn:</strong>{' '}
-            <a
-              href={consultant.linkedin_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={consultant.linkedin_url} target="_blank" rel="noopener noreferrer">
               Profile
             </a>
             {renderVerifiedBadge(consultant.linkedin_url_verified)}
@@ -91,10 +85,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
                     rel="noopener noreferrer"
                   >
                     <i className="bi bi-filetype-pdf"></i>
-                    <p
-                      className="m-0"
-                      style={{ fontSize: '10px', fontWeight: 'bold' }}
-                    >
+                    <p className="m-0" style={{ fontSize: '10px', fontWeight: 'bold' }}>
                       original_resume
                     </p>
                   </a>
@@ -109,10 +100,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
                     rel="noopener noreferrer"
                   >
                     <i className="bi bi-filetype-pdf"></i>
-                    <p
-                      className="m-0"
-                      style={{ fontSize: '10px', fontWeight: 'bold' }}
-                    >
+                    <p className="m-0" style={{ fontSize: '10px', fontWeight: 'bold' }}>
                       consulting_resume
                     </p>
                   </a>
@@ -122,10 +110,7 @@ function ConsultantCard({ consultant, onViewDetails, isDeleting, onDelete }) {
           </p>
         </div>
         <div className="card-footer d-flex flex-wrap justify-content-between align-items-center">
-          <button
-            className="btn btn-primary text-nowrap"
-            onClick={() => onViewDetails(consultant)}
-          >
+          <button className="btn btn-primary text-nowrap" onClick={() => onViewDetails(consultant)}>
             View Details
           </button>
           <div className="fs-7 fst-italic fw-light text-center text-nowrap">

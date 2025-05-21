@@ -21,24 +21,18 @@ export function usePostStatus() {
   const queryClient = useQueryClient();
 
   return useMutation(postStatus, {
-    onMutate: (newStatus) => {
+    onMutate: newStatus => {
       // Optimistically update the data in the cache
-      queryClient.setQueryData(
-        ['calendarData', auth.currentUser.uid],
-        (oldData) => {
-          if (oldData) {
-            return [...oldData, [newStatus.date, newStatus.name]];
-          }
-          return [[newStatus.date, newStatus.name]];
-        },
-      );
+      queryClient.setQueryData(['calendarData', auth.currentUser.uid], oldData => {
+        if (oldData) {
+          return [...oldData, [newStatus.date, newStatus.name]];
+        }
+        return [[newStatus.date, newStatus.name]];
+      });
     },
-    onError: (error) => {
+    onError: error => {
       // Revert the optimistic update on error
-      queryClient.setQueryData(
-        ['calendarData', auth.currentUser.uid],
-        (oldData) => oldData,
-      );
+      queryClient.setQueryData(['calendarData', auth.currentUser.uid], oldData => oldData);
     },
     onSettled: () => {
       // Refetch the calendar data after the mutation is complete

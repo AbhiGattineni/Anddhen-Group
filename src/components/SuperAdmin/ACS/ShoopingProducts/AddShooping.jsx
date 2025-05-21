@@ -28,12 +28,9 @@ const AddShopping = ({ onClose }) => {
   const [imageName, setImageName] = useState('');
 
   // Use the custom React Query mutation hook
-  const { mutate, isLoading, isError, isSuccess } = useAddData(
-    'products',
-    '/products/add/',
-  );
+  const { mutate, isLoading, isError, isSuccess } = useAddData('products', '/products/add/');
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -41,14 +38,14 @@ const AddShopping = ({ onClose }) => {
     });
   };
 
-  const handleAgeGroupChange = (e) => {
+  const handleAgeGroupChange = e => {
     setFormData({
       ...formData,
       age_group: e.target.value,
     });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const file = e.target.files[0];
     setFormData({
       ...formData,
@@ -70,10 +67,10 @@ const AddShopping = ({ onClose }) => {
     setSnackbarOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     const submitData = new FormData();
-    Object.keys(formData).forEach((key) => {
+    Object.keys(formData).forEach(key => {
       if (formData[key] instanceof File) {
         submitData.append(key, formData[key]);
       } else {
@@ -195,9 +192,7 @@ const AddShopping = ({ onClose }) => {
         </div>
 
         {/* Button Container */}
-        <div
-          style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
-        >
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
           <Button
             onClick={onClose} // Cancel button action
             color="primary"

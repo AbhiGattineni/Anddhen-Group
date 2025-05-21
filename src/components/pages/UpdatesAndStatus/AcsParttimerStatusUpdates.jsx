@@ -21,7 +21,7 @@ const AcsParttimerStatusUpdates = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [toastMsg, setToastMsg] = useState(null);
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
@@ -43,9 +43,8 @@ const AcsParttimerStatusUpdates = () => {
     }
   }, [applications]);
   const allFieldsFilled = Object.values(fields).every(Boolean);
-  const hasErrors = Object.values(fieldErrors).some((error) => error);
-  const disableButton =
-    !allFieldsFilled || hasErrors || loading || status.length <= 0;
+  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const disableButton = !allFieldsFilled || hasErrors || loading || status.length <= 0;
   const resetForm = () => {
     setDate('');
     setName('');
@@ -58,7 +57,7 @@ const AcsParttimerStatusUpdates = () => {
     setStatus('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!allFieldsFilled || hasErrors) return;
     const formData = new FormData();
@@ -106,56 +105,56 @@ const AcsParttimerStatusUpdates = () => {
                 label="Date"
                 type="date"
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
-                setError={(error) => handleFieldError('date', error)}
+                onChange={e => setDate(e.target.value)}
+                setError={error => handleFieldError('date', error)}
               />
               <InputField
                 name="name"
                 label="Name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                setError={(error) => handleFieldError('name', error)}
+                onChange={e => setName(e.target.value)}
+                setError={error => handleFieldError('name', error)}
               />
               <InputField
                 name="studentGroup"
                 label="Student Group"
                 type="text"
                 value={studentGroup}
-                onChange={(e) => setStudentGroup(e.target.value)}
-                setError={(error) => handleFieldError('studentGroup', error)}
+                onChange={e => setStudentGroup(e.target.value)}
+                setError={error => handleFieldError('studentGroup', error)}
               />
               <InputField
                 name="applications"
                 label="Applications"
                 type="number"
                 value={applications}
-                onChange={(e) => setApplications(e.target.value)}
-                setError={(error) => handleFieldError('applications', error)}
+                onChange={e => setApplications(e.target.value)}
+                setError={error => handleFieldError('applications', error)}
               />
               <InputField
                 name="easyApply"
                 label="Easy Apply"
                 type="number"
                 value={easyApply}
-                onChange={(e) => setEasyApply(e.target.value)}
-                setError={(error) => handleFieldError('easyApply', error)}
+                onChange={e => setEasyApply(e.target.value)}
+                setError={error => handleFieldError('easyApply', error)}
               />
               <InputField
                 name="connectMessages"
                 label="Connect Messages"
                 type="number"
                 value={connectMessages}
-                onChange={(e) => setConnectMessages(e.target.value)}
-                setError={(error) => handleFieldError('connectMessages', error)}
+                onChange={e => setConnectMessages(e.target.value)}
+                setError={error => handleFieldError('connectMessages', error)}
               />
               <InputField
                 name="directMessages"
                 label="Direct Messages"
                 type="number"
                 value={directMessages}
-                onChange={(e) => setDirectMessages(e.target.value)}
-                setError={(error) => handleFieldError('directMessages', error)}
+                onChange={e => setDirectMessages(e.target.value)}
+                setError={error => handleFieldError('directMessages', error)}
               />
               {parseInt(applications) < 20 && (
                 <InputField
@@ -163,8 +162,8 @@ const AcsParttimerStatusUpdates = () => {
                   label="Reason"
                   type="text"
                   value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  setError={(error) => handleFieldError('reason', error)}
+                  onChange={e => setReason(e.target.value)}
+                  setError={error => handleFieldError('reason', error)}
                   placeholder="Due to Health issues and Festival"
                 />
               )}
@@ -173,7 +172,7 @@ const AcsParttimerStatusUpdates = () => {
                 label="Status"
                 placeholder="Enter your status here..."
                 value={status}
-                onChange={(e) => setStatus(e.target.value)}
+                onChange={e => setStatus(e.target.value)}
               />
               <div className="form-group py-3">
                 <button
@@ -188,11 +187,7 @@ const AcsParttimerStatusUpdates = () => {
           </div>
         </div>
       </div>
-      <Toast
-        show={showToast}
-        message={toastMsg}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

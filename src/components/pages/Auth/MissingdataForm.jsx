@@ -5,7 +5,7 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -19,12 +19,12 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     // Basic validation: Check for empty fields
     let newErrors = {};
-    Object.keys(missingData).forEach((field) => {
+    Object.keys(missingData).forEach(field => {
       if (!formData[field]) {
         newErrors[field] = 'This field is required';
       }
@@ -44,7 +44,7 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
   return (
     <div className="missing-data-form container mt-4">
       <form onSubmit={handleSubmit}>
-        {Object.keys(missingData).map((field) => (
+        {Object.keys(missingData).map(field => (
           <div className="mb-3" key={field}>
             <label htmlFor={field} className="form-label">
               {field.replace(/_/g, ' ')}
@@ -73,9 +73,7 @@ const MissingDataForm = ({ missingData, onCompleted }) => {
                 required
               />
             )}
-            {errors[field] && (
-              <div className="invalid-feedback">{errors[field]}</div>
-            )}
+            {errors[field] && <div className="invalid-feedback">{errors[field]}</div>}
           </div>
         ))}
         <button type="submit" className="btn btn-primary">
