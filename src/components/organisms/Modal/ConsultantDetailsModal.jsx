@@ -48,33 +48,27 @@ function ConsultantDetailsModal({
     };
   }, [show]);
 
-  const handleEditChange = (e) => {
+  const handleEditChange = e => {
     const { name, value, type } = e.target;
     if (type === 'radio') {
-      setEditedConsultant((prevState) => ({
+      setEditedConsultant(prevState => ({
         ...prevState,
         [name]: value === 'true' ? true : false, // Ensure the value is converted back to a boolean
       }));
       //   setEditedConsultant((prevState) => ({ ...prevState, [name]: checked }));
     } else {
-      setEditedConsultant((prevState) => ({ ...prevState, [name]: value }));
+      setEditedConsultant(prevState => ({ ...prevState, [name]: value }));
     }
   };
 
   const { data: employers = [] } = useFetchData('employer', `/employers/`);
   const { data: recruiters = [] } = useFetchData('recruiter', `/recruiters/`);
-  const { data: notesData = [] } = useFetchData(
-    'status-consultant',
-    `/status-consultants/`,
-  );
-  const { mutate: addNote, isLoading } = useAddData(
-    'status-consultant',
-    `/status-consultants/`,
-  );
+  const { data: notesData = [] } = useFetchData('status-consultant', `/status-consultants/`);
+  const { mutate: addNote, isLoading } = useAddData('status-consultant', `/status-consultants/`);
   useEffect(() => {
     if (editedConsultant?.id && notesData?.length) {
       const matchingDescriptions = notesData
-        .filter((note) => note.consultant_id === editedConsultant.id)
+        .filter(note => note.consultant_id === editedConsultant.id)
         .reduce((acc, note) => {
           acc[note.id] = {
             description: note.description,
@@ -105,7 +99,7 @@ function ConsultantDetailsModal({
             return today.toISOString().split('T')[0];
           });
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
         },
       });
@@ -175,7 +169,7 @@ function ConsultantDetailsModal({
                     disabled={!isEditable}
                   >
                     <option value="">Select Employer</option>
-                    {employers.map((employer) => (
+                    {employers.map(employer => (
                       <option key={employer.id} value={employer.id}>
                         {employer.name}
                       </option>
@@ -193,7 +187,7 @@ function ConsultantDetailsModal({
                     disabled={!isEditable}
                   >
                     <option value="">Select Recruiter</option>
-                    {recruiters.map((recruiter) => (
+                    {recruiters.map(recruiter => (
                       <option key={recruiter.id} value={recruiter.id}>
                         {recruiter.name}
                       </option>
@@ -507,9 +501,7 @@ function ConsultantDetailsModal({
                       type="radio"
                       name="visa_validity_verified"
                       value={false}
-                      checked={
-                        editedConsultant.visa_validity_verified === false
-                      }
+                      checked={editedConsultant.visa_validity_verified === false}
                       disabled={!isEditable}
                       onChange={handleEditChange}
                     />{' '}
@@ -546,9 +538,7 @@ function ConsultantDetailsModal({
                       type="radio"
                       name="experience_in_us_verified"
                       value={true}
-                      checked={
-                        editedConsultant.experience_in_us_verified === true
-                      }
+                      checked={editedConsultant.experience_in_us_verified === true}
                       disabled={!isEditable}
                       onChange={handleEditChange}
                     />{' '}
@@ -557,9 +547,7 @@ function ConsultantDetailsModal({
                       type="radio"
                       name="experience_in_us_verified"
                       value={false}
-                      checked={
-                        editedConsultant.experience_in_us_verified === false
-                      }
+                      checked={editedConsultant.experience_in_us_verified === false}
                       disabled={!isEditable}
                       onChange={handleEditChange}
                     />{' '}
@@ -573,9 +561,7 @@ function ConsultantDetailsModal({
                       type="radio"
                       name="passport_number_verified"
                       value={true}
-                      checked={
-                        editedConsultant.passport_number_verified === true
-                      }
+                      checked={editedConsultant.passport_number_verified === true}
                       disabled={!isEditable}
                       onChange={handleEditChange}
                     />{' '}
@@ -584,9 +570,7 @@ function ConsultantDetailsModal({
                       type="radio"
                       name="passport_number_verified"
                       value={false}
-                      checked={
-                        editedConsultant.passport_number_verified === false
-                      }
+                      checked={editedConsultant.passport_number_verified === false}
                       disabled={!isEditable}
                       onChange={handleEditChange}
                     />{' '}
@@ -617,77 +601,64 @@ function ConsultantDetailsModal({
                   </div>
                 </div>
               </div>
-              {filteredDescriptions &&
-                Object.keys(filteredDescriptions).length > 0 && (
-                  <div className="mt-2">
-                    <h5>Notes :</h5>
-                    <ul>
-                      {Object.keys(filteredDescriptions)
-                        .filter(
-                          (noteId) => filteredDescriptions[noteId].description,
-                        )
-                        .sort(
-                          (a, b) =>
-                            new Date(filteredDescriptions[a].date) -
-                            new Date(filteredDescriptions[b].date),
-                        )
-                        .map((noteId, index) => (
-                          <li key={index}>
-                            <p>
-                              <strong>
-                                {filteredDescriptions[noteId].date}
-                              </strong>
-                              <br />
-                              {filteredDescriptions[noteId].description}
-                            </p>
-                          </li>
-                        ))}
-                    </ul>
-                    <div className="mb-3">
-                      <div className="d-flex align-items-center">
-                        <label htmlFor="newNoteDate" className="me-2">
-                          Date:
-                        </label>
-                        <input
-                          type="date"
-                          className="form-control w-auto"
-                          id="newNoteDate"
-                          name="newNoteDate"
-                          value={newNoteDate}
-                          onChange={(e) => setNewNoteDate(e.target.value)}
-                        />
-                      </div>
+              {filteredDescriptions && Object.keys(filteredDescriptions).length > 0 && (
+                <div className="mt-2">
+                  <h5>Notes :</h5>
+                  <ul>
+                    {Object.keys(filteredDescriptions)
+                      .filter(noteId => filteredDescriptions[noteId].description)
+                      .sort(
+                        (a, b) =>
+                          new Date(filteredDescriptions[a].date) -
+                          new Date(filteredDescriptions[b].date)
+                      )
+                      .map((noteId, index) => (
+                        <li key={index}>
+                          <p>
+                            <strong>{filteredDescriptions[noteId].date}</strong>
+                            <br />
+                            {filteredDescriptions[noteId].description}
+                          </p>
+                        </li>
+                      ))}
+                  </ul>
+                  <div className="mb-3">
+                    <div className="d-flex align-items-center">
+                      <label htmlFor="newNoteDate" className="me-2">
+                        Date:
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control w-auto"
+                        id="newNoteDate"
+                        name="newNoteDate"
+                        value={newNoteDate}
+                        onChange={e => setNewNoteDate(e.target.value)}
+                      />
                     </div>
-                    <textarea
-                      name="description"
-                      value={newNote}
-                      onChange={(e) => setNewNote(e.target.value)}
-                      placeholder="Add your notes here ..."
-                      rows="3"
-                      cols="50"
-                      className="form-control shadow-sm rounded border-primary"
-                      style={{ resize: 'none', padding: '10px' }}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-primary mt-2"
-                      onClick={handleNote}
-                    >
-                      {isLoading ? 'loading...' : 'Add Note'}
-                    </button>
                   </div>
-                )}
+                  <textarea
+                    name="description"
+                    value={newNote}
+                    onChange={e => setNewNote(e.target.value)}
+                    placeholder="Add your notes here ..."
+                    rows="3"
+                    cols="50"
+                    className="form-control shadow-sm rounded border-primary"
+                    style={{ resize: 'none', padding: '10px' }}
+                  />
+                  <button type="button" className="btn btn-primary mt-2" onClick={handleNote}>
+                    {isLoading ? 'loading...' : 'Add Note'}
+                  </button>
+                </div>
+              )}
             </form>
           </div>
 
           <div className="modal-footer">
             {/* Edit and Save buttons */}
             {!isEditable && (
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setIsEditable(true)}
-              >
+              <button type="button" className="btn btn-primary" onClick={() => setIsEditable(true)}>
                 Edit
               </button>
             )}
@@ -700,17 +671,10 @@ function ConsultantDetailsModal({
               Close
             </button>
             {isEditable && (
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={handleSaveEdits}
-              >
+              <button type="button" className="btn btn-success" onClick={handleSaveEdits}>
                 {isUpdating ? (
                   <>
-                    <span
-                      className="spinner-grow spinner-grow-sm"
-                      aria-hidden="true"
-                    ></span>
+                    <span className="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
                     <span role="status">Loading...</span>
                   </>
                 ) : (

@@ -5,7 +5,7 @@ import './Modal.css';
 export const AssTeamModal = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [showModal, setShowModal] = useState(false);
-  const teamDetails = useAuthStore((state) => state.teamDetails);
+  const teamDetails = useAuthStore(state => state.teamDetails);
   const toggleModal = useCallback(() => {
     useAuthStore.setState({ teamDetails: null });
     document.body.style.overflow = 'auto'; // Restore body overflow
@@ -25,7 +25,7 @@ export const AssTeamModal = () => {
   }, [showModal]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (showModal && !event.target.closest('.modal-content')) {
         toggleModal();
       }
@@ -53,16 +53,9 @@ export const AssTeamModal = () => {
         <div className="modal-content p-0 h-100">
           <div className="modal-header py-2 px-3 d-flex justify-content-between">
             <h1 className="modal-title fs-6">Profile</h1>
-            <button
-              type="button"
-              className="btn-close"
-              onClick={toggleModal}
-            ></button>
+            <button type="button" className="btn-close" onClick={toggleModal}></button>
           </div>
-          <div
-            className="px-4 h-100 overflow-auto"
-            style={{ maxHeight: 'calc(90vh - 90px)' }}
-          >
+          <div className="px-4 h-100 overflow-auto" style={{ maxHeight: 'calc(90vh - 90px)' }}>
             <div className="profile-photo d-flex flex-column w-100 justify-content-center align-items-center">
               <img
                 className="rounded-circle border border-3 m-2 p-1"

@@ -13,13 +13,7 @@ import PropTypes from 'prop-types';
 import { useDeleteData } from 'src/react-query/useFetchApis';
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 import ReactSelectDropdown from 'src/components/atoms/Search/ReactSelectDropdown';
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material';
 
 export const Transaction = () => {
   const [startDate, setStartDate] = useState(null);
@@ -52,7 +46,7 @@ export const Transaction = () => {
     isLoading,
   } = useQuery('transactions', fetchTransactions);
 
-  const handleEdit = (transaction) => {
+  const handleEdit = transaction => {
     if (transaction) {
       setEditTransaction(transaction);
       setShowModal(true);
@@ -67,25 +61,24 @@ export const Transaction = () => {
 
     const seen = new Set();
     const empNames = transactions
-      .filter((tx) => tx[selectedColumn])
-      .map((tx) => ({
+      .filter(tx => tx[selectedColumn])
+      .map(tx => ({
         value: tx[selectedColumn].toLowerCase(),
         label: tx[selectedColumn],
       }))
-      .filter((item) => {
+      .filter(item => {
         const id = `${item.value}:${item.label}`;
         if (seen.has(id)) return false;
         seen.add(id);
         return true;
       });
 
-    setEmployeeSearch((prev) => {
+    setEmployeeSearch(prev => {
       const isEqual =
         prev.length === empNames.length &&
         prev.every(
           (item, index) =>
-            item.value === empNames[index].value &&
-            item.label === empNames[index].label,
+            item.value === empNames[index].value && item.label === empNames[index].label
         );
 
       return isEqual ? prev : empNames;
@@ -94,10 +87,10 @@ export const Transaction = () => {
 
   const { mutate: deleteTransaction, isLoading: isDeleting } = useDeleteData(
     'transactions',
-    `/transactions/${deleteTransactionId}/delete/`,
+    `/transactions/${deleteTransactionId}/delete/`
   );
 
-  const handleDeleteTransation = (e) => {
+  const handleDeleteTransation = e => {
     e.preventDefault();
     deleteTransaction(null, {
       onSuccess: () => {
@@ -105,13 +98,13 @@ export const Transaction = () => {
         queryClient.invalidateQueries('transactions');
         setDeleteTransactionId(null);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('An error occurred:', error);
       },
     });
   };
 
-  const handleDelete = (transactionId) => {
+  const handleDelete = transactionId => {
     if (transactionId) {
       setShowConfirmation(true);
       setDeleteTransactionId(transactionId);
@@ -119,7 +112,7 @@ export const Transaction = () => {
   };
 
   const { paymentTypes, subsidiaries, currencies } = useMemo(() => {
-    const getUnique = (key) => [...new Set(transactions?.map((tx) => tx[key]))];
+    const getUnique = key => [...new Set(transactions?.map(tx => tx[key]))];
     return {
       paymentTypes: getUnique('payment_type'),
       subsidiaries: getUnique('subsidiary'),
@@ -157,15 +150,8 @@ export const Transaction = () => {
             transaction.transaction_type === 'credit'
               ? transaction.credited_amount
               : transaction.debited_amount;
-          const color =
-            transaction.transaction_type === 'credit'
-              ? 'text-success'
-              : 'text-danger';
-          return (
-            <div className={`${color} fw-bold`}>
-              ₹ {parseFloat(amount).toFixed(2)}
-            </div>
-          );
+          const color = transaction.transaction_type === 'credit' ? 'text-success' : 'text-danger';
+          return <div className={`${color} fw-bold`}>₹ {parseFloat(amount).toFixed(2)}</div>;
         },
       },
       { Header: 'Pay Type', Tooltip: 'Payment Type', accessor: 'payment_type' },
@@ -183,27 +169,21 @@ export const Transaction = () => {
         Cell: ({ row }) => (
           <div className="d-flex justify-content-center gap-2">
             {/* Edit Button */}
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={() => handleEdit(row.original)}
-            >
+            <button className="btn btn-sm btn-primary" onClick={() => handleEdit(row.original)}>
               Edit
             </button>
             {/* Delete Button */}
-            <button
-              className="btn btn-sm btn-danger"
-              onClick={() => handleDelete(row.original.id)}
-            >
+            <button className="btn btn-sm btn-danger" onClick={() => handleDelete(row.original.id)}>
               Delete
             </button>
           </div>
         ),
       },
     ],
-    [transactions],
+    [transactions]
   );
 
-  const calculateRunningTotal = (index) => {
+  const calculateRunningTotal = index => {
     let total = 0;
     for (let i = 0; i <= index && i < transactions.length; i++) {
       const transaction = transactions[i];
@@ -218,7 +198,7 @@ export const Transaction = () => {
 
   const total = useMemo(() => {
     let totalAmount = 0;
-    transactions.forEach((transaction) => {
+    transactions.forEach(transaction => {
       if (transaction.transaction_type === 'credit') {
         totalAmount += parseFloat(transaction.credited_amount);
       } else {
@@ -252,7 +232,7 @@ export const Transaction = () => {
     useSortBy,
     usePagination,
     useResizeColumns,
-    useFlexLayout,
+    useFlexLayout
   );
 
   const { pageIndex, pageSize } = state;
@@ -264,29 +244,24 @@ export const Transaction = () => {
     if (start) start.setHours(0, 0, 0, 0);
     if (end) end.setHours(23, 59, 59, 999);
 
-    const filtered = transactions.filter((transaction) => {
+    const filtered = transactions.filter(transaction => {
       const transactionDate = new Date(transaction.transaction_datetime);
 
       const isWithinDateRange =
-        (!start || transactionDate >= start) &&
-        (!end || transactionDate <= end);
+        (!start || transactionDate >= start) && (!end || transactionDate <= end);
 
       const matchesName =
         !selectedName ||
         (selectedColumn &&
-          transaction[selectedColumn]
-            ?.toLowerCase()
-            .includes(selectedName.toLowerCase()));
+          transaction[selectedColumn]?.toLowerCase().includes(selectedName.toLowerCase()));
 
       const matchesPaymentType =
-        !selectedPaymentType ||
-        transaction.payment_type === selectedPaymentType;
+        !selectedPaymentType || transaction.payment_type === selectedPaymentType;
 
       const matchesSubsidiary =
         !selectedSubsidiary || transaction.subsidiary === selectedSubsidiary;
 
-      const matchesCurrency =
-        !selectedCurrency || transaction.currency === selectedCurrency;
+      const matchesCurrency = !selectedCurrency || transaction.currency === selectedCurrency;
 
       return (
         isWithinDateRange &&
@@ -314,10 +289,7 @@ export const Transaction = () => {
   return (
     <div className="container-xl mb-5 mt-2 px-3">
       <div className="d-flex justify-content-end">
-        <button
-          className="btn btn-primary m-2"
-          onClick={() => setShowModal(true)}
-        >
+        <button className="btn btn-primary m-2" onClick={() => setShowModal(true)}>
           Add Transactions
         </button>
       </div>
@@ -336,10 +308,7 @@ export const Transaction = () => {
             </button>
           </div>
 
-          <div
-            className={`collapse w-100 ${showFilters ? 'show' : ''}`}
-            id="filterCollapse"
-          >
+          <div className={`collapse w-100 ${showFilters ? 'show' : ''}`} id="filterCollapse">
             {/* make Paper full‑width so it spans below the header */}
             <Paper elevation={0} className="w-100 mt-2 p-4 bg-light">
               <div className="row gx-4 gy-3 align-items-end">
@@ -351,7 +320,7 @@ export const Transaction = () => {
                       labelId="dropdown-label"
                       value={selectedColumn}
                       label="Select Option"
-                      onChange={(e) => setSelectedColumn(e.target.value)}
+                      onChange={e => setSelectedColumn(e.target.value)}
                     >
                       <MenuItem value="sender_name">Sender</MenuItem>
                       <MenuItem value="receiver_name">Receiver</MenuItem>
@@ -367,7 +336,7 @@ export const Transaction = () => {
                     onChange={setSelectedName}
                     placeholder={`Search ${selectedColumn
                       .split('_')
-                      .map((w) => w[0].toUpperCase() + w.slice(1))
+                      .map(w => w[0].toUpperCase() + w.slice(1))
                       .join(' ')}`}
                     variant="mui"
                   />
@@ -382,10 +351,8 @@ export const Transaction = () => {
                     type="date"
                     id="startDate"
                     className="form-control"
-                    value={
-                      startDate ? startDate.toISOString().split('T')[0] : ''
-                    }
-                    onChange={(e) => setStartDate(new Date(e.target.value))}
+                    value={startDate ? startDate.toISOString().split('T')[0] : ''}
+                    onChange={e => setStartDate(new Date(e.target.value))}
                   />
                 </div>
                 <div className="col-md-3 col-lg-2">
@@ -397,7 +364,7 @@ export const Transaction = () => {
                     id="endDate"
                     className="form-control"
                     value={endDate ? endDate.toISOString().split('T')[0] : ''}
-                    onChange={(e) => setEndDate(new Date(e.target.value))}
+                    onChange={e => setEndDate(new Date(e.target.value))}
                   />
                 </div>
 
@@ -408,9 +375,9 @@ export const Transaction = () => {
                     <Select
                       labelId="payment-type-label"
                       value={selectedPaymentType}
-                      onChange={(e) => setSelectedPaymentType(e.target.value)}
+                      onChange={e => setSelectedPaymentType(e.target.value)}
                     >
-                      {paymentTypes.map((t) => (
+                      {paymentTypes.map(t => (
                         <MenuItem key={t} value={t}>
                           {t}
                         </MenuItem>
@@ -424,9 +391,9 @@ export const Transaction = () => {
                     <Select
                       labelId="subsidiary-label"
                       value={selectedSubsidiary}
-                      onChange={(e) => setSelectedSubsidiary(e.target.value)}
+                      onChange={e => setSelectedSubsidiary(e.target.value)}
                     >
-                      {subsidiaries.map((s) => (
+                      {subsidiaries.map(s => (
                         <MenuItem key={s} value={s}>
                           {s}
                         </MenuItem>
@@ -440,9 +407,9 @@ export const Transaction = () => {
                     <Select
                       labelId="currency-label"
                       value={selectedCurrency}
-                      onChange={(e) => setSelectedCurrency(e.target.value)}
+                      onChange={e => setSelectedCurrency(e.target.value)}
                     >
-                      {currencies.map((c) => (
+                      {currencies.map(c => (
                         <MenuItem key={c} value={c}>
                           {c}
                         </MenuItem>
@@ -453,16 +420,10 @@ export const Transaction = () => {
 
                 {/* Actions */}
                 <div className="col-md-3 col-lg-2 d-flex gap-2">
-                  <button
-                    className="btn btn-success w-100"
-                    onClick={handleFilter}
-                  >
+                  <button className="btn btn-success w-100" onClick={handleFilter}>
                     Filter
                   </button>
-                  <button
-                    className="btn btn-outline-secondary w-100"
-                    onClick={handleResetData}
-                  >
+                  <button className="btn btn-outline-secondary w-100" onClick={handleResetData}>
                     Reset
                   </button>
                 </div>
@@ -471,19 +432,14 @@ export const Transaction = () => {
                 <div className="col-12 text-end mt-3">
                   <span className="fs-5">
                     <strong>Total:</strong>{' '}
-                    <span className={total < 0 ? 'text-danger' : ''}>
-                      ₹ {total}
-                    </span>
+                    <span className={total < 0 ? 'text-danger' : ''}>₹ {total}</span>
                   </span>
                 </div>
               </div>
             </Paper>
           </div>
         </nav>
-        <div
-          className="table-responsive"
-          style={{ maxHeight: '500px', overflowY: 'auto' }}
-        >
+        <div className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
           <table {...getTableProps()} className="table table-hover m-0">
             <thead
               className="thead-dark"
@@ -495,11 +451,7 @@ export const Transaction = () => {
               }}
             >
               {headerGroups.map((headerGroup, index) => (
-                <tr
-                  className="text-center"
-                  {...headerGroup.getHeaderGroupProps()}
-                  key={index}
-                >
+                <tr className="text-center" {...headerGroup.getHeaderGroupProps()} key={index}>
                   {headerGroup.headers.map((column, index) => (
                     <th
                       {...column.getHeaderProps()}
@@ -519,13 +471,7 @@ export const Transaction = () => {
                         style={{ textAlign: 'center' }}
                       >
                         {column.render('Header')}
-                        <span>
-                          {column.isSorted
-                            ? column.isSortedDesc
-                              ? ' 🔽'
-                              : ' 🔼'
-                            : ''}
-                        </span>
+                        <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
                         <div
                           {...column.getResizerProps()}
                           className="resizer"
@@ -545,10 +491,7 @@ export const Transaction = () => {
             {isLoading ? (
               <tbody>
                 <tr>
-                  <td
-                    colSpan={headerGroups[0].headers.length}
-                    className="text-center p-3"
-                  >
+                  <td colSpan={headerGroups[0].headers.length} className="text-center p-3">
                     <p className="p-3 fw-bold">Loading...</p>
                   </td>
                 </tr>
@@ -557,10 +500,7 @@ export const Transaction = () => {
               <tbody {...getTableBodyProps()}>
                 {page.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={headerGroups[0].headers.length}
-                      className="text-center p-3"
-                    >
+                    <td colSpan={headerGroups[0].headers.length} className="text-center p-3">
                       No transactions available
                     </td>
                   </tr>
@@ -626,9 +566,9 @@ export const Transaction = () => {
             <select
               className="form-select form-select-sm"
               value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
+              onChange={e => setPageSize(Number(e.target.value))}
             >
-              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+              {[5, 10, 20, 30, 40, 50].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
                   Show {pageSize}
                 </option>
@@ -660,10 +600,7 @@ Transaction.propTypes = {
       id: PropTypes.number.isRequired,
       transaction_type: PropTypes.string,
       total: PropTypes.number,
-      credited_amount: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-      ]),
+      credited_amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       debited_amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }).isRequired,
   }).isRequired,

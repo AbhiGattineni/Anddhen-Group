@@ -5,7 +5,7 @@ export const useStatusUpdateMutation = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const queryClient = useQueryClient();
 
-  const postStatus = async (statusData) => {
+  const postStatus = async statusData => {
     try {
       const response = await fetch(`${API_BASE_URL}/create_status_update`, {
         method: 'POST',
@@ -31,7 +31,7 @@ export const useStatusUpdateMutation = () => {
     }
   };
 
-  const updateStatus = async (updatedData) => {
+  const updateStatus = async updatedData => {
     try {
       const response = await fetch(`${API_BASE_URL}/update_status_by_id`, {
         method: 'PUT',
@@ -58,33 +58,24 @@ export const useStatusUpdateMutation = () => {
   };
 
   const statusMutation = useMutation(postStatus, {
-    onMutate: async (newStatus) => {
+    onMutate: async newStatus => {
       await queryClient.cancelQueries(['calendarData', auth.currentUser.uid]);
 
-      const previousStatus = queryClient.getQueryData([
-        'calendarData',
-        auth.currentUser.uid,
-      ]);
+      const previousStatus = queryClient.getQueryData(['calendarData', auth.currentUser.uid]);
 
-      queryClient.setQueryData(
-        ['calendarData', auth.currentUser.uid],
-        (oldData) => {
-          if (oldData) {
-            const statsusOldData = oldData?.status_updates;
-            return [...statsusOldData, auth.currentUser.uid];
-          }
-          return [newStatus];
-        },
-      );
+      queryClient.setQueryData(['calendarData', auth.currentUser.uid], oldData => {
+        if (oldData) {
+          const statsusOldData = oldData?.status_updates;
+          return [...statsusOldData, auth.currentUser.uid];
+        }
+        return [newStatus];
+      });
 
       return { previousStatus };
     },
     onError: (error, newStatus, context) => {
       if (context?.previousStatus) {
-        queryClient.setQueryData(
-          ['calendarData', auth.currentUser.uid],
-          context.previousStatus,
-        );
+        queryClient.setQueryData(['calendarData', auth.currentUser.uid], context.previousStatus);
       }
     },
     onSettled: () => {

@@ -1,27 +1,12 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Additional = ({
-  formData,
-  categories,
-  addAdditional,
-  removeAdditional,
-  setFormData,
-}) => {
-  const addEntry = (sectionIndex) => {
-    setFormData((prevData) => {
+const Additional = ({ formData, categories, addAdditional, removeAdditional, setFormData }) => {
+  const addEntry = sectionIndex => {
+    setFormData(prevData => {
       const categoryId = categories[5].id;
-      const existingArray = Array.isArray(prevData[categoryId])
-        ? [...prevData[categoryId]]
-        : [];
+      const existingArray = Array.isArray(prevData[categoryId]) ? [...prevData[categoryId]] : [];
 
       if (!existingArray[sectionIndex]) {
         existingArray[sectionIndex] = { entries: [] };
@@ -38,20 +23,18 @@ const Additional = ({
   };
 
   const removeEntry = (sectionIndex, entryIndex) => {
-    setFormData((prevData) => {
+    setFormData(prevData => {
       const categoryId = categories[5].id;
-      const existingArray = Array.isArray(prevData[categoryId])
-        ? [...prevData[categoryId]]
-        : [];
+      const existingArray = Array.isArray(prevData[categoryId]) ? [...prevData[categoryId]] : [];
 
       if (
         existingArray[sectionIndex] &&
         Array.isArray(existingArray[sectionIndex].entries) &&
         existingArray[sectionIndex].entries.length > 1
       ) {
-        existingArray[sectionIndex].entries = existingArray[
-          sectionIndex
-        ].entries.filter((_, i) => i !== entryIndex);
+        existingArray[sectionIndex].entries = existingArray[sectionIndex].entries.filter(
+          (_, i) => i !== entryIndex
+        );
       }
 
       return { ...prevData, [categoryId]: existingArray };
@@ -61,11 +44,9 @@ const Additional = ({
   const handleChange = (e, sectionIndex = null, entryIndex = null) => {
     const { name, value, type, checked } = e.target;
 
-    setFormData((prevData) => {
+    setFormData(prevData => {
       const categoryId = categories[5].id;
-      let updatedData = Array.isArray(prevData[categoryId])
-        ? [...prevData[categoryId]]
-        : [];
+      let updatedData = Array.isArray(prevData[categoryId]) ? [...prevData[categoryId]] : [];
 
       if (sectionIndex !== null) {
         if (!updatedData[sectionIndex]) {
@@ -94,9 +75,7 @@ const Additional = ({
           };
 
           if (name === 'current') {
-            updatedData[sectionIndex].entries[entryIndex].end_Date = checked
-              ? 'Present'
-              : '';
+            updatedData[sectionIndex].entries[entryIndex].end_Date = checked ? 'Present' : '';
           }
         }
       }
@@ -123,7 +102,7 @@ const Additional = ({
             name="section_Name"
             fullWidth
             margin="normal"
-            onChange={(e) => handleChange(e, sectionIndex)}
+            onChange={e => handleChange(e, sectionIndex)}
             value={section.section_Name ?? ''}
             required
           />
@@ -138,7 +117,7 @@ const Additional = ({
                 borderRadius: '6px',
               }}
             >
-              {categories[5].fields.map((field) =>
+              {categories[5].fields.map(field =>
                 field === 'current' ? (
                   <FormControlLabel
                     key={field}
@@ -146,9 +125,7 @@ const Additional = ({
                       <Checkbox
                         name={field}
                         checked={entry[field] || false}
-                        onChange={(e) =>
-                          handleChange(e, sectionIndex, entryIndex)
-                        }
+                        onChange={e => handleChange(e, sectionIndex, entryIndex)}
                       />
                     }
                     label="Current Date"
@@ -156,19 +133,17 @@ const Additional = ({
                 ) : (
                   <TextField
                     key={field}
-                    label={field
-                      .replace(/_/g, ' ')
-                      .replace(/\b\w/g, (char) => char.toUpperCase())}
+                    label={field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())}
                     name={field}
                     fullWidth
                     margin="normal"
-                    onChange={(e) => handleChange(e, sectionIndex, entryIndex)}
+                    onChange={e => handleChange(e, sectionIndex, entryIndex)}
                     value={entry[field] ?? ''}
                     required={categories[5].required.includes(field)}
                     disabled={field === 'end_Date' && entry.current}
                     minRows={field === 'description' ? 3 : undefined}
                   />
-                ),
+                )
               )}
 
               {section.entries.length > 1 && (
@@ -190,11 +165,7 @@ const Additional = ({
             </Box>
           ))}
 
-          <Button
-            variant="outlined"
-            onClick={() => addEntry(sectionIndex)}
-            sx={{ mb: 2 }}
-          >
+          <Button variant="outlined" onClick={() => addEntry(sectionIndex)} sx={{ mb: 2 }}>
             Add Entry
           </Button>
 
@@ -235,7 +206,7 @@ Additional.propTypes = {
       PropTypes.shape({
         section_Name: PropTypes.string,
         entries: PropTypes.arrayOf(PropTypes.object),
-      }),
+      })
     ),
   }),
   categories: PropTypes.arrayOf(
@@ -243,7 +214,7 @@ Additional.propTypes = {
       id: PropTypes.string.isRequired,
       fields: PropTypes.arrayOf(PropTypes.string),
       required: PropTypes.arrayOf(PropTypes.string),
-    }),
+    })
   ),
   handleChange: PropTypes.func.isRequired,
   addAdditional: PropTypes.func.isRequired,

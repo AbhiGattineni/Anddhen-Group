@@ -3,21 +3,15 @@ import Select from 'react-select';
 
 import PropTypes from 'prop-types';
 
-export const Search = ({
-  setSelectedOption,
-  selectedOption,
-  placeholder,
-  options,
-  isMulti,
-}) => {
+export const Search = ({ setSelectedOption, selectedOption, placeholder, options, isMulti }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredOptions = options.filter(option =>
+    option.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const handleInputChange = (inputValue) => {
+  const handleInputChange = inputValue => {
     setSearchQuery(inputValue);
   };
-  const handleSelectChange = (selectedOptions) => {
+  const handleSelectChange = selectedOptions => {
     setSelectedOption(selectedOptions);
   };
   return (

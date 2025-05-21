@@ -14,8 +14,7 @@ const AcsManagerUpdates = () => {
   const [activeStudents, setActiveStudents] = useState('');
   const [needToUpdate, setNeedToUpdate] = useState('');
   const [notUpdatedFrom3Days, setNotUpdatedFrom3Days] = useState('');
-  const [applicationsBelow20From2Days, setApplicationsBelow20From2Days] =
-    useState('');
+  const [applicationsBelow20From2Days, setApplicationsBelow20From2Days] = useState('');
   const [leave, setLeave] = useState('');
   const [needWeekendTime, setNeedWeekendTime] = useState('');
   const [holdByStudent, setHoldByStudent] = useState('');
@@ -24,7 +23,7 @@ const AcsManagerUpdates = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [toastMsg, setToastMsg] = useState(null);
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
@@ -43,9 +42,8 @@ const AcsManagerUpdates = () => {
     newStudent,
   };
   const allFieldsFilled = Object.values(fields).every(Boolean);
-  const hasErrors = Object.values(fieldErrors).some((error) => error);
-  const disableButton =
-    !allFieldsFilled || hasErrors || loading || status.length <= 0;
+  const hasErrors = Object.values(fieldErrors).some(error => error);
+  const disableButton = !allFieldsFilled || hasErrors || loading || status.length <= 0;
 
   const resetForm = () => {
     setDate('');
@@ -62,7 +60,7 @@ const AcsManagerUpdates = () => {
     setStatus('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!allFieldsFilled || hasErrors) return;
     const formData = new FormData(e.target);
@@ -100,99 +98,91 @@ const AcsManagerUpdates = () => {
                 type="date"
                 max={today}
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
-                setError={(error) => handleFieldError('date', error)}
+                onChange={e => setDate(e.target.value)}
+                setError={error => handleFieldError('date', error)}
               />
               <InputField
                 name="managerName"
                 label="Manager Name"
                 placeholder="Manager Name"
                 value={managerName}
-                onChange={(e) => setManagerName(e.target.value)}
-                setError={(error) => handleFieldError('managerName', error)}
+                onChange={e => setManagerName(e.target.value)}
+                setError={error => handleFieldError('managerName', error)}
               />
               <InputField
                 name="activeParttimers"
                 label="Active Parttimers"
                 type="number"
                 value={activeParttimers}
-                onChange={(e) => setActiveParttimers(e.target.value)}
-                setError={(error) =>
-                  handleFieldError('activeParttimers', error)
-                }
+                onChange={e => setActiveParttimers(e.target.value)}
+                setError={error => handleFieldError('activeParttimers', error)}
               />
               <InputField
                 name="activeStudents"
                 label="Active Students"
                 type="number"
                 value={activeStudents}
-                onChange={(e) => setActiveStudents(e.target.value)}
-                setError={(error) => handleFieldError('activeStudents', error)}
+                onChange={e => setActiveStudents(e.target.value)}
+                setError={error => handleFieldError('activeStudents', error)}
               />
               <InputField
                 name="needToUpdate"
                 label="Need to Update"
                 value={needToUpdate}
-                onChange={(e) => setNeedToUpdate(e.target.value)}
-                setError={(error) => handleFieldError('needToUpdate', error)}
+                onChange={e => setNeedToUpdate(e.target.value)}
+                setError={error => handleFieldError('needToUpdate', error)}
               />
               <InputField
                 name="notUpdatedFrom3Days"
                 label="Not Updated From 3 Days"
                 value={notUpdatedFrom3Days}
-                onChange={(e) => setNotUpdatedFrom3Days(e.target.value)}
-                setError={(error) =>
-                  handleFieldError('notUpdatedFrom3Days', error)
-                }
+                onChange={e => setNotUpdatedFrom3Days(e.target.value)}
+                setError={error => handleFieldError('notUpdatedFrom3Days', error)}
               />
               <InputField
                 name="applicationsBelow20From2Days"
                 label="Applications Below 20 From 2 Days"
                 value={applicationsBelow20From2Days}
-                onChange={(e) =>
-                  setApplicationsBelow20From2Days(e.target.value)
-                }
-                setError={(error) =>
-                  handleFieldError('applicationsBelow20From2Days', error)
-                }
+                onChange={e => setApplicationsBelow20From2Days(e.target.value)}
+                setError={error => handleFieldError('applicationsBelow20From2Days', error)}
               />
               <InputField
                 name="leave"
                 label="Leave"
                 placeholder="Leave Details"
                 value={leave}
-                onChange={(e) => setLeave(e.target.value)}
-                setError={(error) => handleFieldError('leave', error)}
+                onChange={e => setLeave(e.target.value)}
+                setError={error => handleFieldError('leave', error)}
               />
               <InputField
                 name="needWeekendTime"
                 label="Need Weekend Time"
                 placeholder="Need Weekend Time Details"
                 value={needWeekendTime}
-                onChange={(e) => setNeedWeekendTime(e.target.value)}
-                setError={(error) => handleFieldError('needWeekendTime', error)}
+                onChange={e => setNeedWeekendTime(e.target.value)}
+                setError={error => handleFieldError('needWeekendTime', error)}
               />
               <InputField
                 name="holdByStudent"
                 label="Hold By Student"
                 value={holdByStudent}
-                onChange={(e) => setHoldByStudent(e.target.value)}
-                setError={(error) => handleFieldError('holdByStudent', error)}
+                onChange={e => setHoldByStudent(e.target.value)}
+                setError={error => handleFieldError('holdByStudent', error)}
               />
               <InputField
                 name="newStudent"
                 label="New Student"
                 placeholder="New Student Details"
                 value={newStudent}
-                onChange={(e) => setNewStudent(e.target.value)}
-                setError={(error) => handleFieldError('newStudent', error)}
+                onChange={e => setNewStudent(e.target.value)}
+                setError={error => handleFieldError('newStudent', error)}
               />
               <TextAreaField
                 name="status"
                 label="Status"
                 placeholder="Enter your status here..."
                 value={status}
-                onChange={(e) => setStatus(e.target.value)}
+                onChange={e => setStatus(e.target.value)}
               />
               <div className="form-group py-3">
                 <button
@@ -207,11 +197,7 @@ const AcsManagerUpdates = () => {
           </div>
         </div>
       </div>
-      <Toast
-        show={showToast}
-        message={toastMsg}
-        onClose={() => setShowToast(false)}
-      />
+      <Toast show={showToast} message={toastMsg} onClose={() => setShowToast(false)} />
     </div>
   );
 };

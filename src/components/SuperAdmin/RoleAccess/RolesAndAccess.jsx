@@ -59,12 +59,7 @@ const RolesAndAccess = () => {
         >
           <RoleAccess />
         </div>
-        <div
-          className="tab-pane fade"
-          id="profile"
-          role="tabpanel"
-          aria-labelledby="profile-tab"
-        >
+        <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <AssignRole />
         </div>
         {/* <div

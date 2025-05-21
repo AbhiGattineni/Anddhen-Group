@@ -1,15 +1,8 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, TextField, Typography } from '@mui/material';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Education = (props) => {
+const Education = props => {
   return (
     <>
       {props.formData.education?.map((edu, index) => (
@@ -23,7 +16,7 @@ const Education = (props) => {
             position: 'relative',
           }}
         >
-          {props.categories[1].fields.map((field) =>
+          {props.categories[1].fields.map(field =>
             field === 'current' ? (
               <FormControlLabel
                 key={field}
@@ -31,7 +24,7 @@ const Education = (props) => {
                   <Checkbox
                     name={field}
                     checked={edu[field] || false}
-                    onChange={(e) => props.handleChange(e, index)}
+                    onChange={e => props.handleChange(e, index)}
                   />
                 }
                 label="Currently Studying"
@@ -39,18 +32,16 @@ const Education = (props) => {
             ) : (
               <TextField
                 key={field}
-                label={field
-                  .replace(/_/g, ' ')
-                  .replace(/\b\w/g, (char) => char.toUpperCase())}
+                label={field.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())}
                 name={field}
                 fullWidth
                 margin="normal"
-                onChange={(e) => props.handleChange(e, index)}
+                onChange={e => props.handleChange(e, index)}
                 value={edu[field] ?? ''}
                 required={props.categories[1].required.includes(field)}
                 disabled={field === 'end_Date' && edu.current}
               />
-            ),
+            )
           )}
 
           {/* Remove Education Entry (Disabled if only 1 entry remains) */}
@@ -91,14 +82,14 @@ Education.propTypes = {
     education: PropTypes.arrayOf(
       PropTypes.shape({
         // Define the expected properties inside education objects
-      }),
+      })
     ),
   }),
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       fields: PropTypes.arrayOf(PropTypes.object),
       required: PropTypes.arrayOf(PropTypes.string),
-    }),
+    })
   ),
   handleChange: PropTypes.func.isRequired,
   removeEducation: PropTypes.func.isRequired,

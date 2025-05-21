@@ -1,13 +1,7 @@
 import React from 'react';
 import AddShooping from './AddShooping';
 import ViewShooping from './ViewShooping';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
-  Button,
-} from '@mui/material'; // Import Dialog, IconButton, and related components
+import { Dialog, DialogTitle, DialogContent, IconButton, Button } from '@mui/material'; // Import Dialog, IconButton, and related components
 import CloseIcon from '@mui/icons-material/Close'; // Import the close icon
 
 export const Shooping = () => {
@@ -52,7 +46,7 @@ export const Shooping = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: theme => theme.palette.grey[500],
             }}
           >
             <CloseIcon />
@@ -62,8 +56,7 @@ export const Shooping = () => {
         <DialogContent sx={{ paddingLeft: 2, paddingRight: 2 }}>
           {' '}
           {/* Reduced padding */}
-          <AddShooping onClose={handleCloseDialog} />{' '}
-          {/* Pass the close function */}
+          <AddShooping onClose={handleCloseDialog} /> {/* Pass the close function */}
         </DialogContent>
       </Dialog>
 

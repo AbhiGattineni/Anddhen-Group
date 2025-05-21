@@ -10,14 +10,14 @@ export const useAuth = () => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(
       auth,
-      (user) => {
+      user => {
         setUser(user);
         setLoading(false);
       },
-      (error) => {
+      error => {
         setError(error);
         setLoading(false);
-      },
+      }
     );
 
     return () => unsubscribe();

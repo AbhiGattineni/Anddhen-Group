@@ -17,7 +17,7 @@ export const StatusCalendar = ({ data, empName }) => {
     useAuthStore.setState({ selectedAcsStatusDate: selectedDate });
   }, [selectedDate]);
 
-  const getDayStatus = (date) => {
+  const getDayStatus = date => {
     const checkDate = new Date(date);
     checkDate.setHours(0, 0, 0, 0);
 

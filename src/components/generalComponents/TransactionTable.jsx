@@ -24,14 +24,11 @@ const TransactionTable = () => {
   const [page, setPage] = useState(0);
   const rowsPerPage = 10; // Fixed rows per page
 
-  const { data: transactions = [], error } = useFetchData(
-    'apstransactions',
-    `/transactions/aps/`,
-  );
+  const { data: transactions = [], error } = useFetchData('apstransactions', `/transactions/aps/`);
 
   useEffect(() => {
     if (startDate && endDate) {
-      const filtered = transactions.filter((transaction) => {
+      const filtered = transactions.filter(transaction => {
         const transactionDate = new Date(transaction.transaction_datetime);
         const start = new Date(startDate).setHours(0, 0, 0, 0);
         const end = new Date(endDate).setHours(23, 59, 59, 999);
@@ -83,7 +80,7 @@ const TransactionTable = () => {
             label="Start Date"
             InputLabelProps={{ shrink: true }}
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={e => setStartDate(e.target.value)}
             variant="outlined"
             size="small"
           />
@@ -95,7 +92,7 @@ const TransactionTable = () => {
             label="End Date"
             InputLabelProps={{ shrink: true }}
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={e => setEndDate(e.target.value)}
             variant="outlined"
             size="small"
           />
@@ -126,18 +123,14 @@ const TransactionTable = () => {
               <TableCell sx={{ fontWeight: 'bold' }}>Receiver Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Sender Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Amount</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>
-                Transaction Date
-              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Transaction Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {error ? (
               <TableRow>
                 <TableCell colSpan={4} align="center">
-                  <Typography color="error">
-                    Failed to load transactions.
-                  </Typography>
+                  <Typography color="error">Failed to load transactions.</Typography>
                 </TableCell>
               </TableRow>
             ) : filteredTransactions.length === 0 ? (
@@ -149,7 +142,7 @@ const TransactionTable = () => {
             ) : (
               filteredTransactions
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((transaction) => (
+                .map(transaction => (
                   <TableRow key={transaction.id}>
                     <TableCell>{transaction.receiver_name}</TableCell>
                     <TableCell>{transaction.sender_name}</TableCell>
@@ -171,9 +164,7 @@ const TransactionTable = () => {
                       )}
                     </TableCell>
                     <TableCell>
-                      {new Date(
-                        transaction.transaction_datetime,
-                      ).toLocaleString()}
+                      {new Date(transaction.transaction_datetime).toLocaleString()}
                     </TableCell>
                   </TableRow>
                 ))
@@ -195,8 +186,7 @@ const TransactionTable = () => {
           <ArrowBackIos />
         </IconButton>
         <Typography variant="body1" sx={{ mx: 2 }}>
-          Page {page + 1} of{' '}
-          {Math.ceil(filteredTransactions.length / rowsPerPage)}
+          Page {page + 1} of {Math.ceil(filteredTransactions.length / rowsPerPage)}
         </Typography>
         <IconButton
           onClick={handleNextPage}

@@ -30,11 +30,7 @@ import { useQueryClient } from 'react-query'; // Import useQueryClient to invali
 
 // Table component
 const DeviceAllocation = () => {
-  const {
-    data,
-    isLoading: isFetching,
-    error,
-  } = useFetchData('devices', '/devices/');
+  const { data, isLoading: isFetching, error } = useFetchData('devices', '/devices/');
   const [showAddDevice, setShowAddDevice] = React.useState(false); // State to control visibility of AddDevice dialog
   const [showEditDevice, setShowEditDevice] = React.useState(false); // State to control visibility of EditDevice dialog
   const [selectedDeviceId, setSelectedDeviceId] = React.useState(null); // State to store the selected device ID for deletion
@@ -46,24 +42,19 @@ const DeviceAllocation = () => {
   const queryClient = useQueryClient(); // Get the query client
 
   // Construct the full URL for deletion
-  const deleteUrl = selectedDeviceId
-    ? `/devices/delete/${selectedDeviceId}/`
-    : null;
+  const deleteUrl = selectedDeviceId ? `/devices/delete/${selectedDeviceId}/` : null;
 
   // Use the useDeleteData hook at the top level
-  const { isLoading: isDeleting, mutate: deleteDevice } = useDeleteData(
-    'devices',
-    deleteUrl,
-  );
+  const { isLoading: isDeleting, mutate: deleteDevice } = useDeleteData('devices', deleteUrl);
 
   // Function to handle device deletion
-  const handleDeleteDevice = (deviceId) => {
+  const handleDeleteDevice = deviceId => {
     setSelectedDeviceId(deviceId); // Set the selected device ID
     setOpenDeleteDialog(true); // Open the delete confirmation dialog
   };
 
   // Function to handle device editing
-  const handleEditDevice = (device) => {
+  const handleEditDevice = device => {
     if (device) {
       setSelectedDevice(device); // Set the selected device data
       setShowEditDevice(true); // Open the edit dialog
@@ -179,7 +170,7 @@ const DeviceAllocation = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: theme => theme.palette.grey[500],
             }}
           >
             <CloseIcon />
@@ -209,7 +200,7 @@ const DeviceAllocation = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: theme => theme.palette.grey[500],
             }}
           >
             <CloseIcon />
@@ -227,10 +218,7 @@ const DeviceAllocation = () => {
       </Dialog>
 
       {/* Device Allocation Table */}
-      <TableContainer
-        component={Paper}
-        sx={{ borderRadius: 2, boxShadow: 2, mt: 3 }}
-      >
+      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 2, mt: 3 }}>
         <Table>
           <TableHead sx={{ backgroundColor: '#f2f2f2' }}>
             <TableRow>
@@ -247,7 +235,7 @@ const DeviceAllocation = () => {
           </TableHead>
           <TableBody>
             {data && data.length > 0 ? (
-              data.map((device) => (
+              data.map(device => (
                 <TableRow key={device.id}>
                   <TableCell>{device.device_type}</TableCell>
                   <TableCell>{device.device_name}</TableCell>
@@ -270,11 +258,7 @@ const DeviceAllocation = () => {
                       color="error"
                       disabled={isDeleting} // Disable the button while deleting
                     >
-                      {isDeleting ? (
-                        <CircularProgress size={24} />
-                      ) : (
-                        <DeleteIcon />
-                      )}
+                      {isDeleting ? <CircularProgress size={24} /> : <DeleteIcon />}
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -294,9 +278,7 @@ const DeviceAllocation = () => {
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this device?
-          </DialogContentText>
+          <DialogContentText>Are you sure you want to delete this device?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog} color="primary">

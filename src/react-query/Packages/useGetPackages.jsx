@@ -6,9 +6,7 @@ const useGetPackages = () => {
   const getPackages = async () => {
     const response = await fetch(`${API_BASE_URL}/packages/`);
     if (!response.ok) {
-      throw new Error(
-        `Error fetching data: ${response.status} - ${response.statusText}`,
-      );
+      throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
     }
     const data = await response.json();
     return data;

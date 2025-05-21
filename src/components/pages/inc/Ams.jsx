@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { marketingData } from '../../../dataconfig';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  CardMedia,
-  Box,
-} from '@mui/material';
+import { Card, CardContent, Typography, Grid, CardMedia, Box } from '@mui/material';
 
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
@@ -40,20 +33,17 @@ export const Ams = () => {
                   textAlign: 'justify',
                 }}
               >
-                Anddhen Marketing Services is your one-stop solution for all
-                your digital marketing needs. We specialize in managing social
-                media accounts, ensuring your brand stays active, engaging, and
-                relevant. Our team of experts handles photo and video editing,
-                transforming your raw content into polished, professional
-                masterpieces. We also excel in content creation, crafting
-                visually stunning images and videos that resonate with your
-                audience. With our strategic posting services, we ensure your
-                content goes live at the perfect time to maximize reach and
-                engagement. Additionally, we optimize your posts with carefully
-                selected hashtags to boost visibility and attract the right
-                audience. At Anddhen Marketing Services, we combine creativity
-                and strategy to help your brand shine in the digital world. Let
-                us take your social media presence to the next level!
+                Anddhen Marketing Services is your one-stop solution for all your digital marketing
+                needs. We specialize in managing social media accounts, ensuring your brand stays
+                active, engaging, and relevant. Our team of experts handles photo and video editing,
+                transforming your raw content into polished, professional masterpieces. We also
+                excel in content creation, crafting visually stunning images and videos that
+                resonate with your audience. With our strategic posting services, we ensure your
+                content goes live at the perfect time to maximize reach and engagement.
+                Additionally, we optimize your posts with carefully selected hashtags to boost
+                visibility and attract the right audience. At Anddhen Marketing Services, we combine
+                creativity and strategy to help your brand shine in the digital world. Let us take
+                your social media presence to the next level!
               </Typography>
             </Grid>
 
@@ -77,14 +67,13 @@ export const Ams = () => {
       </div>
       <div className="container">
         <Grid container spacing={4} style={{ padding: '20px' }}>
-          {marketingData.map((item) => (
+          {marketingData.map(item => (
             <Grid item xs={12} sm={6} md={4} key={item.id}>
               <Card
                 sx={{
                   boxShadow: '0px 20px 50px rgba(0, 0, 0, 0.3)', // Adds shadow
                   borderRadius: '40px 0 40px 0', // Two sharp edges, two rounded edges
-                  transition:
-                    'background-color 0.3s ease-in-out, transform 0.3s ease-in-out', // Smooth transition
+                  transition: 'background-color 0.3s ease-in-out, transform 0.3s ease-in-out', // Smooth transition
                   '&:hover': {
                     backgroundColor: '#ffc107', // Yellow background on hover
                     transform: 'scale(1.05)', // Scales up on hover
@@ -163,11 +152,7 @@ export const Ams = () => {
             setShowToast={setShowToast}
             setToastMsg={setToastMsg}
           />
-          <CustomToast
-            showToast={showToast}
-            setShowToast={setShowToast}
-            toastMsg={toastMsg}
-          />
+          <CustomToast showToast={showToast} setShowToast={setShowToast} toastMsg={toastMsg} />
         </div>
       </div>
     </div>

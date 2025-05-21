@@ -10,13 +10,13 @@ function Navbar(props) {
   const [navbarOpen, setNavbarOpen] = useState(false);
   const { user } = useAuth();
 
-  const setNewUser = useAuthStore((state) => state.setParttimer_consent);
+  const setNewUser = useAuthStore(state => state.setParttimer_consent);
   const handleLogout = () => {
     logout()
       .then(() => {
         setNewUser(false);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
       });
     setNavbarOpen(false);

@@ -45,8 +45,8 @@ export const AcsAdmin = () => {
   useEffect(() => {
     setLoading(true);
     fetch(`${GOOGLE_SCRIPT_URL}?sheetName=${encodeURIComponent(sheetName)}`)
-      .then((response) => response.json())
-      .then((result) => {
+      .then(response => response.json())
+      .then(result => {
         if (result.status === 'success') {
           // Separate the headers from the data
           setHeaders(result.data[0]);
@@ -55,42 +55,39 @@ export const AcsAdmin = () => {
         handleTab(result.data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(err => {
         setLoading(false);
       });
   }, [sheetName]);
 
   useEffect(() => {
     fetch('http://35.172.219.206:8000/person/2/')
-      .then((res) => {
+      .then(res => {
         if (res.ok) {
           return res.json(); // This returns a promise that resolves with the parsed JSON
         }
         throw new Error('Network response was not ok.');
       })
-      .catch((e) => console.log('Error fetching data:', e));
+      .catch(e => console.log('Error fetching data:', e));
   }, []);
 
   useEffect(() => {
     fetch('https://server.anddhengroup.com/person/2/')
-      .then((res) => {
+      .then(res => {
         if (res.ok) {
           return res.json(); // This returns a promise that resolves with the parsed JSON
         }
         throw new Error('Network response was not ok.');
       })
-      .then((data) => {
+      .then(data => {
         console.log('Data:', data); // This logs the actual JSON data
       })
-      .catch((e) => console.log('Error fetching data:', e));
+      .catch(e => console.log('Error fetching data:', e));
   }, []);
 
-  const sortData = (sortKey) => {
-    setSortConfig((currentSortConfig) => {
-      if (
-        currentSortConfig.key === sortKey &&
-        currentSortConfig.direction === 'ascending'
-      ) {
+  const sortData = sortKey => {
+    setSortConfig(currentSortConfig => {
+      if (currentSortConfig.key === sortKey && currentSortConfig.direction === 'ascending') {
         return { key: sortKey, direction: 'descending' };
       }
       return { key: sortKey, direction: 'ascending' };
@@ -99,7 +96,7 @@ export const AcsAdmin = () => {
 
   useEffect(() => {
     if (sortConfig.key !== null) {
-      setData((data) =>
+      setData(data =>
         [...data].sort((a, b) => {
           if (a[sortConfig.key] < b[sortConfig.key]) {
             return sortConfig.direction === 'ascending' ? -1 : 1;
@@ -108,7 +105,7 @@ export const AcsAdmin = () => {
             return sortConfig.direction === 'ascending' ? 1 : -1;
           }
           return 0;
-        }),
+        })
       );
     }
   }, [sortConfig]);
@@ -117,24 +114,19 @@ export const AcsAdmin = () => {
     let filteredData = data;
 
     if (empName && empName !== 'All') {
-      filteredData = filteredData.filter((row) => row.includes(empName));
+      filteredData = filteredData.filter(row => row.includes(empName));
     }
 
     if (searchTerm) {
-      filteredData = filteredData.filter((row) =>
-        row.some((cell) =>
-          cell.toString().toLowerCase().includes(searchTerm.toLowerCase()),
-        ),
+      filteredData = filteredData.filter(row =>
+        row.some(cell => cell.toString().toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
     return filteredData;
   };
   const toggleCalendar = () => {
-    if (
-      sheetName !== 'Part Timers Registrations' &&
-      sheetName !== 'Student Registration'
-    ) {
+    if (sheetName !== 'Part Timers Registrations' && sheetName !== 'Student Registration') {
       setShowCalendar(!showCalendar);
     }
   };
@@ -167,10 +159,7 @@ export const AcsAdmin = () => {
                   <ul className="dropdown-menu">
                     {sheetNames.map((tab, index) => (
                       <li key={index}>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => setSheetName(tab)}
-                        >
+                        <button className="dropdown-item" onClick={() => setSheetName(tab)}>
                           {tab}
                         </button>
                       </li>
@@ -192,10 +181,7 @@ export const AcsAdmin = () => {
                       <ul className="dropdown-menu">
                         {empDetails.map((detail, index) => (
                           <li key={index}>
-                            <button
-                              className="dropdown-item"
-                              onClick={() => setEmpName(detail)}
-                            >
+                            <button className="dropdown-item" onClick={() => setEmpName(detail)}>
                               {detail}
                             </button>
                           </li>
@@ -215,7 +201,7 @@ export const AcsAdmin = () => {
                       className="col-3 form-control me-2 rounded-pill"
                       placeholder="Search..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={e => setSearchTerm(e.target.value)}
                     />
                   </div>
                   {empName && empName !== 'All' ? (
@@ -227,10 +213,7 @@ export const AcsAdmin = () => {
                         checked={showCalendar}
                         onChange={toggleCalendar}
                       />
-                      <label
-                        className="form-check-label"
-                        htmlFor="calendarToggle"
-                      >
+                      <label className="form-check-label" htmlFor="calendarToggle">
                         Calendar View
                       </label>
                     </div>
@@ -239,9 +222,7 @@ export const AcsAdmin = () => {
               </div>
             </div>
           </div>
-          {showCalendar && empName && (
-            <StatusCalendar data={getFilteredData()} empName={empName} />
-          )}
+          {showCalendar && empName && <StatusCalendar data={getFilteredData()} empName={empName} />}
           <div className="table-responsive p-1">
             <table className="table table-striped border border-secondary border-2 rounded-1">
               <thead>

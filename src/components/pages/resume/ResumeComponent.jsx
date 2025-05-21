@@ -50,40 +50,35 @@ const ResumeComponent = ({ resume_data }) => {
   const [skillInput, setSkillInput] = useState('');
   const [suggestedSkills, setSuggestedSkills] = useState([]);
 
-  const handleAddSuggestedSkill = (skill) => {
+  const handleAddSuggestedSkill = skill => {
     if (!formData.skills.includes(skill)) {
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         skills: [...prev.skills, skill],
       }));
     }
   };
 
-  const memoizedResume = useMemo(
-    () => <ResumePreview formData={formData} />,
-    [formData],
-  );
+  const memoizedResume = useMemo(() => <ResumePreview formData={formData} />, [formData]);
 
   const handleNext = async () => {
     if (activeStep === 3 && suggestedSkills?.length === 0) {
       const experienceDescriptions = formData.experience
-        ?.map((exp) => exp.description)
+        ?.map(exp => exp.description)
         .filter(Boolean)
         .join(', ');
 
       const projectDescriptions = formData.projects
-        ?.map((proj) => proj.description)
+        ?.map(proj => proj.description)
         .filter(Boolean)
         .join(', ');
 
       try {
         const skills = await fetchAi(
-          `Give some suggested skill languages (top 10) for the user based on the experience: ${experienceDescriptions}, and projects: ${projectDescriptions}. Only give skills as numbered points without any description.`,
+          `Give some suggested skill languages (top 10) for the user based on the experience: ${experienceDescriptions}, and projects: ${projectDescriptions}. Only give skills as numbered points without any description.`
         );
 
-        const skillList = skills
-          .split('\n')
-          .map((skill) => skill.replace(/^\d+\.\s*/, '').trim());
+        const skillList = skills.split('\n').map(skill => skill.replace(/^\d+\.\s*/, '').trim());
 
         setSuggestedSkills(skillList);
       } catch (error) {
@@ -91,15 +86,15 @@ const ResumeComponent = ({ resume_data }) => {
       }
     }
 
-    setActiveStep((prev) => prev + 1);
+    setActiveStep(prev => prev + 1);
   };
 
-  const handleBack = () => setActiveStep((prev) => prev - 1);
+  const handleBack = () => setActiveStep(prev => prev - 1);
 
   const handleChange = (e, index = null) => {
     const { name, value, type, checked } = e.target;
 
-    setFormData((prevData) => {
+    setFormData(prevData => {
       const categoryId = categories[activeStep].id;
       let values = null;
 
@@ -109,9 +104,7 @@ const ResumeComponent = ({ resume_data }) => {
           [name]: type === 'checkbox' ? checked : value,
         };
       } else if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
-        const existingArray = Array.isArray(prevData[categoryId])
-          ? [...prevData[categoryId]]
-          : [];
+        const existingArray = Array.isArray(prevData[categoryId]) ? [...prevData[categoryId]] : [];
 
         if (index !== null) {
           existingArray[index] = {
@@ -136,15 +129,15 @@ const ResumeComponent = ({ resume_data }) => {
     });
   };
 
-  const addFieldEntry = (field) => {
-    setFormData((prevData) => ({
+  const addFieldEntry = field => {
+    setFormData(prevData => ({
       ...prevData,
       [field]: [...(prevData[field] || []), {}], // Add a new empty entry to the specified field
     }));
   };
 
   const removeFieldEntry = (field, index) => {
-    setFormData((prevData) => {
+    setFormData(prevData => {
       if (prevData[field].length === 1) return prevData; // Prevent removing the last entry
 
       return {
@@ -156,7 +149,7 @@ const ResumeComponent = ({ resume_data }) => {
 
   const handleAddSkill = () => {
     if (skillInput.trim()) {
-      setFormData((prevData) => ({
+      setFormData(prevData => ({
         ...prevData,
         skills: [...prevData.skills, skillInput.trim()],
       }));
@@ -164,19 +157,17 @@ const ResumeComponent = ({ resume_data }) => {
     }
   };
 
-  const handleRemoveSkill = (skillToRemove) => {
-    setFormData((prevData) => ({
+  const handleRemoveSkill = skillToRemove => {
+    setFormData(prevData => ({
       ...prevData,
-      skills: prevData.skills.filter((skill) => skill !== skillToRemove),
+      skills: prevData.skills.filter(skill => skill !== skillToRemove),
     }));
   };
 
   const addAdditional = () => {
-    setFormData((prevData) => {
+    setFormData(prevData => {
       const categoryId = categories[activeStep].id;
-      const existingArray = Array.isArray(prevData[categoryId])
-        ? [...prevData[categoryId]]
-        : [];
+      const existingArray = Array.isArray(prevData[categoryId]) ? [...prevData[categoryId]] : [];
 
       existingArray.push({ section_Name: '', entries: [] }); // Add a new section
 
@@ -184,8 +175,8 @@ const ResumeComponent = ({ resume_data }) => {
     });
   };
 
-  const removeAdditional = (sectionIndex) => {
-    setFormData((prevData) => {
+  const removeAdditional = sectionIndex => {
+    setFormData(prevData => {
       const categoryId = categories[activeStep].id;
       return {
         ...prevData,
@@ -200,7 +191,7 @@ const ResumeComponent = ({ resume_data }) => {
 
     if (activeStep === 0) {
       // Personal Info: Check required fields in an object
-      return requiredFields.some((field) => !formData[categoryId]?.[field]);
+      return requiredFields.some(field => !formData[categoryId]?.[field]);
     }
 
     if (activeStep === 1 || activeStep === 2 || activeStep === 3) {
@@ -208,7 +199,7 @@ const ResumeComponent = ({ resume_data }) => {
         !Array.isArray(formData[categoryId]) || // Check if education array exists
         formData[categoryId].length === 0 || // Ensure at least one entry
         formData[categoryId].some(
-          (step) => requiredFields.some((field) => !step[field]), // Ensure all required fields are filled
+          step => requiredFields.some(field => !step[field]) // Ensure all required fields are filled
         )
       );
     }
@@ -226,7 +217,7 @@ const ResumeComponent = ({ resume_data }) => {
         {/* Left Panel - Form */}
         <Grid item xs={12} md={6}>
           <Stepper activeStep={activeStep} alternativeLabel>
-            {categories.map((category) => (
+            {categories.map(category => (
               <Step key={category.label}>
                 <StepLabel>{category.label}</StepLabel>
               </Step>
@@ -256,7 +247,7 @@ const ResumeComponent = ({ resume_data }) => {
                   justifyContent: 'left',
                 }}
               >
-                {suggestedSkills.map((skill) => (
+                {suggestedSkills.map(skill => (
                   <Chip
                     key={skill}
                     label={skill}
@@ -318,7 +309,7 @@ const ResumeComponent = ({ resume_data }) => {
                       fontStyle: 'italic',
                       display: 'inline-block',
                     }}
-                    onClick={() => setActiveStep((prev) => prev + 1)}
+                    onClick={() => setActiveStep(prev => prev + 1)}
                   >
                     Skip Experience(if no experience)
                   </Typography>
@@ -368,19 +359,11 @@ const ResumeComponent = ({ resume_data }) => {
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-            <Button
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              variant="contained"
-            >
+            <Button disabled={activeStep === 0} onClick={handleBack} variant="contained">
               Previous
             </Button>
             {activeStep < categories.length - 1 ? (
-              <Button
-                onClick={handleNext}
-                variant="contained"
-                disabled={isNextDisabled()}
-              >
+              <Button onClick={handleNext} variant="contained" disabled={isNextDisabled()}>
                 Next
               </Button>
             ) : (

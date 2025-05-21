@@ -46,25 +46,18 @@ const Recruiter = () => {
   const [page, setPage] = useState(1);
   const rowsPerPage = 15;
 
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useFetchData('recruiter', '/recruiters/');
+  const { data = [], isLoading, error } = useFetchData('recruiter', '/recruiters/');
 
-  const handleSearch = (e) => setSearch(e.target.value);
+  const handleSearch = e => setSearch(e.target.value);
 
   const { mutate: updateRecruiter, isLoading: isUpdating } = useUpdateData(
     'recruiter',
-    `/recruiters/${selectedId}/`,
+    `/recruiters/${selectedId}/`
   );
-  const { mutate: addRecruiters, isLoading: isAdding } = useAddData(
-    'recruiter',
-    '/recruiters/',
-  );
+  const { mutate: addRecruiters, isLoading: isAdding } = useAddData('recruiter', '/recruiters/');
   const { mutate: deleteRecruiter, isLoading: isDeleting } = useDeleteData(
     'recruiter',
-    `/recruiters/${selectedId}/`,
+    `/recruiters/${selectedId}/`
   );
 
   const handleEditClick = (id, row) => {
@@ -73,7 +66,7 @@ const Recruiter = () => {
     setEditData(row);
   };
 
-  const handleSave = async (id) => {
+  const handleSave = async id => {
     await updateRecruiter(editData, {
       onSuccess: () => {
         queryClient.invalidateQueries('recruiter');
@@ -100,11 +93,11 @@ const Recruiter = () => {
     if (id === 'new') {
       setNewRow({ ...newRow, [field]: value });
     } else {
-      setEditData((prev) => ({ ...prev, [field]: value }));
+      setEditData(prev => ({ ...prev, [field]: value }));
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     console.log('Deleting recruiter with ID:', id); // Debugging log
 
     if (!id) {
@@ -113,7 +106,7 @@ const Recruiter = () => {
     }
 
     setSelectedId(id); // Ensure state updates
-    await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for state update
+    await new Promise(resolve => setTimeout(resolve, 0)); // Wait for state update
 
     deleteRecruiter(null, {
       onSuccess: () => {
@@ -126,24 +119,18 @@ const Recruiter = () => {
 
   const showToast = (message, color) => {
     setToast({ show: true, message, color });
-    setTimeout(
-      () => setToast({ show: false, message: '', color: undefined }),
-      3000,
-    );
+    setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
   };
 
   const filteredData = data.filter(
-    (row) =>
+    row =>
       row.name.toLowerCase().includes(search.toLowerCase()) ||
       row.phone.includes(search) ||
       row.employer.toLowerCase().includes(search.toLowerCase()) ||
-      row.email.toLowerCase().includes(search.toLowerCase()),
+      row.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  const paginatedData = filteredData.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage,
-  );
+  const paginatedData = filteredData.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   const handlePageChange = (event, value) => setPage(value);
 
@@ -187,11 +174,11 @@ const Recruiter = () => {
           </TableHead>
           <TableBody>
             <TableRow>
-              {['name', 'phone', 'employer', 'email'].map((field) => (
+              {['name', 'phone', 'employer', 'email'].map(field => (
                 <TableCell key={field}>
                   <TextField
                     value={newRow[field]}
-                    onChange={(e) => handleInputChange(e, 'new', field)}
+                    onChange={e => handleInputChange(e, 'new', field)}
                     fullWidth
                   />
                 </TableCell>
@@ -220,8 +207,7 @@ const Recruiter = () => {
                 <TableCell colSpan={5} align="center">
                   <Typography color="error">
                     An error occurred:{' '}
-                    {error.message ||
-                      'Failed to fetch data. Please try again later.'}
+                    {error.message || 'Failed to fetch data. Please try again later.'}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -232,14 +218,14 @@ const Recruiter = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedData.map((row) => (
+              paginatedData.map(row => (
                 <TableRow key={row.id}>
-                  {['name', 'phone', 'employer', 'email'].map((field) => (
+                  {['name', 'phone', 'employer', 'email'].map(field => (
                     <TableCell key={field}>
                       {editRowId === row.id ? (
                         <TextField
                           value={editData[field] || ''}
-                          onChange={(e) => handleInputChange(e, row.id, field)}
+                          onChange={e => handleInputChange(e, row.id, field)}
                           fullWidth
                         />
                       ) : (
@@ -257,10 +243,7 @@ const Recruiter = () => {
                         {isUpdating ? <CircularProgress size={24} /> : <Save />}
                       </IconButton>
                     ) : (
-                      <IconButton
-                        onClick={() => handleEditClick(row.id, row)}
-                        color="primary"
-                      >
+                      <IconButton onClick={() => handleEditClick(row.id, row)} color="primary">
                         <Edit />
                       </IconButton>
                     )}

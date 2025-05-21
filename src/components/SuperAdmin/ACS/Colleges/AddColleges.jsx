@@ -11,7 +11,7 @@ import useAuthStore from 'src/services/store/globalStore';
 
 export const AddColleges = () => {
   const queryClient = useQueryClient();
-  const collegesList = useAuthStore((state) => state.collegesList);
+  const collegesList = useAuthStore(state => state.collegesList);
   const [selectedcollege, setSelectedcollege] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading] = useState(false);
@@ -118,7 +118,7 @@ export const AddColleges = () => {
   }, [data]);
   useEffect(() => {
     setAddedColleges(() => {
-      const collegeNames = collegesList.map((college) => ({
+      const collegeNames = collegesList.map(college => ({
         value: college.id,
         label: college.college_name,
       }));
@@ -127,9 +127,7 @@ export const AddColleges = () => {
   }, [collegesList]);
 
   useEffect(() => {
-    const selectedCollegeData = collegesList.find(
-      (college) => college.id === selectedcollege?.value,
-    );
+    const selectedCollegeData = collegesList.find(college => college.id === selectedcollege?.value);
 
     if (selectedCollegeData) {
       const {
@@ -222,33 +220,28 @@ export const AddColleges = () => {
 
   // Extracting keys from formData
   useEffect(() => {
-    const allFieldsFilled = Object.values(formData).every(
-      (value) => value !== '',
-    );
-    const hasErrors = Object.values(fieldErrors).some((error) => error);
+    const allFieldsFilled = Object.values(formData).every(value => value !== '');
+    const hasErrors = Object.values(fieldErrors).some(error => error);
     setDisableButton(!allFieldsFilled || hasErrors);
   }, [formData, fieldErrors]);
 
   const handleChange = (field, value) => {
-    setFormData((prevFormData) => ({
+    setFormData(prevFormData => ({
       ...prevFormData,
       [field]: value,
     }));
   };
 
   const handleFieldError = (fieldName, error) => {
-    setFieldErrors((prevErrors) => ({
+    setFieldErrors(prevErrors => ({
       ...prevErrors,
       [fieldName]: error,
     }));
   };
 
-  const { mutate: addCollege, isLoading } = useAddData(
-    'colleges',
-    `/colleges/create/`,
-  );
+  const { mutate: addCollege, isLoading } = useAddData('colleges', `/colleges/create/`);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     addCollege(formData, {
       onSuccess: () => {
@@ -259,29 +252,23 @@ export const AddColleges = () => {
           message: 'College added successfully!',
           color: '#82DD55',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
       },
-      onError: (error) => {
+      onError: error => {
         console.error('An error occurred:', error);
         setToast({
           show: true,
           message: 'Something went wrong!',
           color: '#E23636',
         });
-        setTimeout(
-          () => setToast({ show: false, message: '', color: undefined }),
-          3000,
-        );
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         // Handle error state or display error message
       },
     });
     resetForm();
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = e => {
     e.preventDefault();
     setInputDisabled(false);
   };
@@ -289,10 +276,10 @@ export const AddColleges = () => {
   // Using the custom hook for updating college
   const { mutate: updateCollege, isLoading: isUpdating } = useUpdateData(
     'colleges',
-    `/colleges/${selectedcollege?.value}/update/`,
+    `/colleges/${selectedcollege?.value}/update/`
   );
 
-  const handleSave = async (e) => {
+  const handleSave = async e => {
     e.preventDefault();
     try {
       await updateCollege(formData, {
@@ -305,22 +292,16 @@ export const AddColleges = () => {
             message: 'College updated successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
           setToast({
             show: true,
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
       });
     } catch (error) {
@@ -330,20 +311,17 @@ export const AddColleges = () => {
         message: `Update failed: ${error.message}`,
         color: '#E23636',
       });
-      setTimeout(
-        () => setToast({ show: false, message: '', color: undefined }),
-        3000,
-      );
+      setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
     }
   };
 
   // Using the custom hook for deleting college
   const { mutate: deleteCollege, isLoading: isDeleting } = useDeleteData(
     'colleges',
-    `/colleges/${selectedcollege?.value}/delete/`,
+    `/colleges/${selectedcollege?.value}/delete/`
   );
 
-  const handleDelete = (e) => {
+  const handleDelete = e => {
     e.preventDefault();
     // eslint-disable-next-line no-restricted-globals
     let confirmation = confirm('Are you sure you want to delete?');
@@ -359,29 +337,23 @@ export const AddColleges = () => {
             message: 'College deleted successfully!',
             color: '#82DD55',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
           setIsEdit(false);
         },
-        onError: (error) => {
+        onError: error => {
           console.error('An error occurred:', error);
           setToast({
             show: true,
             message: 'Something went wrong!',
             color: '#E23636',
           });
-          setTimeout(
-            () => setToast({ show: false, message: '', color: undefined }),
-            3000,
-          );
+          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
         },
       });
     }
   };
 
-  const handleAdd = (e) => {
+  const handleAdd = e => {
     e.preventDefault();
     resetForm();
     setSelectedcollege(null);
@@ -420,8 +392,8 @@ export const AddColleges = () => {
                 type="text"
                 className="col p-1"
                 value={formData.college_name}
-                onChange={(e) => handleChange('college_name', e.target.value)}
-                setError={(error) => handleFieldError('college_name', error)}
+                onChange={e => handleChange('college_name', e.target.value)}
+                setError={error => handleFieldError('college_name', error)}
               />
               <div className="row row-cols-md-2 row row-cols-sm-2 row-cols-1 g-2">
                 <InputField
@@ -432,8 +404,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.website_link}
-                  onChange={(e) => handleChange('website_link', e.target.value)}
-                  setError={(error) => handleFieldError('website_link', error)}
+                  onChange={e => handleChange('website_link', e.target.value)}
+                  setError={error => handleFieldError('website_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -443,10 +415,8 @@ export const AddColleges = () => {
                   type="email"
                   className="col p-1"
                   value={formData.college_email}
-                  onChange={(e) =>
-                    handleChange('college_email', e.target.value)
-                  }
-                  setError={(error) => handleFieldError('college_email', error)}
+                  onChange={e => handleChange('college_email', e.target.value)}
+                  setError={error => handleFieldError('college_email', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -456,12 +426,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.college_email_link}
-                  onChange={(e) =>
-                    handleChange('college_email_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('college_email_link', error)
-                  }
+                  onChange={e => handleChange('college_email_link', e.target.value)}
+                  setError={error => handleFieldError('college_email_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -471,10 +437,8 @@ export const AddColleges = () => {
                   type="tel"
                   className="col p-1"
                   value={formData.college_phone}
-                  onChange={(e) =>
-                    handleChange('college_phone', e.target.value)
-                  }
-                  setError={(error) => handleFieldError('college_phone', error)}
+                  onChange={e => handleChange('college_phone', e.target.value)}
+                  setError={error => handleFieldError('college_phone', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -484,20 +448,13 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.college_phone_link}
-                  onChange={(e) =>
-                    handleChange('college_phone_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('college_phone_link', error)
-                  }
+                  onChange={e => handleChange('college_phone_link', e.target.value)}
+                  setError={error => handleFieldError('college_phone_link', error)}
                 />
                 <div className="col">
                   <label htmlFor="public_private" className="form-label">
                     Public/Private
-                    <span
-                      className="text-danger"
-                      style={{ userSelect: 'none' }}
-                    >
+                    <span className="text-danger" style={{ userSelect: 'none' }}>
                       {' '}
                       *
                     </span>
@@ -508,9 +465,7 @@ export const AddColleges = () => {
                     className="form-select"
                     value={formData.public_private}
                     disabled={inputDisabled}
-                    onChange={(e) =>
-                      handleChange('public_private', e.target.value)
-                    }
+                    onChange={e => handleChange('public_private', e.target.value)}
                   >
                     <option value="" disabled>
                       Select an option
@@ -534,12 +489,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.international_UG_link}
-                  onChange={(e) =>
-                    handleChange('international_UG_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('international_UG_link', error)
-                  }
+                  onChange={e => handleChange('international_UG_link', e.target.value)}
+                  setError={error => handleFieldError('international_UG_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -549,15 +500,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.international_graduation_link}
-                  onChange={(e) =>
-                    handleChange(
-                      'international_graduation_link',
-                      e.target.value,
-                    )
-                  }
-                  setError={(error) =>
-                    handleFieldError('international_graduation_link', error)
-                  }
+                  onChange={e => handleChange('international_graduation_link', e.target.value)}
+                  setError={error => handleFieldError('international_graduation_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -567,12 +511,8 @@ export const AddColleges = () => {
                   type="email"
                   className="col p-1"
                   value={formData.international_person_email}
-                  onChange={(e) =>
-                    handleChange('international_person_email', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('international_person_email', error)
-                  }
+                  onChange={e => handleChange('international_person_email', e.target.value)}
+                  setError={error => handleFieldError('international_person_email', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -582,15 +522,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.international_person_email_link}
-                  onChange={(e) =>
-                    handleChange(
-                      'international_person_email_link',
-                      e.target.value,
-                    )
-                  }
-                  setError={(error) =>
-                    handleFieldError('international_person_email_link', error)
-                  }
+                  onChange={e => handleChange('international_person_email_link', e.target.value)}
+                  setError={error => handleFieldError('international_person_email_link', error)}
                 />
               </div>
             </div>
@@ -607,12 +540,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.application_UG_link}
-                  onChange={(e) =>
-                    handleChange('application_UG_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('application_UG_link', error)
-                  }
+                  onChange={e => handleChange('application_UG_link', e.target.value)}
+                  setError={error => handleFieldError('application_UG_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -622,12 +551,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.application_graduation_link}
-                  onChange={(e) =>
-                    handleChange('application_graduation_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('application_graduation_link', error)
-                  }
+                  onChange={e => handleChange('application_graduation_link', e.target.value)}
+                  setError={error => handleFieldError('application_graduation_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -637,12 +562,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.application_UG_fee}
-                  onChange={(e) =>
-                    handleChange('application_UG_fee', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('application_UG_fee', error)
-                  }
+                  onChange={e => handleChange('application_UG_fee', e.target.value)}
+                  setError={error => handleFieldError('application_UG_fee', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -652,12 +573,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.application_UG_fee_link}
-                  onChange={(e) =>
-                    handleChange('application_UG_fee_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('application_UG_fee_link', error)
-                  }
+                  onChange={e => handleChange('application_UG_fee_link', e.target.value)}
+                  setError={error => handleFieldError('application_UG_fee_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -667,12 +584,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.application_graduation_fee}
-                  onChange={(e) =>
-                    handleChange('application_graduation_fee', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('application_graduation_fee', error)
-                  }
+                  onChange={e => handleChange('application_graduation_fee', e.target.value)}
+                  setError={error => handleFieldError('application_graduation_fee', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -682,15 +595,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.application_graduation_fee_link}
-                  onChange={(e) =>
-                    handleChange(
-                      'application_graduation_fee_link',
-                      e.target.value,
-                    )
-                  }
-                  setError={(error) =>
-                    handleFieldError('application_graduation_fee_link', error)
-                  }
+                  onChange={e => handleChange('application_graduation_fee_link', e.target.value)}
+                  setError={error => handleFieldError('application_graduation_fee_link', error)}
                 />
               </div>
             </div>
@@ -707,8 +613,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.gre_score}
-                  onChange={(e) => handleChange('gre_score', e.target.value)}
-                  setError={(error) => handleFieldError('gre_score', error)}
+                  onChange={e => handleChange('gre_score', e.target.value)}
+                  setError={error => handleFieldError('gre_score', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -718,12 +624,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.gre_score_link}
-                  onChange={(e) =>
-                    handleChange('gre_score_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('gre_score_link', error)
-                  }
+                  onChange={e => handleChange('gre_score_link', e.target.value)}
+                  setError={error => handleFieldError('gre_score_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -733,12 +635,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.toefl_UG_score}
-                  onChange={(e) =>
-                    handleChange('toefl_UG_score', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('toefl_UG_score', error)
-                  }
+                  onChange={e => handleChange('toefl_UG_score', e.target.value)}
+                  setError={error => handleFieldError('toefl_UG_score', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -748,12 +646,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.toefl_UG_score_link}
-                  onChange={(e) =>
-                    handleChange('toefl_UG_score_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('toefl_UG_score_link', error)
-                  }
+                  onChange={e => handleChange('toefl_UG_score_link', e.target.value)}
+                  setError={error => handleFieldError('toefl_UG_score_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -763,12 +657,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.toefl_graduation_score}
-                  onChange={(e) =>
-                    handleChange('toefl_graduation_score', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('toefl_graduation_score', error)
-                  }
+                  onChange={e => handleChange('toefl_graduation_score', e.target.value)}
+                  setError={error => handleFieldError('toefl_graduation_score', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -778,12 +668,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.toefl_graduation_score_link}
-                  onChange={(e) =>
-                    handleChange('toefl_graduation_score_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('toefl_graduation_score_link', error)
-                  }
+                  onChange={e => handleChange('toefl_graduation_score_link', e.target.value)}
+                  setError={error => handleFieldError('toefl_graduation_score_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -793,12 +679,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.ielts_ug_score}
-                  onChange={(e) =>
-                    handleChange('ielts_ug_score', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('ielts_ug_score', error)
-                  }
+                  onChange={e => handleChange('ielts_ug_score', e.target.value)}
+                  setError={error => handleFieldError('ielts_ug_score', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -808,12 +690,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.ielts_ug_score_link}
-                  onChange={(e) =>
-                    handleChange('ielts_ug_score_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('ielts_ug_score_link', error)
-                  }
+                  onChange={e => handleChange('ielts_ug_score_link', e.target.value)}
+                  setError={error => handleFieldError('ielts_ug_score_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -823,12 +701,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.ielts_graduation_score}
-                  onChange={(e) =>
-                    handleChange('ielts_graduation_score', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('ielts_graduation_score', error)
-                  }
+                  onChange={e => handleChange('ielts_graduation_score', e.target.value)}
+                  setError={error => handleFieldError('ielts_graduation_score', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -838,12 +712,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.ielts_graduation_score_link}
-                  onChange={(e) =>
-                    handleChange('ielts_graduation_score_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('ielts_graduation_score_link', error)
-                  }
+                  onChange={e => handleChange('ielts_graduation_score_link', e.target.value)}
+                  setError={error => handleFieldError('ielts_graduation_score_link', error)}
                 />
               </div>
             </div>
@@ -860,12 +730,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.fall_deadline_UG}
-                  onChange={(e) =>
-                    handleChange('fall_deadline_UG', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('fall_deadline_UG', error)
-                  }
+                  onChange={e => handleChange('fall_deadline_UG', e.target.value)}
+                  setError={error => handleFieldError('fall_deadline_UG', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -875,12 +741,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.fall_deadline_UG_link}
-                  onChange={(e) =>
-                    handleChange('fall_deadline_UG_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('fall_deadline_UG_link', error)
-                  }
+                  onChange={e => handleChange('fall_deadline_UG_link', e.target.value)}
+                  setError={error => handleFieldError('fall_deadline_UG_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -890,12 +752,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.fall_deadline_graduation}
-                  onChange={(e) =>
-                    handleChange('fall_deadline_graduation', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('fall_deadline_graduation', error)
-                  }
+                  onChange={e => handleChange('fall_deadline_graduation', e.target.value)}
+                  setError={error => handleFieldError('fall_deadline_graduation', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -905,15 +763,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.fall_deadline_graduation_link}
-                  onChange={(e) =>
-                    handleChange(
-                      'fall_deadline_graduation_link',
-                      e.target.value,
-                    )
-                  }
-                  setError={(error) =>
-                    handleFieldError('fall_deadline_graduation_link', error)
-                  }
+                  onChange={e => handleChange('fall_deadline_graduation_link', e.target.value)}
+                  setError={error => handleFieldError('fall_deadline_graduation_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -923,12 +774,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.spring_deadline_UG}
-                  onChange={(e) =>
-                    handleChange('spring_deadline_UG', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('spring_deadline_UG', error)
-                  }
+                  onChange={e => handleChange('spring_deadline_UG', e.target.value)}
+                  setError={error => handleFieldError('spring_deadline_UG', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -938,12 +785,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.spring_deadline_UG_link}
-                  onChange={(e) =>
-                    handleChange('spring_deadline_UG_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('spring_deadline_UG_link', error)
-                  }
+                  onChange={e => handleChange('spring_deadline_UG_link', e.target.value)}
+                  setError={error => handleFieldError('spring_deadline_UG_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -953,12 +796,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.spring_deadline_graduation}
-                  onChange={(e) =>
-                    handleChange('spring_deadline_graduation', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('spring_deadline_graduation', error)
-                  }
+                  onChange={e => handleChange('spring_deadline_graduation', e.target.value)}
+                  setError={error => handleFieldError('spring_deadline_graduation', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -968,15 +807,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.spring_deadline_graduation_link}
-                  onChange={(e) =>
-                    handleChange(
-                      'spring_deadline_graduation_link',
-                      e.target.value,
-                    )
-                  }
-                  setError={(error) =>
-                    handleFieldError('spring_deadline_graduation_link', error)
-                  }
+                  onChange={e => handleChange('spring_deadline_graduation_link', e.target.value)}
+                  setError={error => handleFieldError('spring_deadline_graduation_link', error)}
                 />
               </div>
             </div>
@@ -993,8 +825,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.UG_courses}
-                  onChange={(e) => handleChange('UG_courses', e.target.value)}
-                  setError={(error) => handleFieldError('UG_courses', error)}
+                  onChange={e => handleChange('UG_courses', e.target.value)}
+                  setError={error => handleFieldError('UG_courses', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -1004,12 +836,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.UG_courses_link}
-                  onChange={(e) =>
-                    handleChange('UG_courses_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('UG_courses_link', error)
-                  }
+                  onChange={e => handleChange('UG_courses_link', e.target.value)}
+                  setError={error => handleFieldError('UG_courses_link', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -1019,12 +847,8 @@ export const AddColleges = () => {
                   type="text"
                   className="col p-1"
                   value={formData.graduation_courses}
-                  onChange={(e) =>
-                    handleChange('graduation_courses', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('graduation_courses', error)
-                  }
+                  onChange={e => handleChange('graduation_courses', e.target.value)}
+                  setError={error => handleFieldError('graduation_courses', error)}
                 />
                 <InputField
                   disabled={inputDisabled}
@@ -1034,12 +858,8 @@ export const AddColleges = () => {
                   type="url"
                   className="col p-1"
                   value={formData.graduation_courses_link}
-                  onChange={(e) =>
-                    handleChange('graduation_courses_link', e.target.value)
-                  }
-                  setError={(error) =>
-                    handleFieldError('graduation_courses_link', error)
-                  }
+                  onChange={e => handleChange('graduation_courses_link', e.target.value)}
+                  setError={error => handleFieldError('graduation_courses_link', error)}
                 />
               </div>
             </div>
@@ -1055,11 +875,7 @@ export const AddColleges = () => {
                 </button>
               ) : (
                 <>
-                  <button
-                    type="submit"
-                    className="btn btn-primary shadow px-5"
-                    onClick={handleAdd}
-                  >
+                  <button type="submit" className="btn btn-primary shadow px-5" onClick={handleAdd}>
                     {'Add College'}
                   </button>
                   {inputDisabled ? (
@@ -1095,9 +911,7 @@ export const AddColleges = () => {
             show={toast.show}
             message={toast.message}
             color={toast.color}
-            onClose={() =>
-              setToast({ show: false, message: '', color: undefined })
-            }
+            onClose={() => setToast({ show: false, message: '', color: undefined })}
           />
         </>
       )}

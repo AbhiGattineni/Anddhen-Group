@@ -35,10 +35,7 @@ const HappinessIndex = ({ open, handleClose }) => {
     mutate: submitHappiness,
     isLoading,
     error,
-  } = useAddData(
-    'happiness-index',
-    user_id ? `/happiness-index/add/${user_id}/` : null,
-  );
+  } = useAddData('happiness-index', user_id ? `/happiness-index/add/${user_id}/` : null);
 
   const handleSubmit = () => {
     if (!user_id) {
@@ -59,7 +56,7 @@ const HappinessIndex = ({ open, handleClose }) => {
         setHappinessScore(3);
         setDescription('');
       },
-      onError: (error) => {
+      onError: error => {
         setSubmitError(error.message || 'Failed to submit happiness index');
         console.error('Error submitting happiness index:', error);
       },
@@ -107,9 +104,7 @@ const HappinessIndex = ({ open, handleClose }) => {
         <ToggleButtonGroup
           value={happinessScore}
           exclusive
-          onChange={(event, newValue) =>
-            setHappinessScore(newValue || happinessScore)
-          }
+          onChange={(event, newValue) => setHappinessScore(newValue || happinessScore)}
           sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}
           disabled={!user_id}
         >
@@ -135,10 +130,7 @@ const HappinessIndex = ({ open, handleClose }) => {
                   justifyContent: 'center',
                   backgroundColor: 'white',
                   transition: 'all 0.2s ease-in-out',
-                  boxShadow:
-                    happinessScore === value
-                      ? '0px 0px 10px rgba(0, 0, 0, 0.2)'
-                      : 'none',
+                  boxShadow: happinessScore === value ? '0px 0px 10px rgba(0, 0, 0, 0.2)' : 'none',
                 }}
               >
                 <img
@@ -155,7 +147,7 @@ const HappinessIndex = ({ open, handleClose }) => {
           fullWidth
           label="Description (Optional)"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={e => setDescription(e.target.value)}
           variant="outlined"
           margin="dense"
           disabled={!user_id}
@@ -169,9 +161,7 @@ const HappinessIndex = ({ open, handleClose }) => {
           }}
         />
       </DialogContent>
-      <DialogActions
-        sx={{ justifyContent: 'center', paddingBottom: 1, paddingTop: 0 }}
-      >
+      <DialogActions sx={{ justifyContent: 'center', paddingBottom: 1, paddingTop: 0 }}>
         <Button
           onClick={handleSubmit}
           variant="contained"
@@ -186,9 +176,7 @@ const HappinessIndex = ({ open, handleClose }) => {
         </Button>
       </DialogActions>
       {(error || submitError) && (
-        <div
-          style={{ color: 'red', textAlign: 'center', padding: '0 16px 16px' }}
-        >
+        <div style={{ color: 'red', textAlign: 'center', padding: '0 16px 16px' }}>
           {error?.message || submitError}
         </div>
       )}

@@ -61,20 +61,10 @@ export const Colleges = () => {
         >
           <AddColleges />
         </div>
-        <div
-          className="tab-pane fade"
-          id="link"
-          role="tabpanel"
-          aria-labelledby="link-tab"
-        >
+        <div className="tab-pane fade" id="link" role="tabpanel" aria-labelledby="link-tab">
           <AddLinks />
         </div>
-        <div
-          className="tab-pane fade"
-          id="profile"
-          role="tabpanel"
-          aria-labelledby="profile-tab"
-        >
+        <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <ViewCollege />
         </div>
       </div>

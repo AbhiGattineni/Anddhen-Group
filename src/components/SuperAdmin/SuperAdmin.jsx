@@ -6,15 +6,14 @@ const SuperAdmin = () => {
   const [search, setSearch] = useState('');
   const [filteredPlates, setFilteredPlates] = useState(adminPlates);
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     const query = e.target.value.toLowerCase();
     setSearch(query);
     setFilteredPlates(
       adminPlates.filter(
-        (plate) =>
-          plate.child.toLowerCase().includes(query) ||
-          plate.route.toLowerCase().includes(query),
-      ),
+        plate =>
+          plate.child.toLowerCase().includes(query) || plate.route.toLowerCase().includes(query)
+      )
     );
   };
 

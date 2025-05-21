@@ -13,11 +13,7 @@ const AssignRole = () => {
   const [roleError, setRoleError] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState(null);
 
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useFetchData('roles', '/api/user_and_role_overview/');
+  const { data = [], isLoading, error } = useFetchData('roles', '/api/user_and_role_overview/');
 
   const { mutate: assignRole } = useAddData('roles', `/assignrole/`); // Using your custom hook
 
@@ -30,10 +26,10 @@ const AssignRole = () => {
           setRole('');
           setUser('');
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Error assigning role:', error);
         },
-      },
+      }
     );
   };
 
@@ -44,10 +40,7 @@ const AssignRole = () => {
     }
   }, [deleteRoleId]);
 
-  const { mutate: deleteRole } = useDeleteData(
-    'roles',
-    `/deleteRole/${deleteRoleId}/`,
-  );
+  const { mutate: deleteRole } = useDeleteData('roles', `/deleteRole/${deleteRoleId}/`);
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this role?')) {
@@ -55,18 +48,18 @@ const AssignRole = () => {
         onSuccess: () => {
           queryClient.invalidateQueries('roles'); // Refresh the roles and user data
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Error deleting role:', error);
         },
       });
     }
   };
 
-  const handleDeleteRole = (roleId) => {
+  const handleDeleteRole = roleId => {
     setDeleteRoleId(roleId);
   };
 
-  const handleAssign = (event) => {
+  const handleAssign = event => {
     event.preventDefault();
 
     if (!user) {
@@ -101,8 +94,7 @@ const AssignRole = () => {
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
-        An error occurred:{' '}
-        {error.message || 'Failed to fetch data. Please try again later.'}
+        An error occurred: {error.message || 'Failed to fetch data. Please try again later.'}
       </div>
     );
   }
@@ -121,20 +113,18 @@ const AssignRole = () => {
               id="userSelect"
               className={`form-select ${userError ? 'is-invalid' : ''}`}
               value={user || ''}
-              onChange={(e) => setUser(e.target.value)}
+              onChange={e => setUser(e.target.value)}
             >
               <option value="" disabled>
                 Select User
               </option>
-              {data?.users.map((user) => (
+              {data?.users.map(user => (
                 <option key={user.user_id} value={user.user_id}>
                   {user.full_name}
                 </option>
               ))}
             </select>
-            {userError && (
-              <div className="invalid-feedback">User is required.</div>
-            )}
+            {userError && <div className="invalid-feedback">User is required.</div>}
           </div>
 
           <div className={`mb-3 col-md-6 ${roleError ? 'has-error' : ''}`}>
@@ -145,20 +135,18 @@ const AssignRole = () => {
               id="roleSelect"
               className={`form-select ${roleError ? 'is-invalid' : ''}`}
               value={role || ''}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={e => setRole(e.target.value)}
             >
               <option value="" disabled>
                 Select Role
               </option>
-              {data?.roles.map((role) => (
+              {data?.roles.map(role => (
                 <option key={role.id} value={role.id}>
                   {role.name_of_role}
                 </option>
               ))}
             </select>
-            {roleError && (
-              <div className="invalid-feedback">Role is required.</div>
-            )}
+            {roleError && <div className="invalid-feedback">Role is required.</div>}
           </div>
 
           <div className="col-12">
@@ -211,20 +199,18 @@ const AssignRole = () => {
             id="userSelect"
             className={`form-select ${userError ? 'is-invalid' : ''}`}
             value={user || ''}
-            onChange={(e) => setUser(e.target.value)}
+            onChange={e => setUser(e.target.value)}
           >
             <option value="" disabled>
               Select User
             </option>
-            {data?.users.map((user) => (
+            {data?.users.map(user => (
               <option key={user.user_id} value={user.user_id}>
                 {user.full_name}
               </option>
             ))}
           </select>
-          {userError && (
-            <div className="invalid-feedback">User is required.</div>
-          )}
+          {userError && <div className="invalid-feedback">User is required.</div>}
         </div>
 
         <div className={`mb-3 col-md-6 ${roleError ? 'has-error' : ''}`}>
@@ -235,20 +221,18 @@ const AssignRole = () => {
             id="roleSelect"
             className={`form-select ${roleError ? 'is-invalid' : ''}`}
             value={role || ''}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={e => setRole(e.target.value)}
           >
             <option value="" disabled>
               Select Role
             </option>
-            {data?.roles.map((role) => (
+            {data?.roles.map(role => (
               <option key={role.id} value={role.id}>
                 {role.name_of_role}
               </option>
             ))}
           </select>
-          {roleError && (
-            <div className="invalid-feedback">Role is required.</div>
-          )}
+          {roleError && <div className="invalid-feedback">Role is required.</div>}
         </div>
 
         <div className="col-12">

@@ -64,50 +64,43 @@ export const subsidiaries = [
   {
     Name: 'Anddhen Marketing Services',
     Photo: '/assets/images/marketing.jpg',
-    Description:
-      'Comprehensive marketing strategies to boost brand presence and growth.',
+    Description: 'Comprehensive marketing strategies to boost brand presence and growth.',
     link: '/ams',
   },
   {
     Name: 'Anddhen Consulting Services',
     Photo: '/assets/images/consulting2.jpg',
-    Description:
-      'Expert consulting services for business development and strategic solutions.',
+    Description: 'Expert consulting services for business development and strategic solutions.',
     link: '/acs',
   },
   {
     Name: 'Anddhen Software Services',
     Photo: '/assets/images/service6.jpg',
-    Description:
-      'Innovative software development services tailored to business needs.',
+    Description: 'Innovative software development services tailored to business needs.',
     link: '/ass',
   },
   {
     Name: 'Anddhen Philanthropy Services',
     Photo: '/assets/images/philanthropy1.jpg',
-    Description:
-      'Supporting philanthropic initiatives for positive social impact and change.',
+    Description: 'Supporting philanthropic initiatives for positive social impact and change.',
     link: '/aps',
   },
   {
     Name: 'Anddhen Trading & Investment',
     Photo: '/assets/images/trade3.jpg',
-    Description:
-      'Expert trading and investment services to maximize financial returns.',
+    Description: 'Expert trading and investment services to maximize financial returns.',
     link: '/ati',
   },
   {
     Name: 'Andhden Travel Services',
     Photo: '/assets/images/subsid6.jpg',
-    Description:
-      'Comprehensive travel solutions for seamless journeys and experiences.',
+    Description: 'Comprehensive travel solutions for seamless journeys and experiences.',
     link: '/ats',
   },
   {
     Name: 'Anddhen NRI Services',
     Photo: '/assets/images/subsid7.jpg',
-    Description:
-      'Dedicated services for NRIs to manage overseas investments effectively.',
+    Description: 'Dedicated services for NRIs to manage overseas investments effectively.',
     link: '/ans',
   },
 ];
@@ -251,8 +244,7 @@ export const teamImages = {
 export const myworks = [
   {
     name: 'Anddhen Group',
-    image:
-      'https://www.anddhengroup.com/static/media/web.8be0ea3c0799cfab269f.jpg',
+    image: 'https://www.anddhengroup.com/static/media/web.8be0ea3c0799cfab269f.jpg',
     description:
       'Anddhen is a startup company that offers leading consultancy and implementation expertise to help drive value across your business. We can deliver both out-of-the box and proprietary solutions and be a trustworthy, long-term technology partner that aligns with your goals and helps you achieve the results you require.',
     link: 'https://www.anddhengroup.com/',
@@ -260,8 +252,7 @@ export const myworks = [
   },
   {
     name: 'Satya sreeman Engineering & Constructions',
-    image:
-      'https://www.satyasreeman.com/static/media/image1.3aa18de420eceb523489.jpg',
+    image: 'https://www.satyasreeman.com/static/media/image1.3aa18de420eceb523489.jpg',
     description:
       "We believe that fundamental role of leadership is to create and maintain a culture that strengthens the company's core values, encourages employees to do the right thing, and helps drive the company's long-term strategy. All delivered with humility and compassion.",
     link: 'http://www.satyasreeman.com',
@@ -269,8 +260,7 @@ export const myworks = [
   },
   {
     name: 'Hyderabad Trekking Company',
-    image:
-      'https://www.thehtc.in/wp-content/uploads/2021/07/HyderabadTrekkingCompany.jpg',
+    image: 'https://www.thehtc.in/wp-content/uploads/2021/07/HyderabadTrekkingCompany.jpg',
     description:
       'HTC preserves and cherishes these amazing leads. It is a fact that HTC is the only one keeping up the ideals of a trek free from cigarettes, alcohol and substance abuse. We are proud of the fact that our events went 100 percent safe for all trekkers, including numerous women, elderly, introverts, specially-abled, and children.',
     link: 'http://www.thehtc.in/',
@@ -951,15 +941,7 @@ export const categories = [
   {
     id: 'personalInfo',
     label: 'Personal Info',
-    fields: [
-      'name',
-      'email',
-      'phone',
-      'address',
-      'linkedIn_Link',
-      'gitHub_Link',
-      'portfolio_Link',
-    ],
+    fields: ['name', 'email', 'phone', 'address', 'linkedIn_Link', 'gitHub_Link', 'portfolio_Link'],
     required: ['name', 'email', 'phone', 'address'],
   },
   {
@@ -975,14 +957,7 @@ export const categories = [
       'end_Date',
       'current',
     ],
-    required: [
-      'college_Name',
-      'location',
-      'degree',
-      'field',
-      'start_Date',
-      'end_Date',
-    ],
+    required: ['college_Name', 'location', 'degree', 'field', 'start_Date', 'end_Date'],
   },
   {
     id: 'experience',
@@ -1022,14 +997,7 @@ export const categories = [
   {
     id: 'additional',
     label: 'Additional',
-    fields: [
-      'title',
-      'link',
-      'start_Date',
-      'end_Date',
-      'current',
-      'description',
-    ],
+    fields: ['title', 'link', 'start_Date', 'end_Date', 'current', 'description'],
     required: [],
   },
 ];
