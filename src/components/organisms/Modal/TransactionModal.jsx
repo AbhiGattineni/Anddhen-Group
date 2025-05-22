@@ -80,11 +80,7 @@ export const TransactionModal = ({
       // Clear any previous error if value is valid
       handleFieldError('amount', null);
     }
-<<<<<<< HEAD
     setFormData(prev => ({ ...prev, [field]: value }));
-=======
-    setFormData((prev) => ({ ...prev, [field]: value }));
->>>>>>> 4c61bd67500c366d6dee11442ab4749bb199606f
   };
 
   const handleFieldError = (fieldName, error) => {
