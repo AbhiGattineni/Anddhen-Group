@@ -83,7 +83,6 @@ const FinanceAnalytics = ({ transactions }) => {
         return acc;
       }, {});
 
-      console.log('Monthly totals:', monthlyTotals);
       const barData = Object.entries(monthlyTotals)
         .map(([month, total]) => ({
           month,
