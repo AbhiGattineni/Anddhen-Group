@@ -92,7 +92,6 @@ const ExtensionView = () => {
       }
 
       const data = await response.json();
-      console.log('Backend updated list:', data);
       setWords(Array.isArray(data) ? data : updatedWords);
     } catch (error) {
       console.error('Error syncing words:', error);
@@ -116,12 +115,10 @@ const ExtensionView = () => {
 
     let updatedWords;
     if (editIndex !== null) {
-      // Edit existing
       updatedWords = words.map((w, i) =>
         i === editIndex ? { word: trimmedWord, color: trimmedColor } : w
       );
     } else {
-      // Add new
       updatedWords = [...words, { word: trimmedWord, color: trimmedColor }];
     }
 
@@ -129,13 +126,11 @@ const ExtensionView = () => {
     handleClose();
   };
 
-  // Confirm delete dialog open
   const confirmDelete = index => {
     setDeleteIndex(index);
     setShowConfirmation(true);
   };
 
-  // Delete confirmed handler
   const handleDeleteLink = async () => {
     setDeleteLoading(true);
     const updatedWords = words.filter((_, i) => i !== deleteIndex);
@@ -154,7 +149,30 @@ const ExtensionView = () => {
     { name: 'Red', hex: '#ff0000' },
     { name: 'Orange', hex: '#ffa500' },
     { name: 'Green', hex: '#00ff00' },
+    { name: 'Thick Orange', hex: '#ff8c00' }, // New color
   ];
+
+  const getCategoryByColor = color => {
+    switch (color.toLowerCase()) {
+      case '#ff8c00':
+        return 'STAFFING';
+      case '#ffa500':
+        return 'CONSULTING';
+      case '#ff0000':
+        return 'FILTER';
+      case '#00ff00':
+        return 'CHECK IN';
+      default:
+        return 'OTHER';
+    }
+  };
+
+  const categorizedWords = words.reduce((acc, wordObj) => {
+    const category = getCategoryByColor(wordObj.color);
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(wordObj);
+    return acc;
+  }, {});
 
   return (
     <div className="container mt-5">
@@ -173,47 +191,66 @@ const ExtensionView = () => {
         </Box>
       ) : (
         <>
-          {Array.isArray(words) && words.length > 0 ? (
-            <div className="row">
-              {words.map((item, index) => (
-                <div key={index} className="col-md-4 mb-4">
-                  <div
-                    className="shadow-sm p-3 rounded d-flex justify-content-between align-items-center"
-                    style={{
-                      backgroundColor: item.color,
-                      color: '#fff',
-                      fontWeight: 500,
-                      borderRadius: '12px',
-                      minHeight: '70px',
-                    }}
-                  >
-                    <span>{item.word}</span>
-                    <Box>
-                      <Tooltip title="Edit">
-                        <IconButton
-                          onClick={() => handleOpen(index)}
-                          size="small"
-                          disabled={saving}
-                          sx={{ color: '#fff' }}
-                        >
-                          <Edit />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton
-                          onClick={() => confirmDelete(index)}
-                          size="small"
-                          disabled={saving}
-                          sx={{ color: '#fff' }}
-                        >
-                          <Delete />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </div>
+          {Object.keys(categorizedWords).length > 0 ? (
+            Object.keys(categorizedWords).map(category => (
+              <Box key={category} mb={4}>
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  {category}
+                </Typography>
+                <div className="row">
+                  {categorizedWords[category].map((item, index) => (
+                    <div key={`${item.word}-${index}`} className="col-md-4 mb-4">
+                      <div
+                        className="shadow-sm p-3 rounded d-flex justify-content-between align-items-center"
+                        style={{
+                          backgroundColor: item.color,
+                          color: '#fff',
+                          fontWeight: 500,
+                          borderRadius: '12px',
+                          minHeight: '70px',
+                        }}
+                      >
+                        <span>{item.word}</span>
+                        <Box>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              onClick={() =>
+                                handleOpen(
+                                  words.findIndex(
+                                    w => w.word === item.word && w.color === item.color
+                                  )
+                                )
+                              }
+                              size="small"
+                              disabled={saving}
+                              sx={{ color: '#fff' }}
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              onClick={() =>
+                                confirmDelete(
+                                  words.findIndex(
+                                    w => w.word === item.word && w.color === item.color
+                                  )
+                                )
+                              }
+                              size="small"
+                              disabled={saving}
+                              sx={{ color: '#fff' }}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </Box>
+            ))
           ) : (
             <Typography>No words found.</Typography>
           )}
