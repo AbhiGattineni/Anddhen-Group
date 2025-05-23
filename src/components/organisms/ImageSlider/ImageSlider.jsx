@@ -21,7 +21,13 @@ const ImageSlider = ({ title, cards }) => {
     setStartIndex(0);
   }, [isExtraLargeScreen, isLargeScreen, isMediumScreen, isSmallScreen]);
 
-  const imagesPerPage = isExtraLargeScreen ? 4 : isLargeScreen ? 3 : isMediumScreen ? 2 : 1;
+  const imagesPerPage = isExtraLargeScreen
+    ? 4
+    : isLargeScreen
+      ? 3
+      : isMediumScreen
+        ? 2
+        : 1;
   const totalImages = cards.length;
 
   // Scroll Functionality for Mouse Wheel
