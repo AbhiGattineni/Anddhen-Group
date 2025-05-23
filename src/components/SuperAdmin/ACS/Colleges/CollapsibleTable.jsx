@@ -350,9 +350,13 @@ function Row({ row, filter }) {
                             <li key={key}>
                               <strong>{key}:</strong>{' '}
                               {key.includes('Link') ? (
-                                <a href={value} target="_blank" rel="noopener noreferrer">
-                                  {value}
-                                </a>
+                                value ? (
+                                  <a href={value} target="_blank" rel="noopener noreferrer">
+                                    Link
+                                  </a>
+                                ) : (
+                                  'No Link Available'
+                                )
                               ) : (
                                 value
                               )}
@@ -376,9 +380,13 @@ function Row({ row, filter }) {
                             <li key={key}>
                               <strong>{key}:</strong>{' '}
                               {key.includes('Link') ? (
-                                <a href={value} target="_blank" rel="noopener noreferrer">
-                                  {value}
-                                </a>
+                                value ? (
+                                  <a href={value} target="_blank" rel="noopener noreferrer">
+                                    Link
+                                  </a>
+                                ) : (
+                                  'No Link Available'
+                                )
                               ) : (
                                 value
                               )}
