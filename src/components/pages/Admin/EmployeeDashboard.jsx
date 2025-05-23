@@ -8,7 +8,7 @@ import useAuthStore from 'src/services/store/globalStore';
 import AssignCards from './AssignCards';
 import { adminPlates } from 'src/dataconfig';
 import HappinessIndex from './HappinessIndex';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { FormControl, Grid, InputLabel, MenuItem, Select, TextField, Alert } from '@mui/material';
 
 const subsidaryOptions = ['ACS', 'ASS', 'ATI', 'ANS', 'AMS'];
 
@@ -48,6 +48,7 @@ const initialFormState = {
     whatsapp_group_number: '',
   },
 };
+
 export const EmployeeDashboard = () => {
   const empName = '';
   const [formValues, setFormValues] = useState(initialFormState);
@@ -59,8 +60,9 @@ export const EmployeeDashboard = () => {
   const [search, setSearch] = useState('');
   const [searchedPlates, setSearchedPlates] = useState(adminPlates);
   const [userSubsidaries, setUserSubsidaries] = useState([]);
+  const [userTimezone, setUserTimezone] = useState('UTC');
 
-  const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid); // Use statusUpdates directly
+  const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
   const formattedData = statusUpdates
     ? statusUpdates?.status_updates?.map(item => [item.date, item.leave])
@@ -75,11 +77,67 @@ export const EmployeeDashboard = () => {
     !statusUpdates?.has_submitted_happiness_today
   );
 
+  // Timezone handling functions
+  const isUpdateAllowed = selectedDate => {
+    if (!selectedDate) return false;
+
+    const selectedDateLocal = new Date(selectedDate);
+    const nowLocal = new Date();
+
+    const cutoffTime = new Date(selectedDateLocal);
+    cutoffTime.setDate(cutoffTime.getDate() + 1);
+    cutoffTime.setHours(9, 0, 0, 0);
+
+    return nowLocal <= cutoffTime;
+  };
+
+  const isTodayOrPast = selectedDate => {
+    if (!selectedDate) return false;
+
+    const todayLocal = new Date();
+    todayLocal.setHours(0, 0, 0, 0);
+
+    const selectedDateLocal = new Date(selectedDate);
+    selectedDateLocal.setHours(0, 0, 0, 0);
+
+    return selectedDateLocal <= todayLocal;
+  };
+
+  const formatDateForDisplay = dateString => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleString('en-US', {
+      timeZone: userTimezone,
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    });
+  };
+
+  const getLocalCutoffTimeDisplay = dateString => {
+    if (!dateString) return '';
+    const cutoff = new Date(dateString);
+    cutoff.setDate(cutoff.getDate() + 1);
+    cutoff.setHours(9, 0, 0, 0);
+    return formatDateForDisplay(cutoff);
+  };
+
   useEffect(() => {
     if (statusUpdates?.has_submitted_happiness_today !== undefined) {
       statusUpdates['has_submitted_happiness_today'] = true;
     }
-  }, [openHappinessDialog]);
+
+    // Detect user's timezone
+    try {
+      const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      setUserTimezone(detectedTimezone || 'UTC');
+    } catch (e) {
+      console.error('Could not detect timezone:', e);
+      setUserTimezone('UTC');
+    }
+  }, []);
 
   useEffect(() => {
     if (searchedPlates !== filteredPlates) {
@@ -119,6 +177,7 @@ export const EmployeeDashboard = () => {
   }, [auth.currentUser]);
 
   const formatDate = date => {
+    if (!date) return '';
     const inputDate = new Date(date);
     const year = inputDate.getFullYear();
     const month = String(inputDate.getMonth() + 1).padStart(2, '0');
@@ -240,25 +299,26 @@ export const EmployeeDashboard = () => {
     const selectedSubsidary = formValues.subsidary;
     const fields = initialFormState[selectedSubsidary];
 
-    if (!fields) return null; // Ensure fields exist
+    if (!fields) return null;
 
-    // Initialize formValues[selectedSubsidary] if undefined
     if (!formValues[selectedSubsidary]) {
       formValues[selectedSubsidary] = { ...fields };
     }
 
+    const updatesAllowed = isUpdateAllowed(formValues.date);
+    const isPastDate = !isTodayOrPast(formValues.date);
     return Object.keys(fields)?.map(key => (
       <Grid item xs={12} sm={6} key={key}>
         <TextField
           fullWidth
           label={key
-            .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before uppercase letters
-            .replace(/_/g, ' ') // Replace underscores with spaces
-            .replace(/\b\w/g, char => char.toUpperCase())} // Capitalize first letter of each word
+            .replace(/([a-z])([A-Z])/g, '$1 $2')
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, char => char.toUpperCase())}
           name={`${selectedSubsidary}.${key}`}
           value={formValues[selectedSubsidary]?.[key] || ''}
           onChange={handleChange}
-          disabled={disableInputs}
+          disabled={disableInputs || !updatesAllowed || isPastDate}
           variant="outlined"
         />
       </Grid>
@@ -268,15 +328,28 @@ export const EmployeeDashboard = () => {
   const flattenObject = obj => {
     return Object.keys(obj).reduce((acc, key) => {
       if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-        return { ...acc, ...obj[key] }; // Spread nested object properties
+        return { ...acc, ...obj[key] };
       }
-      acc[key] = obj[key]; // Keep top-level properties
+      acc[key] = obj[key];
       return acc;
     }, {});
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
+
+    if (!isTodayOrPast(formValues.date)) {
+      setMsgResponse('You can only submit status for today or past dates.');
+      return;
+    }
+
+    if (!isUpdateAllowed(formValues.date)) {
+      setMsgResponse(
+        `Status updates are only allowed until ${getLocalCutoffTimeDisplay(formValues.date)} (your local time)`
+      );
+      return;
+    }
+
     try {
       const requiredFields = ['date', 'subsidary'];
       const missingField = requiredFields?.find(field => !formValues[field]);
@@ -296,6 +369,7 @@ export const EmployeeDashboard = () => {
         setMsgResponse(`Please fill in the required field: ${missingFieldName}`);
         return;
       }
+
       const postStatus = flattenObject(formValues);
 
       let response = '';
@@ -339,16 +413,24 @@ export const EmployeeDashboard = () => {
         )}
         <form className="form">
           <h2>Status Update Form</h2>
+
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Status updates are allowed until 9 AM the next day in your local timezone.
+            <div>Detected timezone: {userTimezone}</div>
+          </Alert>
+
           <div className="row">
             <div className="col-12">
               {formattedData && <StatusCalendar data={formattedData} empName={empName} />}
             </div>
           </div>
+
           {msgResponse && (
             <div className="alert alert-info" role="alert">
               {msgResponse}
             </div>
           )}
+
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -407,8 +489,9 @@ export const EmployeeDashboard = () => {
                 <MenuItem value={false}>No</MenuItem>
               </TextField>
             </Grid>
-            {/* Dynamic Fields */}
+
             {renderSubsidaryFields()}
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -423,24 +506,25 @@ export const EmployeeDashboard = () => {
               />
             </Grid>
           </Grid>
+
           <div className="col-12 d-flex justify-content-center gap-3 py-2">
-            <button type="submit" className="btn btn-primary" onClick={handleSubmit}>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={handleSubmit}
+              disabled={!isUpdateAllowed(formValues.date) || !isTodayOrPast(formValues.date)}
+            >
               Submit
             </button>
             {showEdit && (
-              <button
-                type="submit"
-                className="btn btn-primary"
-                onClick={handleEdit}
-                // disabled={showEdit}
-              >
+              <button type="submit" className="btn btn-primary" onClick={handleEdit}>
                 Edit
               </button>
             )}
           </div>
         </form>
       </div>
-      {/* Conditionally render search bar if cards are available */}
+
       {searchedPlates?.length > 0 && (
         <div className="input-group px-5 mt-4">
           <input
