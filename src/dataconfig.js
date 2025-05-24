@@ -404,6 +404,10 @@ export const adminPlates = [
     child: 'HappinessIndexAdmin',
     route: 'HappinessIndexAdmin',
   },
+  {
+    child: 'Extension Data',
+    route: 'extension',
+  },
 ];
 
 export const adminPortal = [
