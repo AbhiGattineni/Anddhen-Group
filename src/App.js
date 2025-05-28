@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types'; // Add this line
-
 import './App.css';
 import Navbar from './components/organisms/Navbar';
 import Footer from './components/organisms/Footer';
