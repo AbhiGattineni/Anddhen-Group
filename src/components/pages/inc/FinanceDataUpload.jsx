@@ -22,6 +22,7 @@ const FinanceDataUpload = () => {
   const [persistData, setPersistData] = useState(false);
   const [uploadHistory, setUploadHistory] = useState([]);
   const [currentTransactions, setCurrentTransactions] = useState([]);
+  const [currentCardSuggestions, setCurrentCardSuggestions] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({});
   const [fileInputKey, setFileInputKey] = useState(0);
 
@@ -58,13 +59,18 @@ const FinanceDataUpload = () => {
         fileResults: data.file_results,
         totalCount: data.total_count,
         transactions: data.transactions,
+        cardSuggestions: data.card_suggestions,
       };
       setUploadHistory(prev => [newUpload, ...prev]);
 
-      // Update current transactions if available
+      // Update current transactions and card suggestions if available
       if (data.transactions && Array.isArray(data.transactions)) {
         console.log('Setting transactions:', data.transactions);
         setCurrentTransactions(data.transactions);
+      }
+      if (data.card_suggestions) {
+        console.log('Setting card suggestions:', data.card_suggestions);
+        setCurrentCardSuggestions(data.card_suggestions);
       }
 
       // Clear selected files
@@ -298,7 +304,10 @@ const FinanceDataUpload = () => {
             </Col>
             <Col md={8}>
               {Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
-                <FinanceAnalytics transactions={currentTransactions} />
+                <FinanceAnalytics
+                  transactions={currentTransactions}
+                  cardSuggestions={currentCardSuggestions}
+                />
               ) : (
                 <Alert variant="info">
                   {uploadMutation.isPending
