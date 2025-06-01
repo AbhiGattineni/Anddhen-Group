@@ -10,6 +10,8 @@ import {
   Badge,
   Spinner,
   Alert,
+  Pagination,
+  Form,
 } from 'react-bootstrap';
 import {
   PieChart,
@@ -44,6 +46,8 @@ const FinanceAnalytics = ({ transactions }) => {
   const [categoryData, setCategoryData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [categorySummary, setCategorySummary] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(20);
 
   useEffect(() => {
     if (!transactions || !Array.isArray(transactions)) {
@@ -120,6 +124,21 @@ const FinanceAnalytics = ({ transactions }) => {
       setLoading(false);
     }
   }, [transactions]);
+
+  // Calculate pagination
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = transactions.slice(indexOfFirstRecord, indexOfLastRecord);
+  const totalPages = Math.ceil(transactions.length / recordsPerPage);
+
+  const handlePageChange = pageNumber => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleRecordsPerPageChange = event => {
+    setRecordsPerPage(Number(event.target.value));
+    setCurrentPage(1); // Reset to first page when changing records per page
+  };
 
   if (loading) {
     return (
@@ -256,8 +275,18 @@ const FinanceAnalytics = ({ transactions }) => {
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="d-flex justify-content-between align-items-center">
           <h5 className="mb-0">Recent Transactions</h5>
+          <Form.Select
+            style={{ width: 'auto' }}
+            value={recordsPerPage}
+            onChange={handleRecordsPerPageChange}
+          >
+            <option value={10}>10 per page</option>
+            <option value={20}>20 per page</option>
+            <option value={50}>50 per page</option>
+            <option value={100}>100 per page</option>
+          </Form.Select>
         </CardHeader>
         <CardBody>
           <Table responsive hover>
@@ -270,7 +299,7 @@ const FinanceAnalytics = ({ transactions }) => {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((txn, index) => (
+              {currentRecords.map((txn, index) => (
                 <tr key={index}>
                   <td>{new Date(txn.date).toLocaleDateString()}</td>
                   <td>{txn.merchant}</td>
@@ -282,6 +311,36 @@ const FinanceAnalytics = ({ transactions }) => {
               ))}
             </tbody>
           </Table>
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              Showing {indexOfFirstRecord + 1} to {Math.min(indexOfLastRecord, transactions.length)}{' '}
+              of {transactions.length} entries
+            </div>
+            <Pagination>
+              <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
+              <Pagination.Prev
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              />
+              {[...Array(totalPages)].map((_, index) => (
+                <Pagination.Item
+                  key={index + 1}
+                  active={index + 1 === currentPage}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              />
+              <Pagination.Last
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+              />
+            </Pagination>
+          </div>
         </CardBody>
       </Card>
     </div>
