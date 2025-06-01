@@ -13,6 +13,7 @@ import {
 } from 'react-bootstrap';
 import { useMutation } from 'react-query';
 import FinanceAnalytics from './FinanceAnalytics';
+import { toast, Toaster } from 'react-hot-toast';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -22,72 +23,75 @@ const FinanceDataUpload = () => {
   const [uploadHistory, setUploadHistory] = useState([]);
   const [currentTransactions, setCurrentTransactions] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
+  const [fileInputKey, setFileInputKey] = useState(0);
 
-  const uploadMutation = useMutation(
-    async formData => {
-      console.log(
-        'Uploading files:',
-        selectedFiles.map(f => f.name)
-      );
-      console.log('FormData contents:');
-      for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
+  const uploadMutation = useMutation({
+    mutationFn: async files => {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('statement', file);
+      });
 
       const response = await fetch(`${API_BASE_URL}/api/finance/upload/`, {
         method: 'POST',
         body: formData,
       });
-      return response.json();
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Upload failed');
+      }
+
+      const data = await response.json();
+      console.log('Upload response:', data);
+      return data;
     },
-    {
-      onSuccess: data => {
-        console.log('Upload successful:', data);
+    onSuccess: data => {
+      console.log('Success handler data:', data);
 
-        // Update upload progress based on file results
-        const newProgress = {};
-        data.file_results.forEach(result => {
-          newProgress[result.filename] = result.status;
-        });
-        setUploadProgress(newProgress);
+      // Update upload history with the new upload
+      const newUpload = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        status: 'success',
+        message: data.message,
+        fileResults: data.file_results,
+        totalCount: data.total_count,
+        transactions: data.transactions,
+      };
+      setUploadHistory(prev => [newUpload, ...prev]);
 
-        // Update transactions if any were successfully processed
-        if (Array.isArray(data.transactions) && data.transactions.length > 0) {
-          setCurrentTransactions(data.transactions);
+      // Update current transactions if available
+      if (data.transactions && Array.isArray(data.transactions)) {
+        console.log('Setting transactions:', data.transactions);
+        setCurrentTransactions(data.transactions);
+      }
 
-          // Add to upload history
-          setUploadHistory(prev => [
-            {
-              id: Date.now(),
-              filename: 'Multiple Files',
-              date: new Date().toISOString(),
-              count: data.total_count,
-              transactions: data.transactions,
-              fileResults: data.file_results,
-            },
-            ...prev,
-          ]);
-        }
+      // Clear selected files
+      setSelectedFiles([]);
+      setFileInputKey(Date.now());
 
-        // Clear selected files after successful upload
-        setSelectedFiles([]);
-      },
-      onError: error => {
-        console.error('Upload error details:', {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-        });
+      // Show success message
+      toast.success(
+        `Files uploaded successfully! Processed ${data.total_count || 0} transactions.`
+      );
+    },
+    onError: error => {
+      console.error('Upload error:', error);
 
-        // Mark all files as error
-        const newProgress = {};
-        selectedFiles.forEach(file => {
-          newProgress[file.name] = 'error';
-        });
-        setUploadProgress(newProgress);
-      },
-    }
-  );
+      // Update upload history with the failed upload
+      const newUpload = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        status: 'error',
+        message: error.message,
+      };
+      setUploadHistory(prev => [newUpload, ...prev]);
+
+      // Show error message
+      toast.error(error.message || 'Upload failed');
+    },
+  });
 
   const handleFileChange = event => {
     const files = Array.from(event.target.files);
@@ -118,24 +122,15 @@ const FinanceDataUpload = () => {
     });
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const handleSubmit = async e => {
+    e.preventDefault();
     if (selectedFiles.length === 0) return;
 
-    const formData = new FormData();
-    selectedFiles.forEach(file => {
-      formData.append('statement', file);
-    });
-    formData.append('persist', persistData);
-
-    // Update all files to uploading status
-    const newProgress = {};
-    selectedFiles.forEach(file => {
-      newProgress[file.name] = 'uploading';
-    });
-    setUploadProgress(newProgress);
-
-    uploadMutation.mutate(formData);
+    try {
+      await uploadMutation.mutateAsync(selectedFiles);
+    } catch (error) {
+      console.error('Upload error:', error);
+    }
   };
 
   const getUploadStatus = filename => {
@@ -165,6 +160,7 @@ const FinanceDataUpload = () => {
 
   return (
     <div className="finance-data-upload">
+      <Toaster position="top-right" />
       <Card>
         <CardHeader>
           <h4 className="mb-0">Finance Data Management</h4>
@@ -185,6 +181,7 @@ const FinanceDataUpload = () => {
                         onChange={handleFileChange}
                         accept=".csv,.pdf"
                         multiple
+                        key={fileInputKey}
                       />
                     </Form.Group>
 
@@ -224,9 +221,9 @@ const FinanceDataUpload = () => {
                     <Button
                       variant="primary"
                       type="submit"
-                      disabled={selectedFiles.length === 0 || uploadMutation.isLoading}
+                      disabled={selectedFiles.length === 0 || uploadMutation.isPending}
                     >
-                      {uploadMutation.isLoading ? (
+                      {uploadMutation.isPending ? (
                         <>
                           <Spinner
                             as="span"
@@ -261,9 +258,10 @@ const FinanceDataUpload = () => {
                     <div className="upload-history">
                       {uploadHistory.map(upload => (
                         <div key={upload.id} className="mb-3">
-                          <h6>{upload.filename}</h6>
-                          <p className="mb-1">Uploaded: {new Date(upload.date).toLocaleString()}</p>
-                          <p className="mb-0">Total Transactions: {upload.count}</p>
+                          <h6>{upload.timestamp}</h6>
+                          <p className="mb-1">
+                            {upload.status === 'success' ? 'Upload successful' : 'Upload failed'}
+                          </p>
                           {upload.fileResults && (
                             <div className="mt-2">
                               <h6 className="small">File Results:</h6>
@@ -302,7 +300,11 @@ const FinanceDataUpload = () => {
               {Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
                 <FinanceAnalytics transactions={currentTransactions} />
               ) : (
-                <Alert variant="info">Upload files to see analytics</Alert>
+                <Alert variant="info">
+                  {uploadMutation.isPending
+                    ? 'Processing your files...'
+                    : 'Upload files to see analytics'}
+                </Alert>
               )}
             </Col>
           </Row>
