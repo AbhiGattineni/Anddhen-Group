@@ -22,6 +22,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from 'recharts';
 
 const COLORS = [
@@ -153,13 +154,41 @@ const FinanceAnalytics = ({ transactions }) => {
                       cx="50%"
                       cy="50%"
                       outerRadius={100}
-                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      label={false}
                     >
                       {categoryData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip formatter={value => `$${parseFloat(value).toFixed(2)}`} />
+                    <Legend
+                      layout="vertical"
+                      align="right"
+                      verticalAlign="middle"
+                      content={({ payload }) => (
+                        <div style={{ marginLeft: '20px' }}>
+                          {payload.map((entry, index) => (
+                            <div
+                              key={`legend-${index}`}
+                              style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}
+                            >
+                              <div
+                                style={{
+                                  width: '12px',
+                                  height: '12px',
+                                  borderRadius: '50%',
+                                  backgroundColor: entry.color,
+                                  marginRight: '8px',
+                                }}
+                              />
+                              <span style={{ fontSize: '14px' }}>
+                                {entry.value} (${parseFloat(categoryData[index].value).toFixed(2)})
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
