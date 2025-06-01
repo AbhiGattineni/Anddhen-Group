@@ -11,8 +11,9 @@ import {
   Col,
 } from 'react-bootstrap';
 import { useMutation } from 'react-query';
-import axios from 'axios';
 import FinanceAnalytics from './FinanceAnalytics';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const FinanceDataUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,12 +29,11 @@ const FinanceDataUpload = () => {
         console.log(pair[0], pair[1]);
       }
 
-      const response = await axios.post('http://localhost:8000/api/finance/upload/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await fetch(`${API_BASE_URL}/api/finance/upload/`, {
+        method: 'POST',
+        body: formData,
       });
-      return response.data;
+      return response.json();
     },
     {
       onSuccess: data => {
