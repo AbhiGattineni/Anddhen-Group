@@ -25,9 +25,11 @@ const FinanceDataUpload = () => {
   const [currentCardSuggestions, setCurrentCardSuggestions] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({});
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const uploadMutation = useMutation({
     mutationFn: async files => {
+      setIsProcessing(true);
       const formData = new FormData();
       files.forEach(file => {
         formData.append('statement', file);
@@ -81,9 +83,11 @@ const FinanceDataUpload = () => {
       toast.success(
         `Files uploaded successfully! Processed ${data.total_count || 0} transactions.`
       );
+      setIsProcessing(false);
     },
     onError: error => {
       console.error('Upload error:', error);
+      setIsProcessing(false);
 
       // Update upload history with the failed upload
       const newUpload = {
@@ -188,6 +192,7 @@ const FinanceDataUpload = () => {
                         accept=".csv,.pdf"
                         multiple
                         key={fileInputKey}
+                        disabled={isProcessing}
                       />
                     </Form.Group>
 
@@ -207,6 +212,7 @@ const FinanceDataUpload = () => {
                               size="sm"
                               className="text-danger"
                               onClick={() => removeFile(file.name)}
+                              disabled={isProcessing}
                             >
                               Remove
                             </Button>
@@ -221,15 +227,18 @@ const FinanceDataUpload = () => {
                         label="Save data for future use"
                         checked={persistData}
                         onChange={e => setPersistData(e.target.checked)}
+                        disabled={isProcessing}
                       />
                     </Form.Group>
 
                     <Button
                       variant="primary"
                       type="submit"
-                      disabled={selectedFiles.length === 0 || uploadMutation.isPending}
+                      disabled={
+                        selectedFiles.length === 0 || uploadMutation.isPending || isProcessing
+                      }
                     >
-                      {uploadMutation.isPending ? (
+                      {uploadMutation.isPending || isProcessing ? (
                         <>
                           <Spinner
                             as="span"
@@ -239,7 +248,7 @@ const FinanceDataUpload = () => {
                             aria-hidden="true"
                             className="me-2"
                           />
-                          Uploading...
+                          {isProcessing ? 'Processing...' : 'Uploading...'}
                         </>
                       ) : (
                         'Upload All'
@@ -303,7 +312,15 @@ const FinanceDataUpload = () => {
               )}
             </Col>
             <Col md={8}>
-              {Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
+              {isProcessing ? (
+                <div className="text-center p-5">
+                  <Spinner animation="border" role="status" className="mb-3">
+                    <span className="visually-hidden">Processing...</span>
+                  </Spinner>
+                  <h5>Processing your files...</h5>
+                  <p className="text-muted">This may take a few moments</p>
+                </div>
+              ) : Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
                 <FinanceAnalytics
                   transactions={currentTransactions}
                   cardSuggestions={currentCardSuggestions}
