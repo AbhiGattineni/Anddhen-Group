@@ -6,8 +6,6 @@ import { useStatusMutation } from 'src/react-query/useStatusMutation';
 import useAuthStore from 'src/services/store/globalStore';
 import { useQueryClient } from 'react-query';
 
-const empName = '';
-
 const StatusUpdates = () => {
   const [formValues, setFormValues] = useState({
     parttimerName: '',
@@ -21,7 +19,9 @@ const StatusUpdates = () => {
     reason: '',
     description: '',
   });
-  const { data } = useCalendarData(auth.currentUser.uid);
+
+  // Safely handle data from useCalendarData
+  const { data: calendarData = [] } = useCalendarData(auth.currentUser?.uid || '');
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
   const [msgResponse, setMsgResponse] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
@@ -42,46 +42,62 @@ const StatusUpdates = () => {
     description: false,
   });
 
+  // Format data for calendar safely
+  const formattedData = Array.isArray(calendarData)
+    ? calendarData.map(item => [item.date, item.name])
+    : [];
+
+  const formatDate = date => {
+    if (!date) return '';
+    try {
+      const inputDate = new Date(date);
+      const year = inputDate.getFullYear();
+      const month = String(inputDate.getMonth() + 1).padStart(2, '0');
+      const day = String(inputDate.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  };
+
   useEffect(() => {
-    // Get the department from the URL (you can replace this with your actual logic)
     const currentDepartment = window.location.pathname.includes('/parttimerportal') ? 'ACS' : '';
     updateFieldsToShow(currentDepartment);
 
-    if (auth.currentUser.displayName) {
-      setFormValues({
-        ...formValues,
+    if (auth.currentUser?.displayName) {
+      setFormValues(prev => ({
+        ...prev,
         parttimerName: auth.currentUser.displayName,
-      });
+      }));
     }
   }, []);
+
   useEffect(() => {
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
-    if (data && selectedAcsStatusDate) {
-      let found = false; // Flag to indicate if a match is found
-      data.forEach(status => {
-        if (formattedSelectedDate === status.date) {
-          found = true; // Set flag to true if a match is found
-          setDisableInputs(true);
-          setFormValues({
-            parttimerName: status.parttimerName,
-            studentName: status.studentName,
-            date: status.date,
-            applicationsAppliedSaved: status.applicationsAppliedSaved,
-            applicationsAppliedSearched: status.applicationsAppliedSearched,
-            easyApply: status.easyApply,
-            connectMessages: status.connectMessages,
-            recruiterMessages: status.recruiterDirectMessages,
-            reason: status.reason,
-            description: status.description,
-          });
-          return; // Exit the loop once a match is found
-        }
-      });
-      if (!found) {
-        setDisableInputs(false);
+
+    if (Array.isArray(calendarData) && formattedSelectedDate) {
+      const foundStatus = calendarData.find(status => formattedSelectedDate === status.date);
+
+      if (foundStatus) {
+        setDisableInputs(true);
         setFormValues({
-          parttimerName: auth.currentUser.displayName,
+          parttimerName: foundStatus.parttimerName || auth.currentUser?.displayName || '',
+          studentName: foundStatus.studentName || '',
+          date: foundStatus.date || '',
+          applicationsAppliedSaved: foundStatus.applicationsAppliedSaved || '',
+          applicationsAppliedSearched: foundStatus.applicationsAppliedSearched || '',
+          easyApply: foundStatus.easyApply || '',
+          connectMessages: foundStatus.connectMessages || '',
+          recruiterMessages: foundStatus.recruiterDirectMessages || '',
+          reason: foundStatus.reason || '',
+          description: foundStatus.description || '',
+        });
+      } else {
+        setDisableInputs(false);
+        setFormValues(prev => ({
+          ...prev,
           studentName: '',
           date: '',
           applicationsAppliedSaved: '',
@@ -91,24 +107,18 @@ const StatusUpdates = () => {
           recruiterMessages: '',
           reason: '',
           description: '',
-        });
+        }));
       }
     }
 
-    var currentDate = new Date().toISOString().split('T')[0];
-    var isSelectedDateCurrent = formattedSelectedDate === currentDate;
-    if (
-      data &&
-      isSelectedDateCurrent &&
-      data.some(function (obj) {
-        return obj.date === currentDate;
-      })
-    ) {
-      setShowEdit(true);
-    } else {
-      setShowEdit(false);
-    }
-  }, [selectedAcsStatusDate, data]);
+    const currentDate = new Date().toISOString().split('T')[0];
+    const isSelectedDateCurrent = formattedSelectedDate === currentDate;
+    setShowEdit(
+      Array.isArray(calendarData) &&
+        isSelectedDateCurrent &&
+        calendarData.some(obj => obj.date === currentDate)
+    );
+  }, [selectedAcsStatusDate, calendarData]);
 
   const updateFieldsToShow = currentDepartment => {
     if (currentDepartment === 'ACS') {
@@ -148,15 +158,6 @@ const StatusUpdates = () => {
       ...formValues,
       [id]: value,
     });
-  };
-  const formattedData = data ? data?.map(item => [item.date, item.name]) : [];
-  const formatDate = date => {
-    const inputDate = new Date(date);
-    const year = inputDate.getFullYear();
-    const month = String(inputDate.getMonth() + 1).padStart(2, '0');
-    const day = String(inputDate.getDate()).padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
-    return formattedDate;
   };
 
   const handleEdit = e => {
@@ -268,13 +269,11 @@ const StatusUpdates = () => {
 
   return (
     <div className="mb-5">
-      {/* Form Section */}
       <form className="form">
         <h2>Status Update Form</h2>
-        {/* Calendar Section */}
         <div className="row">
           <div className="col-12">
-            <StatusCalendar data={formattedData} empName={empName} />
+            <StatusCalendar data={formattedData} empName={auth.currentUser?.displayName || ''} />
           </div>
         </div>
         {msgResponse && (
