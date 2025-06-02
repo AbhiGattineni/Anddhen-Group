@@ -149,7 +149,7 @@ const StatusUpdates = () => {
       [id]: value,
     });
   };
-  const formattedData = data ? data.map(item => [item.date, item.name]) : [];
+  const formattedData = data ? data?.map(item => [item.date, item.name]) : [];
   const formatDate = date => {
     const inputDate = new Date(date);
     const year = inputDate.getFullYear();

@@ -17,10 +17,8 @@ const routes = [
 
   sitemap.pipe(writeStream);
 
-  routes.forEach((route) => sitemap.write(route));
+  routes.forEach(route => sitemap.write(route));
   sitemap.end();
 
-  await streamToPromise(sitemap).then(() =>
-    console.log('Sitemap successfully created!'),
-  );
+  await streamToPromise(sitemap).then(() => console.log('Sitemap successfully created!'));
 })();

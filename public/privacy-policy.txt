@@ -1,0 +1,14 @@
+Privacy Policy for Word Highlighter
+
+Last updated: May 28, 2025
+
+Word Highlighter collects the following user data:
+- Words and colors added by the user for highlighting purposes.
+- This data is stored locally on your device using Chrome's storage API.
+
+We use this data to:
+- Highlight user-specified words on webpages in the active tab.
+
+We also fetch default word lists and highlight rules from our API at https://server.anddhengroup.com/api/default-words/. This API is hosted on our personal website and does not share your data with third parties. All API requests are made over HTTPS for security.
+
+We do not share your data with any other third parties. You can contact us at anddhenconsulting@gmail.com for any privacy-related concerns.

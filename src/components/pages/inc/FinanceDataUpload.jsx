@@ -9,87 +9,166 @@ import {
   Spinner,
   Row,
   Col,
+  ListGroup,
 } from 'react-bootstrap';
 import { useMutation } from 'react-query';
-import axios from 'axios';
 import FinanceAnalytics from './FinanceAnalytics';
+import { toast, Toaster } from 'react-hot-toast';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const FinanceDataUpload = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [persistData, setPersistData] = useState(false);
   const [uploadHistory, setUploadHistory] = useState([]);
   const [currentTransactions, setCurrentTransactions] = useState([]);
+  const [currentCardSuggestions, setCurrentCardSuggestions] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState({});
+  const [fileInputKey, setFileInputKey] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const uploadMutation = useMutation(
-    async formData => {
-      console.log('Selected file:', selectedFile);
-      console.log('FormData contents:');
-      for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
+  const uploadMutation = useMutation({
+    mutationFn: async files => {
+      setIsProcessing(true);
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('statement', file);
+      });
+      const response = await fetch(`${API_BASE_URL}/api/finance/upload/`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Upload failed');
       }
 
-      const response = await axios.post('http://localhost:8000/api/finance/upload/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
+      const data = await response.json();
+      console.log('Upload response:', data);
+      return data;
     },
-    {
-      onSuccess: data => {
-        console.log('Upload successful:', data);
-        if (Array.isArray(data.transactions)) {
-          setCurrentTransactions(data.transactions);
-          setUploadHistory(prev => [
-            {
-              id: Date.now(),
-              filename: selectedFile.name,
-              date: new Date().toISOString(),
-              count: data.count,
-              transactions: data.transactions,
-            },
-            ...prev,
-          ]);
-        } else {
-          console.error('Invalid transactions data:', data);
-        }
-        setSelectedFile(null);
-      },
-      onError: error => {
-        console.error('Upload error details:', {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-        });
-      },
-    }
-  );
+    onSuccess: data => {
+      console.log('Success handler data:', data);
+
+      // Update upload history with the new upload
+      const newUpload = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        status: 'success',
+        message: data.message,
+        fileResults: data.file_results,
+        totalCount: data.total_count,
+        transactions: data.transactions,
+        cardSuggestions: data.card_suggestions,
+      };
+      setUploadHistory(prev => [newUpload, ...prev]);
+
+      // Update current transactions and card suggestions if available
+      if (data.transactions && Array.isArray(data.transactions)) {
+        console.log('Setting transactions:', data.transactions);
+        setCurrentTransactions(data.transactions);
+      }
+      if (data.card_suggestions) {
+        console.log('Setting card suggestions:', data.card_suggestions);
+        setCurrentCardSuggestions(data.card_suggestions);
+      }
+
+      // Clear selected files
+      setSelectedFiles([]);
+      setFileInputKey(Date.now());
+
+      // Show success message
+      toast.success(
+        `Files uploaded successfully! Processed ${data.total_count || 0} transactions.`
+      );
+      setIsProcessing(false);
+    },
+    onError: error => {
+      console.error('Upload error:', error);
+      setIsProcessing(false);
+
+      // Update upload history with the failed upload
+      const newUpload = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        status: 'error',
+        message: error.message,
+      };
+      setUploadHistory(prev => [newUpload, ...prev]);
+
+      // Show error message
+      toast.error(error.message || 'Upload failed');
+    },
+  });
 
   const handleFileChange = event => {
-    const file = event.target.files[0];
-    if (file) {
-      if (file.type === 'text/csv' || file.type === 'application/pdf') {
-        setSelectedFile(file);
-      } else {
-        alert('Please select a CSV or PDF file');
-      }
+    const files = Array.from(event.target.files);
+    const validFiles = files.filter(
+      file => file.type === 'text/csv' || file.type === 'application/pdf'
+    );
+
+    if (validFiles.length !== files.length) {
+      alert('Some files were skipped. Only CSV and PDF files are allowed.');
+    }
+
+    setSelectedFiles(prev => [...prev, ...validFiles]);
+    setUploadProgress(prev => {
+      const newProgress = { ...prev };
+      validFiles.forEach(file => {
+        newProgress[file.name] = 'pending';
+      });
+      return newProgress;
+    });
+  };
+
+  const removeFile = filename => {
+    setSelectedFiles(prev => prev.filter(file => file.name !== filename));
+    setUploadProgress(prev => {
+      const newProgress = { ...prev };
+      delete newProgress[filename];
+      return newProgress;
+    });
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (selectedFiles.length === 0) return;
+    try {
+      await uploadMutation.mutateAsync(selectedFiles);
+    } catch (error) {
+      console.error('Upload error:', error);
     }
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
-    if (!selectedFile) return;
-
-    const formData = new FormData();
-    formData.append('statement', selectedFile);
-    formData.append('persist', persistData);
-    formData.append('file_type', selectedFile.name.endsWith('.pdf') ? 'pdf' : 'csv');
-
-    uploadMutation.mutate(formData);
+  const getUploadStatus = filename => {
+    const status = uploadProgress[filename];
+    switch (status) {
+      case 'pending':
+        return <span className="text-muted">Pending</span>;
+      case 'uploading':
+        return (
+          <Spinner
+            as="span"
+            animation="border"
+            size="sm"
+            role="status"
+            aria-hidden="true"
+            className="me-2"
+          />
+        );
+      case 'success':
+        return <span className="text-success">Completed</span>;
+      case 'error':
+        return <span className="text-danger">Error</span>;
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="finance-data-upload">
+      <Toaster position="top-right" />
       <Card>
         <CardHeader>
           <h4 className="mb-0">Finance Data Management</h4>
@@ -99,14 +178,46 @@ const FinanceDataUpload = () => {
             <Col md={4}>
               <Card className="mb-4">
                 <CardHeader>
-                  <h5 className="mb-0">Upload Statement</h5>
+                  <h5 className="mb-0">Upload Statements</h5>
                 </CardHeader>
                 <CardBody>
                   <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                      <Form.Label>Select File (CSV or PDF)</Form.Label>
-                      <Form.Control type="file" onChange={handleFileChange} accept=".csv,.pdf" />
+                      <Form.Label>Select Files (CSV or PDF)</Form.Label>
+                      <Form.Control
+                        type="file"
+                        onChange={handleFileChange}
+                        accept=".csv,.pdf"
+                        multiple
+                        key={fileInputKey}
+                        disabled={isProcessing}
+                      />
                     </Form.Group>
+
+                    {selectedFiles.length > 0 && (
+                      <ListGroup className="mb-3">
+                        {selectedFiles.map(file => (
+                          <ListGroup.Item
+                            key={file.name}
+                            className="d-flex justify-content-between align-items-center"
+                          >
+                            <div>
+                              {file.name}
+                              <div className="small">{getUploadStatus(file.name)}</div>
+                            </div>
+                            <Button
+                              variant="link"
+                              size="sm"
+                              className="text-danger"
+                              onClick={() => removeFile(file.name)}
+                              disabled={isProcessing}
+                            >
+                              Remove
+                            </Button>
+                          </ListGroup.Item>
+                        ))}
+                      </ListGroup>
+                    )}
 
                     <Form.Group className="mb-3">
                       <Form.Check
@@ -114,15 +225,18 @@ const FinanceDataUpload = () => {
                         label="Save data for future use"
                         checked={persistData}
                         onChange={e => setPersistData(e.target.checked)}
+                        disabled={isProcessing}
                       />
                     </Form.Group>
 
                     <Button
                       variant="primary"
                       type="submit"
-                      disabled={!selectedFile || uploadMutation.isLoading}
+                      disabled={
+                        selectedFiles.length === 0 || uploadMutation.isPending || isProcessing
+                      }
                     >
-                      {uploadMutation.isLoading ? (
+                      {uploadMutation.isPending || isProcessing ? (
                         <>
                           <Spinner
                             as="span"
@@ -132,17 +246,17 @@ const FinanceDataUpload = () => {
                             aria-hidden="true"
                             className="me-2"
                           />
-                          Uploading...
+                          {isProcessing ? 'Processing...' : 'Uploading...'}
                         </>
                       ) : (
-                        'Upload'
+                        'Upload All'
                       )}
                     </Button>
                   </Form>
 
                   {uploadMutation.isError && (
                     <Alert variant="danger" className="mt-3">
-                      Error uploading file: {uploadMutation.error.message}
+                      Error uploading files: {uploadMutation.error.message}
                     </Alert>
                   )}
                 </CardBody>
@@ -157,9 +271,30 @@ const FinanceDataUpload = () => {
                     <div className="upload-history">
                       {uploadHistory.map(upload => (
                         <div key={upload.id} className="mb-3">
-                          <h6>{upload.filename}</h6>
-                          <p className="mb-1">Uploaded: {new Date(upload.date).toLocaleString()}</p>
-                          <p className="mb-0">Transactions: {upload.count}</p>
+                          <h6>{upload.timestamp}</h6>
+                          <p className="mb-1">
+                            {upload.status === 'success' ? 'Upload successful' : 'Upload failed'}
+                          </p>
+                          {upload.fileResults && (
+                            <div className="mt-2">
+                              <h6 className="small">File Results:</h6>
+                              <ul className="list-unstyled small">
+                                {upload.fileResults.map(result => (
+                                  <li
+                                    key={result.filename}
+                                    className={
+                                      result.status === 'error' ? 'text-danger' : 'text-success'
+                                    }
+                                  >
+                                    {result.filename}:{' '}
+                                    {result.status === 'error'
+                                      ? result.error
+                                      : `${result.count} transactions`}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                           <Button
                             variant="link"
                             size="sm"
@@ -175,10 +310,25 @@ const FinanceDataUpload = () => {
               )}
             </Col>
             <Col md={8}>
-              {Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
-                <FinanceAnalytics transactions={currentTransactions} />
+              {isProcessing ? (
+                <div className="text-center p-5">
+                  <Spinner animation="border" role="status" className="mb-3">
+                    <span className="visually-hidden">Processing...</span>
+                  </Spinner>
+                  <h5>Processing your files...</h5>
+                  <p className="text-muted">This may take a few moments</p>
+                </div>
+              ) : Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
+                <FinanceAnalytics
+                  transactions={currentTransactions}
+                  cardSuggestions={currentCardSuggestions}
+                />
               ) : (
-                <Alert variant="info">Upload a file to see analytics</Alert>
+                <Alert variant="info">
+                  {uploadMutation.isPending
+                    ? 'Processing your files...'
+                    : 'Upload files to see analytics'}
+                </Alert>
               )}
             </Col>
           </Row>
