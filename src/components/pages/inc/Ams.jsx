@@ -9,21 +9,15 @@ export const Ams = () => {
   const [toastMsg, setToastMsg] = useState('');
   return (
     <div>
-      <div className="container">
-        <h1
-          className="main-heading"
-          style={{
-            marginTop: '20px',
-          }}
-        >
-          Anddhen Marketing Services
-        </h1>
-      </div>
-      <Box sx={{ padding: '20px 20px', backgroundColor: '#f9f9f9' }}>
+      <section className="section border-top">
         <div className="container">
-          <Grid container spacing={4} alignItems="center">
-            {/* Text on the Left */}
-
+          <h1 className="text-center">Anddhen Marketing Services</h1>
+          <div className="underline mx-auto"></div>
+        </div>
+        <Box sx={{ padding: '20px 20px', backgroundColor: '#f9f9f9' }}>
+          <div className="container">
+            <Grid container spacing={4} alignItems="center">
+              {/* Text on the Left */}
             <Grid item xs={12} md={6}>
               <Typography
                 variant="body1"
@@ -46,19 +40,23 @@ export const Ams = () => {
                 your social media presence to the next level!
               </Typography>
             </Grid>
-
-            {/* Image on the Right */}
-            <Grid item xs={12} md={6}>
-              <Box
-                component="img"
-                src="/assets/images/marketingHome.png" // Replace with your image path
-                alt="Anddhen Marketing Services"
-                sx={{
-                  width: '100%',
-                }}
-              />
+              {/* Image on the Right */}
+              <Grid item xs={12} md={6}>
+                <Box
+                  component="img"
+                  src="/assets/images/marketingHome.png" // Replace with your image path
+                  alt="Anddhen Marketing Services"
+                  sx={{
+                    width: '100%',
+                  }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
+          </div>
+        </Box>
+        <div className="col-md-12 mb-4 mt-4 text-center">
+          <h3 className="main-heading">Our Works</h3>
+          <div className="underline mx-auto"></div>
         </div>
       </Box>
       <div className="col-md-12 mb-4 mt-4 text-center">
@@ -80,52 +78,64 @@ export const Ams = () => {
                     '& .icon-container': {
                       backgroundColor: 'white', // White background for icon on hover
                     },
-                  },
-                }}
-              >
-                <CardContent>
-                  {/* Flex container for icon and heading */}
-                  <Box display="flex" alignItems="center">
-                    {/* Rounded icon with background color */}
-                    <Box
-                      className="icon-container" // Class for targeting icon container
-                      sx={{
-                        backgroundColor: '#ffc107', // Default background color
-                        borderRadius: '50%', // Makes it round
-                        padding: '8px', // Adds space around the icon
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 2, // Space between icon and heading
-                        transition: 'background-color 0.3s ease-in-out', // Smooth transition
-                      }}
-                    >
-                      <CardMedia
-                        component="img"
-                        image={item.logo}
-                        alt={item.heading}
+                  }}
+                >
+                  <CardContent>
+                    {/* Flex container for icon and heading */}
+                    <Box display="flex" alignItems="center">
+                      {/* Rounded icon with background color */}
+                      <Box
+                        className="icon-container" // Class for targeting icon container
                         sx={{
-                          width: 50, // Adjust size as needed
-                          height: 50, // Adjust size as needed
-                          borderRadius: '50%', // Ensures the image is round
-                          objectFit: 'contain', // Ensures the image is fully visible
+                          backgroundColor: '#ffc107', // Default background color
+                          borderRadius: '50%', // Makes it round
+                          padding: '8px', // Adds space around the icon
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginRight: 2, // Space between icon and heading
+                          transition: 'background-color 0.3s ease-in-out', // Smooth transition
                         }}
-                      />
+                      >
+                        <CardMedia
+                          component="img"
+                          image={item.logo}
+                          alt={item.heading}
+                          sx={{
+                            width: 50, // Adjust size as needed
+                            height: 50, // Adjust size as needed
+                            borderRadius: '50%', // Ensures the image is round
+                            objectFit: 'contain', // Ensures the image is fully visible
+                          }}
+                        />
+                      </Box>
+                      {/* Heading */}
+                      <Typography
+                        variant="h3"
+                        component="div"
+                        sx={{
+                          fontSize: '1.3rem', // Adjust font size
+                          lineHeight: '1.2', // Ensures two lines
+                          height: 50, // Matches icon height
+                          display: 'flex',
+                          alignItems: 'center',
+                          fontWeight: 'bold', // Makes the heading bold
+                        }}
+                      >
+                        {item.heading}
+                      </Typography>
                     </Box>
-                    {/* Heading */}
+                    {/* Description */}
                     <Typography
-                      variant="h3"
-                      component="div"
+                      variant="body1" // Changed from body2 to body1 for larger text
                       sx={{
-                        fontSize: '1.3rem', // Adjust font size
-                        lineHeight: '1.2', // Ensures two lines
-                        height: 50, // Matches icon height
-                        display: 'flex',
-                        alignItems: 'center',
-                        fontWeight: 'bold', // Makes the heading bold
+                        marginTop: 2,
+                        fontSize: '1rem', // Increase description font size
+                        lineHeight: '1.6', // Increase space between lines
+                        textAlign: 'justify', // Justify alignment
                       }}
                     >
-                      {item.heading}
+                      {item.description}
                     </Typography>
                   </Box>
                   {/* Description */}
@@ -154,7 +164,7 @@ export const Ams = () => {
           />
           <CustomToast showToast={showToast} setShowToast={setShowToast} toastMsg={toastMsg} />
         </div>
-      </div>
+      </section>
     </div>
   );
 };

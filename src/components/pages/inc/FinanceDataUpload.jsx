@@ -34,7 +34,6 @@ const FinanceDataUpload = () => {
       files.forEach(file => {
         formData.append('statement', file);
       });
-
       const response = await fetch(`${API_BASE_URL}/api/finance/upload/`, {
         method: 'POST',
         body: formData,
@@ -135,7 +134,6 @@ const FinanceDataUpload = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     if (selectedFiles.length === 0) return;
-
     try {
       await uploadMutation.mutateAsync(selectedFiles);
     } catch (error) {
