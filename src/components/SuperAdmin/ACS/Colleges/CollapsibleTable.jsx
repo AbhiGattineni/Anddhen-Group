@@ -27,15 +27,17 @@ import { useFetchData } from 'src/react-query/useFetchApis';
 
 // Component for handling global filter
 const GlobalFilter = ({ globalFilter, setGlobalFilter }) => (
-  <TextField
-    value={globalFilter || ''}
-    onChange={e => setGlobalFilter(e.target.value)}
-    label="Search"
-    variant="outlined"
-    size="small"
-    margin="normal"
-    sx={{ marginBottom: '16px' }}
-  />
+  <Box sx={{ mb: 2 }}>
+    <TextField
+      value={globalFilter || ''}
+      onChange={e => setGlobalFilter(e.target.value)}
+      label="Search Colleges"
+      variant="outlined"
+      size="small"
+      fullWidth
+      sx={{ marginBottom: '16px' }}
+    />
+  </Box>
 );
 
 GlobalFilter.propTypes = {
@@ -53,6 +55,9 @@ const FilterComponent = ({ filter, handleProgramChange, states }) => {
         flexDirection: 'column',
         gap: '16px',
         marginBottom: '16px',
+        backgroundColor: '#f5f5f5',
+        padding: '16px',
+        borderRadius: '8px',
       }}
     >
       <RadioGroup
@@ -456,12 +461,14 @@ Row.propTypes = {
     state: PropTypes.string.isRequired,
   }).isRequired,
 };
+
 export const ViewCollege = () => {
   const { data = [], isLoading, error } = useFetchData('colleges', `/colleges/all/`);
   const [globalFilter, setGlobalFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalStates, setTotalStates] = useState([]);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const [filter, setFilter] = useState({
     selectedProgram: 'all',
@@ -497,6 +504,7 @@ export const ViewCollege = () => {
 
   const applyFilters = () => {
     setFilter(editFilter);
+    setIsFiltering(true);
   };
 
   const resetFilters = () => {
@@ -513,64 +521,73 @@ export const ViewCollege = () => {
     setGlobalFilter('');
     setEditFilter(initialFilter);
     setFilter(initialFilter);
+    setIsFiltering(false);
+  };
+
+  const handleSearchChange = value => {
+    setGlobalFilter(value);
+    setIsFiltering(true);
   };
 
   const filteredData = useMemo(() => {
+    if (!isFiltering) {
+      return data;
+    }
+
     return (
       data?.filter(college => {
-        const matchesCollege = college.college_name
-          ? college.college_name.toLowerCase().includes(globalFilter.toLowerCase())
-          : false;
+        // Search filter
+        const matchesCollege =
+          !globalFilter ||
+          (college.college_name &&
+            college.college_name.toLowerCase().includes(globalFilter.toLowerCase()));
 
+        // Program type filter
+        const matchesProgram =
+          filter.selectedProgram === 'all' ||
+          (filter.selectedProgram === 'ug' && college.UG_courses) ||
+          (filter.selectedProgram === 'grad' && college.graduation_courses);
+
+        // Test score filters
         const matchesGRE =
-          !filter.greScore || parseInt(college.gre_score, 10) <= parseInt(filter.greScore, 10);
+          !filter.greScore ||
+          (college.gre_score && parseInt(college.gre_score, 10) <= parseInt(filter.greScore, 10));
 
         const matchesTOEFL =
           !filter.toeflScore ||
-          Math.min(
-            parseInt(college.toefl_graduation_score, 10) || Infinity,
-            parseInt(college.toefl_UG_score, 10) || Infinity
-          ) <= parseInt(filter.toeflScore, 10);
+          (college.toefl_UG_score &&
+            parseInt(college.toefl_UG_score, 10) <= parseInt(filter.toeflScore, 10)) ||
+          (college.toefl_graduation_score &&
+            parseInt(college.toefl_graduation_score, 10) <= parseInt(filter.toeflScore, 10));
 
         const matchesIELTS =
           !filter.ieltsScore ||
-          Math.min(
-            parseInt(college.ielts_graduation_score, 10) || Infinity,
-            parseInt(college.ielts_ug_score, 10) || Infinity
-          ) <= parseInt(filter.ieltsScore, 10);
+          (college.ielts_ug_score &&
+            parseInt(college.ielts_ug_score, 10) <= parseInt(filter.ieltsScore, 10)) ||
+          (college.ielts_graduation_score &&
+            parseInt(college.ielts_graduation_score, 10) <= parseInt(filter.ieltsScore, 10));
 
+        // College type filter
         const matchesCollegeType =
           !filter.collegeType ||
-          college.public_private?.toLowerCase() === filter.collegeType.toLowerCase();
+          (college.public_private &&
+            college.public_private.toLowerCase() === filter.collegeType.toLowerCase());
 
+        // State filter
         const matchesState =
           !filter.state ||
           (college.state && college.state.toLowerCase() === filter.state.toLowerCase());
 
-        const minFallDeadline = new Date(
-          Math.min(
-            new Date(college.fall_deadline_UG || '9999-12-31'),
-            new Date(college.fall_deadline_graduation || '9999-12-31')
-          )
-        );
-        const minSpringDeadline = new Date(
-          Math.min(
-            new Date(college.spring_deadline_UG || '9999-12-31'),
-            new Date(college.spring_deadline_graduation || '9999-12-31')
-          )
-        );
-        const selectedFallDeadline = filter.fallDeadline
-          ? new Date(filter.fallDeadline)
-          : new Date('9999-12-31');
-        const selectedSpringDeadline = filter.springDeadline
-          ? new Date(filter.springDeadline)
-          : new Date('9999-12-31');
+        // Deadline filters
+        const hasFallDeadline = college.fall_deadline_UG || college.fall_deadline_graduation;
+        const hasSpringDeadline = college.spring_deadline_UG || college.spring_deadline_graduation;
 
-        const matchesFallDeadline = minFallDeadline <= selectedFallDeadline;
-        const matchesSpringDeadline = minSpringDeadline <= selectedSpringDeadline;
+        const matchesFallDeadline = !filter.fallDeadline || hasFallDeadline;
+        const matchesSpringDeadline = !filter.springDeadline || hasSpringDeadline;
 
         return (
           matchesCollege &&
+          matchesProgram &&
           matchesGRE &&
           matchesTOEFL &&
           matchesIELTS &&
@@ -581,35 +598,15 @@ export const ViewCollege = () => {
         );
       }) || []
     );
-  }, [data, filter, globalFilter]);
+  }, [data, filter, globalFilter, isFiltering]);
 
   const paginatedData = useMemo(() => {
     return filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   }, [filteredData, page, rowsPerPage]);
 
-  // Handle network errors
-  if (error) {
-    return (
-      <Box sx={{ textAlign: 'center', padding: '16px', color: 'error.main' }}>
-        <Typography variant="h6">
-          Error: {error.message || 'Failed to fetch data. Please try again later.'}
-        </Typography>
-      </Box>
-    );
-  }
-
-  // Handle no records
-  if (!isLoading && filteredData.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', padding: '16px' }}>
-        <Typography variant="h6">No records to display.</Typography>
-      </Box>
-    );
-  }
-
   return (
-    <Box>
-      <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+    <Box sx={{ p: 2 }}>
+      <GlobalFilter globalFilter={globalFilter} setGlobalFilter={handleSearchChange} />
       <FilterComponent
         filter={editFilter}
         handleProgramChange={handleProgramChange}
@@ -672,7 +669,7 @@ export const ViewCollege = () => {
       ) : filteredData.length === 0 ? (
         <TableContainer component={Paper}>
           <Box p={3} textAlign="center">
-            <Typography>No fields to show matching your criteria.</Typography>
+            <Typography>No colleges found matching your criteria.</Typography>
           </Box>
         </TableContainer>
       ) : (
