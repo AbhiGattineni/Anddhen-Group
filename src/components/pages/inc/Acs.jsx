@@ -77,17 +77,18 @@ export const Acs = () => {
                   </Link>
                   <p className="card-text">{data.description}</p>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <h4 className="text-center pt-4">
-          WhatsApp groups links according to the US university 2024-25
-        </h4>
-        <div className="row justify-content-md-center px-0">
-          <CollegeWhatsappLinks />
-        </div>
+            <h4 className="text-center pt-4">
+              WhatsApp groups links according to the US university 2024-25
+            </h4>
+            <div className="row justify-content-md-center px-0">
+              <CollegeWhatsappLinks />
+            </div>
+          </div>
+        </section>
       </div>
+
       <div className="bg-c-light py-1">
         <div className="container">
           <h4 className="row justify-content-md-left ps-3 ps-md-0">Contact Us</h4>
