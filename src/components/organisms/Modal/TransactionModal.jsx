@@ -211,7 +211,6 @@ export const TransactionModal = ({
       if (event.target.closest('.modal-content')) return;
 
       // 2) Click inside react-select's menu or menu-list? → ignore
-      // 2) Click inside react-select's menu or menu-list? → ignore
       if (
         event.target.closest('.react-select__menu') ||
         event.target.closest('.react-select__menu-list')
