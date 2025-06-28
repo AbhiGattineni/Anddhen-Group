@@ -22,7 +22,7 @@ const initialFormState = {
   AMS: { source: '' },
   ACS: {
     studentName: '',
-    studentId: '',
+    whatsappId: '',
     applicationsAppliedSearched: 0,
     applicationsAppliedSaved: 0,
     easyApply: 0,
@@ -196,7 +196,7 @@ export const EmployeeDashboard = () => {
       AMS: { source: flatObj.source || null },
       ACS: {
         studentName: flatObj.studentName || null,
-        studentId: flatObj.studentId || null,
+        whatsappId: flatObj.whatsappId || null,
         applicationsAppliedSearched: flatObj.applicationsAppliedSearched || 0,
         applicationsAppliedSaved: flatObj.applicationsAppliedSaved || 0,
         easyApply: flatObj.easyApply || 0,
