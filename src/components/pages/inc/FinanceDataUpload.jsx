@@ -17,8 +17,6 @@ import { toast, Toaster } from 'react-hot-toast';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 const FinanceDataUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [persistData, setPersistData] = useState(false);
@@ -46,10 +44,6 @@ const FinanceDataUpload = () => {
         throw new Error(error.detail || 'Upload failed');
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/finance/upload/`, {
-        method: 'POST',
-        body: formData,
-      });
       return response.json();
     },
     onSuccess: data => {
