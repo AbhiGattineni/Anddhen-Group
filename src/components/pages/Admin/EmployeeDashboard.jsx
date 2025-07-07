@@ -9,8 +9,8 @@ import AssignCards from './AssignCards';
 import { adminPlates } from 'src/dataconfig';
 import HappinessIndex from './HappinessIndex';
 import { FormControl, Grid, InputLabel, MenuItem, Select, TextField, Alert } from '@mui/material';
-
-const subsidaryOptions = ['ACS', 'ASS', 'ATI', 'ANS', 'AMS'];
+import StatusTable from '../../generalComponents/StatusTable';
+import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
 const initialFormState = {
   user_id: auth?.currentUser?.uid || '',
@@ -76,6 +76,13 @@ export const EmployeeDashboard = () => {
   const [openHappinessDialog, setOpenHappinessDialog] = useState(
     !statusUpdates?.has_submitted_happiness_today
   );
+
+  // Fetch subsidiaries from backend
+  const { data: subsidiariesData, isLoading: isSubsidiariesLoading } = useGetSubsidiaries();
+  // Only show active subsidiaries
+  const activeSubsidiaries = Array.isArray(subsidiariesData)
+    ? subsidiariesData.filter(sub => sub.active === true || sub.active === 'Yes')
+    : [];
 
   // Timezone handling functions
   const isUpdateAllowed = selectedDate => {
@@ -236,9 +243,18 @@ export const EmployeeDashboard = () => {
         status => formattedSelectedDate === status.date
       );
       setUserSubsidaries(filteredStatuses);
+      // Check if selected subsidiary is multi-status
+      const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
+      const isMultiStatus =
+        selectedSubsidiaryObj?.parttimer_multi_status === true ||
+        selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
       if (!filteredStatuses?.length) {
         setDisableInputs(false);
         resetForm();
+      } else if (isMultiStatus) {
+        setDisableInputs(false);
+      } else {
+        setDisableInputs(true);
       }
     }
   }, [selectedAcsStatusDate, statusUpdates?.status_updates]);
@@ -260,11 +276,31 @@ export const EmployeeDashboard = () => {
       setDisableInputs(false);
     }
     if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
+      // Find the selected subsidiary object
+      const selectedSubsidiaryObj = activeSubsidiaries.find(sub => sub.subName === value);
       const filtered = userSubsidaries?.filter(sub => sub.subsidary === value);
+      const isMultiStatus =
+        selectedSubsidiaryObj?.parttimer_multi_status === true ||
+        selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
       if (filtered?.length > 0) {
-        const currentStatus = restructureObject(filtered[0]);
-        setFormValues(currentStatus);
-        setDisableInputs(true);
+        if (isMultiStatus) {
+          // For multi-status, allow new entry, clear WhatsApp ID and keep form enabled
+          setFormValues(prev => ({
+            ...initialFormState,
+            subsidary: value,
+            date: formatDate(selectedAcsStatusDate),
+            user_name: auth.currentUser.displayName,
+            user_id: auth.currentUser.uid,
+            selectedSubsidiaryObj,
+            ACS: { ...initialFormState.ACS, whatsappId: '' },
+          }));
+          setDisableInputs(false);
+        } else {
+          // For non-multi-status, disable after one entry
+          const currentStatus = restructureObject(filtered[0]);
+          setFormValues(currentStatus);
+          setDisableInputs(true);
+        }
       } else {
         setDisableInputs(false);
         setFormValues({
@@ -273,6 +309,7 @@ export const EmployeeDashboard = () => {
           date: formatDate(selectedAcsStatusDate),
           user_name: auth.currentUser.displayName,
           user_id: auth.currentUser.uid,
+          selectedSubsidiaryObj,
         });
       }
       const formattedSelectedDate = formatDate(selectedAcsStatusDate);
@@ -290,6 +327,8 @@ export const EmployeeDashboard = () => {
       } else {
         setShowEdit(false);
       }
+      // Store the selected subsidiary object for multi-status logic
+      setFormValues(prev => ({ ...prev, selectedSubsidiaryObj }));
     }
   };
 
@@ -338,6 +377,33 @@ export const EmployeeDashboard = () => {
   const handleSubmit = async e => {
     e.preventDefault();
 
+    // Multi-status logic
+    const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
+    const isMultiStatus =
+      selectedSubsidiaryObj?.parttimer_multi_status === true ||
+      selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
+    const currentStatuses = (statusUpdates?.status_updates || []).filter(
+      s => s.subsidary === formValues.subsidary && s.date === formValues.date
+    );
+    if (isMultiStatus) {
+      // Only allow if whatsappId is unique for this date+subsidiary
+      if (
+        formValues.ACS?.whatsappId &&
+        currentStatuses.some(s => s.whatsappId === formValues.ACS.whatsappId)
+      ) {
+        setMsgResponse(
+          'A status for this WhatsApp ID already exists for this subsidiary and date.'
+        );
+        return;
+      }
+    } else {
+      // Only allow one status for this subsidiary+date, regardless of whatsappId
+      if (currentStatuses.length > 0) {
+        setMsgResponse('You can only add one status for this subsidiary and date.');
+        return;
+      }
+    }
+
     if (!isTodayOrPast(formValues.date)) {
       setMsgResponse('You can only submit status for today or past dates.');
       return;
@@ -351,23 +417,31 @@ export const EmployeeDashboard = () => {
     }
 
     try {
-      const requiredFields = ['date', 'subsidary'];
-      const missingField = requiredFields?.find(field => !formValues[field]);
-
-      if (missingField) {
-        let missingFieldName = missingField;
-        switch (missingField) {
-          case 'date':
-            missingFieldName = 'Date';
-            break;
-          case 'subsidary':
-            missingFieldName = 'Subsidary';
-            break;
-          default:
-            break;
+      // Dynamically require all fields for the selected subsidiary except description
+      const selectedSubsidary = formValues.subsidary;
+      const fields = initialFormState[selectedSubsidary];
+      if (fields) {
+        for (const key of Object.keys(fields)) {
+          if (key === 'description') continue;
+          const value = formValues[selectedSubsidary]?.[key];
+          if (
+            value === undefined ||
+            value === null ||
+            value === '' ||
+            value === 0 ||
+            value === 0.0 ||
+            value === '0' ||
+            value === '0.00'
+          ) {
+            setMsgResponse(
+              `Please fill in the required field: ${key
+                .replace(/([a-z])([A-Z])/g, '$1 $2')
+                .replace(/_/g, ' ')
+                .replace(/^\w/, c => c.toUpperCase())}`
+            );
+            return;
+          }
         }
-        setMsgResponse(`Please fill in the required field: ${missingFieldName}`);
-        return;
       }
 
       const postStatus = flattenObject(formValues);
@@ -425,6 +499,18 @@ export const EmployeeDashboard = () => {
             </div>
           </div>
 
+          <div className="row my-4">
+            <div className="col-12">
+              <StatusTable
+                statusUpdates={statusUpdates?.status_updates || []}
+                isUpdateAllowed={isUpdateAllowed}
+                userTimezone={userTimezone}
+                updateMutation={updateMutation}
+                subsidaryOptions={activeSubsidiaries.map(sub => sub.subName)}
+              />
+            </div>
+          </div>
+
           {msgResponse && (
             <div className="alert alert-info" role="alert">
               {msgResponse}
@@ -445,16 +531,16 @@ export const EmployeeDashboard = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Subsidary</InputLabel>
+                <InputLabel>Subsidiary</InputLabel>
                 <Select
                   name="subsidary"
                   value={formValues.subsidary}
                   onChange={handleChange}
-                  disabled={false}
+                  disabled={isSubsidiariesLoading}
                 >
-                  {subsidaryOptions?.map(option => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                  {activeSubsidiaries.map(sub => (
+                    <MenuItem key={sub.id || sub.subsidiaryName || sub.subName} value={sub.subName}>
+                      {sub.subName}
                     </MenuItem>
                   ))}
                 </Select>
