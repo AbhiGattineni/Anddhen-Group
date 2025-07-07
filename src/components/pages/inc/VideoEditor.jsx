@@ -30,6 +30,12 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import UndoIcon from '@mui/icons-material/Undo';
+import RedoIcon from '@mui/icons-material/Redo';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import FastRewindIcon from '@mui/icons-material/FastRewind';
+import FastForwardIcon from '@mui/icons-material/FastForward';
 
 const SIDEBAR_TOOLS = [
   { label: 'Uploads', icon: <UploadFileIcon /> },
@@ -88,9 +94,9 @@ const VideoEditor = () => {
   const [dragging, setDragging] = useState(null); // {trackIdx, clipIdx, startX, startY, origStart, origEnd, origTrackIdx}
   const [dragOverTrack, setDragOverTrack] = useState(null); // Track index being dragged over
   const [timelineDuration, setTimelineDuration] = useState(60);
+  const [timelineWidth, setTimelineWidth] = useState(timelineDuration * 50 * zoom);
 
   const scaledTimelineScale = 50 * zoom;
-  const [timelineWidth] = useState(timelineDuration * scaledTimelineScale);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -647,58 +653,74 @@ const VideoEditor = () => {
     </AppBar>
   );
 
-  const renderPreview = () => (
-    <Box
-      sx={{
-        width: 800,
-        minWidth: 800,
-        maxWidth: 800,
-        background: 'linear-gradient(135deg, #23272A 0%, #181A1B 100%)',
-        borderRadius: 3,
-        boxShadow: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: 500,
-        p: 2,
-        position: 'relative',
-        mb: 4,
-      }}
-    >
+  const getPreviewDimensions = () => {
+    let w = 800,
+      h = 450;
+    if (resolution.label === 'Custom') {
+      w = customRes.width || 800;
+      h = customRes.height || 450;
+    } else {
+      w = resolution.width;
+      h = resolution.height;
+    }
+    // Scale down if too large for preview area
+    const maxW = 800,
+      maxH = 450;
+    const scale = Math.min(maxW / w, maxH / h, 1);
+    return { width: Math.round(w * scale), height: Math.round(h * scale) };
+  };
+
+  const renderPreview = () => {
+    const { width, height } = getPreviewDimensions();
+    // Find the first video clip in the video track
+    const videoTrack = tracks.find(t => t.type === 'video');
+    const firstClip = videoTrack && videoTrack.clips.length > 0 ? videoTrack.clips[0] : null;
+    return (
       <Box
         sx={{
-          width: '100%',
-          maxWidth: 800,
-          position: 'relative',
-          background: '#000',
-          borderRadius: 2,
-          overflow: 'hidden',
-          boxShadow: 2,
-          height: 400,
+          width: width + 64,
+          background: '#191B1F',
+          borderRadius: 4,
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
+          minHeight: height + 120,
+          p: 0,
+          position: 'relative',
+          mb: 4,
+          overflow: 'visible',
         }}
       >
-        <video
-          ref={videoRef}
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          controls
-          onLoadedMetadata={e => {
-            const video = e.target;
-            setTimelineDuration(Math.max(timelineDuration, video.duration));
+        <Box
+          sx={{
+            width,
+            height,
+            background: '#000',
+            borderRadius: 3,
+            overflow: 'hidden',
+            position: 'relative',
+            mt: 4,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-        />
+        >
+          {firstClip ? (
+            <video
+              ref={videoRef}
+              src={firstClip.file?.url}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', background: '#000' }}
+              onLoadedMetadata={e => {
+                const video = e.target;
+                setTimelineDuration(Math.max(timelineDuration, video.duration));
+              }}
+            />
+          ) : null}
+        </Box>
       </Box>
-      <Button
-        onClick={() => setIsPlaying(p => !p)}
-        sx={{ position: 'absolute', left: 16, top: 16, zIndex: 10 }}
-      >
-        {isPlaying ? 'Pause' : 'Play'}
-      </Button>
-    </Box>
-  );
+    );
+  };
 
   const renderBlockVisual = (clip, trackIdx) => {
     if (tracks[trackIdx].type === 'video') {
@@ -752,6 +774,19 @@ const VideoEditor = () => {
     );
   };
 
+  // Helper to format time for the timeline scale
+  function formatTimelineTime(seconds, showHour) {
+    const totalSeconds = Math.floor(seconds);
+    const s = totalSeconds % 60;
+    const m = Math.floor(totalSeconds / 60) % 60;
+    const h = Math.floor(totalSeconds / 3600);
+    if (showHour) {
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    } else {
+      return `${String(m + h * 60).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+  }
+
   const renderTimeline = () => (
     <Box
       sx={{
@@ -763,55 +798,139 @@ const VideoEditor = () => {
         position: 'relative',
       }}
     >
-      <Box sx={{ position: 'sticky', top: 0, zIndex: 2, background: '#23272A' }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-          <Stack direction="row" spacing={1}>
+      {/* Timeline Navbar */}
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 2,
+          background: '#23272A',
+          px: 2,
+          py: 1,
+          width: '100%',
+          left: 0,
+        }}
+      >
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ width: '100%' }}>
+          {/* Left: Undo/Redo, Split/Copy/Delete */}
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mr: 2, flex: 1 }}>
+            <Tooltip title="Undo">
+              <span>
+                <IconButton
+                  size="small"
+                  onClick={undo}
+                  disabled={undoStack.length === 0}
+                  sx={{ color: undoStack.length === 0 ? '#888' : '#fff' }}
+                >
+                  <UndoIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title="Redo">
+              <span>
+                <IconButton
+                  size="small"
+                  onClick={redo}
+                  disabled={redoStack.length === 0}
+                  sx={{ color: redoStack.length === 0 ? '#888' : '#fff' }}
+                >
+                  <RedoIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
             <Tooltip title="Split">
-              <IconButton>
+              <IconButton size="small" sx={{ color: '#fff' }}>
                 <ContentCutIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Copy">
-              <IconButton>
+              <IconButton size="small" sx={{ color: '#fff' }}>
                 <FileCopyIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete">
-              <IconButton>
+              <IconButton size="small" sx={{ color: '#fff' }}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
           </Stack>
-          <Box sx={{ flex: 1 }} />
-          <Stack direction="row" spacing={1}>
+          {/* Center: Play/Pause */}
+          <Box sx={{ flex: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <IconButton
+              sx={{ color: '#fff', mx: 1, background: '#23272A', borderRadius: 2, boxShadow: 1 }}
+              onClick={() => {
+                if (videoRef.current) {
+                  videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 10);
+                  setCurrentTime(Math.max(0, videoRef.current.currentTime));
+                }
+              }}
+            >
+              <FastRewindIcon />
+            </IconButton>
+            <IconButton
+              sx={{ color: '#fff', mx: 1, background: '#23272A', borderRadius: 2, boxShadow: 1 }}
+              onClick={() => setIsPlaying(p => !p)}
+            >
+              {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+            </IconButton>
+            <IconButton
+              sx={{ color: '#fff', mx: 1, background: '#23272A', borderRadius: 2, boxShadow: 1 }}
+              onClick={() => {
+                if (videoRef.current) {
+                  videoRef.current.currentTime = Math.min(
+                    videoRef.current.duration || 0,
+                    videoRef.current.currentTime + 10
+                  );
+                  setCurrentTime(videoRef.current.currentTime);
+                }
+              }}
+            >
+              <FastForwardIcon />
+            </IconButton>
+          </Box>
+          {/* Right: Zoom, Marker */}
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{ ml: 2, flex: 1, justifyContent: 'flex-end' }}
+          >
             <Tooltip title="Zoom Out">
-              <Button
-                onClick={() => setZoom(z => Math.max(ZOOM_LEVELS[0], z / 2))}
-                disabled={zoom === ZOOM_LEVELS[0]}
-              >
-                -
-              </Button>
+              <span>
+                <IconButton
+                  size="small"
+                  sx={{ color: zoom === ZOOM_LEVELS[0] ? '#888' : '#fff' }}
+                  onClick={() => setZoom(z => Math.max(ZOOM_LEVELS[0], z / 2))}
+                  disabled={zoom === ZOOM_LEVELS[0]}
+                >
+                  -
+                </IconButton>
+              </span>
             </Tooltip>
-            <Box sx={{ color: '#fff', alignSelf: 'center' }}>Zoom: {zoom}x</Box>
+            <Box sx={{ color: '#fff', fontWeight: 500, minWidth: 60, textAlign: 'center' }}>
+              Zoom: {zoom}x
+            </Box>
             <Tooltip title="Zoom In">
-              <Button
-                onClick={() => setZoom(z => Math.min(ZOOM_LEVELS[ZOOM_LEVELS.length - 1], z * 2))}
-                disabled={zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]}
-              >
-                +
-              </Button>
+              <span>
+                <IconButton
+                  size="small"
+                  sx={{ color: zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1] ? '#888' : '#fff' }}
+                  onClick={() => setZoom(z => Math.min(ZOOM_LEVELS[ZOOM_LEVELS.length - 1], z * 2))}
+                  disabled={zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]}
+                >
+                  +
+                </IconButton>
+              </span>
             </Tooltip>
+            <Box sx={{ width: 16 }} />
+            <Button onClick={addMarker} sx={{ color: '#a259ff', fontWeight: 600 }}>
+              Add Marker
+            </Button>
           </Stack>
-          <Button onClick={addMarker}>Add Marker</Button>
-          <Button onClick={undo} disabled={undoStack.length === 0}>
-            Undo
-          </Button>
-          <Button onClick={redo} disabled={redoStack.length === 0}>
-            Redo
-          </Button>
         </Stack>
       </Box>
-      <Box sx={{ width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
+      {/* Timeline Scroll Area */}
+      <Box sx={{ width: '100vw', maxWidth: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
         <Box sx={{ width: timelineWidth }} ref={timelineRef}>
           <Box
             sx={{
@@ -822,50 +941,95 @@ const VideoEditor = () => {
               borderBottom: '1px solid #333',
             }}
           >
-            {[...Array(Math.ceil(timelineDuration / 2) + 1)].map((_, i) => (
-              <Box
-                key={i}
-                sx={{
-                  position: 'absolute',
-                  left: i * 2 * scaledTimelineScale,
-                  top: 0,
-                  color: '#bbb',
-                  fontSize: 12,
-                  userSelect: 'none',
-                }}
-              >
-                {`00:${String(i * 2).padStart(2, '0')}`}
-                <Box
-                  sx={{
-                    width: 1,
-                    height: 32,
-                    background: '#333',
-                    mt: 0.5,
-                    opacity: 0.3,
-                  }}
-                />
-              </Box>
-            ))}
+            {(() => {
+              // Choose tick interval based on duration
+              const showHour = timelineDuration >= 3600;
+              const tickInterval = showHour ? 10 : 2; // 10s for >=1hr, 2s for <1hr
+              const ticks = [];
+              for (let t = 0; t <= timelineDuration; t += tickInterval) {
+                ticks.push(
+                  <Box
+                    key={t}
+                    sx={{
+                      position: 'absolute',
+                      left: t * scaledTimelineScale,
+                      top: 0,
+                      color: '#bbb',
+                      fontSize: 12,
+                      userSelect: 'none',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {formatTimelineTime(t, showHour)}
+                    <Box
+                      sx={{
+                        width: 1,
+                        height: 32,
+                        background: '#333',
+                        mt: 0.5,
+                        opacity: 0.3,
+                      }}
+                    />
+                  </Box>
+                );
+              }
+              return ticks;
+            })()}
+            {/* Playhead line and handle rendered last for top zIndex */}
             <Box
               sx={{
                 position: 'absolute',
-                left: currentTime * scaledTimelineScale,
+                left: currentTime * scaledTimelineScale - 1,
                 top: 0,
                 width: 2,
                 height: '100%',
                 background: '#fff',
                 borderRadius: 1,
-                zIndex: 10,
-                cursor: 'pointer',
-              }}
-              onClick={e => {
-                const rect = timelineRef.current.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                setCurrentTime(
-                  Math.max(0, Math.min(clickX / scaledTimelineScale, timelineDuration))
-                );
+                zIndex: 100,
+                pointerEvents: 'none',
               }}
             />
+            <Box
+              sx={{
+                position: 'absolute',
+                left: currentTime * scaledTimelineScale - 8,
+                top: -10,
+                width: 18,
+                height: 18,
+                background: '#fff',
+                borderRadius: '50%',
+                zIndex: 110,
+                boxShadow: 2,
+                border: '2px solid #23272A',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'auto',
+              }}
+              onMouseDown={e => {
+                e.preventDefault();
+                const startX = e.clientX;
+                const startCurrentTime = currentTime;
+                const onMove = moveEvent => {
+                  const delta = moveEvent.clientX - startX;
+                  const newTime = Math.max(
+                    0,
+                    Math.min(startCurrentTime + delta / scaledTimelineScale, timelineDuration)
+                  );
+                  setCurrentTime(newTime);
+                  if (videoRef.current) videoRef.current.currentTime = newTime;
+                };
+                const onUp = () => {
+                  window.removeEventListener('mousemove', onMove);
+                  window.removeEventListener('mouseup', onUp);
+                };
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onUp);
+              }}
+            >
+              <Box sx={{ width: 8, height: 8, background: '#fff', borderRadius: '50%' }} />
+            </Box>
             {markers.map((m, i) => (
               <Box
                 key={i}
@@ -902,335 +1066,343 @@ const VideoEditor = () => {
             ))}
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
-            {tracks.map((track, trackIdx) => (
-              <Box
-                key={track.id}
-                sx={{
-                  position: 'relative',
-                  height: 48,
-                  display: 'flex',
-                  alignItems: 'center',
-                  background: dragOverTrack === trackIdx ? '#2a2d3a' : '#202124',
-                  borderRadius: 2,
-                  mb: 1,
-                  boxShadow: dragOverTrack === trackIdx ? 6 : undefined,
-                  border: dragOverTrack === trackIdx ? '2px dashed #a259ff' : undefined,
-                  transition: 'all 0.15s',
-                }}
-              >
+            {tracks.map((track, trackIdx) => {
+              const isVideo = track.type === 'video';
+              const trackHeight = isVideo ? 44 : 28;
+              return (
                 <Box
+                  key={track.id}
                   sx={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    width: 100,
-                    height: '100%',
+                    position: 'relative',
+                    height: trackHeight,
                     display: 'flex',
                     alignItems: 'center',
-                    color: '#fff',
-                    fontSize: 14,
-                    pl: 1,
-                    zIndex: 1,
+                    background: dragOverTrack === trackIdx ? '#2a2d3a' : '#202124',
+                    borderRadius: 2,
+                    mb: 0.5,
+                    boxShadow: dragOverTrack === trackIdx ? 6 : undefined,
+                    border: dragOverTrack === trackIdx ? '2px dashed #a259ff' : undefined,
+                    transition: 'all 0.15s',
                   }}
                 >
-                  <IconButton
-                    size="small"
-                    sx={{ color: track.locked ? '#a259ff' : '#bbb' }}
-                    onClick={() => toggleTrackLock(trackIdx)}
-                  >
-                    {/* lock/unlock icon here */}
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    sx={{ color: track.muted ? '#a259ff' : '#bbb' }}
-                    onClick={() => toggleTrackMute(trackIdx)}
-                  >
-                    {/* mute/unmute icon here */}
-                  </IconButton>
-                </Box>
-                <Box
-                  sx={{
-                    flex: 1,
-                    position: 'relative',
-                    height: 48,
-                  }}
-                >
-                  {/* Drop overlay for drag-and-drop */}
                   <Box
-                    className="timeline-drop-overlay"
                     sx={{
                       position: 'absolute',
                       left: 0,
                       top: 0,
-                      width: '100%',
+                      width: 100,
                       height: '100%',
-                      zIndex: 20,
-                      background:
-                        dragOverTrack === trackIdx ? 'rgba(162,89,255,0.08)' : 'transparent',
-                      borderRadius: 2,
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#a259ff',
-                      fontWeight: 'bold',
-                      fontSize: 18,
-                      letterSpacing: 1,
-                      pointerEvents: dragOverTrack === trackIdx ? 'auto' : 'none',
-                      transition: 'background 0.15s',
-                    }}
-                    onDragOver={e => {
-                      e.preventDefault();
-                      setDragOverTrack(trackIdx);
-                      console.log('onDragOver track', trackIdx);
-                    }}
-                    onDragLeave={e => {
-                      setDragOverTrack(null);
-                      console.log('onDragLeave track', trackIdx);
-                    }}
-                    onDrop={e => {
-                      e.preventDefault();
-                      const fileData = e.dataTransfer.getData('application/json');
-                      if (fileData) {
-                        // Try to add to the first compatible track at drop position
-                        const data = JSON.parse(fileData);
-                        const { type, file } = data;
-                        let trackIdx = -1;
-                        if (type === 'video') trackIdx = tracks.findIndex(t => t.type === 'video');
-                        else if (type === 'audio')
-                          trackIdx = tracks.findIndex(t => t.type === 'audio');
-                        else if (type === 'text')
-                          trackIdx = tracks.findIndex(t => t.type === 'subtitle');
-                        if (trackIdx !== -1) {
-                          let startTime, endTime;
-                          if (type === 'video') {
-                            // find the latest video on the track
-                            const existingClips = tracks[trackIdx].clips;
-                            const lastEndTime = existingClips.length
-                              ? Math.max(...existingClips.map(c => c.endTime))
-                              : 0;
-                            startTime = lastEndTime;
-                            const duration = file.duration || 5;
-                            endTime = startTime + duration;
-
-                            // push clip
-                            pushUndo(
-                              tracks.map((t, i) =>
-                                i === trackIdx
-                                  ? {
-                                      ...t,
-                                      clips: [
-                                        ...t.clips,
-                                        {
-                                          id: Date.now() + Math.random(),
-                                          file,
-                                          type,
-                                          source: file.name,
-                                          startTime,
-                                          endTime,
-                                        },
-                                      ].sort((a, b) => a.startTime - b.startTime),
-                                    }
-                                  : t
-                              )
-                            );
-                          } else {
-                            // For audio/subtitles, use drop position as before
-                            const rect = timelineRef.current.getBoundingClientRect();
-                            const dropX = e.clientX - rect.left;
-                            const dropTime = (dropX / timelineWidth) * timelineDuration;
-                            startTime = getSnappedTime(
-                              dropTime,
-                              trackIdx,
-                              tracks[trackIdx].clips.length
-                            );
-                            const duration = file.duration || 5;
-                            endTime = startTime + duration;
-                          }
-                          // Check for overlaps
-                          const hasOverlap = tracks[trackIdx].clips.some(
-                            clip => !(clip.endTime <= startTime || clip.startTime >= endTime)
-                          );
-                          if (!hasOverlap) {
-                            pushUndo(
-                              tracks.map((t, i) =>
-                                i === trackIdx
-                                  ? {
-                                      ...t,
-                                      clips: [
-                                        ...t.clips,
-                                        {
-                                          id: Date.now() + Math.random(),
-                                          file,
-                                          type,
-                                          source: file.name,
-                                          startTime,
-                                          endTime,
-                                        },
-                                      ].sort((a, b) => a.startTime - b.startTime),
-                                    }
-                                  : t
-                              )
-                            );
-                          }
-                        }
-                      }
+                      color: '#fff',
+                      fontSize: 14,
+                      pl: 1,
+                      zIndex: 1,
                     }}
                   >
-                    {dragOverTrack === trackIdx && 'Drop here'}
+                    <IconButton
+                      size="small"
+                      sx={{ color: track.locked ? '#a259ff' : '#bbb' }}
+                      onClick={() => toggleTrackLock(trackIdx)}
+                    >
+                      {/* lock/unlock icon here */}
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      sx={{ color: track.muted ? '#a259ff' : '#bbb' }}
+                      onClick={() => toggleTrackMute(trackIdx)}
+                    >
+                      {/* mute/unmute icon here */}
+                    </IconButton>
                   </Box>
-                  {track.clips.map((clip, clipIdx) => (
+                  <Box
+                    sx={{
+                      flex: 1,
+                      position: 'relative',
+                      height: trackHeight,
+                    }}
+                  >
+                    {/* Drop overlay for drag-and-drop */}
                     <Box
-                      key={clip.id}
+                      className="timeline-drop-overlay"
                       sx={{
                         position: 'absolute',
-                        left: clip.startTime * scaledTimelineScale,
-                        width: (clip.endTime - clip.startTime) * scaledTimelineScale,
-                        height: 40,
-                        background: '#1976d2',
+                        left: 0,
+                        top: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 20,
+                        background:
+                          dragOverTrack === trackIdx ? 'rgba(162,89,255,0.08)' : 'transparent',
                         borderRadius: 2,
-                        boxShadow: 3,
                         display: 'flex',
                         alignItems: 'center',
-                        color: '#fff',
+                        justifyContent: 'center',
+                        color: '#a259ff',
                         fontWeight: 'bold',
-                        fontSize: 14,
-                        px: 2,
-                        cursor: track.type === 'video' ? 'not-allowed' : 'pointer',
-                        zIndex: 2,
-                        transition: 'box-shadow 0.2s',
-                        userSelect: 'none',
-                        outline:
-                          selectedClip &&
-                          selectedClip.trackIdx === trackIdx &&
-                          selectedClip.clipIdx === clipIdx
-                            ? '3px solid #fff'
-                            : 'none',
-                        overflow: 'hidden',
-                        gap: 1,
-                        draggable: track.type !== 'video',
+                        fontSize: 18,
+                        letterSpacing: 1,
+                        pointerEvents: dragOverTrack === trackIdx ? 'auto' : 'none',
+                        transition: 'background 0.15s',
                       }}
-                      onClick={() => setSelectedClip({ trackIdx, clipIdx })}
-                      onDoubleClick={() => setSelectedClip({ trackIdx, clipIdx })}
-                      onDragStart={e => {
-                        e.dataTransfer.setData('clip', JSON.stringify({ trackIdx, clipIdx }));
+                      onDragOver={e => {
+                        e.preventDefault();
+                        setDragOverTrack(trackIdx);
+                        console.log('onDragOver track', trackIdx);
+                      }}
+                      onDragLeave={e => {
+                        setDragOverTrack(null);
+                        console.log('onDragLeave track', trackIdx);
+                      }}
+                      onDrop={e => {
+                        e.preventDefault();
+                        const fileData = e.dataTransfer.getData('application/json');
+                        if (fileData) {
+                          // Try to add to the first compatible track at drop position
+                          const data = JSON.parse(fileData);
+                          const { type, file } = data;
+                          let trackIdx = -1;
+                          if (type === 'video')
+                            trackIdx = tracks.findIndex(t => t.type === 'video');
+                          else if (type === 'audio')
+                            trackIdx = tracks.findIndex(t => t.type === 'audio');
+                          else if (type === 'text')
+                            trackIdx = tracks.findIndex(t => t.type === 'subtitle');
+                          if (trackIdx !== -1) {
+                            let startTime, endTime;
+                            if (type === 'video') {
+                              // find the latest video on the track
+                              const existingClips = tracks[trackIdx].clips;
+                              const lastEndTime = existingClips.length
+                                ? Math.max(...existingClips.map(c => c.endTime))
+                                : 0;
+                              startTime = lastEndTime;
+                              const duration = file.duration || 5;
+                              endTime = startTime + duration;
+
+                              // push clip
+                              pushUndo(
+                                tracks.map((t, i) =>
+                                  i === trackIdx
+                                    ? {
+                                        ...t,
+                                        clips: [
+                                          ...t.clips,
+                                          {
+                                            id: Date.now() + Math.random(),
+                                            file,
+                                            type,
+                                            source: file.name,
+                                            startTime,
+                                            endTime,
+                                          },
+                                        ].sort((a, b) => a.startTime - b.startTime),
+                                      }
+                                    : t
+                                )
+                              );
+                            } else {
+                              // For audio/subtitles, use drop position as before
+                              const rect = timelineRef.current.getBoundingClientRect();
+                              const dropX = e.clientX - rect.left;
+                              const dropTime = (dropX / timelineWidth) * timelineDuration;
+                              startTime = getSnappedTime(
+                                dropTime,
+                                trackIdx,
+                                tracks[trackIdx].clips.length
+                              );
+                              const duration = file.duration || 5;
+                              endTime = startTime + duration;
+                            }
+                            // Check for overlaps
+                            const hasOverlap = tracks[trackIdx].clips.some(
+                              clip => !(clip.endTime <= startTime || clip.startTime >= endTime)
+                            );
+                            if (!hasOverlap) {
+                              pushUndo(
+                                tracks.map((t, i) =>
+                                  i === trackIdx
+                                    ? {
+                                        ...t,
+                                        clips: [
+                                          ...t.clips,
+                                          {
+                                            id: Date.now() + Math.random(),
+                                            file,
+                                            type,
+                                            source: file.name,
+                                            startTime,
+                                            endTime,
+                                          },
+                                        ].sort((a, b) => a.startTime - b.startTime),
+                                      }
+                                    : t
+                                )
+                              );
+                            }
+                          }
+                        }
                       }}
                     >
-                      {renderBlockVisual(clip, trackIdx)}
-                      <span
-                        style={{
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis',
+                      {dragOverTrack === trackIdx && 'Drop here'}
+                    </Box>
+                    {track.clips.map((clip, clipIdx) => (
+                      <Box
+                        key={clip.id}
+                        sx={{
+                          position: 'absolute',
+                          left: clip.startTime * scaledTimelineScale,
+                          width: (clip.endTime - clip.startTime) * scaledTimelineScale,
+                          height: isVideo ? 36 : 20,
+                          background: '#1976d2',
+                          borderRadius: 2,
+                          boxShadow: 3,
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: '#fff',
+                          fontWeight: 'bold',
+                          fontSize: 14,
+                          px: 2,
+                          cursor: track.type === 'video' ? 'not-allowed' : 'pointer',
+                          zIndex: 2,
+                          transition: 'box-shadow 0.2s',
+                          userSelect: 'none',
+                          outline:
+                            selectedClip &&
+                            selectedClip.trackIdx === trackIdx &&
+                            selectedClip.clipIdx === clipIdx
+                              ? '3px solid #fff'
+                              : 'none',
                           overflow: 'hidden',
+                          gap: 1,
+                          draggable: track.type !== 'video',
+                        }}
+                        onClick={() => setSelectedClip({ trackIdx, clipIdx })}
+                        onDoubleClick={() => setSelectedClip({ trackIdx, clipIdx })}
+                        onDragStart={e => {
+                          e.dataTransfer.setData('clip', JSON.stringify({ trackIdx, clipIdx }));
                         }}
                       >
-                        {clip.source || clip.type}
-                      </span>
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          left: 0,
-                          top: 0,
-                          width: 8,
-                          height: '100%',
-                          cursor: 'ew-resize',
-                          zIndex: 3,
-                          background: 'transparent',
-                        }}
-                        onMouseDown={e => onTrimMouseDown(e, trackIdx, clipIdx, 'left')}
-                      />
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          right: 0,
-                          top: 0,
-                          width: 8,
-                          height: '100%',
-                          cursor: 'ew-resize',
-                          zIndex: 3,
-                          background: 'transparent',
-                        }}
-                        onMouseDown={e => onTrimMouseDown(e, trackIdx, clipIdx, 'right')}
-                      />
+                        {renderBlockVisual(clip, trackIdx)}
+                        <span
+                          style={{
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {clip.source || clip.type}
+                        </span>
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            width: 8,
+                            height: '100%',
+                            cursor: 'ew-resize',
+                            zIndex: 3,
+                            background: 'transparent',
+                          }}
+                          onMouseDown={e => onTrimMouseDown(e, trackIdx, clipIdx, 'left')}
+                        />
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            right: 0,
+                            top: 0,
+                            width: 8,
+                            height: '100%',
+                            cursor: 'ew-resize',
+                            zIndex: 3,
+                            background: 'transparent',
+                          }}
+                          onMouseDown={e => onTrimMouseDown(e, trackIdx, clipIdx, 'right')}
+                        />
 
-                      {selectedClip &&
-                        selectedClip.trackIdx === trackIdx &&
-                        selectedClip.clipIdx === clipIdx && (
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              left: clip.startTime * scaledTimelineScale,
-                              top: -38,
-                              zIndex: 20,
-                              display: 'flex',
-                              gap: 1,
-                              background: '#23272A',
-                              borderRadius: 2,
-                              boxShadow: 4,
-                              px: 1,
-                              py: 0.5,
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Tooltip title="Split">
-                              <IconButton
-                                size="small"
-                                sx={{ color: '#fff' }}
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  // Split block at playhead
-                                  const clip = tracks[trackIdx].clips[clipIdx];
-                                  if (currentTime > clip.startTime && currentTime < clip.endTime) {
-                                    const left = {
-                                      ...clip,
-                                      endTime: currentTime,
-                                      id: Date.now() + Math.random(),
-                                    };
-                                    const right = {
-                                      ...clip,
-                                      startTime: currentTime,
-                                      id: Date.now() + Math.random(),
-                                    };
-                                    const newTracks = tracks.map((t, tIdx) =>
-                                      tIdx === trackIdx
-                                        ? {
-                                            ...t,
-                                            clips: [
-                                              ...t.clips.slice(0, clipIdx),
-                                              left,
-                                              right,
-                                              ...t.clips.slice(clipIdx + 1),
-                                            ],
-                                          }
-                                        : t
-                                    );
-                                    pushUndo(newTracks);
-                                    setTimeout(centerPlayheadIfNeeded, 0);
-                                  }
-                                }}
-                              >
-                                <ContentCutIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Delete">
-                              <IconButton
-                                size="small"
-                                sx={{ color: '#fff' }}
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  rippleDeleteClip(trackIdx, clipIdx);
-                                  setSelectedClip(null);
-                                }}
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                        )}
-                    </Box>
-                  ))}
+                        {selectedClip &&
+                          selectedClip.trackIdx === trackIdx &&
+                          selectedClip.clipIdx === clipIdx && (
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                left: clip.startTime * scaledTimelineScale,
+                                top: -38,
+                                zIndex: 20,
+                                display: 'flex',
+                                gap: 1,
+                                background: '#23272A',
+                                borderRadius: 2,
+                                boxShadow: 4,
+                                px: 1,
+                                py: 0.5,
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Tooltip title="Split">
+                                <IconButton
+                                  size="small"
+                                  sx={{ color: '#fff' }}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    // Split block at playhead
+                                    const clip = tracks[trackIdx].clips[clipIdx];
+                                    if (
+                                      currentTime > clip.startTime &&
+                                      currentTime < clip.endTime
+                                    ) {
+                                      const left = {
+                                        ...clip,
+                                        endTime: currentTime,
+                                        id: Date.now() + Math.random(),
+                                      };
+                                      const right = {
+                                        ...clip,
+                                        startTime: currentTime,
+                                        id: Date.now() + Math.random(),
+                                      };
+                                      const newTracks = tracks.map((t, tIdx) =>
+                                        tIdx === trackIdx
+                                          ? {
+                                              ...t,
+                                              clips: [
+                                                ...t.clips.slice(0, clipIdx),
+                                                left,
+                                                right,
+                                                ...t.clips.slice(clipIdx + 1),
+                                              ],
+                                            }
+                                          : t
+                                      );
+                                      pushUndo(newTracks);
+                                      setTimeout(centerPlayheadIfNeeded, 0);
+                                    }
+                                  }}
+                                >
+                                  <ContentCutIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Delete">
+                                <IconButton
+                                  size="small"
+                                  sx={{ color: '#fff' }}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    rippleDeleteClip(trackIdx, clipIdx);
+                                    setSelectedClip(null);
+                                  }}
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          )}
+                      </Box>
+                    ))}
+                  </Box>
                 </Box>
-              </Box>
-            ))}
+              );
+            })}
           </Box>
         </Box>
       </Box>
@@ -1271,61 +1443,32 @@ const VideoEditor = () => {
     );
   };
 
-  // sync playhead with video
+  // sync playhead with video and control video playback from isPlaying
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    // Keep playhead in sync
     const handler = () => {
       setCurrentTime(video.currentTime);
     };
     video.addEventListener('timeupdate', handler);
-    return () => video.removeEventListener('timeupdate', handler);
-  }, []);
-
-  useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setCurrentTime(t => {
-        if (t + 0.04 >= timelineDuration) {
-          setIsPlaying(false);
-          return timelineDuration;
-        }
-        return t + 0.04;
-      });
-    }, 40);
-    return () => clearInterval(interval);
-  }, [isPlaying, timelineDuration]);
-
-  // Add handleFileDrop function for file input and blank subtitle
-  const handleFileDrop = (e, trackIdx, dropTime) => {
-    let data;
-    if (e && e.dataTransfer && typeof e.dataTransfer.getData === 'function') {
-      data = JSON.parse(e.dataTransfer.getData('application/json'));
-    } else if (e && e.dataTransfer && typeof e.dataTransfer.getData !== 'function') {
-      // Simulated event from file input
-      data = e.dataTransfer;
+    // Control playback
+    if (isPlaying) {
+      const playPromise = video.play();
+      if (playPromise && playPromise.catch) playPromise.catch(() => {});
     } else {
-      data = e; // fallback for direct object
+      video.pause();
     }
-    if (tracks[trackIdx].type === 'video') dropTime = 0;
-    const duration = data.duration;
-    const newClip = {
-      id: Date.now() + Math.random(),
-      source: data.fileName,
-      type: data.type,
-      startTime: dropTime,
-      endTime: dropTime + duration,
-    };
-    setTracks(prev => {
-      const next = [...prev];
-      next[trackIdx].clips.push(newClip);
-      return next;
-    });
-    setTimelineDuration(Math.max(timelineDuration, dropTime + duration));
-  };
+    return () => video.removeEventListener('timeupdate', handler);
+  }, [isPlaying]);
+
+  // Update timelineWidth when duration or zoom changes
+  useEffect(() => {
+    setTimelineWidth(timelineDuration * 50 * zoom);
+  }, [timelineDuration, zoom]);
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#181A1B' }}>
+    <Box sx={{ minHeight: '100vh', height: '100vh', background: '#181A1B', overflow: 'hidden' }}>
       {renderTopBar()}
       <Box
         sx={{
@@ -1335,10 +1478,13 @@ const VideoEditor = () => {
           height: 'calc(100vh - 56px)',
           p: isMobile ? 0 : 2,
           gap: 2,
+          overflow: 'hidden',
         }}
       >
-        <Box sx={{ minWidth: 80, maxWidth: 80, flex: '0 0 80px', height: '100%' }}>
-          {renderSidebar()}
+        <Box
+          sx={{ minWidth: 80, maxWidth: 80, flex: '0 0 80px', height: '100%', overflow: 'hidden' }}
+        >
+          <Box sx={{ height: '100%', overflowY: 'auto' }}>{renderSidebar()}</Box>
         </Box>
         <Box
           sx={{
@@ -1347,9 +1493,18 @@ const VideoEditor = () => {
             flex: 1,
             height: '100%',
             minHeight: 0,
+            overflow: 'hidden',
           }}
         >
-          <Box sx={{ display: 'flex', flexDirection: 'row', flex: 1, minHeight: 0 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              flex: 1,
+              minHeight: 0,
+              overflow: 'hidden',
+            }}
+          >
             {showSidebarPanel && (
               <Box
                 sx={{
@@ -1362,7 +1517,7 @@ const VideoEditor = () => {
                   flexDirection: 'column',
                 }}
               >
-                {renderSidebarPanel()}
+                <Box sx={{ height: '100%', overflowY: 'auto' }}>{renderSidebarPanel()}</Box>
               </Box>
             )}
             <Box
@@ -1372,12 +1527,13 @@ const VideoEditor = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 minHeight: 0,
+                overflow: 'hidden',
               }}
             >
               {renderPreview()}
             </Box>
           </Box>
-          <Box sx={{ width: '100%' }}>
+          <Box sx={{ width: '100%', flex: '0 0 auto', overflow: 'hidden' }}>
             <Box
               onDragOver={e => {
                 e.preventDefault();
@@ -1463,85 +1619,12 @@ const VideoEditor = () => {
                   }
                 }
               }}
+              sx={{ overflowX: 'auto', overflowY: 'hidden', maxHeight: 220 }}
             >
               {renderTimeline()}
             </Box>
           </Box>
         </Box>
-      </Box>
-      <Box sx={{ p: 2, background: '#23272A', borderTop: '1px solid #333' }}>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <input
-            type="file"
-            accept="video/*,audio/*"
-            onChange={e => {
-              const file = e.target.files[0];
-              if (!file) return;
-              const url = URL.createObjectURL(file);
-              const video = videoRef.current;
-              if (file.type.startsWith('video/')) {
-                video.src = url;
-                video.load();
-                video.onloadedmetadata = () => {
-                  const duration = video.duration;
-                  handleFileDrop(
-                    {
-                      dataTransfer: {
-                        getData: () =>
-                          JSON.stringify({ fileName: file.name, type: 'video', duration }),
-                      },
-                    },
-                    0,
-                    0
-                  );
-                };
-              } else if (file.type.startsWith('audio/')) {
-                const audio = document.createElement('audio');
-                audio.src = url;
-                audio.onloadedmetadata = () => {
-                  const duration = audio.duration;
-                  handleFileDrop(
-                    {
-                      dataTransfer: {
-                        getData: () =>
-                          JSON.stringify({ fileName: file.name, type: 'audio', duration }),
-                      },
-                    },
-                    1,
-                    0
-                  );
-                };
-              }
-              e.target.value = '';
-            }}
-          />
-          <Button
-            startIcon={<AddIcon />}
-            onClick={() => {
-              // add blank subtitle block
-              setTracks(prev => {
-                const next = [...prev];
-                next[2].clips.push({
-                  id: Date.now() + Math.random(),
-                  source: 'Blank',
-                  type: 'subtitle',
-                  startTime: 10,
-                  endTime: 20,
-                });
-                return next;
-              });
-            }}
-            sx={{
-              background: 'linear-gradient(90deg, #1976d2 0%, #64b5f6 100%)',
-              color: '#fff',
-              fontWeight: 'bold',
-              borderRadius: 2,
-              boxShadow: 1,
-            }}
-          >
-            Add Blank Subtitle
-          </Button>
-        </Stack>
       </Box>
     </Box>
   );
