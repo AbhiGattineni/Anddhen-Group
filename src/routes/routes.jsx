@@ -30,6 +30,7 @@ import Ats from 'src/components/pages/inc/Ats';
 import Ans from 'src/components/pages/inc/Ans';
 import ResumeHome from 'src/components/pages/resume/ResumeHome';
 import FinanceDataUpload from 'src/components/pages/inc/FinanceDataUpload';
+import VideoEditor from 'src/components/pages/inc/VideoEditor';
 
 const router = createBrowserRouter([
   {
@@ -181,6 +182,14 @@ const router = createBrowserRouter([
   {
     path: '/quiz',
     element: <MainLayout>{/* Add your Quiz component here */}</MainLayout>,
+  },
+  {
+    path: '/video-editor',
+    element: (
+      <ProtectedRoute>
+        <VideoEditor />
+      </ProtectedRoute>
+    ),
   },
 ]);
 
