@@ -34,7 +34,7 @@ import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
-import FastRewindIcon from '@mui/icons-material/FastRewind';
+// import FastRewindIcon from '@mui/icons-material/FastRewind';
 import FastForwardIcon from '@mui/icons-material/FastForward';
 
 const SIDEBAR_TOOLS = [
@@ -135,10 +135,18 @@ const VideoEditor = () => {
     }
   };
 
-  // Helper to get the max end time across all tracks
+  // Helper: get the max endTime across all tracks (or just video track)
+  function getMaxTimelineEndTime(tracks) {
+    // Only consider video track for playhead duration
+    const videoTrack = tracks.find(t => t.type === 'video');
+    if (!videoTrack || videoTrack.clips.length === 0) return 0;
+    return Math.max(...videoTrack.clips.map(c => c.endTime));
+  }
+
+  // Helper to get the max end time across all tracks (used for timelineDuration)
   function getMaxEndTime(tracks) {
-    const allEndTimes = tracks.flatMap(track => track.clips.map(clip => clip.endTime));
-    return allEndTimes.length > 0 ? Math.max(60, ...allEndTimes) : 60;
+    const max = getMaxTimelineEndTime(tracks);
+    return max > 0 ? Math.max(60, max) : 60;
   }
 
   const pushUndo = newTracks => {
@@ -379,11 +387,13 @@ const VideoEditor = () => {
                     if (file.type.startsWith('video/')) {
                       const video = document.createElement('video');
                       video.src = url;
-                      video.onloadedmetadata = () =>
+                      video.onloadedmetadata = async () => {
+                        const thumbnails = await extractThumbnails(url, video.duration, 8);
                         setUploadedVideos(v => [
                           ...v,
-                          { name: file.name, url, duration: video.duration, file },
+                          { name: file.name, url, duration: video.duration, file, thumbnails },
                         ]);
+                      };
                     } else if (file.type.startsWith('audio/')) {
                       const audio = document.createElement('audio');
                       audio.src = url;
@@ -678,18 +688,19 @@ const VideoEditor = () => {
     return (
       <Box
         sx={{
-          width: width + 64,
+          width: width,
           background: '#191B1F',
-          borderRadius: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          minHeight: height + 120,
+          minHeight: height,
           p: 0,
           position: 'relative',
           mb: 4,
           overflow: 'visible',
+          border: '1.5px solidrgb(255, 255, 255)',
+          borderRadius: 6,
         }}
       >
         <Box
@@ -697,20 +708,32 @@ const VideoEditor = () => {
             width,
             height,
             background: '#000',
-            borderRadius: 3,
             overflow: 'hidden',
             position: 'relative',
-            mt: 4,
+            mt: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            border: '2px solid rgb(126, 126, 126)',
+            borderRadius: 3,
+            boxShadow: 'none',
+            outline: 'none',
           }}
         >
           {firstClip ? (
             <video
               ref={videoRef}
               src={firstClip.file?.url}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', background: '#000' }}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                background: '#000',
+                border: 'none',
+                borderRadius: 0,
+                boxShadow: 'none',
+                outline: 'none',
+              }}
               onLoadedMetadata={e => {
                 const video = e.target;
                 setTimelineDuration(Math.max(timelineDuration, video.duration));
@@ -724,16 +747,17 @@ const VideoEditor = () => {
 
   const renderBlockVisual = (clip, trackIdx) => {
     if (tracks[trackIdx].type === 'video') {
+      // Just show the same image as in uploads (video file's url as poster)
       return (
         <img
           src={clip.file?.url || ''}
           alt={clip.label}
           style={{
-            width: 48,
-            height: 32,
+            width: '100%',
+            height: '100%',
             objectFit: 'cover',
-            borderRadius: 4,
-            marginRight: 8,
+            borderRadius: 2,
+            display: 'block',
           }}
         />
       );
@@ -839,7 +863,53 @@ const VideoEditor = () => {
               </span>
             </Tooltip>
             <Tooltip title="Split">
-              <IconButton size="small" sx={{ color: '#fff' }}>
+              <IconButton
+                size="small"
+                sx={{ color: '#fff' }}
+                onClick={() => {
+                  if (!selectedClip) return;
+                  const { trackIdx, clipIdx } = selectedClip;
+                  const clip = tracks[trackIdx].clips[clipIdx];
+                  if (currentTime > clip.startTime && currentTime < clip.endTime) {
+                    const originId = clip.originId || clip.id;
+                    const left = {
+                      ...clip,
+                      endTime: currentTime,
+                      id: Date.now() + Math.random(),
+                      originId,
+                    };
+                    const right = {
+                      ...clip,
+                      startTime: currentTime,
+                      id: Date.now() + Math.random(),
+                      originId,
+                    };
+                    const newTracks = tracks.map((t, tIdx) =>
+                      tIdx === trackIdx
+                        ? {
+                            ...t,
+                            clips: [
+                              ...t.clips.slice(0, clipIdx),
+                              left,
+                              right,
+                              ...t.clips.slice(clipIdx + 1),
+                            ],
+                          }
+                        : t
+                    );
+                    pushUndo(newTracks);
+                    setTimeout(centerPlayheadIfNeeded, 0);
+                  }
+                }}
+                disabled={
+                  !selectedClip ||
+                  (() => {
+                    const { trackIdx, clipIdx } = selectedClip || {};
+                    const clip = tracks[trackIdx]?.clips[clipIdx];
+                    return !clip || currentTime <= clip?.startTime || currentTime >= clip?.endTime;
+                  })()
+                }
+              >
                 <ContentCutIcon />
               </IconButton>
             </Tooltip>
@@ -849,7 +919,17 @@ const VideoEditor = () => {
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete">
-              <IconButton size="small" sx={{ color: '#fff' }}>
+              <IconButton
+                size="small"
+                sx={{ color: '#fff' }}
+                onClick={() => {
+                  if (!selectedClip) return;
+                  const { trackIdx, clipIdx } = selectedClip;
+                  deleteClip(trackIdx, clipIdx);
+                  setSelectedClip(null);
+                }}
+                disabled={!selectedClip}
+              >
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
@@ -859,17 +939,16 @@ const VideoEditor = () => {
             <IconButton
               sx={{ color: '#fff', mx: 1, background: '#23272A', borderRadius: 2, boxShadow: 1 }}
               onClick={() => {
-                if (videoRef.current) {
-                  videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 10);
-                  setCurrentTime(Math.max(0, videoRef.current.currentTime));
+                if (!isPlaying) {
+                  // If playhead is not in any video clip, jump to first video clip
+                  const firstStart = getFirstVideoClipStart(tracks);
+                  if (!isTimeInAnyVideoClip(currentTime, tracks)) {
+                    setCurrentTime(firstStart);
+                    if (videoRef.current) videoRef.current.currentTime = firstStart;
+                  }
                 }
+                setIsPlaying(p => !p);
               }}
-            >
-              <FastRewindIcon />
-            </IconButton>
-            <IconButton
-              sx={{ color: '#fff', mx: 1, background: '#23272A', borderRadius: 2, boxShadow: 1 }}
-              onClick={() => setIsPlaying(p => !p)}
             >
               {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
@@ -1170,17 +1249,22 @@ const VideoEditor = () => {
                             trackIdx = tracks.findIndex(t => t.type === 'subtitle');
                           if (trackIdx !== -1) {
                             let startTime, endTime;
+                            let fileToUse = file;
                             if (type === 'video') {
-                              // find the latest video on the track
+                              // Find the uploaded video by url or name
+                              const uploaded = uploadedVideos.find(
+                                v => v.url === file.url || v.name === file.name
+                              );
+                              if (uploaded) fileToUse = uploaded;
                               const existingClips = tracks[trackIdx].clips;
                               const lastEndTime = existingClips.length
                                 ? Math.max(...existingClips.map(c => c.endTime))
                                 : 0;
                               startTime = lastEndTime;
-                              const duration = file.duration || 5;
+                              const duration = fileToUse.duration || 5;
                               endTime = startTime + duration;
 
-                              // push clip
+                              // push clip, ensure thumbnails are copied
                               pushUndo(
                                 tracks.map((t, i) =>
                                   i === trackIdx
@@ -1190,11 +1274,12 @@ const VideoEditor = () => {
                                           ...t.clips,
                                           {
                                             id: Date.now() + Math.random(),
-                                            file,
+                                            file: fileToUse,
                                             type,
-                                            source: file.name,
+                                            source: fileToUse.name,
                                             startTime,
                                             endTime,
+                                            thumbnails: fileToUse.thumbnails || [],
                                           },
                                         ].sort((a, b) => a.startTime - b.startTime),
                                       }
@@ -1228,11 +1313,12 @@ const VideoEditor = () => {
                                           ...t.clips,
                                           {
                                             id: Date.now() + Math.random(),
-                                            file,
+                                            file: fileToUse,
                                             type,
-                                            source: file.name,
+                                            source: fileToUse.name,
                                             startTime,
                                             endTime,
+                                            thumbnails: fileToUse.thumbnails || [],
                                           },
                                         ].sort((a, b) => a.startTime - b.startTime),
                                       }
@@ -1351,15 +1437,18 @@ const VideoEditor = () => {
                                       currentTime > clip.startTime &&
                                       currentTime < clip.endTime
                                     ) {
+                                      const originId = clip.originId || clip.id;
                                       const left = {
                                         ...clip,
                                         endTime: currentTime,
                                         id: Date.now() + Math.random(),
+                                        originId,
                                       };
                                       const right = {
                                         ...clip,
                                         startTime: currentTime,
                                         id: Date.now() + Math.random(),
+                                        originId,
                                       };
                                       const newTracks = tracks.map((t, tIdx) =>
                                         tIdx === trackIdx
@@ -1388,7 +1477,7 @@ const VideoEditor = () => {
                                   sx={{ color: '#fff' }}
                                   onClick={e => {
                                     e.stopPropagation();
-                                    rippleDeleteClip(trackIdx, clipIdx);
+                                    deleteClip(trackIdx, clipIdx);
                                     setSelectedClip(null);
                                   }}
                                 >
@@ -1417,30 +1506,67 @@ const VideoEditor = () => {
     setTracks(tracks => tracks.map((t, i) => (i === idx ? { ...t, muted: !t.muted } : t)));
   };
 
-  const rippleDeleteClip = (trackIdx, clipIdx) => {
-    const clip = tracks[trackIdx].clips[clipIdx];
+  const deleteClip = (trackIdx, clipIdx) => {
     setTracks(tracks =>
-      tracks.map((track, idx) =>
-        idx === trackIdx
-          ? {
-              ...track,
-              clips: track.clips
-                .filter((_, i) => i !== clipIdx)
-                .map(c => ({
-                  ...c,
-                  startTime:
-                    c.startTime > clip.startTime
-                      ? c.startTime - (clip.endTime - clip.startTime)
-                      : c.startTime,
-                  endTime:
-                    c.endTime > clip.startTime
-                      ? c.endTime - (clip.endTime - clip.startTime)
-                      : c.endTime,
-                })),
-            }
-          : track
-      )
+      tracks.map((track, idx) => {
+        if (idx !== trackIdx) return track;
+        const clips = [...track.clips];
+        const deletedClip = clips[clipIdx];
+        // Check if next clip is contiguous and from same origin
+        const nextClip = clips[clipIdx + 1];
+        if (
+          nextClip &&
+          deletedClip.originId &&
+          nextClip.originId === deletedClip.originId &&
+          Math.abs(nextClip.startTime - deletedClip.endTime) < 1e-6
+        ) {
+          // Ripple: shift all subsequent contiguous split clips left
+          const shiftAmount = deletedClip.endTime - deletedClip.startTime;
+          let i = clipIdx + 1;
+          // Shift all contiguous clips with same originId
+          while (
+            i < clips.length &&
+            clips[i].originId === deletedClip.originId &&
+            (i === clipIdx + 1 || Math.abs(clips[i].startTime - clips[i - 1].endTime) < 1e-6)
+          ) {
+            clips[i] = {
+              ...clips[i],
+              startTime: clips[i].startTime - shiftAmount,
+              endTime: clips[i].endTime - shiftAmount,
+            };
+            i++;
+          }
+          // Remove the deleted clip
+          clips.splice(clipIdx, 1);
+          return { ...track, clips };
+        } else {
+          // Normal delete (no ripple)
+          return {
+            ...track,
+            clips: clips.filter((_, i) => i !== clipIdx),
+          };
+        }
+      })
     );
+  };
+
+  // Helper: get the min startTime and max endTime of all video clips
+  function getFirstVideoClipStart(tracks) {
+    const videoTrack = tracks.find(t => t.type === 'video');
+    if (!videoTrack || videoTrack.clips.length === 0) return 0;
+    return Math.min(...videoTrack.clips.map(c => c.startTime));
+  }
+  function getLastVideoClipEnd(tracks) {
+    const videoTrack = tracks.find(t => t.type === 'video');
+    if (!videoTrack || videoTrack.clips.length === 0) return 0;
+    return Math.max(...videoTrack.clips.map(c => c.endTime));
+  }
+
+  // Playback logic: when play is pressed, jump to first video clip if playhead is outside any clip
+  const isTimeInAnyVideoClip = (time, tracks) => {
+    const videoTrack = tracks.find(t => t.type === 'video');
+    if (!videoTrack) return false;
+    return videoTrack.clips.some(c => time >= c.startTime && time < c.endTime);
   };
 
   // sync playhead with video and control video playback from isPlaying
@@ -1449,23 +1575,102 @@ const VideoEditor = () => {
     if (!video) return;
     // Keep playhead in sync
     const handler = () => {
-      setCurrentTime(video.currentTime);
+      // If currentTime exceeds the last valid endTime, stop playback
+      const minStart = getFirstVideoClipStart(tracks);
+      const maxEnd = getLastVideoClipEnd(tracks);
+      if (video.currentTime < minStart) {
+        setCurrentTime(minStart);
+        video.currentTime = minStart;
+        video.pause();
+        setIsPlaying(false);
+      } else if (video.currentTime >= maxEnd) {
+        setIsPlaying(false);
+        setCurrentTime(maxEnd);
+        video.pause();
+        video.currentTime = maxEnd;
+      } else {
+        setCurrentTime(video.currentTime);
+      }
     };
     video.addEventListener('timeupdate', handler);
     // Control playback
     if (isPlaying) {
-      const playPromise = video.play();
-      if (playPromise && playPromise.catch) playPromise.catch(() => {});
+      const minStart = getFirstVideoClipStart(tracks);
+      const maxEnd = getLastVideoClipEnd(tracks);
+      if (video.currentTime < minStart) {
+        setCurrentTime(minStart);
+        video.currentTime = minStart;
+      } else if (video.currentTime >= maxEnd) {
+        setIsPlaying(false);
+        setCurrentTime(maxEnd);
+        video.pause();
+        video.currentTime = maxEnd;
+      } else {
+        const playPromise = video.play();
+        if (playPromise && playPromise.catch) playPromise.catch(() => {});
+      }
     } else {
       video.pause();
     }
     return () => video.removeEventListener('timeupdate', handler);
-  }, [isPlaying]);
+  }, [isPlaying, tracks]);
 
   // Update timelineWidth when duration or zoom changes
   useEffect(() => {
     setTimelineWidth(timelineDuration * 50 * zoom);
   }, [timelineDuration, zoom]);
+
+  // Utility: Extract thumbnails from a video file at regular intervals
+  const extractThumbnails = (fileUrl, duration, count = 8) => {
+    return new Promise(resolve => {
+      const video = document.createElement('video');
+      video.src = fileUrl;
+      video.crossOrigin = 'anonymous';
+      video.muted = true;
+      video.currentTime = 0;
+      const canvas = document.createElement('canvas');
+      const thumbnails = [];
+      let loaded = false;
+      video.addEventListener('loadeddata', async () => {
+        if (loaded) return;
+        loaded = true;
+        const interval = duration / count;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        for (let i = 0; i < count; i++) {
+          video.currentTime = Math.min(duration - 0.1, i * interval);
+          await new Promise(res => {
+            video.onseeked = () => {
+              canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+              thumbnails.push(canvas.toDataURL('image/jpeg', 0.7));
+              res();
+            };
+          });
+        }
+        resolve(thumbnails);
+      });
+    });
+  };
+
+  // Sync thumbnails from uploadedVideos to timeline clips after upload/async extraction
+  useEffect(() => {
+    setTracks(tracks =>
+      tracks.map(track => {
+        if (track.type !== 'video') return track;
+        return {
+          ...track,
+          clips: track.clips.map(clip => {
+            if (clip.thumbnails && clip.thumbnails.length > 0) return clip;
+            const match = uploadedVideos.find(v => v.url === clip.file?.url);
+            if (match && match.thumbnails && match.thumbnails.length > 0) {
+              return { ...clip, thumbnails: match.thumbnails };
+            }
+            return clip;
+          }),
+        };
+      })
+    );
+  }, [uploadedVideos]);
 
   return (
     <Box sx={{ minHeight: '100vh', height: '100vh', background: '#181A1B', overflow: 'hidden' }}>
@@ -1551,16 +1756,22 @@ const VideoEditor = () => {
                   else if (type === 'text') trackIdx = tracks.findIndex(t => t.type === 'subtitle');
                   if (trackIdx !== -1) {
                     let startTime, endTime;
+                    let fileToUse = file;
                     if (type === 'video') {
+                      // Find the uploaded video by url or name
+                      const uploaded = uploadedVideos.find(
+                        v => v.url === file.url || v.name === file.name
+                      );
+                      if (uploaded) fileToUse = uploaded;
                       const existingClips = tracks[trackIdx].clips;
                       const lastEndTime = existingClips.length
                         ? Math.max(...existingClips.map(c => c.endTime))
                         : 0;
                       startTime = lastEndTime;
-                      const duration = file.duration || 5;
+                      const duration = fileToUse.duration || 5;
                       endTime = startTime + duration;
 
-                      // push clip
+                      // push clip, ensure thumbnails are copied
                       pushUndo(
                         tracks.map((t, i) =>
                           i === trackIdx
@@ -1570,11 +1781,12 @@ const VideoEditor = () => {
                                   ...t.clips,
                                   {
                                     id: Date.now() + Math.random(),
-                                    file,
+                                    file: fileToUse,
                                     type,
-                                    source: file.name,
+                                    source: fileToUse.name,
                                     startTime,
                                     endTime,
+                                    thumbnails: fileToUse.thumbnails || [],
                                   },
                                 ].sort((a, b) => a.startTime - b.startTime),
                               }
@@ -1604,11 +1816,12 @@ const VideoEditor = () => {
                                   ...t.clips,
                                   {
                                     id: Date.now() + Math.random(),
-                                    file,
+                                    file: fileToUse,
                                     type,
-                                    source: file.name,
+                                    source: fileToUse.name,
                                     startTime,
                                     endTime,
+                                    thumbnails: fileToUse.thumbnails || [],
                                   },
                                 ].sort((a, b) => a.startTime - b.startTime),
                               }
