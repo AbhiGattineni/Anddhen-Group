@@ -3,6 +3,7 @@ import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import { Carousel, Container, Card, Button } from 'react-bootstrap';
 import { Link, Routes, Route } from 'react-router-dom';
 import FinanceDataUpload from './FinanceDataUpload';
+import InvestmentOptionsTabs from './InvestmentOptionsTabs';
 
 export const Ati = () => {
   const [setShowToast] = useState(false);
@@ -80,6 +81,17 @@ export const Ati = () => {
                     </Card>
                   </div>
                 </div>
+              </div>
+
+              {/* Explore Global Investment Options - New Section */}
+              <div className="investment-section mt-5 mb-5 p-4 rounded bg-white shadow-sm">
+                <h2
+                  className="text-center mb-4"
+                  style={{ fontWeight: 600, fontSize: '2rem', letterSpacing: '0.5px' }}
+                >
+                  Explore Global Investment Options
+                </h2>
+                <InvestmentOptionsTabs />
               </div>
 
               <div className="mt-5 p-3 rounded bg-light">

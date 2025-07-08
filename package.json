@@ -28,6 +28,7 @@
     "react-ga": "^3.3.1",
     "react-helmet-async": "^2.0.5",
     "react-hot-toast": "^2.5.2",
+    "react-icons": "^5.5.0",
     "react-lazy-load-image-component": "^1.6.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.21.2",
@@ -82,7 +83,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.6.2",
     "react-app-rewired": "^2.2.1"
   }
 }
