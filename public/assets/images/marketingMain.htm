@@ -9633,7 +9633,7 @@
               })
             );
           };
-          (() => {
+          ((() => {
             let e = () =>
                 new Promise(e => {
                   'complete' === document.readyState ? e() : window.addEventListener('load', e);
@@ -9645,7 +9645,7 @@
                     : e();
                 }),
               a = async () => {
-                await i(), await e(), t();
+                (await i(), await e(), t());
               };
             a();
           })(),
@@ -9656,7 +9656,7 @@
                   self.performance?.getEntriesByType?.('navigation')[0]?.activationStart > 0;
                 'visible' !== document.visibilityState || i || t();
               }
-            });
+            }));
         }
       })();
     </script>
