@@ -49,7 +49,7 @@
     "eject": "react-scripts eject",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "prepare": "husky",
+    "prepare": "husky && husky install",
     "generate-sitemap": "node sitemap-generator.js"
   },
   "lint-staged": {
@@ -80,9 +80,9 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "husky": "^9.1.7",
+    "husky": "^8.0.0",
     "lint-staged": "^15.3.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.6.2",
     "react-app-rewired": "^2.2.1"
   }
 }

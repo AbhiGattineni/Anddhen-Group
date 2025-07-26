@@ -3,13 +3,14 @@ import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import { Carousel, Container, Card, Button } from 'react-bootstrap';
 import { Link, Routes, Route } from 'react-router-dom';
 import FinanceDataUpload from './FinanceDataUpload';
+import InvestmentOptions from 'src/components/organisms/InvestmentOptions';
 
 export const Ati = () => {
   const [setShowToast] = useState(false);
   const [setToastMsg] = useState('');
 
   return (
-    <div className="section border-top">
+    <div className="section">
       <Routes>
         <Route path="/finance-data" element={<FinanceDataUpload />} />
         <Route
@@ -82,7 +83,12 @@ export const Ati = () => {
                 </div>
               </div>
 
-              <div className="mt-5 p-3 rounded bg-light">
+              {/* Explore Global Investment Options - New Section */}
+              <div className="investment-section mt-5 mb-5 p-4 pb-0 bg-white">
+                <InvestmentOptions />
+              </div>
+
+              <div className="p-3 bg-light">
                 <Container>
                   <p className="p-2" style={{ textAlign: 'justify' }}>
                     Unlock the true potential of your investments with our expert stock market
