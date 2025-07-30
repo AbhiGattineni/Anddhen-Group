@@ -13,6 +13,8 @@ import {
   Grid,
   IconButton,
   Divider,
+  Tooltip,
+  Chip,
 } from '@mui/material';
 import { Edit, Save, Cancel } from '@mui/icons-material';
 import PropTypes from 'prop-types';
@@ -24,6 +26,26 @@ const StatusTable = ({
   updateMutation,
   subsidaryOptions,
 }) => {
+  // Function to check if a specific date is still editable (only current day until cutoff)
+  const isDateEditable = dateString => {
+    if (!dateString) return false;
+
+    // Get current date in YYYY-MM-DD format for comparison
+    const now = new Date();
+    const today = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+    // Compare date strings directly
+    if (dateString !== today) {
+      return false;
+    }
+
+    // For today's date, check if we're within the cutoff time (3:30 AM UTC tomorrow)
+    const cutoffTime = new Date(now);
+    cutoffTime.setDate(cutoffTime.getDate() + 1);
+    cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
+
+    return now <= cutoffTime;
+  };
   const [editRowId, setEditRowId] = useState(null);
   const [editData, setEditData] = useState({});
   const [filters, setFilters] = useState({
@@ -83,6 +105,11 @@ const StatusTable = ({
 
   // Handlers
   const handleEdit = row => {
+    // Only allow editing if the date is still editable
+    if (!isDateEditable(row.date)) {
+      setMsg("Cannot edit this record. Only today's records can be edited until 9 AM tomorrow.");
+      return;
+    }
     setEditRowId(row.id || row._id || row.date + row.subsidary);
     setEditData({ ...row });
     setMsg('');
@@ -240,6 +267,9 @@ const StatusTable = ({
                 }}
               >
                 Actions
+                <Box sx={{ fontSize: '0.75rem', color: '#666', fontWeight: 'normal' }}>
+                  (Edit: Today only until 9 AM tomorrow)
+                </Box>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -257,8 +287,9 @@ const StatusTable = ({
             )}
             {filteredData.map((row, idx) => {
               const rowId = row.id || row._id || row.date + row.subsidary;
-              const editable = isUpdateAllowed(row.date);
+              const editable = isDateEditable(row.date);
               const isEditing = editRowId === rowId;
+
               return (
                 <TableRow
                   key={rowId}
@@ -267,8 +298,9 @@ const StatusTable = ({
                     '&:hover': {
                       backgroundColor: '#e0e7ef',
                       boxShadow: 2,
-                      borderLeft: '4px solid #1976d2',
+                      borderLeft: editable ? '4px solid #4caf50' : '4px solid #1976d2',
                     },
+                    borderLeft: editable ? '2px solid #4caf50' : '2px solid transparent',
                     transition: 'background 0.2s, box-shadow 0.2s',
                   }}
                 >
@@ -318,7 +350,17 @@ const StatusTable = ({
                           ''
                         )
                       ) : col === 'date' ? (
-                        formatDate(row.date)
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {formatDate(row.date)}
+                          {editable && (
+                            <Chip
+                              label="Editable"
+                              size="small"
+                              color="success"
+                              sx={{ fontSize: '0.6rem', height: '16px' }}
+                            />
+                          )}
+                        </Box>
                       ) : (
                         getDisplayValue(row[col])
                       )}
@@ -349,19 +391,44 @@ const StatusTable = ({
                         </IconButton>
                       </>
                     ) : (
-                      <IconButton
-                        onClick={() => editable && handleEdit(row)}
-                        color="primary"
-                        size="small"
-                        disabled={!editable}
-                        sx={{
-                          borderRadius: 2,
-                          background: editable ? '#e3f0ff' : '#f5faff',
-                          '&:hover': { background: '#1976d2', color: 'white' },
-                        }}
+                      <Tooltip
+                        title={
+                          editable
+                            ? 'Edit this record'
+                            : "Cannot edit. Only today's records can be edited until 9 AM tomorrow."
+                        }
+                        arrow
                       >
-                        <Edit />
-                      </IconButton>
+                        <span>
+                          <IconButton
+                            onClick={() => {
+                              if (editable) {
+                                handleEdit(row);
+                              } else {
+                                setMsg(
+                                  "Cannot edit. Only today's records can be edited until 9 AM tomorrow."
+                                );
+                              }
+                            }}
+                            color="primary"
+                            size="small"
+                            disabled={!editable}
+                            sx={{
+                              borderRadius: 2,
+                              background: editable ? '#e3f0ff' : '#f5faff',
+                              '&:hover': {
+                                background: editable ? '#1976d2' : '#f5faff',
+                                color: editable ? 'white' : 'inherit',
+                              },
+                              opacity: editable ? 1 : 0.3,
+                              cursor: editable ? 'pointer' : 'not-allowed',
+                              pointerEvents: editable ? 'auto' : 'none',
+                            }}
+                          >
+                            <Edit />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
                     )}
                   </TableCell>
                 </TableRow>
