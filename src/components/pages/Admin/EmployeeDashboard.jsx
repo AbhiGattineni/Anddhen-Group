@@ -220,6 +220,12 @@ export const EmployeeDashboard = () => {
     const descriptionError = validateField('description', formValues.description);
     if (descriptionError) errors.description = descriptionError;
 
+    // If leave is selected, skip subsidiary-specific field validation
+    if (formValues.leave) {
+      setFieldErrors(errors);
+      return Object.keys(errors).length === 0;
+    }
+
     // Validate subsidiary-specific fields (except ASS which only needs description)
     if (formValues.subsidary && formValues.subsidary !== 'ASS') {
       const subsidiaryFields = initialFormState[formValues.subsidary];
@@ -258,7 +264,11 @@ export const EmployeeDashboard = () => {
     if (isSubmitting) return false;
     if (!formValues.date || !formValues.subsidary) return false;
     if (!isTodayOrPast(formValues.date) || !isUpdateAllowed(formValues.date)) return false;
-    if (formValues.leave && !formValues.description?.trim()) return false;
+
+    // If leave is selected, only require description
+    if (formValues.leave) {
+      return formValues.description?.trim() ? true : false;
+    }
 
     // For ASS subsidiary, description is always required
     if (formValues.subsidary === 'ASS' && !formValues.description?.trim()) return false;
@@ -506,6 +516,8 @@ export const EmployeeDashboard = () => {
 
     const updatesAllowed = isUpdateAllowed(formValues.date);
     const isPastDate = !isTodayOrPast(formValues.date);
+    const isLeaveSelected = formValues.leave;
+
     return Object.keys(fields)?.map(key => (
       <Grid item xs={12} sm={6} key={key}>
         <TextField
@@ -517,7 +529,7 @@ export const EmployeeDashboard = () => {
           name={`${selectedSubsidary}.${key}`}
           value={formValues[selectedSubsidary]?.[key] || ''}
           onChange={handleChange}
-          disabled={disableInputs || !updatesAllowed || isPastDate}
+          disabled={disableInputs || !updatesAllowed || isPastDate || isLeaveSelected}
           variant="outlined"
           error={!!fieldErrors[`${selectedSubsidary}.${key}`]}
           helperText={fieldErrors[`${selectedSubsidary}.${key}`]}
