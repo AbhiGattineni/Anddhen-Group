@@ -435,7 +435,8 @@ export const EmployeeDashboard = () => {
     // Handle leave field
     if (name === 'leave') {
       const leaveValue = value === 'true' || value === true;
-      setDisableInputs(leaveValue);
+      // Don't disable inputs when leave is selected - only subsidiary fields should be disabled
+      // setDisableInputs(leaveValue);
 
       // Clear description error if user unchecks leave
       if (!leaveValue && fieldErrors.description) {
