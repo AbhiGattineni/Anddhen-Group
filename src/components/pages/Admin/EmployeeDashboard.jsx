@@ -112,6 +112,7 @@ export const EmployeeDashboard = () => {
   const isUpdateAllowed = selectedDate => {
     if (!selectedDate) return false;
 
+    const currentAvailableDate = getCurrentAvailableDate();
     const selectedDateLocal = new Date(selectedDate);
     const nowLocal = new Date();
 
@@ -119,20 +120,15 @@ export const EmployeeDashboard = () => {
     const selectedDateStart = new Date(selectedDateLocal);
     selectedDateStart.setHours(0, 0, 0, 0);
 
-    const todayStart = new Date(nowLocal);
-    todayStart.setHours(0, 0, 0, 0);
+    const availableDateStart = new Date(currentAvailableDate);
+    availableDateStart.setHours(0, 0, 0, 0);
 
-    // If selected date is in the future, don't allow updates
-    if (selectedDateStart > todayStart) {
+    // Only allow updates for the current available date
+    if (selectedDateStart.getTime() !== availableDateStart.getTime()) {
       return false;
     }
 
-    // If selected date is in the past, always allow updates
-    if (selectedDateStart < todayStart) {
-      return true;
-    }
-
-    // If selected date is today, allow updates until 3:30 AM UTC tomorrow (9 AM IST)
+    // Allow updates until 3:30 AM UTC tomorrow (9 AM IST)
     const cutoffTime = new Date(selectedDateLocal);
     cutoffTime.setDate(cutoffTime.getDate() + 1);
     cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
@@ -143,13 +139,19 @@ export const EmployeeDashboard = () => {
   const isTodayOrPast = selectedDate => {
     if (!selectedDate) return false;
 
-    const todayLocal = new Date();
-    todayLocal.setHours(0, 0, 0, 0);
-
+    const currentAvailableDate = getCurrentAvailableDate();
     const selectedDateLocal = new Date(selectedDate);
     selectedDateLocal.setHours(0, 0, 0, 0);
 
-    return selectedDateLocal <= todayLocal;
+    // Only allow the current available date
+    const availableDateLocal = new Date(currentAvailableDate);
+    availableDateLocal.setHours(0, 0, 0, 0);
+
+    // Use string comparison for more reliable date matching
+    const availableString = availableDateLocal.toISOString().split('T')[0];
+    const selectedString = selectedDateLocal.toISOString().split('T')[0];
+
+    return selectedString === availableString;
   };
 
   const getLocalCutoffTimeDisplay = dateString => {
@@ -187,7 +189,8 @@ export const EmployeeDashboard = () => {
     switch (fieldName) {
       case 'date':
         if (!value) return 'Date is required';
-        if (!isTodayOrPast(value)) return 'You can only submit status for today or past dates';
+        if (!isTodayOrPast(value))
+          return 'You can only submit status for the current available date';
         if (!isUpdateAllowed(value))
           return `Status updates are only allowed until ${getLocalCutoffTimeDisplay(value)} (your local time)`;
         return '';
@@ -263,6 +266,7 @@ export const EmployeeDashboard = () => {
   const canSubmit = () => {
     if (isSubmitting) return false;
     if (!formValues.date || !formValues.subsidary) return false;
+
     if (!isTodayOrPast(formValues.date) || !isUpdateAllowed(formValues.date)) return false;
 
     // If leave is selected, only require description
@@ -315,20 +319,16 @@ export const EmployeeDashboard = () => {
     );
   };
 
-  const handleEdit = e => {
-    e.preventDefault();
-    setDisableInputs(false);
-  };
-
   const resetForm = () => {
     setFormValues({
       ...initialFormState,
-      date: formatDate(selectedAcsStatusDate),
+      date: getCurrentAvailableDate(),
       user_id: auth.currentUser.uid,
       user_name: auth.currentUser.displayName,
     });
     setFieldErrors({});
     setMsgResponse(null);
+    setShowEdit(false);
   };
 
   useEffect(() => {
@@ -481,16 +481,14 @@ export const EmployeeDashboard = () => {
         });
       }
       const formattedSelectedDate = formatDate(selectedAcsStatusDate);
-      const currentDate = formatDate(new Date());
-      const isSelectedDateCurrent = formattedSelectedDate === currentDate;
+      const currentAvailableDate = getCurrentAvailableDate();
+      const isSelectedDateCurrent = formattedSelectedDate === currentAvailableDate;
 
-      if (
-        statusUpdates?.status_updates &&
-        isSelectedDateCurrent &&
-        statusUpdates?.status_updates?.some(
-          obj => obj.date === currentDate && obj.subsidary === value
-        )
-      ) {
+      const existingStatus = statusUpdates?.status_updates?.some(
+        obj => obj.date === currentAvailableDate && obj.subsidary === value
+      );
+
+      if (statusUpdates?.status_updates && isSelectedDateCurrent && existingStatus) {
         setShowEdit(true);
       } else {
         setShowEdit(false);
@@ -562,31 +560,34 @@ export const EmployeeDashboard = () => {
     setMsgResponse(null);
 
     try {
-      // Multi-status logic
-      const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
-      const isMultiStatus =
-        selectedSubsidiaryObj?.parttimer_multi_status === true ||
-        selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
-      const currentStatuses = (statusUpdates?.status_updates || []).filter(
-        s => s.subsidary === formValues.subsidary && s.date === formValues.date
-      );
+      // Skip duplicate checks if we're in edit mode
+      if (!showEdit) {
+        // Multi-status logic
+        const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
+        const isMultiStatus =
+          selectedSubsidiaryObj?.parttimer_multi_status === true ||
+          selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
+        const currentStatuses = (statusUpdates?.status_updates || []).filter(
+          s => s.subsidary === formValues.subsidary && s.date === formValues.date
+        );
 
-      if (isMultiStatus) {
-        // Only allow if whatsappId is unique for this date+subsidiary
-        if (
-          formValues.ACS?.whatsappId &&
-          currentStatuses.some(s => s.whatsappId === formValues.ACS.whatsappId)
-        ) {
-          setMsgResponse(
-            'A status for this WhatsApp ID already exists for this subsidiary and date.'
-          );
-          return;
-        }
-      } else {
-        // Only allow one status for this subsidiary+date, regardless of whatsappId
-        if (currentStatuses.length > 0) {
-          setMsgResponse('You can only add one status for this subsidiary and date.');
-          return;
+        if (isMultiStatus) {
+          // Only allow if whatsappId is unique for this date+subsidiary
+          if (
+            formValues.ACS?.whatsappId &&
+            currentStatuses.some(s => s.whatsappId === formValues.ACS.whatsappId)
+          ) {
+            setMsgResponse(
+              'A status for this WhatsApp ID already exists for this subsidiary and date.'
+            );
+            return;
+          }
+        } else {
+          // Only allow one status for this subsidiary+date, regardless of whatsappId
+          if (currentStatuses.length > 0) {
+            setMsgResponse('You can only add one status for this subsidiary and date.');
+            return;
+          }
         }
       }
 
@@ -617,12 +618,33 @@ export const EmployeeDashboard = () => {
     }
   };
 
-  function getMaxDate() {
+  function getCurrentAvailableDate() {
+    const now = new Date();
     const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
+    const cutoffTime = new Date(currentDate);
+    cutoffTime.setDate(cutoffTime.getDate() + 1);
+    cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
+
+    // If current time is before cutoff, show today's date
+    // If current time is after cutoff, show tomorrow's date
+    if (now < cutoffTime) {
+      // Before cutoff - show today's date
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+      const day = String(currentDate.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } else {
+      // After cutoff - show tomorrow's date
+      const tomorrow = new Date(currentDate);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const year = tomorrow.getFullYear();
+      const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const day = String(tomorrow.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
   }
 
   return (
@@ -673,6 +695,32 @@ export const EmployeeDashboard = () => {
             </div>
           )}
 
+          {showEdit && (
+            <div
+              className="alert alert-warning"
+              role="alert"
+              style={{
+                marginBottom: '16px',
+                border: '2px solid #ffc107',
+                backgroundColor: '#fff3cd',
+                color: '#856404',
+                padding: '12px 16px',
+                borderRadius: '4px',
+              }}
+            >
+              <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>
+                ⚠️ Status Already Submitted
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                A status for <strong>{formValues.subsidary}</strong> on{' '}
+                <strong>{formValues.date}</strong> has already been submitted.
+              </div>
+              <div style={{ fontSize: '0.9rem', marginTop: '8px', fontStyle: 'italic' }}>
+                You can edit the existing status or cancel to start fresh.
+              </div>
+            </div>
+          )}
+
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -714,7 +762,10 @@ export const EmployeeDashboard = () => {
                 disabled={disableInputs}
                 InputLabelProps={{ shrink: true }}
                 variant="outlined"
-                inputProps={{ max: getMaxDate() }}
+                inputProps={{
+                  min: getCurrentAvailableDate(),
+                  max: getCurrentAvailableDate(),
+                }}
                 error={!!fieldErrors.date}
                 helperText={fieldErrors.date}
               />
@@ -764,40 +815,22 @@ export const EmployeeDashboard = () => {
           <div className="col-12 d-flex justify-content-center gap-3 py-2">
             <button
               type="submit"
-              className="btn btn-primary"
+              className={`btn ${showEdit ? 'btn-warning' : 'btn-primary'}`}
               onClick={handleSubmit}
               disabled={!canSubmit()}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
-            </button>
-            {/* Temporary debug button - remove after testing */}
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => {
-                console.log('Debug Submit State:', {
-                  hasDate: !!formValues.date,
-                  hasSubsidary: !!formValues.subsidary,
-                  date: formValues.date,
-                  subsidiary: formValues.subsidary,
-                  leave: formValues.leave,
-                  description: formValues.description,
-                  isTodayOrPast: isTodayOrPast(formValues.date),
-                  isUpdateAllowed: isUpdateAllowed(formValues.date),
-                  disableInputs,
-                  canSubmit:
-                    formValues.date &&
-                    formValues.subsidary &&
-                    isTodayOrPast(formValues.date) &&
-                    isUpdateAllowed(formValues.date),
-                });
-              }}
-            >
-              Debug
+              {isSubmitting ? 'Submitting...' : showEdit ? 'Update Status' : 'Submit Status'}
             </button>
             {showEdit && (
-              <button type="submit" className="btn btn-primary" onClick={handleEdit}>
-                Edit
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowEdit(false);
+                  resetForm();
+                }}
+              >
+                Cancel Edit
               </button>
             )}
           </div>
