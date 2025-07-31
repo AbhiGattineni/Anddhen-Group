@@ -393,9 +393,17 @@ export const EmployeeDashboard = () => {
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
     if (statusUpdates?.status_updates && selectedAcsStatusDate) {
-      const filteredStatuses = statusUpdates.status_updates?.filter(
-        status => formattedSelectedDate === status.date
-      );
+      // More robust date comparison - check if the dates are the same regardless of timezone
+      const filteredStatuses = statusUpdates.status_updates?.filter(status => {
+        // Convert both dates to YYYY-MM-DD format in local timezone for comparison
+        const statusDate = new Date(status.date);
+        const statusYear = statusDate.getFullYear();
+        const statusMonth = String(statusDate.getMonth() + 1).padStart(2, '0');
+        const statusDay = String(statusDate.getDate()).padStart(2, '0');
+        const statusDateString = `${statusYear}-${statusMonth}-${statusDay}`;
+
+        return statusDateString === formattedSelectedDate;
+      });
       setUserSubsidaries(filteredStatuses);
       // Check if selected subsidiary is multi-status
       const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;

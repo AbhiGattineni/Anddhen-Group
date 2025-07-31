@@ -30,16 +30,51 @@ const StatusTable = ({
   const isDateEditable = dateString => {
     if (!dateString) return false;
 
-    // Get current date in YYYY-MM-DD format for comparison
-    const now = new Date();
-    const today = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    // Get the current available date (same logic as EmployeeDashboard)
+    const getCurrentAvailableDate = () => {
+      const now = new Date();
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
 
-    // Compare date strings directly
-    if (dateString !== today) {
+      // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
+      const cutoffTime = new Date(currentDate);
+      cutoffTime.setDate(cutoffTime.getDate() + 1);
+      cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
+
+      // If current time is before cutoff, show today's date
+      // If current time is after cutoff, show tomorrow's date
+      if (now < cutoffTime) {
+        // Before cutoff - show today's date
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      } else {
+        // After cutoff - show tomorrow's date
+        const tomorrow = new Date(currentDate);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const year = tomorrow.getFullYear();
+        const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const day = String(tomorrow.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    };
+
+    const currentAvailableDate = getCurrentAvailableDate();
+
+    console.log('StatusTable - isDateEditable check:', {
+      dateString,
+      currentAvailableDate,
+      isMatch: dateString === currentAvailableDate,
+    });
+
+    // Compare with the current available date (not just today)
+    if (dateString !== currentAvailableDate) {
       return false;
     }
 
-    // For today's date, check if we're within the cutoff time (3:30 AM UTC tomorrow)
+    // For the current available date, check if we're within the cutoff time (3:30 AM UTC tomorrow)
+    const now = new Date();
     const cutoffTime = new Date(now);
     cutoffTime.setDate(cutoffTime.getDate() + 1);
     cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
@@ -135,6 +170,19 @@ const StatusTable = ({
   // Format date for display
   const formatDate = dateString => {
     if (!dateString) return '';
+
+    // If it's already a date string in YYYY-MM-DD format, format it nicely without timezone conversion
+    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    }
+
+    // For other formats, use the original logic
     return new Date(dateString).toLocaleString('en-US', {
       timeZone: userTimezone,
       year: 'numeric',
