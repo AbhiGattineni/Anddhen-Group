@@ -485,7 +485,7 @@ export const EmployeeDashboard = () => {
       const isSelectedDateCurrent = formattedSelectedDate === currentAvailableDate;
 
       const existingStatus = statusUpdates?.status_updates?.some(
-        obj => obj.date === currentAvailableDate && obj.subsidary === value
+        obj => obj.date === formattedSelectedDate && obj.subsidary === value
       );
 
       if (statusUpdates?.status_updates && isSelectedDateCurrent && existingStatus) {
