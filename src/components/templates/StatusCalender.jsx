@@ -42,30 +42,12 @@ export const StatusCalendar = ({ data, empName }) => {
     return null;
   };
 
-  const tileContent = ({ date }) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    ) {
-      return (
-        <div className="icon-container text-black">
-          <i className="bi bi-pencil-square"></i>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="calendar-container">
       <Calendar
         onChange={setSelectedDate}
         value={selectedDate}
         tileClassName={tileClassName}
-        tileContent={tileContent}
         maxDate={new Date()}
         className="react-calendar"
       />
