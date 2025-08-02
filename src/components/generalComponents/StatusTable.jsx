@@ -33,40 +33,32 @@ const StatusTable = ({
     // Get the current available date (same logic as EmployeeDashboard)
     const getCurrentAvailableDate = () => {
       const now = new Date();
-      const currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0);
+
+      // Get current UTC date
+      const currentUTCDate = new Date();
+      const utcYear = currentUTCDate.getUTCFullYear();
+      const utcMonth = currentUTCDate.getUTCMonth();
+      const utcDay = currentUTCDate.getUTCDate();
 
       // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
-      const cutoffTime = new Date(currentDate);
-      cutoffTime.setDate(cutoffTime.getDate() + 1);
-      cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
+      const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1, 3, 30, 0, 0));
 
       // If current time is before cutoff, show today's date
       // If current time is after cutoff, show tomorrow's date
-      if (now < cutoffTime) {
+      if (now < cutoffTimeUTC) {
         // Before cutoff - show today's date
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
       } else {
         // After cutoff - show tomorrow's date
-        const tomorrow = new Date(currentDate);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const year = tomorrow.getFullYear();
-        const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-        const day = String(tomorrow.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const tomorrowUTCDate = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1));
+        const tomorrowYear = tomorrowUTCDate.getUTCFullYear();
+        const tomorrowMonth = tomorrowUTCDate.getUTCMonth();
+        const tomorrowDay = tomorrowUTCDate.getUTCDate();
+        return `${tomorrowYear}-${String(tomorrowMonth + 1).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`;
       }
     };
 
     const currentAvailableDate = getCurrentAvailableDate();
-
-    console.log('StatusTable - isDateEditable check:', {
-      dateString,
-      currentAvailableDate,
-      isMatch: dateString === currentAvailableDate,
-    });
 
     // Compare with the current available date (not just today)
     if (dateString !== currentAvailableDate) {
