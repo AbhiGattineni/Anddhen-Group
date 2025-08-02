@@ -13,6 +13,8 @@ import {
   Grid,
   IconButton,
   Divider,
+  Tooltip,
+  Chip,
 } from '@mui/material';
 import { Edit, Save, Cancel } from '@mui/icons-material';
 import PropTypes from 'prop-types';
@@ -24,6 +26,61 @@ const StatusTable = ({
   updateMutation,
   subsidaryOptions,
 }) => {
+  // Function to check if a specific date is still editable (only current day until cutoff)
+  const isDateEditable = dateString => {
+    if (!dateString) return false;
+
+    // Get the current available date (same logic as EmployeeDashboard)
+    const getCurrentAvailableDate = () => {
+      const now = new Date();
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+
+      // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
+      const cutoffTime = new Date(currentDate);
+      cutoffTime.setDate(cutoffTime.getDate() + 1);
+      cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
+
+      // If current time is before cutoff, show today's date
+      // If current time is after cutoff, show tomorrow's date
+      if (now < cutoffTime) {
+        // Before cutoff - show today's date
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      } else {
+        // After cutoff - show tomorrow's date
+        const tomorrow = new Date(currentDate);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const year = tomorrow.getFullYear();
+        const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const day = String(tomorrow.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    };
+
+    const currentAvailableDate = getCurrentAvailableDate();
+
+    console.log('StatusTable - isDateEditable check:', {
+      dateString,
+      currentAvailableDate,
+      isMatch: dateString === currentAvailableDate,
+    });
+
+    // Compare with the current available date (not just today)
+    if (dateString !== currentAvailableDate) {
+      return false;
+    }
+
+    // For the current available date, check if we're within the cutoff time (3:30 AM UTC tomorrow)
+    const now = new Date();
+    const cutoffTime = new Date(now);
+    cutoffTime.setDate(cutoffTime.getDate() + 1);
+    cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
+
+    return now <= cutoffTime;
+  };
   const [editRowId, setEditRowId] = useState(null);
   const [editData, setEditData] = useState({});
   const [filters, setFilters] = useState({
@@ -83,6 +140,11 @@ const StatusTable = ({
 
   // Handlers
   const handleEdit = row => {
+    // Only allow editing if the date is still editable
+    if (!isDateEditable(row.date)) {
+      setMsg("Cannot edit this record. Only today's records can be edited until 9 AM tomorrow.");
+      return;
+    }
     setEditRowId(row.id || row._id || row.date + row.subsidary);
     setEditData({ ...row });
     setMsg('');
@@ -93,6 +155,10 @@ const StatusTable = ({
     setMsg('');
   };
   const handleChange = (e, field) => {
+    // Prevent changes to subsidiary field during editing
+    if (field === 'subsidary') {
+      return;
+    }
     setEditData(prev => ({ ...prev, [field]: e.target.value }));
   };
   const handleSave = async () => {
@@ -108,6 +174,19 @@ const StatusTable = ({
   // Format date for display
   const formatDate = dateString => {
     if (!dateString) return '';
+
+    // If it's already a date string in YYYY-MM-DD format, format it nicely without timezone conversion
+    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    }
+
+    // For other formats, use the original logic
     return new Date(dateString).toLocaleString('en-US', {
       timeZone: userTimezone,
       year: 'numeric',
@@ -240,6 +319,9 @@ const StatusTable = ({
                 }}
               >
                 Actions
+                <Box sx={{ fontSize: '0.75rem', color: '#666', fontWeight: 'normal' }}>
+                  (Edit: Today only until 9 AM tomorrow)
+                </Box>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -257,8 +339,9 @@ const StatusTable = ({
             )}
             {filteredData.map((row, idx) => {
               const rowId = row.id || row._id || row.date + row.subsidary;
-              const editable = isUpdateAllowed(row.date);
+              const editable = isDateEditable(row.date);
               const isEditing = editRowId === rowId;
+
               return (
                 <TableRow
                   key={rowId}
@@ -267,8 +350,9 @@ const StatusTable = ({
                     '&:hover': {
                       backgroundColor: '#e0e7ef',
                       boxShadow: 2,
-                      borderLeft: '4px solid #1976d2',
+                      borderLeft: editable ? '4px solid #4caf50' : '4px solid #1976d2',
                     },
+                    borderLeft: editable ? '2px solid #4caf50' : '2px solid transparent',
                     transition: 'background 0.2s, box-shadow 0.2s',
                   }}
                 >
@@ -280,17 +364,17 @@ const StatusTable = ({
                       {isEditing && col === 'subsidary' ? (
                         <TextField
                           value={editData.subsidary}
-                          onChange={e => handleChange(e, 'subsidary')}
-                          select
+                          disabled
                           size="small"
-                          sx={{ borderRadius: 2, background: '#f5faff' }}
-                        >
-                          {subsidaryOptions.map(opt => (
-                            <MenuItem key={opt} value={opt}>
-                              {opt}
-                            </MenuItem>
-                          ))}
-                        </TextField>
+                          sx={{
+                            borderRadius: 2,
+                            background: '#f5f5f5',
+                            '& .MuiInputBase-input': {
+                              color: '#666',
+                              fontStyle: 'italic',
+                            },
+                          }}
+                        />
                       ) : isEditing && col === 'leave' ? (
                         <TextField
                           value={editData.leave}
@@ -318,7 +402,17 @@ const StatusTable = ({
                           ''
                         )
                       ) : col === 'date' ? (
-                        formatDate(row.date)
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {formatDate(row.date)}
+                          {editable && (
+                            <Chip
+                              label="Editable"
+                              size="small"
+                              color="success"
+                              sx={{ fontSize: '0.6rem', height: '16px' }}
+                            />
+                          )}
+                        </Box>
                       ) : (
                         getDisplayValue(row[col])
                       )}
@@ -349,19 +443,44 @@ const StatusTable = ({
                         </IconButton>
                       </>
                     ) : (
-                      <IconButton
-                        onClick={() => editable && handleEdit(row)}
-                        color="primary"
-                        size="small"
-                        disabled={!editable}
-                        sx={{
-                          borderRadius: 2,
-                          background: editable ? '#e3f0ff' : '#f5faff',
-                          '&:hover': { background: '#1976d2', color: 'white' },
-                        }}
+                      <Tooltip
+                        title={
+                          editable
+                            ? 'Edit this record'
+                            : "Cannot edit. Only today's records can be edited until 9 AM tomorrow."
+                        }
+                        arrow
                       >
-                        <Edit />
-                      </IconButton>
+                        <span>
+                          <IconButton
+                            onClick={() => {
+                              if (editable) {
+                                handleEdit(row);
+                              } else {
+                                setMsg(
+                                  "Cannot edit. Only today's records can be edited until 9 AM tomorrow."
+                                );
+                              }
+                            }}
+                            color="primary"
+                            size="small"
+                            disabled={!editable}
+                            sx={{
+                              borderRadius: 2,
+                              background: editable ? '#e3f0ff' : '#f5faff',
+                              '&:hover': {
+                                background: editable ? '#1976d2' : '#f5faff',
+                                color: editable ? 'white' : 'inherit',
+                              },
+                              opacity: editable ? 1 : 0.3,
+                              cursor: editable ? 'pointer' : 'not-allowed',
+                              pointerEvents: editable ? 'auto' : 'none',
+                            }}
+                          >
+                            <Edit />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
                     )}
                   </TableCell>
                 </TableRow>

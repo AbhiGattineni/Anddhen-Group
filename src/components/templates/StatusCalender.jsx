@@ -18,14 +18,16 @@ export const StatusCalendar = ({ data, empName }) => {
   }, [selectedDate]);
 
   const getDayStatus = date => {
-    const checkDate = new Date(date);
-    checkDate.setHours(0, 0, 0, 0);
+    // Format the check date as YYYY-MM-DD string in local timezone
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const checkDateString = `${year}-${month}-${day}`;
 
     for (const entry of data) {
-      const entryDate = new Date(entry[0]);
-      entryDate.setHours(0, 0, 0, 0);
+      const entryDateString = entry[0]; // entry[0] is already a YYYY-MM-DD string
 
-      if (entryDate.getTime() === checkDate.getTime()) {
+      if (entryDateString === checkDateString) {
         return entry[1] ? 'leave-day' : 'green-day';
       }
     }
@@ -42,30 +44,12 @@ export const StatusCalendar = ({ data, empName }) => {
     return null;
   };
 
-  const tileContent = ({ date }) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    ) {
-      return (
-        <div className="icon-container text-black">
-          <i className="bi bi-pencil-square"></i>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="calendar-container">
       <Calendar
         onChange={setSelectedDate}
         value={selectedDate}
         tileClassName={tileClassName}
-        tileContent={tileContent}
         maxDate={new Date()}
         className="react-calendar"
       />
