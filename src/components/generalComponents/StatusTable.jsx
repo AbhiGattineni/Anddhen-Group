@@ -155,6 +155,10 @@ const StatusTable = ({
     setMsg('');
   };
   const handleChange = (e, field) => {
+    // Prevent changes to subsidiary field during editing
+    if (field === 'subsidary') {
+      return;
+    }
     setEditData(prev => ({ ...prev, [field]: e.target.value }));
   };
   const handleSave = async () => {
@@ -360,17 +364,17 @@ const StatusTable = ({
                       {isEditing && col === 'subsidary' ? (
                         <TextField
                           value={editData.subsidary}
-                          onChange={e => handleChange(e, 'subsidary')}
-                          select
+                          disabled
                           size="small"
-                          sx={{ borderRadius: 2, background: '#f5faff' }}
-                        >
-                          {subsidaryOptions.map(opt => (
-                            <MenuItem key={opt} value={opt}>
-                              {opt}
-                            </MenuItem>
-                          ))}
-                        </TextField>
+                          sx={{
+                            borderRadius: 2,
+                            background: '#f5f5f5',
+                            '& .MuiInputBase-input': {
+                              color: '#666',
+                              fontStyle: 'italic',
+                            },
+                          }}
+                        />
                       ) : isEditing && col === 'leave' ? (
                         <TextField
                           value={editData.leave}
