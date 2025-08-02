@@ -497,9 +497,11 @@ export const EmployeeDashboard = () => {
       );
 
       if (statusUpdates?.status_updates && isSelectedDateCurrent && existingStatus) {
-        setShowEdit(true);
+        setShowEdit(true); // Show warning banner
+        setDisableInputs(true); // Disable all inputs
       } else {
         setShowEdit(false);
+        setDisableInputs(false);
       }
       // Store the selected subsidiary object for multi-status logic
       setFormValues(prev => ({ ...prev, selectedSubsidiaryObj }));
@@ -568,34 +570,31 @@ export const EmployeeDashboard = () => {
     setMsgResponse(null);
 
     try {
-      // Skip duplicate checks if we're in edit mode
-      if (!showEdit) {
-        // Multi-status logic
-        const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
-        const isMultiStatus =
-          selectedSubsidiaryObj?.parttimer_multi_status === true ||
-          selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
-        const currentStatuses = (statusUpdates?.status_updates || []).filter(
-          s => s.subsidary === formValues.subsidary && s.date === formValues.date
-        );
+      // Always check for duplicates since we don't allow editing from form
+      const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
+      const isMultiStatus =
+        selectedSubsidiaryObj?.parttimer_multi_status === true ||
+        selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
+      const currentStatuses = (statusUpdates?.status_updates || []).filter(
+        s => s.subsidary === formValues.subsidary && s.date === formValues.date
+      );
 
-        if (isMultiStatus) {
-          // Only allow if whatsappId is unique for this date+subsidiary
-          if (
-            formValues.ACS?.whatsappId &&
-            currentStatuses.some(s => s.whatsappId === formValues.ACS.whatsappId)
-          ) {
-            setMsgResponse(
-              'A status for this WhatsApp ID already exists for this subsidiary and date.'
-            );
-            return;
-          }
-        } else {
-          // Only allow one status for this subsidiary+date, regardless of whatsappId
-          if (currentStatuses.length > 0) {
-            setMsgResponse('You can only add one status for this subsidiary and date.');
-            return;
-          }
+      if (isMultiStatus) {
+        // Only allow if whatsappId is unique for this date+subsidiary
+        if (
+          formValues.ACS?.whatsappId &&
+          currentStatuses.some(s => s.whatsappId === formValues.ACS.whatsappId)
+        ) {
+          setMsgResponse(
+            'A status for this WhatsApp ID already exists for this subsidiary and date.'
+          );
+          return;
+        }
+      } else {
+        // Only allow one status for this subsidiary+date, regardless of whatsappId
+        if (currentStatuses.length > 0) {
+          setMsgResponse('You can only add one status for this subsidiary and date.');
+          return;
         }
       }
 
@@ -603,15 +602,10 @@ export const EmployeeDashboard = () => {
 
       let response = '';
       try {
-        if (!showEdit) {
-          response = await statusMutation.mutateAsync(postStatus);
-          setMsgResponse(response.message);
-          resetForm();
-        } else {
-          response = await updateMutation.mutateAsync(postStatus);
-          setMsgResponse(response.message);
-          setShowEdit(false);
-        }
+        // Only create new status, never update from form
+        response = await statusMutation.mutateAsync(postStatus);
+        setMsgResponse(response.message);
+        resetForm();
 
         queryClient.invalidateQueries(['calendarData', formValues]);
       } catch (error) {
@@ -685,18 +679,6 @@ export const EmployeeDashboard = () => {
             </div>
           </div>
 
-          <div className="row my-4">
-            <div className="col-12">
-              <StatusTable
-                statusUpdates={statusUpdates?.status_updates || []}
-                isUpdateAllowed={isUpdateAllowed}
-                userTimezone={userTimezone}
-                updateMutation={updateMutation}
-                subsidaryOptions={activeSubsidiaries.map(sub => sub.subName)}
-              />
-            </div>
-          </div>
-
           {msgResponse && (
             <div className="alert alert-info" role="alert">
               {msgResponse}
@@ -724,10 +706,19 @@ export const EmployeeDashboard = () => {
                 <strong>{formValues.date}</strong> has already been submitted.
               </div>
               <div style={{ fontSize: '0.9rem', marginTop: '8px', fontStyle: 'italic' }}>
-                You can edit the existing status or cancel to start fresh.
+                Please use the pencil edit icon in the Status Table below to edit this status.
               </div>
             </div>
           )}
+
+          <div className="row mb-3">
+            <div className="col-12 text-center">
+              <h4 className="text-primary mb-0">
+                <i className="fas fa-plus-circle me-2"></i>
+                Update your status here
+              </h4>
+            </div>
+          </div>
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -823,26 +814,26 @@ export const EmployeeDashboard = () => {
           <div className="col-12 d-flex justify-content-center gap-3 py-2">
             <button
               type="submit"
-              className={`btn ${showEdit ? 'btn-warning' : 'btn-primary'}`}
+              className="btn btn-primary"
               onClick={handleSubmit}
-              disabled={!canSubmit()}
+              disabled={!canSubmit() || showEdit}
             >
-              {isSubmitting ? 'Submitting...' : showEdit ? 'Update Status' : 'Submit Status'}
+              {isSubmitting ? 'Submitting...' : 'Submit Status'}
             </button>
-            {showEdit && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => {
-                  setShowEdit(false);
-                  resetForm();
-                }}
-              >
-                Cancel Edit
-              </button>
-            )}
           </div>
         </form>
+
+        <div className="row my-4">
+          <div className="col-12">
+            <StatusTable
+              statusUpdates={statusUpdates?.status_updates || []}
+              isUpdateAllowed={isUpdateAllowed}
+              userTimezone={userTimezone}
+              updateMutation={updateMutation}
+              subsidaryOptions={activeSubsidiaries.map(sub => sub.subName)}
+            />
+          </div>
+        </div>
       </div>
 
       {searchedPlates?.length > 0 && (
