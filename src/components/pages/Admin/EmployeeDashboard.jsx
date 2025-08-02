@@ -223,6 +223,9 @@ export const EmployeeDashboard = () => {
     const descriptionError = validateField('description', formValues.description);
     if (descriptionError) errors.description = descriptionError;
 
+    // For now, skip subsidiary-specific field validation since we're not showing those fields
+    // This logic is kept for future use when subsidiary-specific fields are re-enabled
+    /*
     // If leave is selected, skip subsidiary-specific field validation
     if (formValues.leave) {
       setFieldErrors(errors);
@@ -258,6 +261,7 @@ export const EmployeeDashboard = () => {
         });
       }
     }
+    */
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -509,42 +513,9 @@ export const EmployeeDashboard = () => {
   };
 
   const renderSubsidaryFields = () => {
-    if (!formValues.subsidary) return null;
-
-    const selectedSubsidary = formValues.subsidary;
-    const fields = initialFormState[selectedSubsidary];
-
-    if (!fields) return null;
-
-    // Don't render any fields for ASS subsidiary
-    if (selectedSubsidary === 'ASS') return null;
-
-    if (!formValues[selectedSubsidary]) {
-      formValues[selectedSubsidary] = { ...fields };
-    }
-
-    const updatesAllowed = isUpdateAllowed(formValues.date);
-    const isPastDate = !isTodayOrPast(formValues.date);
-    const isLeaveSelected = formValues.leave;
-
-    return Object.keys(fields)?.map(key => (
-      <Grid item xs={12} sm={6} key={key}>
-        <TextField
-          fullWidth
-          label={key
-            .replace(/([a-z])([A-Z])/g, '$1 $2')
-            .replace(/_/g, ' ')
-            .replace(/\b\w/g, char => char.toUpperCase())}
-          name={`${selectedSubsidary}.${key}`}
-          value={formValues[selectedSubsidary]?.[key] || ''}
-          onChange={handleChange}
-          disabled={disableInputs || !updatesAllowed || isPastDate || isLeaveSelected}
-          variant="outlined"
-          error={!!fieldErrors[`${selectedSubsidary}.${key}`]}
-          helperText={fieldErrors[`${selectedSubsidary}.${key}`]}
-        />
-      </Grid>
-    ));
+    // For now, return null to show only basic fields (name, subsidiary, date, leave, description)
+    // All subsidiary-specific logic is kept intact for future use
+    return null;
   };
 
   const flattenObject = obj => {
