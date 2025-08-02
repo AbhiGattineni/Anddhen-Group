@@ -285,10 +285,6 @@ export const EmployeeDashboard = () => {
   };
 
   useEffect(() => {
-    if (statusUpdates?.has_submitted_happiness_today !== undefined) {
-      statusUpdates['has_submitted_happiness_today'] = true;
-    }
-
     // Detect user's timezone
     try {
       const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -623,7 +619,7 @@ export const EmployeeDashboard = () => {
   return (
     <div className="container">
       <div className="my-3">
-        {statusUpdates && !statusUpdates?.has_submitted_happiness_today && (
+        {statusUpdates && statusUpdates.has_submitted_happiness_today === false && (
           <HappinessIndex
             open={openHappinessDialog}
             handleClose={() => setOpenHappinessDialog(false)}
