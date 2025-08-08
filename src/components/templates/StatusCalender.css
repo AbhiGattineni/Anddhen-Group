@@ -11,7 +11,8 @@
   /* Adjust the max width as per your design */
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* Removed box-shadow for cleaner look */
+  background: transparent;
 }
 
 .status-update {
