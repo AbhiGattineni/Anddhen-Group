@@ -58,7 +58,7 @@ export const PartTimerPortal = () => {
       <ParttimerDashboard />
 
       <KeyWordsComponent />
-      <ExtensionDetails />
+      
       <Videos />
       <PartTimerRegistrationForm />
     </div>
