@@ -9,7 +9,6 @@ import useErrorHandling from 'src/hooks/useErrorHandling';
 import ErrorPage from '../ErrorPage';
 
 import { KeyWordsComponent } from 'src/components/generalComponents/KeyWordsComponent';
-import { ExtensionDetails } from '../Extension/ExtensionDetails';
 
 export const PartTimerPortal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -58,7 +57,7 @@ export const PartTimerPortal = () => {
       <ParttimerDashboard />
 
       <KeyWordsComponent />
-      
+
       <Videos />
       <PartTimerRegistrationForm />
     </div>

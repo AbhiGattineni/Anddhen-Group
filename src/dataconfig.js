@@ -285,7 +285,7 @@ export const myworks = [
   },
   {
     name: 'Word Highlighter Chrome Extension',
-    image: '/assets/images/software.png',
+    image: '/assets/images/wordhighlighter.png',
     description:
       'A Chrome extension to highlight words on any webpage for easy reading and studying. Features: Highlight words with different colors on webpages, helps users find content easily based on highlighting.',
     link: 'https://chromewebstore.google.com/detail/word-highlighter/nheocgebdfhdfknfppfhfcgijedcepae',
@@ -293,7 +293,7 @@ export const myworks = [
   },
   {
     name: 'Famous Meats USA',
-    image: '/assets/images/software.png',
+    image: '/assets/images/FamousMeat.png',
     description:
       'A trusted halal meat brand delivering fresh, high-quality meats across America. Premium meats across the USA, trusted by families.',
     link: 'https://www.famousmeatsusa.com/',
@@ -301,9 +301,8 @@ export const myworks = [
   },
   {
     name: 'Indimitra',
-    image: '/assets/images/software.png',
-    description:
-      'Professional services and solutions for business growth and development.',
+    image: '/assets/images/indimitra.png',
+    description: 'Professional services and solutions for business growth and development.',
     link: 'https://indimitra.com/',
     timeline: '2021 - 2023',
   },

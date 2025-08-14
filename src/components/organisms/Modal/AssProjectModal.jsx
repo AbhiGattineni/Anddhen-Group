@@ -65,7 +65,9 @@ export const AssProjectModal = () => {
               className="modal-background d-flex align-items-end text-white"
               style={{ backgroundImage: `url(${workData.image})` }}
             >
-              <h2 className="fw-bold px-3 px-md-5 fs-4 fs-md-2">{workData.name || workData.title}</h2>
+              <h2 className="fw-bold px-3 px-md-5 fs-4 fs-md-2">
+                {workData.name || workData.title}
+              </h2>
             </div>
             <div className="p-4">
               <p className="fw-bold">
