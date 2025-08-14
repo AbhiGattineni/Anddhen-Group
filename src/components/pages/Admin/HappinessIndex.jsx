@@ -24,7 +24,7 @@ const smileys = [
 ];
 
 const HappinessIndex = ({ open, handleClose }) => {
-  const [happinessScore, setHappinessScore] = useState(3);
+  const [happinessScore, setHappinessScore] = useState(5);
   const [description, setDescription] = useState('');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

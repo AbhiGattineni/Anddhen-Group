@@ -8,7 +8,16 @@ import useAuthStore from 'src/services/store/globalStore';
 import AssignCards from './AssignCards';
 import { adminPlates } from 'src/dataconfig';
 import HappinessIndex from './HappinessIndex';
-import { FormControl, Grid, InputLabel, MenuItem, Select, TextField, Alert } from '@mui/material';
+import {
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Alert,
+  FormHelperText,
+} from '@mui/material';
 import StatusTable from '../../generalComponents/StatusTable';
 import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
@@ -30,7 +39,7 @@ const initialFormState = {
     connectMessages: '',
     reason: '',
   },
-  ASS: { ticket_link: '', github_link: '' },
+  ASS: {},
   ATI: {
     account_name: '',
     stock_name: '',
@@ -55,6 +64,8 @@ export const EmployeeDashboard = () => {
   const [msgResponse, setMsgResponse] = useState(null);
   const [disableInputs, setDisableInputs] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
   const { statusMutation, updateMutation } = useStatusUpdateMutation();
   const [search, setSearch] = useState('');
@@ -84,16 +95,43 @@ export const EmployeeDashboard = () => {
     ? subsidiariesData.filter(sub => sub.active === true || sub.active === 'Yes')
     : [];
 
+  // Fallback subsidiary options if backend data is not available
+  const fallbackSubsidiaries = [
+    { subName: 'ACS', id: 'acs' },
+    { subName: 'ASS', id: 'ass' },
+    { subName: 'ATI', id: 'ati' },
+    { subName: 'ANS', id: 'ans' },
+    { subName: 'AMS', id: 'ams' },
+  ];
+
+  // Use active subsidiaries if available, otherwise use fallback
+  const availableSubsidiaries =
+    activeSubsidiaries.length > 0 ? activeSubsidiaries : fallbackSubsidiaries;
+
   // Timezone handling functions
   const isUpdateAllowed = selectedDate => {
     if (!selectedDate) return false;
 
+    const currentAvailableDate = getCurrentAvailableDate();
     const selectedDateLocal = new Date(selectedDate);
     const nowLocal = new Date();
 
+    // Set both dates to start of day for comparison
+    const selectedDateStart = new Date(selectedDateLocal);
+    selectedDateStart.setHours(0, 0, 0, 0);
+
+    const availableDateStart = new Date(currentAvailableDate);
+    availableDateStart.setHours(0, 0, 0, 0);
+
+    // Only allow updates for the current available date
+    if (selectedDateStart.getTime() !== availableDateStart.getTime()) {
+      return false;
+    }
+
+    // Allow updates until 3:30 AM UTC tomorrow (9 AM IST)
     const cutoffTime = new Date(selectedDateLocal);
     cutoffTime.setDate(cutoffTime.getDate() + 1);
-    cutoffTime.setHours(9, 0, 0, 0);
+    cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
 
     return nowLocal <= cutoffTime;
   };
@@ -101,18 +139,32 @@ export const EmployeeDashboard = () => {
   const isTodayOrPast = selectedDate => {
     if (!selectedDate) return false;
 
-    const todayLocal = new Date();
-    todayLocal.setHours(0, 0, 0, 0);
+    const currentAvailableDate = getCurrentAvailableDate();
 
-    const selectedDateLocal = new Date(selectedDate);
-    selectedDateLocal.setHours(0, 0, 0, 0);
-
-    return selectedDateLocal <= todayLocal;
+    // Compare dates as strings in YYYY-MM-DD format
+    return selectedDate === currentAvailableDate;
   };
 
-  const formatDateForDisplay = dateString => {
+  const getLocalCutoffTimeDisplay = dateString => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleString('en-US', {
+
+    // Create a date object from the input (ensure it's treated as local date)
+    let inputDate;
+    if (typeof dateString === 'string' && dateString.includes('-')) {
+      // If it's a date string like "2025-07-29", create a proper date in local timezone
+      const [year, month, day] = dateString.split('-');
+      inputDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    } else {
+      inputDate = new Date(dateString);
+    }
+
+    // Create cutoff time: 3:30 AM UTC tomorrow (which is 9 AM IST)
+    const cutoff = new Date(inputDate);
+    cutoff.setDate(cutoff.getDate() + 1);
+    cutoff.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
+
+    // Format the cutoff time in the user's timezone
+    return cutoff.toLocaleString('en-US', {
       timeZone: userTimezone,
       weekday: 'short',
       month: 'short',
@@ -123,19 +175,107 @@ export const EmployeeDashboard = () => {
     });
   };
 
-  const getLocalCutoffTimeDisplay = dateString => {
-    if (!dateString) return '';
-    const cutoff = new Date(dateString);
-    cutoff.setDate(cutoff.getDate() + 1);
-    cutoff.setHours(9, 0, 0, 0);
-    return formatDateForDisplay(cutoff);
+  // Validation functions
+  const validateField = (fieldName, value) => {
+    switch (fieldName) {
+      case 'date':
+        if (!value) return 'Date is required';
+        if (!isTodayOrPast(value))
+          return 'You can only submit status for the current available date';
+        if (!isUpdateAllowed(value))
+          return `Status updates are only allowed until ${getLocalCutoffTimeDisplay(value)} (your local time)`;
+        return '';
+
+      case 'subsidary':
+        if (!value) return 'Subsidiary is required';
+        return '';
+
+      case 'description':
+        if (formValues.leave && !value?.trim()) return 'Description is required when taking leave';
+        if (formValues.subsidary === 'ASS' && !value?.trim())
+          return 'Description is required for ASS subsidiary';
+        return '';
+
+      default:
+        return '';
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+
+    // Validate required fields
+    const dateError = validateField('date', formValues.date);
+    if (dateError) errors.date = dateError;
+
+    const subsidaryError = validateField('subsidary', formValues.subsidary);
+    if (subsidaryError) errors.subsidary = subsidaryError;
+
+    const descriptionError = validateField('description', formValues.description);
+    if (descriptionError) errors.description = descriptionError;
+
+    // For now, skip subsidiary-specific field validation since we're not showing those fields
+    // This logic is kept for future use when subsidiary-specific fields are re-enabled
+    /*
+    // If leave is selected, skip subsidiary-specific field validation
+    if (formValues.leave) {
+      setFieldErrors(errors);
+      return Object.keys(errors).length === 0;
+    }
+
+    // Validate subsidiary-specific fields (except ASS which only needs description)
+    if (formValues.subsidary && formValues.subsidary !== 'ASS') {
+      const subsidiaryFields = initialFormState[formValues.subsidary];
+      if (subsidiaryFields) {
+        Object.keys(subsidiaryFields).forEach(field => {
+          if (field === 'description') return; // Already validated above
+
+          const fieldValue = formValues[formValues.subsidary]?.[field];
+          const fieldName = `${formValues.subsidary}.${field}`;
+
+          // Check if field is required (not empty, null, undefined, 0, or '0')
+          if (
+            fieldValue === undefined ||
+            fieldValue === null ||
+            fieldValue === '' ||
+            fieldValue === 0 ||
+            fieldValue === 0.0 ||
+            fieldValue === '0' ||
+            fieldValue === '0.00'
+          ) {
+            const fieldDisplayName = field
+              .replace(/([a-z])([A-Z])/g, '$1 $2')
+              .replace(/_/g, ' ')
+              .replace(/^\w/, c => c.toUpperCase());
+            errors[fieldName] = `${fieldDisplayName} is required`;
+          }
+        });
+      }
+    }
+    */
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const canSubmit = () => {
+    if (isSubmitting) return false;
+    if (!formValues.date || !formValues.subsidary) return false;
+
+    if (!isTodayOrPast(formValues.date) || !isUpdateAllowed(formValues.date)) return false;
+
+    // If leave is selected, only require description
+    if (formValues.leave) {
+      return formValues.description?.trim() ? true : false;
+    }
+
+    // For ASS subsidiary, description is always required
+    if (formValues.subsidary === 'ASS' && !formValues.description?.trim()) return false;
+
+    return true;
   };
 
   useEffect(() => {
-    if (statusUpdates?.has_submitted_happiness_today !== undefined) {
-      statusUpdates['has_submitted_happiness_today'] = true;
-    }
-
     // Detect user's timezone
     try {
       const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -145,6 +285,13 @@ export const EmployeeDashboard = () => {
       setUserTimezone('UTC');
     }
   }, []);
+
+  // Real-time form validation
+  useEffect(() => {
+    if (formValues.date || formValues.subsidary) {
+      validateForm();
+    }
+  }, [formValues.date, formValues.subsidary, formValues.description, formValues.leave]);
 
   useEffect(() => {
     if (searchedPlates !== filteredPlates) {
@@ -163,18 +310,16 @@ export const EmployeeDashboard = () => {
     );
   };
 
-  const handleEdit = e => {
-    e.preventDefault();
-    setDisableInputs(false);
-  };
-
   const resetForm = () => {
     setFormValues({
       ...initialFormState,
-      date: formatDate(selectedAcsStatusDate),
+      date: getCurrentAvailableDate(),
       user_id: auth.currentUser.uid,
       user_name: auth.currentUser.displayName,
     });
+    setFieldErrors({});
+    setMsgResponse(null);
+    setShowEdit(false);
   };
 
   useEffect(() => {
@@ -239,9 +384,17 @@ export const EmployeeDashboard = () => {
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
     if (statusUpdates?.status_updates && selectedAcsStatusDate) {
-      const filteredStatuses = statusUpdates.status_updates?.filter(
-        status => formattedSelectedDate === status.date
-      );
+      // More robust date comparison - check if the dates are the same regardless of timezone
+      const filteredStatuses = statusUpdates.status_updates?.filter(status => {
+        // Convert both dates to YYYY-MM-DD format in local timezone for comparison
+        const statusDate = new Date(status.date);
+        const statusYear = statusDate.getFullYear();
+        const statusMonth = String(statusDate.getMonth() + 1).padStart(2, '0');
+        const statusDay = String(statusDate.getDate()).padStart(2, '0');
+        const statusDateString = `${statusYear}-${statusMonth}-${statusDay}`;
+
+        return statusDateString === formattedSelectedDate;
+      });
       setUserSubsidaries(filteredStatuses);
       // Check if selected subsidiary is multi-status
       const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
@@ -261,6 +414,8 @@ export const EmployeeDashboard = () => {
 
   const handleChange = e => {
     const { name, value } = e.target;
+
+    // Update form values
     if (name.includes('.')) {
       const [subsidary, field] = name.split('.');
       setFormValues(prev => ({
@@ -270,14 +425,26 @@ export const EmployeeDashboard = () => {
     } else {
       setFormValues(prev => ({ ...prev, [name]: value }));
     }
-    if (name === 'leave' && value === true) {
-      setDisableInputs(true);
-    } else if (name === 'leave' && value === false) {
-      setDisableInputs(false);
+
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+
+    // Handle leave field
+    if (name === 'leave') {
+      const leaveValue = value === 'true' || value === true;
+      // Don't disable inputs when leave is selected - only subsidiary fields should be disabled
+      // setDisableInputs(leaveValue);
+
+      // Clear description error if user unchecks leave
+      if (!leaveValue && fieldErrors.description) {
+        setFieldErrors(prev => ({ ...prev, description: undefined }));
+      }
     }
     if (name === 'subsidary' && Array.isArray(userSubsidaries)) {
       // Find the selected subsidiary object
-      const selectedSubsidiaryObj = activeSubsidiaries.find(sub => sub.subName === value);
+      const selectedSubsidiaryObj = availableSubsidiaries.find(sub => sub.subName === value);
       const filtered = userSubsidaries?.filter(sub => sub.subsidary === value);
       const isMultiStatus =
         selectedSubsidiaryObj?.parttimer_multi_status === true ||
@@ -313,19 +480,19 @@ export const EmployeeDashboard = () => {
         });
       }
       const formattedSelectedDate = formatDate(selectedAcsStatusDate);
-      const currentDate = formatDate(new Date());
-      const isSelectedDateCurrent = formattedSelectedDate === currentDate;
+      const currentAvailableDate = getCurrentAvailableDate();
+      const isSelectedDateCurrent = formattedSelectedDate === currentAvailableDate;
 
-      if (
-        statusUpdates?.status_updates &&
-        isSelectedDateCurrent &&
-        statusUpdates?.status_updates?.some(
-          obj => obj.date === currentDate && obj.subsidary === value
-        )
-      ) {
-        setShowEdit(true);
+      const existingStatus = statusUpdates?.status_updates?.some(
+        obj => obj.date === formattedSelectedDate && obj.subsidary === value
+      );
+
+      if (statusUpdates?.status_updates && isSelectedDateCurrent && existingStatus) {
+        setShowEdit(true); // Show warning banner
+        setDisableInputs(true); // Disable all inputs
       } else {
         setShowEdit(false);
+        setDisableInputs(false);
       }
       // Store the selected subsidiary object for multi-status logic
       setFormValues(prev => ({ ...prev, selectedSubsidiaryObj }));
@@ -333,35 +500,9 @@ export const EmployeeDashboard = () => {
   };
 
   const renderSubsidaryFields = () => {
-    if (!formValues.subsidary) return null;
-
-    const selectedSubsidary = formValues.subsidary;
-    const fields = initialFormState[selectedSubsidary];
-
-    if (!fields) return null;
-
-    if (!formValues[selectedSubsidary]) {
-      formValues[selectedSubsidary] = { ...fields };
-    }
-
-    const updatesAllowed = isUpdateAllowed(formValues.date);
-    const isPastDate = !isTodayOrPast(formValues.date);
-    return Object.keys(fields)?.map(key => (
-      <Grid item xs={12} sm={6} key={key}>
-        <TextField
-          fullWidth
-          label={key
-            .replace(/([a-z])([A-Z])/g, '$1 $2')
-            .replace(/_/g, ' ')
-            .replace(/\b\w/g, char => char.toUpperCase())}
-          name={`${selectedSubsidary}.${key}`}
-          value={formValues[selectedSubsidary]?.[key] || ''}
-          onChange={handleChange}
-          disabled={disableInputs || !updatesAllowed || isPastDate}
-          variant="outlined"
-        />
-      </Grid>
-    ));
+    // For now, return null to show only basic fields (name, subsidiary, date, leave, description)
+    // All subsidiary-specific logic is kept intact for future use
+    return null;
   };
 
   const flattenObject = obj => {
@@ -377,70 +518,41 @@ export const EmployeeDashboard = () => {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    // Multi-status logic
-    const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
-    const isMultiStatus =
-      selectedSubsidiaryObj?.parttimer_multi_status === true ||
-      selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
-    const currentStatuses = (statusUpdates?.status_updates || []).filter(
-      s => s.subsidary === formValues.subsidary && s.date === formValues.date
-    );
-    if (isMultiStatus) {
-      // Only allow if whatsappId is unique for this date+subsidiary
-      if (
-        formValues.ACS?.whatsappId &&
-        currentStatuses.some(s => s.whatsappId === formValues.ACS.whatsappId)
-      ) {
-        setMsgResponse(
-          'A status for this WhatsApp ID already exists for this subsidiary and date.'
-        );
-        return;
-      }
-    } else {
-      // Only allow one status for this subsidiary+date, regardless of whatsappId
-      if (currentStatuses.length > 0) {
-        setMsgResponse('You can only add one status for this subsidiary and date.');
-        return;
-      }
-    }
-
-    if (!isTodayOrPast(formValues.date)) {
-      setMsgResponse('You can only submit status for today or past dates.');
+    // Validate form before submission
+    if (!validateForm()) {
+      setMsgResponse('Please fix the validation errors before submitting.');
       return;
     }
 
-    if (!isUpdateAllowed(formValues.date)) {
-      setMsgResponse(
-        `Status updates are only allowed until ${getLocalCutoffTimeDisplay(formValues.date)} (your local time)`
-      );
-      return;
-    }
+    setIsSubmitting(true);
+    setMsgResponse(null);
 
     try {
-      // Dynamically require all fields for the selected subsidiary except description
-      const selectedSubsidary = formValues.subsidary;
-      const fields = initialFormState[selectedSubsidary];
-      if (fields) {
-        for (const key of Object.keys(fields)) {
-          if (key === 'description') continue;
-          const value = formValues[selectedSubsidary]?.[key];
-          if (
-            value === undefined ||
-            value === null ||
-            value === '' ||
-            value === 0 ||
-            value === 0.0 ||
-            value === '0' ||
-            value === '0.00'
-          ) {
-            setMsgResponse(
-              `Please fill in the required field: ${key
-                .replace(/([a-z])([A-Z])/g, '$1 $2')
-                .replace(/_/g, ' ')
-                .replace(/^\w/, c => c.toUpperCase())}`
-            );
-            return;
-          }
+      // Always check for duplicates since we don't allow editing from form
+      const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
+      const isMultiStatus =
+        selectedSubsidiaryObj?.parttimer_multi_status === true ||
+        selectedSubsidiaryObj?.parttimer_multi_status === 'Yes';
+      const currentStatuses = (statusUpdates?.status_updates || []).filter(
+        s => s.subsidary === formValues.subsidary && s.date === formValues.date
+      );
+
+      if (isMultiStatus) {
+        // Only allow if whatsappId is unique for this date+subsidiary
+        if (
+          formValues.ACS?.whatsappId &&
+          currentStatuses.some(s => s.whatsappId === formValues.ACS.whatsappId)
+        ) {
+          setMsgResponse(
+            'A status for this WhatsApp ID already exists for this subsidiary and date.'
+          );
+          return;
+        }
+      } else {
+        // Only allow one status for this subsidiary+date, regardless of whatsappId
+        if (currentStatuses.length > 0) {
+          setMsgResponse('You can only add one status for this subsidiary and date.');
+          return;
         }
       }
 
@@ -448,38 +560,55 @@ export const EmployeeDashboard = () => {
 
       let response = '';
       try {
-        if (!showEdit) {
-          response = await statusMutation.mutateAsync(postStatus);
-          setMsgResponse(response.message);
-          resetForm();
-        } else {
-          response = await updateMutation.mutateAsync(postStatus);
-          setMsgResponse(response.message);
-          setShowEdit(false);
-        }
+        // Only create new status, never update from form
+        response = await statusMutation.mutateAsync(postStatus);
+        setMsgResponse(response.message);
+        resetForm();
 
         queryClient.invalidateQueries(['calendarData', formValues]);
       } catch (error) {
-        setMsgResponse(response.message);
+        setMsgResponse(error.message || 'An error occurred while submitting status');
         console.error('Mutation error:', error);
       }
     } catch (error) {
+      setMsgResponse('An error occurred while processing your request');
       console.error('Error posting status:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  function getMaxDate() {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  function getCurrentAvailableDate() {
+    const now = new Date();
+
+    // Get current UTC date
+    const currentUTCDate = new Date();
+    const utcYear = currentUTCDate.getUTCFullYear();
+    const utcMonth = currentUTCDate.getUTCMonth();
+    const utcDay = currentUTCDate.getUTCDate();
+
+    // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
+    const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1, 3, 30, 0, 0));
+
+    // If current time is before cutoff, show today's date
+    // If current time is after cutoff, show tomorrow's date
+    if (now < cutoffTimeUTC) {
+      // Before cutoff - show today's date
+      return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
+    } else {
+      // After cutoff - show tomorrow's date
+      const tomorrowUTCDate = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1));
+      const tomorrowYear = tomorrowUTCDate.getUTCFullYear();
+      const tomorrowMonth = tomorrowUTCDate.getUTCMonth();
+      const tomorrowDay = tomorrowUTCDate.getUTCDate();
+      return `${tomorrowYear}-${String(tomorrowMonth + 1).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`;
+    }
   }
 
   return (
     <div className="container">
       <div className="my-3">
-        {statusUpdates && !statusUpdates?.has_submitted_happiness_today && (
+        {statusUpdates && statusUpdates.has_submitted_happiness_today === false && (
           <HappinessIndex
             open={openHappinessDialog}
             handleClose={() => setOpenHappinessDialog(false)}
@@ -489,8 +618,15 @@ export const EmployeeDashboard = () => {
           <h2>Status Update Form</h2>
 
           <Alert severity="info" sx={{ mb: 2 }}>
-            Status updates are allowed until 9 AM the next day in your local timezone.
+            Status updates are allowed until 3:30 AM UTC the next day (9 AM IST).
             <div>Detected timezone: {userTimezone}</div>
+            <div>
+              Cutoff time for today ({formatDate(new Date())}):{' '}
+              {getLocalCutoffTimeDisplay(formatDate(new Date()))}
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px' }}>
+              (Status updates allowed until 3:30 AM UTC tomorrow, shown in your local timezone)
+            </div>
           </Alert>
 
           <div className="row">
@@ -499,23 +635,46 @@ export const EmployeeDashboard = () => {
             </div>
           </div>
 
-          <div className="row my-4">
-            <div className="col-12">
-              <StatusTable
-                statusUpdates={statusUpdates?.status_updates || []}
-                isUpdateAllowed={isUpdateAllowed}
-                userTimezone={userTimezone}
-                updateMutation={updateMutation}
-                subsidaryOptions={activeSubsidiaries.map(sub => sub.subName)}
-              />
-            </div>
-          </div>
-
           {msgResponse && (
             <div className="alert alert-info" role="alert">
               {msgResponse}
             </div>
           )}
+
+          {showEdit && (
+            <div
+              className="alert alert-warning"
+              role="alert"
+              style={{
+                marginBottom: '16px',
+                border: '2px solid #ffc107',
+                backgroundColor: '#fff3cd',
+                color: '#856404',
+                padding: '12px 16px',
+                borderRadius: '4px',
+              }}
+            >
+              <div style={{ fontWeight: 'bold', marginBottom: '8px', fontSize: '16px' }}>
+                ⚠️ Status Already Submitted
+              </div>
+              <div style={{ marginBottom: '8px' }}>
+                A status for <strong>{formValues.subsidary}</strong> on{' '}
+                <strong>{formValues.date}</strong> has already been submitted.
+              </div>
+              <div style={{ fontSize: '0.9rem', marginTop: '8px', fontStyle: 'italic' }}>
+                Please use the pencil edit icon in the Status Table below to edit this status.
+              </div>
+            </div>
+          )}
+
+          <div className="row mb-3">
+            <div className="col-12 text-center">
+              <h4 className="text-primary mb-0">
+                <i className="fas fa-plus-circle me-2"></i>
+                Update your status here
+              </h4>
+            </div>
+          </div>
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -530,7 +689,7 @@ export const EmployeeDashboard = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={!!fieldErrors.subsidary}>
                 <InputLabel>Subsidiary</InputLabel>
                 <Select
                   name="subsidary"
@@ -538,12 +697,13 @@ export const EmployeeDashboard = () => {
                   onChange={handleChange}
                   disabled={isSubsidiariesLoading}
                 >
-                  {activeSubsidiaries.map(sub => (
+                  {availableSubsidiaries.map(sub => (
                     <MenuItem key={sub.id || sub.subsidiaryName || sub.subName} value={sub.subName}>
                       {sub.subName}
                     </MenuItem>
                   ))}
                 </Select>
+                {fieldErrors.subsidary && <FormHelperText>{fieldErrors.subsidary}</FormHelperText>}
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -557,7 +717,12 @@ export const EmployeeDashboard = () => {
                 disabled={disableInputs}
                 InputLabelProps={{ shrink: true }}
                 variant="outlined"
-                inputProps={{ max: getMaxDate() }}
+                inputProps={{
+                  min: getCurrentAvailableDate(),
+                  max: getCurrentAvailableDate(),
+                }}
+                error={!!fieldErrors.date}
+                helperText={fieldErrors.date}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -589,6 +754,15 @@ export const EmployeeDashboard = () => {
                 multiline
                 rows={4}
                 variant="outlined"
+                error={!!fieldErrors.description}
+                helperText={fieldErrors.description}
+                placeholder={
+                  formValues.subsidary === 'ASS'
+                    ? 'Description is required for ASS subsidiary...'
+                    : formValues.leave
+                      ? 'Please provide a reason for your leave...'
+                      : 'Optional description...'
+                }
               />
             </Grid>
           </Grid>
@@ -598,17 +772,24 @@ export const EmployeeDashboard = () => {
               type="submit"
               className="btn btn-primary"
               onClick={handleSubmit}
-              disabled={!isUpdateAllowed(formValues.date) || !isTodayOrPast(formValues.date)}
+              disabled={!canSubmit() || showEdit}
             >
-              Submit
+              {isSubmitting ? 'Submitting...' : 'Submit Status'}
             </button>
-            {showEdit && (
-              <button type="submit" className="btn btn-primary" onClick={handleEdit}>
-                Edit
-              </button>
-            )}
           </div>
         </form>
+
+        <div className="row my-4">
+          <div className="col-12">
+            <StatusTable
+              statusUpdates={statusUpdates?.status_updates || []}
+              isUpdateAllowed={isUpdateAllowed}
+              userTimezone={userTimezone}
+              updateMutation={updateMutation}
+              subsidaryOptions={activeSubsidiaries.map(sub => sub.subName)}
+            />
+          </div>
+        </div>
       </div>
 
       {searchedPlates?.length > 0 && (

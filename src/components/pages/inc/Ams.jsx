@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { marketingData } from '../../../dataconfig';
 import { Card, CardContent, Typography, Grid, CardMedia, Box } from '@mui/material';
+import { useAuth } from 'src/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 import CustomToast from 'src/components/atoms/Toast/CustomToast';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
@@ -8,6 +10,16 @@ import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 export const Ams = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleGoToEditor = () => {
+    if (user) {
+      navigate('/video-editor');
+    } else {
+      navigate('/login', { state: { from: '/video-editor' } });
+    }
+  };
 
   return (
     <div>
@@ -15,6 +27,37 @@ export const Ams = () => {
         <div className="container">
           <h1 className="text-center">Anddhen Marketing Services</h1>
           <div className="underline mx-auto"></div>
+
+          {/* Introductory Section for Video Editing Tool */}
+          <Box sx={{ my: 4, p: 3, background: '#fffbe6', borderRadius: 3, boxShadow: 1 }}>
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
+              Introducing the Anddhen Video Editing Tool
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              Our all-in-one video editing platform lets you edit, trim, and enhance your videos,
+              generate AI-powered content, and manage your digital marketing assets—all in one
+              place. Click below to get started!
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <button
+                onClick={handleGoToEditor}
+                style={{
+                  background: '#ffc107',
+                  color: '#222',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '12px 32px',
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'background 0.2s',
+                }}
+              >
+                Go to Video Editing Tool
+              </button>
+            </Box>
+          </Box>
         </div>
 
         <Box sx={{ padding: '20px 20px', backgroundColor: '#f9f9f9' }}>
