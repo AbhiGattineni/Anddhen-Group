@@ -26,30 +26,20 @@ const StatusTable = ({
   updateMutation,
   subsidaryOptions,
 }) => {
-  // Function to check if a specific date is still editable (only current day until cutoff)
+  // Helper: Only allow editing for currently available (today) records until cutoff
   const isDateEditable = dateString => {
     if (!dateString) return false;
-
-    // Get the current available date (same logic as EmployeeDashboard)
     const getCurrentAvailableDate = () => {
       const now = new Date();
-
-      // Get current UTC date
       const currentUTCDate = new Date();
       const utcYear = currentUTCDate.getUTCFullYear();
       const utcMonth = currentUTCDate.getUTCMonth();
       const utcDay = currentUTCDate.getUTCDate();
-
-      // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
+      // 03:30 AM UTC next day is cutoff
       const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1, 3, 30, 0, 0));
-
-      // If current time is before cutoff, show today's date
-      // If current time is after cutoff, show tomorrow's date
       if (now < cutoffTimeUTC) {
-        // Before cutoff - show today's date
         return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
       } else {
-        // After cutoff - show tomorrow's date
         const tomorrowUTCDate = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1));
         const tomorrowYear = tomorrowUTCDate.getUTCFullYear();
         const tomorrowMonth = tomorrowUTCDate.getUTCMonth();
@@ -57,22 +47,15 @@ const StatusTable = ({
         return `${tomorrowYear}-${String(tomorrowMonth + 1).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`;
       }
     };
-
     const currentAvailableDate = getCurrentAvailableDate();
-
-    // Compare with the current available date (not just today)
-    if (dateString !== currentAvailableDate) {
-      return false;
-    }
-
-    // For the current available date, check if we're within the cutoff time (3:30 AM UTC tomorrow)
+    if (dateString !== currentAvailableDate) return false;
     const now = new Date();
     const cutoffTime = new Date(now);
     cutoffTime.setDate(cutoffTime.getDate() + 1);
-    cutoffTime.setUTCHours(3, 30, 0, 0); // 3:30 AM UTC
-
+    cutoffTime.setUTCHours(3, 30, 0, 0);
     return now <= cutoffTime;
   };
+
   const [editRowId, setEditRowId] = useState(null);
   const [editData, setEditData] = useState({});
   const [filters, setFilters] = useState({
@@ -82,9 +65,20 @@ const StatusTable = ({
   });
   const [msg, setMsg] = useState('');
 
-  // Filtering logic
+  // Sort records by date descending (latest at top)
+  const sortedStatusUpdates = useMemo(() => {
+    return [...statusUpdates].sort((a, b) => {
+      if (a.date && b.date) return new Date(b.date) - new Date(a.date);
+      // Fallback by id if needed
+      const aId = a._id || a.id || '';
+      const bId = b._id || b.id || '';
+      return bId > aId ? 1 : -1;
+    });
+  }, [statusUpdates]);
+
+  // Filtering
   const filteredData = useMemo(() => {
-    return statusUpdates.filter(row => {
+    return sortedStatusUpdates.filter(row => {
       const rowDate = new Date(row.date);
       const start = filters.startDate ? new Date(filters.startDate) : null;
       const end = filters.endDate ? new Date(filters.endDate) : null;
@@ -92,12 +86,11 @@ const StatusTable = ({
       const dateMatch = (!start || rowDate >= start) && (!end || rowDate <= end);
       return subsidaryMatch && dateMatch;
     });
-  }, [statusUpdates, filters]);
+  }, [sortedStatusUpdates, filters]);
 
-  // Columns to show (dynamic for extra fields)
+  // Dynamic columns logic
   const baseColumns = ['date', 'subsidary', 'leave', 'description'];
   const alwaysExclude = ['id', 'user_id', 'user_name'];
-  // Helper to check if a column has any visible value
   const getDisplayValue = val => {
     if (
       val === null ||
@@ -111,28 +104,23 @@ const StatusTable = ({
       return '';
     return val;
   };
-  // Compute all possible columns except always excluded
   const allKeys = useMemo(() => {
     const keys = new Set();
     statusUpdates.forEach(row => Object.keys(row).forEach(k => keys.add(k)));
     alwaysExclude.forEach(k => keys.delete(k));
     return Array.from(keys);
   }, [statusUpdates]);
-  // Only show columns that have at least one non-empty value
   const visibleColumns = useMemo(() => {
     return allKeys.filter(col => statusUpdates.some(row => getDisplayValue(row[col]) !== ''));
   }, [allKeys, statusUpdates]);
-  // Only show base columns if they are present and not excluded, and have at least one value
   const shownBaseColumns = baseColumns.filter(
     col =>
       !alwaysExclude.includes(col) && statusUpdates.some(row => getDisplayValue(row[col]) !== '')
   );
-  // Extra columns are visibleColumns minus shownBaseColumns
   const extraColumns = visibleColumns.filter(col => !shownBaseColumns.includes(col));
 
-  // Handlers
+  // Edit handlers
   const handleEdit = row => {
-    // Only allow editing if the date is still editable
     if (!isDateEditable(row.date)) {
       setMsg("Cannot edit this record. Only today's records can be edited until 9 AM tomorrow.");
       return;
@@ -147,10 +135,7 @@ const StatusTable = ({
     setMsg('');
   };
   const handleChange = (e, field) => {
-    // Prevent changes to subsidiary field during editing
-    if (field === 'subsidary') {
-      return;
-    }
+    if (field === 'subsidary') return;
     setEditData(prev => ({ ...prev, [field]: e.target.value }));
   };
   const handleSave = async () => {
@@ -163,11 +148,8 @@ const StatusTable = ({
     }
   };
 
-  // Format date for display
   const formatDate = dateString => {
     if (!dateString) return '';
-
-    // If it's already a date string in YYYY-MM-DD format, format it nicely without timezone conversion
     if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
       const [year, month, day] = dateString.split('-');
       const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
@@ -177,8 +159,6 @@ const StatusTable = ({
         day: 'numeric',
       });
     }
-
-    // For other formats, use the original logic
     return new Date(dateString).toLocaleString('en-US', {
       timeZone: userTimezone,
       year: 'numeric',
@@ -189,21 +169,22 @@ const StatusTable = ({
 
   return (
     <Paper
-      elevation={4}
+      elevation={5}
       sx={{
         borderRadius: 4,
         p: { xs: 2, md: 4 },
         my: 2,
-        background: 'linear-gradient(135deg, #f8fafc 60%, #e3f0ff 100%)',
+        background: 'linear-gradient(135deg, #eef4fd 60%, #e3f0ff 100%)',
+        boxShadow: 3,
       }}
     >
       <Box
         sx={{
-          background: 'rgba(255,255,255,0.85)',
+          background: 'rgba(255,255,255,0.92)',
           borderRadius: 3,
           p: 2,
           mb: 3,
-          boxShadow: 2,
+          boxShadow: 1,
           display: 'flex',
           flexWrap: 'wrap',
           gap: 2,
@@ -272,8 +253,29 @@ const StatusTable = ({
       </Box>
       <Divider sx={{ my: 2, borderColor: '#e0e7ef' }} />
       {msg && <Box sx={{ mb: 2, color: 'green', fontWeight: 500 }}>{msg}</Box>}
-      <TableContainer component={Box} sx={{ borderRadius: 3, boxShadow: 2, background: 'white' }}>
-        <Table size="small" sx={{ borderRadius: 3, overflow: 'hidden' }}>
+
+      {/* Table Panel with Scrollbar and sticky header */}
+      <TableContainer
+        component={Box}
+        sx={{
+          borderRadius: 3,
+          boxShadow: 2,
+          background: 'white',
+          maxHeight: 470,
+          overflowX: 'auto',
+          overflowY: 'auto',
+          '&::-webkit-scrollbar': {
+            width: 8,
+            height: 10,
+            background: '#f5f5fa',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#c1c7d0',
+            borderRadius: 8,
+          },
+        }}
+      >
+        <Table size="small" stickyHeader>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
               {shownBaseColumns.map(col => (
@@ -289,6 +291,8 @@ const StatusTable = ({
                       extraColumns.length === 0
                         ? 12
                         : 0,
+                    background: '#e5ebf5',
+                    borderBottom: '2px solid #d0d7e5',
                   }}
                 >
                   {col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
@@ -297,7 +301,13 @@ const StatusTable = ({
               {extraColumns.map(col => (
                 <TableCell
                   key={col}
-                  sx={{ fontWeight: 'bold', color: '#333', fontSize: '1.08rem' }}
+                  sx={{
+                    fontWeight: 'bold',
+                    color: '#333',
+                    fontSize: '1.08rem',
+                    background: '#e5ebf5',
+                    borderBottom: '2px solid #d0d7e5',
+                  }}
                 >
                   {col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                 </TableCell>
@@ -308,6 +318,8 @@ const StatusTable = ({
                   color: '#333',
                   fontSize: '1.08rem',
                   borderTopRightRadius: 12,
+                  background: '#e5ebf5',
+                  borderBottom: '2px solid #d0d7e5',
                 }}
               >
                 Actions
@@ -341,7 +353,7 @@ const StatusTable = ({
                     backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#e3f0ff',
                     '&:hover': {
                       backgroundColor: '#e0e7ef',
-                      boxShadow: 2,
+                      boxShadow: 1,
                       borderLeft: editable ? '4px solid #4caf50' : '4px solid #1976d2',
                     },
                     borderLeft: editable ? '2px solid #4caf50' : '2px solid transparent',
