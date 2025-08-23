@@ -1,37 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css'; // default styling
-import './StatusCalender.css'; // your custom styling
-import useAuthStore from 'src/services/store/globalStore';
-
+import 'react-calendar/dist/Calendar.css';
+import './StatusCalender.css';
 import PropTypes from 'prop-types';
 
-export const StatusCalendar = ({ data, empName }) => {
-  // Add prop validation for 'data'
+export const StatusCalendar = ({ data, empName, selectedDate, onDateChange, onMonthChange }) => {
   StatusCalendar.propTypes = {
     data: PropTypes.array.isRequired,
     empName: PropTypes.string,
+    selectedDate: PropTypes.instanceOf(Date),
+    onDateChange: PropTypes.func,
+    onMonthChange: PropTypes.func,
   };
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  useEffect(() => {
-    useAuthStore.setState({ selectedAcsStatusDate: selectedDate });
-  }, [selectedDate]);
+
+  // Default values for optional props
+  const currentSelectedDate = selectedDate || new Date();
+  const handleDateChange = onDateChange || (() => {});
+  const handleMonthChange = onMonthChange || (() => {});
 
   const getDayStatus = date => {
-    // Format the check date as YYYY-MM-DD string in local timezone
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const checkDateString = `${year}-${month}-${day}`;
 
     for (const entry of data) {
-      const entryDateString = entry[0]; // entry[0] is already a YYYY-MM-DD string
-
+      const entryDateString = entry[0];
       if (entryDateString === checkDateString) {
         return entry[1] ? 'leave-day' : 'green-day';
       }
     }
-
     return 'red-day';
   };
 
@@ -47,11 +45,12 @@ export const StatusCalendar = ({ data, empName }) => {
   return (
     <div className="calendar-container">
       <Calendar
-        onChange={setSelectedDate}
-        value={selectedDate}
+        onChange={handleDateChange}
+        value={currentSelectedDate}
         tileClassName={tileClassName}
         maxDate={new Date()}
         className="react-calendar"
+        onActiveStartDateChange={({ activeStartDate }) => handleMonthChange(activeStartDate)}
       />
     </div>
   );

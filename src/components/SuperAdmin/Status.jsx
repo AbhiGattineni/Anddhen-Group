@@ -5,6 +5,7 @@ import { useAddData } from 'src/react-query/useFetchApis';
 import { useQueryClient } from 'react-query';
 import { useStatusCalendar } from 'src/react-query/useStatusCalender';
 import useAuthStore from 'src/services/store/globalStore';
+import PropTypes from 'prop-types';
 
 // Subsidiary Management Component
 const SubsidiaryManagement = () => {
@@ -18,12 +19,10 @@ const SubsidiaryManagement = () => {
     parttimer_multi_status: false,
     active: true,
   });
-  // New state for delete confirmation modal
   const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Fetch subsidiaries
   const fetchSubsidiaries = async () => {
     setLoading(true);
     try {
@@ -44,7 +43,6 @@ const SubsidiaryManagement = () => {
     fetchSubsidiaries();
   }, []);
 
-  // Add/Edit subsidiary
   const handleSubmit = async () => {
     try {
       const url = editingSubsidiary
@@ -79,7 +77,6 @@ const SubsidiaryManagement = () => {
     }
   };
 
-  // Delete subsidiary (now only called after confirmation)
   const handleDelete = async id => {
     try {
       const response = await fetch(`${API_BASE_URL}/subsidiaries/delete/${id}/`, {
@@ -94,7 +91,6 @@ const SubsidiaryManagement = () => {
     }
   };
 
-  // Edit subsidiary
   const handleEdit = subsidiary => {
     setEditingSubsidiary(subsidiary);
     setFormData({
@@ -106,7 +102,6 @@ const SubsidiaryManagement = () => {
     setOpenDialog(true);
   };
 
-  // Add new subsidiary
   const handleAdd = () => {
     setEditingSubsidiary(null);
     setFormData({
@@ -331,7 +326,7 @@ const SubsidiaryManagement = () => {
   );
 };
 
-// Employee Status Component (existing functionality)
+// Employee Status Component with Calendar, Monthly Stats, and Loading States
 const EmployeeStatus = () => {
   const queryClient = useQueryClient();
   const [employees, setEmployees] = useState([]);
@@ -340,8 +335,12 @@ const EmployeeStatus = () => {
   const [formattedData, setFormattedData] = useState([]);
   const [singleStatus, setSingleStatus] = useState([]);
   const [allStatuses, setAllStatuses] = useState({});
-  const { data } = useStatusCalendar(empId);
+  const [isLoadingStatuses, setIsLoadingStatuses] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+
+  // Calendar state management
+  const [calendarSelectedDate, setCalendarSelectedDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Filter states
   const [leaveFilter, setLeaveFilter] = useState('all');
@@ -350,6 +349,19 @@ const EmployeeStatus = () => {
   const [filteredStatuses, setFilteredStatuses] = useState([]);
 
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
+
+  // Fetch data with loading states
+  const { data, isLoading: isLoadingCalendarData } = useStatusCalendar(empId);
+  const { data: employeeData = [], isLoading: isLoadingEmployees } = useFetchData(
+    'status',
+    '/get_status_ids'
+  );
+  const { mutate: getAllStatus } = useAddData('status', '/get_status_update');
+
+  // Handle calendar date changes and update global store
+  useEffect(() => {
+    useAuthStore.setState({ selectedAcsStatusDate: calendarSelectedDate });
+  }, [calendarSelectedDate]);
 
   useEffect(() => {
     if (data?.status_updates) {
@@ -362,6 +374,8 @@ const EmployeeStatus = () => {
       const status = data?.status_updates?.filter(item => item.date === formattedDate);
       if (status.length > 0) {
         setSingleStatus(status);
+      } else {
+        setSingleStatus([]);
       }
     }
   }, [selectedAcsStatusDate, data]);
@@ -370,15 +384,13 @@ const EmployeeStatus = () => {
     ? data?.status_updates?.map(item => [item.date, item.leave])
     : [];
 
-  const { data: employeeData = [] } = useFetchData('status', '/get_status_ids');
-  const { mutate: getAllStatus } = useAddData('status', '/get_status_update');
-
   useEffect(() => {
     setEmployees(employeeData);
   }, [employeeData]);
 
   useEffect(() => {
     if (empId) {
+      setIsLoadingStatuses(true);
       getAllStatus(
         { user_id: empId },
         {
@@ -393,14 +405,16 @@ const EmployeeStatus = () => {
             }, {});
             setAllStatuses(newStatuses);
             queryClient.invalidateQueries('status');
+            setIsLoadingStatuses(false);
           },
           onError: error => {
             setAllStatuses({});
+            setIsLoadingStatuses(false);
           },
         }
       );
     }
-  }, [empId]);
+  }, [empId, getAllStatus, queryClient]);
 
   useEffect(() => {
     if (empId && allStatuses[empId]) {
@@ -435,18 +449,82 @@ const EmployeeStatus = () => {
     }
   }, [formattedData, startDateFilter, endDateFilter, leaveFilter]);
 
+  // Calculate monthly stats
+  const calculateMonthStats = (data, month) => {
+    const year = month.getFullYear();
+    const mon = String(month.getMonth() + 1).padStart(2, '0');
+
+    // Filter entries for the current visible month
+    const entries = data.filter(([date]) => date.startsWith(`${year}-${mon}`));
+
+    // Count days working (leave === false), leaves (leave === true)
+    const daysWorking = entries.filter(([_, leave]) => leave === false).length;
+    const leaves = entries.filter(([_, leave]) => leave === true).length;
+
+    // Calculate total days of month up to today if current month; otherwise full month days
+    const now = new Date();
+    let totalDays = new Date(year, month.getMonth() + 1, 0).getDate();
+    if (year === now.getFullYear() && month.getMonth() === now.getMonth()) {
+      totalDays = now.getDate();
+    }
+
+    // Find days with no status (days in month not in data)
+    const filledDates = new Set(entries.map(([date]) => date));
+    let emptyDays = 0;
+    for (let d = 1; d <= totalDays; d++) {
+      const dateStr = `${year}-${mon}-${String(d).padStart(2, '0')}`;
+      if (!filledDates.has(dateStr)) emptyDays++;
+    }
+
+    return { daysWorking, leaves, emptyDays, totalDays };
+  };
+
   const handleEmployeeChange = event => {
     const selectedEmpId = event.target.value;
     const selectedEmpName = employees?.find(emp => emp.user_id === selectedEmpId)?.user_name;
 
     setEmpId(selectedEmpId);
     setEmpName(selectedEmpName);
-    setSingleStatus('');
+    setSingleStatus([]);
     // Reset filters when employee changes
     setLeaveFilter('all');
     setStartDateFilter('');
     setEndDateFilter('');
   };
+
+  const monthStats = calculateMonthStats(formattedCallenderData, currentMonth);
+
+  // Loading Component
+  const LoadingSpinner = ({ text = 'Loading...' }) => (
+    <div className="text-center p-4">
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+      <p className="mt-2 fs-6 text-muted">{text}</p>
+    </div>
+  );
+
+  LoadingSpinner.propTypes = {
+    text: PropTypes.string,
+  };
+
+  // Stats Loading Component
+  const StatsLoadingCards = () => (
+    <div className="row g-3">
+      {[1, 2, 3, 4].map(i => (
+        <div key={i} className="col-6 col-md-3">
+          <div className="text-center p-3 bg-light rounded">
+            <div className="spinner-border spinner-border-sm text-muted mb-2" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <div className="placeholder-glow">
+              <small className="placeholder col-8 bg-secondary"></small>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="container-fluid p-2 p-md-4">
@@ -457,14 +535,25 @@ const EmployeeStatus = () => {
           <div className="row align-items-center">
             <div className="col-12 col-md-6 col-lg-4">
               <label className="form-label fw-bold mb-2">Select Employee</label>
-              <select className="form-select" value={empId} onChange={handleEmployeeChange}>
-                <option value="">Choose an employee...</option>
-                {employees?.map(employee => (
-                  <option key={employee.user_id} value={employee.user_id}>
-                    {employee.user_name}
-                  </option>
-                ))}
-              </select>
+              {isLoadingEmployees ? (
+                <div className="d-flex align-items-center">
+                  <select className="form-select" disabled>
+                    <option>Loading employees...</option>
+                  </select>
+                  <div className="spinner-border spinner-border-sm text-primary ms-2" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              ) : (
+                <select className="form-select" value={empId} onChange={handleEmployeeChange}>
+                  <option value="">Choose an employee...</option>
+                  {employees?.map(employee => (
+                    <option key={employee.user_id} value={employee.user_id}>
+                      {employee.user_name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
         </div>
@@ -479,7 +568,7 @@ const EmployeeStatus = () => {
         </div>
       ) : (
         <div className="row g-3 g-md-4">
-          {/* Calendar Section - Full Width */}
+          {/* Calendar Section with Stats - Full Width */}
           <div className="col-12">
             <div className="card border-0 shadow-sm">
               <div className="card-body p-0">
@@ -487,7 +576,79 @@ const EmployeeStatus = () => {
                   <h5 className="card-title mb-0 fs-6 fs-md-5">Status Calendar</h5>
                 </div>
                 <div className="p-2 p-md-3">
-                  <StatusCalendar data={formattedCallenderData} empName={''} />
+                  {isLoadingCalendarData ? (
+                    <LoadingSpinner text="Loading calendar data..." />
+                  ) : (
+                    <div className="d-flex flex-column flex-lg-row gap-4 align-items-stretch">
+                      {/* Calendar */}
+                      <div className="flex-shrink-0" style={{ minWidth: 320 }}>
+                        <StatusCalendar
+                          data={formattedCallenderData}
+                          empName={empName}
+                          selectedDate={calendarSelectedDate}
+                          onDateChange={setCalendarSelectedDate}
+                          onMonthChange={setCurrentMonth}
+                        />
+                      </div>
+
+                      {/* Monthly Stats Panel */}
+                      <div className="flex-grow-1 d-flex flex-column justify-content-center">
+                        <div className="card shadow-sm w-100">
+                          <div className="card-body p-3">
+                            <h5 className="card-title mb-3 fs-6 fs-md-5">
+                              {currentMonth.toLocaleString('default', {
+                                month: 'long',
+                                year: 'numeric',
+                              })}{' '}
+                              Statistics
+                            </h5>
+                            {isLoadingCalendarData ? (
+                              <StatsLoadingCards />
+                            ) : (
+                              <div className="row g-3">
+                                <div className="col-6 col-md-3">
+                                  <div className="text-center p-3 bg-success bg-opacity-10 rounded">
+                                    <div className="h4 mb-1 text-success">
+                                      {monthStats.daysWorking}
+                                    </div>
+                                    <small className="text-muted">Days Working</small>
+                                  </div>
+                                </div>
+                                <div className="col-6 col-md-3">
+                                  <div className="text-center p-3 bg-warning bg-opacity-10 rounded">
+                                    <div className="h4 mb-1 text-warning">{monthStats.leaves}</div>
+                                    <small className="text-muted">Leaves</small>
+                                  </div>
+                                </div>
+                                <div className="col-6 col-md-3">
+                                  <div className="text-center p-3 bg-danger bg-opacity-10 rounded">
+                                    <div className="h4 mb-1 text-danger">
+                                      {monthStats.emptyDays}
+                                    </div>
+                                    <small className="text-muted">Empty Status</small>
+                                  </div>
+                                </div>
+                                <div className="col-6 col-md-3">
+                                  <div className="text-center p-3 bg-info bg-opacity-10 rounded">
+                                    <div className="h4 mb-1 text-info">{monthStats.totalDays}</div>
+                                    <small className="text-muted">Total Days</small>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {empName && (
+                              <div className="mt-3 pt-3 border-top">
+                                <small className="text-muted">
+                                  <i className="bi bi-person me-1"></i>
+                                  Employee: <strong>{empName}</strong>
+                                </small>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -504,7 +665,9 @@ const EmployeeStatus = () => {
                   )}
                 </h5>
                 <div className="overflow-auto">
-                  {Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
+                  {isLoadingCalendarData ? (
+                    <LoadingSpinner text="Loading status data..." />
+                  ) : Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
                     singleStatus?.map((status, statusIndex) => {
                       const filteredEntries = Object.entries(status)?.filter(
                         ([key, value]) =>
@@ -575,7 +738,12 @@ const EmployeeStatus = () => {
               <div className="card-body p-3 p-md-4">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h5 className="card-title mb-0 fs-6 fs-md-5">All Statuses of {empName}</h5>
-                  <span className="badge bg-secondary fs-6">{filteredStatuses.length} records</span>
+                  <span className="badge bg-secondary fs-6">
+                    {isLoadingStatuses ? (
+                      <span className="spinner-border spinner-border-sm me-1" role="status"></span>
+                    ) : null}
+                    {filteredStatuses.length} records
+                  </span>
                 </div>
 
                 {/* Filters - Responsive Layout */}
@@ -588,6 +756,7 @@ const EmployeeStatus = () => {
                         className="form-control form-control-sm"
                         value={startDateFilter}
                         onChange={e => setStartDateFilter(e.target.value)}
+                        disabled={isLoadingStatuses}
                       />
                       <span className="align-self-center text-center d-none d-sm-block">to</span>
                       <input
@@ -595,6 +764,7 @@ const EmployeeStatus = () => {
                         className="form-control form-control-sm"
                         value={endDateFilter}
                         onChange={e => setEndDateFilter(e.target.value)}
+                        disabled={isLoadingStatuses}
                       />
                     </div>
                   </div>
@@ -604,6 +774,7 @@ const EmployeeStatus = () => {
                       className="form-select form-select-sm"
                       value={leaveFilter}
                       onChange={e => setLeaveFilter(e.target.value)}
+                      disabled={isLoadingStatuses}
                     >
                       <option value="all">All</option>
                       <option value="with_leave">With Leave</option>
@@ -613,7 +784,9 @@ const EmployeeStatus = () => {
                 </div>
 
                 <div className="status-list overflow-auto" style={{ maxHeight: '400px' }}>
-                  {filteredStatuses?.length > 0 ? (
+                  {isLoadingStatuses ? (
+                    <LoadingSpinner text="Loading all statuses..." />
+                  ) : filteredStatuses?.length > 0 ? (
                     filteredStatuses?.map((status, index) => (
                       <div key={index} className="card mb-2 border-0 bg-light">
                         <div className="card-body p-2 p-md-3">
