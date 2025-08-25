@@ -110,6 +110,16 @@ export const AddColleges = () => {
     });
   };
 
+  const requiredFields = ['college_name', 'public_private'];
+
+  useEffect(() => {
+    const allRequiredFilled = requiredFields.every(
+      field => formData[field] && formData[field].trim() !== ''
+    );
+    const hasErrors = Object.values(fieldErrors).some(error => error);
+    setDisableButton(!allRequiredFilled || hasErrors);
+  }, [formData, fieldErrors]);
+
   const {
     data = [], // Provide a default value of an empty array
   } = useFetchData('colleges', `/colleges/all/`);
@@ -217,13 +227,6 @@ export const AddColleges = () => {
       setInputDisabled(true);
     }
   }, [selectedcollege, collegesList]);
-
-  // Extracting keys from formData
-  useEffect(() => {
-    const allFieldsFilled = Object.values(formData).every(value => value !== '');
-    const hasErrors = Object.values(fieldErrors).some(error => error);
-    setDisableButton(!allFieldsFilled || hasErrors);
-  }, [formData, fieldErrors]);
 
   const handleChange = (field, value) => {
     setFormData(prevFormData => ({
