@@ -229,48 +229,61 @@ export const TransactionModal = ({
   }, [showModal, toggleModal]);
 
   return (
-    <div
-      className={`position-fixed top-50 start-50 translate-middle bg-white rounded shadow overflow-hidden modal-dialog-centered ${
-        showModal ? 'd-block' : 'd-none'
-      }`}
-      style={{
-        maxHeight: '90vh',
-        maxWidth: '90vw',
-        overflowY: 'auto',
-        zIndex: 105,
-      }} // Limiting modal height and width, allowing overflow
-    >
-      <div className="modal-content p-0 h-100">
-        <div className="modal-header py-2 px-3 d-flex justify-content-between">
-          <h1 className="modal-title fs-6" id="exampleModalLabel">
-            {editTransaction ? 'Edit' : 'Add'} Transaction
-          </h1>
-          <button type="button" className="btn-close" onClick={toggleModal}></button>
-        </div>
-        <div className="modal-body row px-3 py-2" style={{ overflowY: 'auto', maxHeight: '80vh' }}>
-          <form className="w-100">
-            <div className="row">
-              <InputField
-                className="col-12 col-md-6 mb-3"
-                name="receiver_name"
-                label="Receiver Name"
-                placeholder="Receiver Name"
-                type="text"
-                value={formData.receiver_name}
-                onChange={e => handleChange('receiver_name', e.target.value)}
-                setError={error => handleFieldError('receiver_name', error)}
-              />
-              <InputField
-                className="col-12 col-md-6 mb-3"
-                name="sender_name"
-                label="Sender Name"
-                placeholder="Sender Name"
-                type="text"
-                value={formData.sender_name}
-                onChange={e => handleChange('sender_name', e.target.value)}
-                setError={error => handleFieldError('sender_name', error)}
-              />
-              {/* <InputField
+    <>
+      {/* Dark overlay */}
+      <div
+        className={`position-fixed top-0 start-0 w-100 h-100 ${showModal ? 'd-block' : 'd-none'}`}
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 104,
+        }}
+      />
+      {/* Modal */}
+      <div
+        className={`position-fixed top-50 start-50 translate-middle bg-white rounded shadow overflow-hidden modal-dialog-centered ${
+          showModal ? 'd-block' : 'd-none'
+        }`}
+        style={{
+          maxHeight: '90vh',
+          maxWidth: '90vw',
+          overflowY: 'auto',
+          zIndex: 105,
+        }} // Limiting modal height and width, allowing overflow
+      >
+        <div className="modal-content p-0 h-100">
+          <div className="modal-header py-2 px-3 d-flex justify-content-between">
+            <h1 className="modal-title fs-6" id="exampleModalLabel">
+              {editTransaction ? 'Edit' : 'Add'} Transaction
+            </h1>
+            <button type="button" className="btn-close" onClick={toggleModal}></button>
+          </div>
+          <div
+            className="modal-body row px-3 py-2"
+            style={{ overflowY: 'auto', maxHeight: '80vh' }}
+          >
+            <form className="w-100">
+              <div className="row">
+                <InputField
+                  className="col-12 col-md-6 mb-3"
+                  name="receiver_name"
+                  label="Receiver Name"
+                  placeholder="Receiver Name"
+                  type="text"
+                  value={formData.receiver_name}
+                  onChange={e => handleChange('receiver_name', e.target.value)}
+                  setError={error => handleFieldError('receiver_name', error)}
+                />
+                <InputField
+                  className="col-12 col-md-6 mb-3"
+                  name="sender_name"
+                  label="Sender Name"
+                  placeholder="Sender Name"
+                  type="text"
+                  value={formData.sender_name}
+                  onChange={e => handleChange('sender_name', e.target.value)}
+                  setError={error => handleFieldError('sender_name', error)}
+                />
+                {/* <InputField
                 className="col-12 col-md-6 mb-3"
                 name="receiver_id"
                 label="Receiver ID"
@@ -280,8 +293,8 @@ export const TransactionModal = ({
                 onChange={(e) => handleChange('receiver_id', e.target.value)}
                 setError={(error) => handleFieldError('receiver_id', error)}
               /> */}
-            </div>
-            {/* <div className="row">
+              </div>
+              {/* <div className="row">
 
               <InputField
                 className="col-12 col-md-6 mb-3"
@@ -294,153 +307,154 @@ export const TransactionModal = ({
                 setError={(error) => handleFieldError('sender_id', error)}
               />
             </div> */}
-            <div className="row">
-              <InputField
-                className="col-12 col-md-6 mb-3"
-                name="amount"
-                label="Amount"
-                placeholder="Amount"
-                type="number"
-                value={formData.amount}
-                onChange={e => handleChange('amount', e.target.value)}
-                setError={error => handleFieldError('amount', error)}
-              />
-              <InputField
-                className="col-12 col-md-6 mb-3"
-                name="transaction_datetime"
-                label="Transaction Date & Time"
-                placeholder="Transaction Date & Time"
-                type="datetime-local"
-                value={formData.transaction_datetime}
-                onChange={e => handleChange('transaction_datetime', e.target.value)}
-                setError={error => handleFieldError('transaction_datetime', error)}
-              />
-            </div>
-            <div className="row">
-              <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="transaction_type" className="form-label">
-                  Credit/Debit{' '}
-                  <span className="text-danger" style={{ userSelect: 'none' }}>
-                    {' '}
-                    *
-                  </span>
-                </label>
-                <select
-                  id="transaction_type"
-                  name="transaction_type"
-                  className="form-select"
-                  value={formData.transaction_type}
-                  onChange={e => handleChange('transaction_type', e.target.value)}
-                >
-                  <option value="">Select</option>
-                  <option value="credit">Credit</option>
-                  <option value="debit">Debit</option>
-                </select>
+              <div className="row">
+                <InputField
+                  className="col-12 col-md-6 mb-3"
+                  name="amount"
+                  label="Amount"
+                  placeholder="Amount"
+                  type="number"
+                  value={formData.amount}
+                  onChange={e => handleChange('amount', e.target.value)}
+                  setError={error => handleFieldError('amount', error)}
+                />
+                <InputField
+                  className="col-12 col-md-6 mb-3"
+                  name="transaction_datetime"
+                  label="Transaction Date & Time"
+                  placeholder="Transaction Date & Time"
+                  type="datetime-local"
+                  value={formData.transaction_datetime}
+                  onChange={e => handleChange('transaction_datetime', e.target.value)}
+                  setError={error => handleFieldError('transaction_datetime', error)}
+                />
               </div>
-              <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="payment_type" className="form-label">
-                  Transaction Type{' '}
-                  <span className="text-danger" style={{ userSelect: 'none' }}>
-                    {' '}
-                    *
-                  </span>
-                </label>
-                <select
-                  id="payment_type"
-                  name="payment_type"
-                  className="form-select"
-                  value={formData.payment_type}
-                  onChange={e => handleChange('payment_type', e.target.value)}
-                >
-                  <option value="">Select</option>
-                  <option value="cash">Cash</option>
-                  <option value="upi">UPI</option>
-                  <option value="bank_transfer">Bank Transfer</option>
-                </select>
+              <div className="row">
+                <div className="col-12 col-md-6 mb-3">
+                  <label htmlFor="transaction_type" className="form-label">
+                    Credit/Debit{' '}
+                    <span className="text-danger" style={{ userSelect: 'none' }}>
+                      {' '}
+                      *
+                    </span>
+                  </label>
+                  <select
+                    id="transaction_type"
+                    name="transaction_type"
+                    className="form-select"
+                    value={formData.transaction_type}
+                    onChange={e => handleChange('transaction_type', e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    <option value="credit">Credit</option>
+                    <option value="debit">Debit</option>
+                  </select>
+                </div>
+                <div className="col-12 col-md-6 mb-3">
+                  <label htmlFor="payment_type" className="form-label">
+                    Transaction Type{' '}
+                    <span className="text-danger" style={{ userSelect: 'none' }}>
+                      {' '}
+                      *
+                    </span>
+                  </label>
+                  <select
+                    id="payment_type"
+                    name="payment_type"
+                    className="form-select"
+                    value={formData.payment_type}
+                    onChange={e => handleChange('payment_type', e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    <option value="cash">Cash</option>
+                    <option value="upi">UPI</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                  </select>
+                </div>
               </div>
-            </div>
-            <div className="row">
-              <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="subsidiary" className="form-label">
-                  Subsidiary{' '}
-                  <span className="text-danger" style={{ userSelect: 'none' }}>
-                    {' '}
-                    *
-                  </span>
-                </label>
-                <select
-                  id="subsidiary"
-                  name="subsidiary"
-                  className="form-select"
-                  value={formData.subsidiary}
-                  onChange={e => handleChange('subsidiary', e.target.value)}
-                >
-                  <option value="">Select</option>
-                  <option value="AMS">AMS</option>
-                  <option value="ACS">ACS</option>
-                  <option value="ASS">ASS</option>
-                  <option value="APS">APS</option>
-                  <option value="ATI">ATI</option>
-                </select>
+              <div className="row">
+                <div className="col-12 col-md-6 mb-3">
+                  <label htmlFor="subsidiary" className="form-label">
+                    Subsidiary{' '}
+                    <span className="text-danger" style={{ userSelect: 'none' }}>
+                      {' '}
+                      *
+                    </span>
+                  </label>
+                  <select
+                    id="subsidiary"
+                    name="subsidiary"
+                    className="form-select"
+                    value={formData.subsidiary}
+                    onChange={e => handleChange('subsidiary', e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    <option value="AMS">AMS</option>
+                    <option value="ACS">ACS</option>
+                    <option value="ASS">ASS</option>
+                    <option value="APS">APS</option>
+                    <option value="ATI">ATI</option>
+                  </select>
+                </div>
+                <div className="col-12 col-md-6 mb-3">
+                  <label htmlFor="currency" className="form-label">
+                    Currency{' '}
+                    <span className="text-danger" style={{ userSelect: 'none' }}>
+                      {' '}
+                      *
+                    </span>
+                  </label>
+                  <select
+                    id="currency"
+                    name="currency"
+                    className="form-select"
+                    value={formData.currency}
+                    onChange={e => handleChange('currency', e.target.value)}
+                  >
+                    <option value="">Select</option>
+                    <option value="INR">INR</option>
+                    {/* <option value="USD">USD</option> */}
+                  </select>
+                </div>
+                <InputField
+                  className="col-12 mb-3"
+                  name="description"
+                  label="Description"
+                  placeholder="Description"
+                  type="text"
+                  value={formData.description}
+                  onChange={e => handleChange('description', e.target.value)}
+                  setError={error => handleFieldError('description', error)}
+                />
               </div>
-              <div className="col-12 col-md-6 mb-3">
-                <label htmlFor="currency" className="form-label">
-                  Currency{' '}
-                  <span className="text-danger" style={{ userSelect: 'none' }}>
-                    {' '}
-                    *
-                  </span>
-                </label>
-                <select
-                  id="currency"
-                  name="currency"
-                  className="form-select"
-                  value={formData.currency}
-                  onChange={e => handleChange('currency', e.target.value)}
-                >
-                  <option value="">Select</option>
-                  <option value="INR">INR</option>
-                  {/* <option value="USD">USD</option> */}
-                </select>
+              <div className="form-group py-3 w-100 d-flex justify-content-center">
+                {editTransaction ? (
+                  // If editTransaction has data, show the Edit button
+                  <button
+                    onClick={handleEdit}
+                    type="button"
+                    className="btn btn-warning shadow px-5"
+                    disabled={disableButton || isLoading}
+                  >
+                    {isUpdating ? 'Updating...' : 'Update'}
+                  </button>
+                ) : (
+                  // If no editTransaction data, show the Submit button
+                  <button
+                    onClick={handleSubmit}
+                    type="submit"
+                    className="btn btn-warning shadow px-5"
+                    disabled={disableButton || isLoading}
+                  >
+                    {isLoading ? 'Submitting...' : 'Submit'}
+                  </button>
+                )}
               </div>
-              <InputField
-                className="col-12 mb-3"
-                name="description"
-                label="Description"
-                placeholder="Description"
-                type="text"
-                value={formData.description}
-                onChange={e => handleChange('description', e.target.value)}
-                setError={error => handleFieldError('description', error)}
-              />
-            </div>
-            <div className="form-group py-3 w-100 d-flex justify-content-center">
-              {editTransaction ? (
-                // If editTransaction has data, show the Edit button
-                <button
-                  onClick={handleEdit}
-                  type="button"
-                  className="btn btn-warning shadow px-5"
-                  disabled={disableButton || isLoading}
-                >
-                  {isUpdating ? 'Updating...' : 'Update'}
-                </button>
-              ) : (
-                // If no editTransaction data, show the Submit button
-                <button
-                  onClick={handleSubmit}
-                  type="submit"
-                  className="btn btn-warning shadow px-5"
-                  disabled={disableButton || isLoading}
-                >
-                  {isLoading ? 'Submitting...' : 'Submit'}
-                </button>
-              )}
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
