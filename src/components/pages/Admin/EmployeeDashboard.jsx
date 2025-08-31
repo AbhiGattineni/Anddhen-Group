@@ -73,8 +73,17 @@ export const EmployeeDashboard = () => {
   const [userSubsidaries, setUserSubsidaries] = useState([]);
   const [userTimezone, setUserTimezone] = useState('UTC');
 
+  // Calendar state management - NEW
+  const [calendarSelectedDate, setCalendarSelectedDate] = useState(new Date());
+
   const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
+
+  // Handle calendar date changes and update global store - NEW
+  useEffect(() => {
+    useAuthStore.setState({ selectedAcsStatusDate: calendarSelectedDate });
+  }, [calendarSelectedDate]);
+
   const formattedData = statusUpdates
     ? statusUpdates?.status_updates?.map(item => [item.date, item.leave])
     : [];
@@ -213,46 +222,6 @@ export const EmployeeDashboard = () => {
 
     const descriptionError = validateField('description', formValues.description);
     if (descriptionError) errors.description = descriptionError;
-
-    // For now, skip subsidiary-specific field validation since we're not showing those fields
-    // This logic is kept for future use when subsidiary-specific fields are re-enabled
-    /*
-    // If leave is selected, skip subsidiary-specific field validation
-    if (formValues.leave) {
-      setFieldErrors(errors);
-      return Object.keys(errors).length === 0;
-    }
-
-    // Validate subsidiary-specific fields (except ASS which only needs description)
-    if (formValues.subsidary && formValues.subsidary !== 'ASS') {
-      const subsidiaryFields = initialFormState[formValues.subsidary];
-      if (subsidiaryFields) {
-        Object.keys(subsidiaryFields).forEach(field => {
-          if (field === 'description') return; // Already validated above
-
-          const fieldValue = formValues[formValues.subsidary]?.[field];
-          const fieldName = `${formValues.subsidary}.${field}`;
-
-          // Check if field is required (not empty, null, undefined, 0, or '0')
-          if (
-            fieldValue === undefined ||
-            fieldValue === null ||
-            fieldValue === '' ||
-            fieldValue === 0 ||
-            fieldValue === 0.0 ||
-            fieldValue === '0' ||
-            fieldValue === '0.00'
-          ) {
-            const fieldDisplayName = field
-              .replace(/([a-z])([A-Z])/g, '$1 $2')
-              .replace(/_/g, ' ')
-              .replace(/^\w/, c => c.toUpperCase());
-            errors[fieldName] = `${fieldDisplayName} is required`;
-          }
-        });
-      }
-    }
-    */
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -434,8 +403,6 @@ export const EmployeeDashboard = () => {
     // Handle leave field
     if (name === 'leave') {
       const leaveValue = value === 'true' || value === true;
-      // Don't disable inputs when leave is selected - only subsidiary fields should be disabled
-      // setDisableInputs(leaveValue);
 
       // Clear description error if user unchecks leave
       if (!leaveValue && fieldErrors.description) {
@@ -631,7 +598,14 @@ export const EmployeeDashboard = () => {
 
           <div className="row">
             <div className="col-12">
-              {formattedData && <StatusCalendar data={formattedData} empName={empName} />}
+              {formattedData && (
+                <StatusCalendar
+                  data={formattedData}
+                  empName={empName}
+                  selectedDate={calendarSelectedDate}
+                  onDateChange={setCalendarSelectedDate}
+                />
+              )}
             </div>
           </div>
 
