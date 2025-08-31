@@ -26,6 +26,7 @@ const initialFormState = {
   user_name: auth?.currentUser?.displayName || '',
   subsidary: '',
   date: '',
+  endDate: '',
   leave: false,
   description: '',
   AMS: { source: '' },
@@ -189,10 +190,18 @@ export const EmployeeDashboard = () => {
     switch (fieldName) {
       case 'date':
         if (!value) return 'Date is required';
-        if (!isTodayOrPast(value))
+        if (!formValues.leave && !isTodayOrPast(value))
           return 'You can only submit status for the current available date';
-        if (!isUpdateAllowed(value))
+        if (!formValues.leave && !isUpdateAllowed(value))
           return `Status updates are only allowed until ${getLocalCutoffTimeDisplay(value)} (your local time)`;
+        return '';
+
+      case 'endDate':
+        if (formValues.leave && value) {
+          if (value < formValues.date) {
+            return 'End date must be after or equal to start date';
+          }
+        }
         return '';
 
       case 'subsidary':
@@ -223,6 +232,12 @@ export const EmployeeDashboard = () => {
     const descriptionError = validateField('description', formValues.description);
     if (descriptionError) errors.description = descriptionError;
 
+    // Validate end date if it's a leave request
+    if (formValues.leave && formValues.endDate) {
+      const endDateError = validateField('endDate', formValues.endDate);
+      if (endDateError) errors.endDate = endDateError;
+    }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -231,15 +246,25 @@ export const EmployeeDashboard = () => {
     if (isSubmitting) return false;
     if (!formValues.date || !formValues.subsidary) return false;
 
-    if (!isTodayOrPast(formValues.date) || !isUpdateAllowed(formValues.date)) return false;
-
-    // If leave is selected, only require description
-    if (formValues.leave) {
-      return formValues.description?.trim() ? true : false;
+    // For non-leave submissions
+    if (!formValues.leave) {
+      if (!isTodayOrPast(formValues.date) || !isUpdateAllowed(formValues.date)) return false;
+      // For ASS subsidiary, description is always required
+      if (formValues.subsidary === 'ASS' && !formValues.description?.trim()) return false;
+      return true;
     }
 
-    // For ASS subsidiary, description is always required
-    if (formValues.subsidary === 'ASS' && !formValues.description?.trim()) return false;
+    // For leave submissions
+    if (formValues.leave) {
+      // Require description for all leave requests
+      if (!formValues.description?.trim()) return false;
+
+      // If endDate is provided, it must be valid
+      if (formValues.endDate && formValues.endDate < formValues.date) return false;
+
+      // Single day leave doesn't require endDate
+      return true;
+    }
 
     return true;
   };
@@ -260,7 +285,13 @@ export const EmployeeDashboard = () => {
     if (formValues.date || formValues.subsidary) {
       validateForm();
     }
-  }, [formValues.date, formValues.subsidary, formValues.description, formValues.leave]);
+  }, [
+    formValues.date,
+    formValues.subsidary,
+    formValues.description,
+    formValues.leave,
+    formValues.endDate,
+  ]);
 
   useEffect(() => {
     if (searchedPlates !== filteredPlates) {
@@ -495,7 +526,57 @@ export const EmployeeDashboard = () => {
     setMsgResponse(null);
 
     try {
-      // Always check for duplicates since we don't allow editing from form
+      // Handle leave requests (both single and multiple days)
+      if (formValues.leave) {
+        let dateArray = [];
+        const startDate = new Date(formValues.date);
+
+        if (formValues.endDate) {
+          // Multiple day leave
+          const endDate = new Date(formValues.endDate);
+          // Generate array of dates between start and end date (inclusive)
+          for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+            dateArray.push(new Date(date));
+          }
+        } else {
+          // Single day leave
+          dateArray = [startDate];
+        }
+
+        try {
+          // Submit status for each date in sequence
+          for (const date of dateArray) {
+            const formattedDate = formatDate(date);
+            const statusData = {
+              ...formValues,
+              date: formattedDate,
+            };
+
+            await statusMutation.mutateAsync(statusData, {
+              onError: error => {
+                throw new Error(`Error submitting status for ${formattedDate}: ${error.message}`);
+              },
+            });
+          }
+
+          setMsgResponse(`Successfully submitted leave for ${dateArray.length} day(s)`);
+          resetForm();
+
+          // Invalidate and refetch the relevant queries
+          await Promise.all([
+            queryClient.invalidateQueries(['calendarData']),
+            queryClient.invalidateQueries(['statusUpdates', auth.currentUser?.uid]),
+          ]);
+        } catch (error) {
+          setMsgResponse(error.message || 'An error occurred while submitting leave');
+          console.error('Leave submission error:', error);
+        } finally {
+          setIsSubmitting(false);
+        }
+        return;
+      }
+
+      // Regular single day submission
       const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
       const isMultiStatus =
         selectedSubsidiaryObj?.parttimer_multi_status === true ||
@@ -525,14 +606,17 @@ export const EmployeeDashboard = () => {
 
       const postStatus = flattenObject(formValues);
 
-      let response = '';
       try {
         // Only create new status, never update from form
-        response = await statusMutation.mutateAsync(postStatus);
+        const response = await statusMutation.mutateAsync(postStatus);
         setMsgResponse(response.message);
         resetForm();
 
-        queryClient.invalidateQueries(['calendarData', formValues]);
+        // Invalidate and refetch both queries
+        await Promise.all([
+          queryClient.invalidateQueries(['calendarData']),
+          queryClient.invalidateQueries(['statusUpdates', auth.currentUser?.uid]),
+        ]);
       } catch (error) {
         setMsgResponse(error.message || 'An error occurred while submitting status');
         console.error('Mutation error:', error);
@@ -680,10 +764,10 @@ export const EmployeeDashboard = () => {
                 {fieldErrors.subsidary && <FormHelperText>{fieldErrors.subsidary}</FormHelperText>}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={formValues.leave ? 4 : 6}>
               <TextField
                 fullWidth
-                label="Date"
+                label={formValues.leave ? 'Start Date' : 'Date'}
                 type="date"
                 name="date"
                 value={formValues.date}
@@ -693,13 +777,34 @@ export const EmployeeDashboard = () => {
                 variant="outlined"
                 inputProps={{
                   min: getCurrentAvailableDate(),
-                  max: getCurrentAvailableDate(),
                 }}
                 error={!!fieldErrors.date}
-                helperText={fieldErrors.date}
+                helperText={fieldErrors.date || (formValues.leave ? 'First day of your leave' : '')}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            {formValues.leave && (
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  fullWidth
+                  label="End Date (Optional)"
+                  type="date"
+                  name="endDate"
+                  value={formValues.endDate}
+                  onChange={handleChange}
+                  disabled={disableInputs}
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                  inputProps={{
+                    min: formValues.date || getCurrentAvailableDate(),
+                  }}
+                  error={!!fieldErrors.endDate}
+                  helperText={
+                    fieldErrors.endDate || 'Leave empty for single day, or select last day of leave'
+                  }
+                />
+              </Grid>
+            )}
+            <Grid item xs={12} sm={formValues.leave ? 4 : 6}>
               <TextField
                 select
                 fullWidth
