@@ -244,7 +244,7 @@ export const teamImages = {
 export const myworks = [
   {
     name: 'Anddhen Group',
-    image: 'https://www.anddhengroup.com/static/media/web.8be0ea3c0799cfab269f.jpg',
+    image: '/assets/images/wordhighlighter.jpg',
     description:
       'Anddhen is a startup company that offers leading consultancy and implementation expertise to help drive value across your business. We can deliver both out-of-the box and proprietary solutions and be a trustworthy, long-term technology partner that aligns with your goals and helps you achieve the results you require.',
     link: 'https://www.anddhengroup.com/',
@@ -252,7 +252,7 @@ export const myworks = [
   },
   {
     name: 'Satya sreeman Engineering & Constructions',
-    image: 'https://www.satyasreeman.com/static/media/image1.3aa18de420eceb523489.jpg',
+    image: '/assets/images/SatyaSreeman.png',
     description:
       "We believe that fundamental role of leadership is to create and maintain a culture that strengthens the company's core values, encourages employees to do the right thing, and helps drive the company's long-term strategy. All delivered with humility and compassion.",
     link: 'http://www.satyasreeman.com',
@@ -285,7 +285,7 @@ export const myworks = [
   },
   {
     name: 'Word Highlighter Chrome Extension',
-    image: '/assets/images/wordhighlighter.png',
+    image: '/assets/images/wordhighlighter.jpg',
     description:
       'A Chrome extension to highlight words on any webpage for easy reading and studying. Features: Highlight words with different colors on webpages, helps users find content easily based on highlighting.',
     link: 'https://chromewebstore.google.com/detail/word-highlighter/nheocgebdfhdfknfppfhfcgijedcepae',
@@ -293,7 +293,7 @@ export const myworks = [
   },
   {
     name: 'Famous Meats USA',
-    image: '/assets/images/FamousMeat.png',
+    image: '/assets/images/famousMeats.png',
     description:
       'A trusted halal meat brand delivering fresh, high-quality meats across America. Premium meats across the USA, trusted by families.',
     link: 'https://www.famousmeatsusa.com/',
