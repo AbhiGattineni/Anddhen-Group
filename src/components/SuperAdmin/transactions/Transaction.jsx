@@ -46,6 +46,13 @@ export const Transaction = () => {
     isLoading,
   } = useQuery('transactions', fetchTransactions);
 
+  const sortedTransactions = useMemo(() => {
+    if (!transactions || transactions.length === 0) return [];
+    return [...transactions].sort((a, b) => {
+      return new Date(b.transaction_datetime) - new Date(a.transaction_datetime);
+    });
+  }, [transactions]);
+
   const handleEdit = transaction => {
     if (transaction) {
       setEditTransaction(transaction);
@@ -226,7 +233,7 @@ export const Transaction = () => {
   } = useTable(
     {
       columns,
-      data: filteredTransactions || transactions, // Use filtered data if available
+      data: filteredTransactions || sortedTransactions, // Use filtered data if available, otherwise sorted data
     },
     useGlobalFilter,
     useSortBy,
@@ -283,7 +290,7 @@ export const Transaction = () => {
     setSelectedPaymentType('');
     setSelectedSubsidiary('');
     setSelectedCurrency('');
-    setFilteredTransactions(transactions); // reset to full list
+    setFilteredTransactions(sortedTransactions); // reset to full list, maintaining sort order
   };
 
   return (
