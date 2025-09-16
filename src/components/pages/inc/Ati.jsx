@@ -1,13 +1,148 @@
 import React, { useState } from 'react';
 import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
-import { Carousel, Container, Card, Button } from 'react-bootstrap';
+import { Carousel, Container, Card, Button, Row, Col } from 'react-bootstrap';
 import { Link, Routes, Route } from 'react-router-dom';
 import FinanceDataUpload from './FinanceDataUpload';
 import InvestmentOptionsTabs from './InvestmentOptionsTabs';
 
 export const Ati = () => {
-  const [setShowToast] = useState(false);
-  const [setToastMsg] = useState('');
+  const [activeTab, setActiveTab] = useState('');
+  const [, setShowToast] = useState(false);
+  const [, setToastMsg] = useState('');
+
+  const investmentData = {
+    usa: [
+      {
+        title: '401(k)',
+        description:
+          'Employer-sponsored retirement savings plan. Money is taken from your paycheck before tax.',
+        advantages: [
+          'Employer matching (free money)',
+          'Tax-deferred growth',
+          'Large annual contribution limit',
+        ],
+        disadvantages: [
+          'Early withdrawal penalties',
+          'Limited investment options',
+          'Required minimum distributions after age 73',
+        ],
+      },
+      {
+        title: 'Roth IRA',
+        description: 'Personal retirement account where you invest post-tax money.',
+        advantages: [
+          'Tax-free withdrawals during retirement',
+          'Flexible investment choices',
+          'No tax on gains if held long-term',
+        ],
+        disadvantages: [
+          'Income limits for eligibility',
+          'Contributions are not tax-deductible',
+          '5-year rule for qualified withdrawals',
+        ],
+      },
+    ],
+    uk: [
+      {
+        title: 'ISA',
+        description: 'Tax-free account for saving or investing up to a limit.',
+        advantages: [
+          'No tax on interest, dividends, or gains',
+          'Multiple ISA types',
+          'Can withdraw anytime (except Lifetime ISA)',
+        ],
+        disadvantages: [
+          'Annual contribution limits apply',
+          'No tax relief on contributions',
+          'Lifetime ISA has penalties if misused',
+        ],
+      },
+      {
+        title: 'Workplace Pension',
+        description: 'Retirement plan where employer and employee both contribute.',
+        advantages: [
+          'Free money from employer',
+          'Tax relief from government',
+          'Automatic savings from salary',
+        ],
+        disadvantages: [
+          'Locked until retirement age',
+          'Pension income may be taxed',
+          'Fees vary by provider',
+        ],
+      },
+    ],
+    india: [
+      {
+        title: 'PPF',
+        description: '15-year government-backed savings scheme for individuals.',
+        advantages: [
+          'Tax-free interest',
+          'Safe and stable returns',
+          'Partial withdrawal after 6 years',
+        ],
+        disadvantages: [
+          'Long lock-in period (15 years)',
+          'Limited annual contribution',
+          'Lower returns than stocks',
+        ],
+      },
+      {
+        title: 'Stocks',
+        description: 'Buying shares in Indian companies.',
+        advantages: ['High returns possible', 'No lock-in period', 'Easy to invest online'],
+        disadvantages: ['High market volatility', 'Requires knowledge', 'Capital loss possible'],
+      },
+    ],
+    canada: [
+      {
+        title: 'RRSP',
+        description: 'Retirement plan where contributions reduce your taxable income.',
+        advantages: [
+          'Tax-deductible contributions',
+          'Tax-free growth until withdrawal',
+          'Good for long-term savings',
+        ],
+        disadvantages: [
+          'Withdrawals are taxed',
+          'Mandatory withdrawals by age 71',
+          'Over-contribution penalties',
+        ],
+      },
+      {
+        title: 'TFSA',
+        description: 'Flexible savings/investment account with tax-free gains.',
+        advantages: ['No tax on gains', 'Withdraw anytime without penalty', 'Use for any goal'],
+        disadvantages: [
+          'Annual contribution limits',
+          'No tax deduction on contributions',
+          'Over-contribution penalties',
+        ],
+      },
+    ],
+    australia: [
+      {
+        title: 'Superannuation',
+        description: 'Compulsory retirement savings from salary with employer contributions.',
+        advantages: [
+          'Tax-concessional growth',
+          'Employer contributes extra',
+          'Long-term wealth generation',
+        ],
+        disadvantages: ['Locked until retirement', 'Returns vary with market', 'Complex rules'],
+      },
+      {
+        title: 'Shares (Stocks)',
+        description: 'Buying parts of companies for capital growth.',
+        advantages: [
+          'High growth over time',
+          'Regular dividends possible',
+          'Control over investments',
+        ],
+        disadvantages: ['Market volatility', 'Requires monitoring', 'Capital loss possible'],
+      },
+    ],
+  };
 
   return (
     <div className="section border-top">
@@ -17,8 +152,10 @@ export const Ati = () => {
           path="/"
           element={
             <>
-              <h1 className="text-center">Anddhen Trading and Investment </h1>
+              <h1 className="text-center">Anddhen Trading and Investment</h1>
               <div className="underline mx-auto"></div>
+
+              {/* Carousel */}
               <Carousel className="mt-4 mx-auto" style={{ maxWidth: '80%', maxHeight: '60%' }}>
                 <Carousel.Item>
                   <img
@@ -83,17 +220,70 @@ export const Ati = () => {
                 </div>
               </div>
 
-              {/* Explore Global Investment Options - New Section */}
-              <div className="investment-section mt-5 mb-5 p-4 rounded bg-white shadow-sm">
-                <h2
-                  className="text-center mb-4"
-                  style={{ fontWeight: 600, fontSize: '2rem', letterSpacing: '0.5px' }}
-                >
-                  Explore Global Investment Options
-                </h2>
-                <InvestmentOptionsTabs />
-              </div>
+              {/* Redesigned Investment Options Section */}
+              <Container className="my-5 p-4 rounded bg-white shadow border-0">
+                <h1 className="text-center">Explore Global Investment Options</h1>
+                <div className="underline mx-auto"></div>
+                <p className="text-center text-secondary mb-4">
+                  Compare top investment types by country – understand the pros and cons, and decide
+                  what aligns best with your financial goals.
+                </p>
 
+                {/* Country Tabs */}
+                <div className="text-center mb-4">
+                  {Object.keys(investmentData).map(country => (
+                    <Button
+                      key={country}
+                      variant={activeTab === country ? 'primary' : 'outline-primary'}
+                      className="m-2 px-4"
+                      onClick={() => setActiveTab(country)}
+                    >
+                      {country.toUpperCase()}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Show investment cards only if a country is selected */}
+                {activeTab && (
+                  <Row className="justify-content-center mt-3">
+                    {investmentData[activeTab].map((item, idx) => (
+                      <Col xs={12} md={6} lg={5} className="mb-4" key={idx}>
+                        <Card className="h-100 border-0">
+                          <Card.Body>
+                            <Card.Title
+                              className="text-center fw-semibold"
+                              style={{ fontSize: '1.25rem' }}
+                            >
+                              {item.title}
+                            </Card.Title>
+                            <Card.Text className="text-muted">{item.description}</Card.Text>
+                            <div className="mt-3">
+                              <h6 className="fw-bold text-dark">Advantages</h6>
+                              <ul className="ps-3 mb-3">
+                                {item.advantages.map((adv, i) => (
+                                  <li key={i} className="fs-6">
+                                    {adv}
+                                  </li>
+                                ))}
+                              </ul>
+                              <h6 className="fw-bold text-dark">Disadvantages</h6>
+                              <ul className="ps-3">
+                                {item.disadvantages.map((disadv, i) => (
+                                  <li key={i} className="fs-6">
+                                    {disadv}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                )}
+              </Container>
+
+              {/* Info Section */}
               <div className="mt-5 p-3 rounded bg-light">
                 <Container>
                   <p className="p-2" style={{ textAlign: 'justify' }}>
@@ -109,6 +299,8 @@ export const Ati = () => {
                   </p>
                 </Container>
               </div>
+
+              {/* Enquiry Form */}
               <EnquiryForm
                 title="ATI : Andheen Trading and Investment Services"
                 setShowToast={setShowToast}

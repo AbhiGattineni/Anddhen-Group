@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { StatusCalendar } from 'src/components/templates/StatusCalender';
 import { auth } from '../../../services/Authentication/firebase';
 import { useStatusCalendar } from 'src/react-query/useStatusCalender';
@@ -64,9 +64,11 @@ export const EmployeeDashboard = () => {
 
   const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
-  const formattedData = statusUpdates
-    ? statusUpdates?.status_updates?.map(item => [item.date, item.leave])
-    : [];
+  const formattedData = useMemo(
+    () =>
+      statusUpdates ? statusUpdates?.status_updates?.map(item => [item.date, item.leave]) : [],
+    [statusUpdates]
+  );
 
   const currentRole = localStorage.getItem('roles');
   const current_roles = currentRole?.split(',');
@@ -135,8 +137,6 @@ export const EmployeeDashboard = () => {
     if (statusUpdates?.has_submitted_happiness_today !== undefined) {
       statusUpdates['has_submitted_happiness_today'] = true;
     }
-
-    // Detect user's timezone
     try {
       const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       setUserTimezone(detectedTimezone || 'UTC');
@@ -144,13 +144,13 @@ export const EmployeeDashboard = () => {
       console.error('Could not detect timezone:', e);
       setUserTimezone('UTC');
     }
-  }, []);
+  }, [statusUpdates]);
 
   useEffect(() => {
     if (searchedPlates !== filteredPlates) {
       setSearchedPlates(filteredPlates);
     }
-  }, []);
+  }, [filteredPlates, searchedPlates]);
 
   const handleSearch = e => {
     const query = e.target.value.toLowerCase();
@@ -168,20 +168,20 @@ export const EmployeeDashboard = () => {
     setDisableInputs(false);
   };
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setFormValues({
       ...initialFormState,
       date: formatDate(selectedAcsStatusDate),
       user_id: auth.currentUser.uid,
       user_name: auth.currentUser.displayName,
     });
-  };
+  }, [selectedAcsStatusDate]);
 
   useEffect(() => {
     if (auth.currentUser && auth.currentUser.displayName) {
       resetForm();
     }
-  }, [auth.currentUser]);
+  }, [auth.currentUser, resetForm]);
 
   const formatDate = date => {
     if (!date) return '';
@@ -243,7 +243,6 @@ export const EmployeeDashboard = () => {
         status => formattedSelectedDate === status.date
       );
       setUserSubsidaries(filteredStatuses);
-      // Check if selected subsidiary is multi-status
       const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
       const isMultiStatus =
         selectedSubsidiaryObj?.parttimer_multi_status === true ||
@@ -257,7 +256,12 @@ export const EmployeeDashboard = () => {
         setDisableInputs(true);
       }
     }
-  }, [selectedAcsStatusDate, statusUpdates?.status_updates]);
+  }, [
+    selectedAcsStatusDate,
+    statusUpdates?.status_updates,
+    resetForm,
+    formValues.selectedSubsidiaryObj,
+  ]);
 
   const handleChange = e => {
     const { name, value } = e.target;

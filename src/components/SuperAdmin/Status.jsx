@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   AppBar,
   Toolbar,
   Typography,
-  MenuItem,
-  Select,
   Box,
   Grid,
   Paper,
@@ -25,6 +23,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import ReactSelectDropdown from 'src/components/atoms/Search/ReactSelectDropdown';
 import { StatusCalendar } from '../templates/StatusCalender';
 import { useFetchData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
@@ -48,7 +47,7 @@ const SubsidiaryManagement = () => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   // Fetch subsidiaries
-  const fetchSubsidiaries = async () => {
+  const fetchSubsidiaries = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/subsidiaries/`);
@@ -62,11 +61,11 @@ const SubsidiaryManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE_URL]);
 
   useEffect(() => {
     fetchSubsidiaries();
-  }, []);
+  }, [fetchSubsidiaries]);
 
   // Add/Edit subsidiary
   const handleSubmit = async () => {
@@ -292,30 +291,33 @@ const EmployeeStatus = () => {
     setEmployees(employeeData);
   }, [employeeData]);
 
+  const runGetAllStatus = useCallback(() => {
+    if (!empId) return;
+    getAllStatus(
+      { user_id: empId },
+      {
+        onSuccess: response => {
+          const newStatuses = response.reduce((acc, item) => {
+            const { user_id, date, ...userStatus } = item;
+            if (!acc[user_id]) {
+              acc[user_id] = [];
+            }
+            acc[user_id].push({ date, userStatus });
+            return acc;
+          }, {});
+          setAllStatuses(newStatuses);
+          queryClient.invalidateQueries('status');
+        },
+        onError: error => {
+          setAllStatuses({});
+        },
+      }
+    );
+  }, [empId, getAllStatus, queryClient]);
+
   useEffect(() => {
-    if (empId) {
-      getAllStatus(
-        { user_id: empId },
-        {
-          onSuccess: response => {
-            const newStatuses = response.reduce((acc, item) => {
-              const { user_id, date, ...userStatus } = item;
-              if (!acc[user_id]) {
-                acc[user_id] = [];
-              }
-              acc[user_id].push({ date, userStatus });
-              return acc;
-            }, {});
-            setAllStatuses(newStatuses);
-            queryClient.invalidateQueries('status');
-          },
-          onError: error => {
-            setAllStatuses({});
-          },
-        }
-      );
-    }
-  }, [empId]);
+    runGetAllStatus();
+  }, [runGetAllStatus]);
 
   useEffect(() => {
     if (empId && allStatuses[empId]) {
@@ -323,10 +325,25 @@ const EmployeeStatus = () => {
     }
   }, [allStatuses, empId]);
 
-  const handleEmployeeChange = event => {
-    const selectedEmpId = event.target.value;
-    const selectedEmpName = employees?.find(emp => emp.user_id === selectedEmpId)?.user_name;
+  // removed unused handleEmployeeChange (replaced by handleEmployeeSelect)
 
+  const employeeOptions = React.useMemo(() => {
+    const seen = new Set();
+    return (employees || [])
+      .map(e => ({ value: e.user_id, label: e.user_name }))
+      .filter(opt => {
+        const key = `${opt.value}:${opt.label}`;
+        if (!opt.label || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [employees]);
+
+  const handleEmployeeSelect = value => {
+    const selectedEmpId = value || '';
+    const selected = employeeOptions.find(o => o.value === selectedEmpId);
+    const selectedEmpName = selected?.label || '';
     setEmpId(selectedEmpId);
     setEmpName(selectedEmpName);
     setSingleStatus('');
@@ -346,21 +363,15 @@ const EmployeeStatus = () => {
         }}
       >
         <Toolbar>
-          <Select
-            value={empId}
-            onChange={handleEmployeeChange}
-            displayEmpty
-            sx={{ marginLeft: 2, color: 'black' }}
-          >
-            <MenuItem value="">
-              <em>Select an Employee</em>
-            </MenuItem>
-            {employees?.map(employee => (
-              <MenuItem key={employee.user_id} value={employee.user_id}>
-                {employee.user_name}
-              </MenuItem>
-            ))}
-          </Select>
+          <div style={{ width: 320 }}>
+            <ReactSelectDropdown
+              options={employeeOptions}
+              value={empId}
+              onChange={handleEmployeeSelect}
+              placeholder="Select an Employee"
+              variant="mui"
+            />
+          </div>
         </Toolbar>
 
         {empId.length === 0 ? (
