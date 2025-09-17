@@ -23,7 +23,7 @@ import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
 const initialFormState = {
   user_id: auth?.currentUser?.uid || '',
-  user_name: auth?.currentUser?.displayName || '',
+  user_name: '',
   subsidary: '',
   date: '',
   endDate: '',
@@ -61,7 +61,13 @@ const initialFormState = {
 
 export const EmployeeDashboard = () => {
   const empName = '';
-  const [formValues, setFormValues] = useState(initialFormState);
+  // Use full name from API if available, else fallback to displayName
+  const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid);
+  const fullName = statusUpdates?.user_name || auth?.currentUser?.displayName || '';
+  const [formValues, setFormValues] = useState({
+    ...initialFormState,
+    user_name: fullName,
+  });
   const [msgResponse, setMsgResponse] = useState(null);
   const [disableInputs, setDisableInputs] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -76,8 +82,6 @@ export const EmployeeDashboard = () => {
 
   // Calendar state management - NEW
   const [calendarSelectedDate, setCalendarSelectedDate] = useState(new Date());
-
-  const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
 
   // Handle calendar date changes and update global store - NEW
@@ -315,7 +319,7 @@ export const EmployeeDashboard = () => {
       ...initialFormState,
       date: getCurrentAvailableDate(),
       user_id: auth.currentUser.uid,
-      user_name: auth.currentUser.displayName,
+      user_name: statusUpdates?.user_name || auth.currentUser.displayName || '',
     });
     setFieldErrors({});
     setMsgResponse(null);
@@ -380,6 +384,11 @@ export const EmployeeDashboard = () => {
   }
 
   useEffect(() => {
+    // Always set user_name from API if available
+    setFormValues(prev => ({
+      ...prev,
+      user_name: statusUpdates?.user_name || auth?.currentUser?.displayName || '',
+    }));
     resetForm();
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
@@ -410,7 +419,7 @@ export const EmployeeDashboard = () => {
         setDisableInputs(true);
       }
     }
-  }, [selectedAcsStatusDate, statusUpdates?.status_updates]);
+  }, [selectedAcsStatusDate, statusUpdates?.status_updates, statusUpdates?.user_name]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -454,7 +463,7 @@ export const EmployeeDashboard = () => {
             ...initialFormState,
             subsidary: value,
             date: formatDate(selectedAcsStatusDate),
-            user_name: auth.currentUser.displayName,
+            user_name: statusUpdates?.user_name || auth.currentUser.displayName || '',
             user_id: auth.currentUser.uid,
             selectedSubsidiaryObj,
             ACS: { ...initialFormState.ACS, whatsappId: '' },
