@@ -371,12 +371,48 @@ const EmployeeStatus = () => {
       const day = String(inputDate.getDate()).padStart(2, '0');
       const formattedDate = `${year}-${month}-${day}`;
       setSelectedDate(formattedDate);
-      const status = data?.status_updates?.filter(item => item.date === formattedDate);
-      if (status.length > 0) {
-        setSingleStatus(status);
-      } else {
-        setSingleStatus([]);
-      }
+
+      // Get user roles
+      const currentRole = localStorage.getItem('roles');
+      const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+      const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+
+      // Get user's allowed subsidiaries
+      const userSubsidiaries = userRoles
+        .filter(role => role.startsWith('status_subsidiary_'))
+        .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+
+      // Filter statuses for the selected date
+      const dateStatuses = data?.status_updates?.filter(item => item.date === formattedDate) || [];
+
+      // Apply subsidiary access filtering
+      const filteredStatuses = dateStatuses.filter(item => {
+        // If user is superadmin, show all
+        if (userRoles.includes('superadmin')) {
+          return true;
+        }
+
+        // If user has only status role without subsidiary roles, show all
+        if (userRoles.includes('status') && !hasSubsidiaryRoles) {
+          return true;
+        }
+
+        // Get subsidiary from status
+        const subsidiary = item.subsidiary || item.subsidary || '';
+
+        // If user has subsidiary roles, only show matching subsidiaries
+        if (hasSubsidiaryRoles) {
+          // If no subsidiary specified and user has subsidiary roles, don't show
+          if (!subsidiary) {
+            return false;
+          }
+          return userSubsidiaries.includes(subsidiary.toUpperCase());
+        }
+
+        return false;
+      });
+
+      setSingleStatus(filteredStatuses);
     }
   }, [selectedAcsStatusDate, data]);
 
@@ -388,6 +424,46 @@ const EmployeeStatus = () => {
     setEmployees(employeeData);
   }, [employeeData]);
 
+  // Function to filter status updates based on subsidiary access
+  const filterStatusByAccess = statusData => {
+    const currentRole = localStorage.getItem('roles');
+    const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+
+    // If user is superadmin, show all
+    if (userRoles.includes('superadmin')) {
+      return statusData;
+    }
+
+    // Check if user has any subsidiary-specific access
+    const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+
+    // If user has status role but no subsidiary roles, show all
+    if (userRoles.includes('status') && !hasSubsidiaryRoles) {
+      return statusData;
+    }
+
+    // Get the subsidiaries user has access to
+    const userSubsidiaries = userRoles
+      .filter(role => role.startsWith('status_subsidiary_'))
+      .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+
+    return statusData.filter(item => {
+      // Extract subsidiary from status data
+      const subsidiary =
+        item.subsidiary ||
+        item.userStatus?.subsidiary ||
+        item.subsidary ||
+        item.userStatus?.subsidary; // Handle both spellings
+
+      // If no subsidiary info and user has any subsidiary access, deny
+      if (!subsidiary && userSubsidiaries.length > 0) {
+        return false;
+      }
+
+      return userSubsidiaries.includes(subsidiary?.toUpperCase());
+    });
+  };
+
   useEffect(() => {
     if (empId) {
       setIsLoadingStatuses(true);
@@ -395,7 +471,10 @@ const EmployeeStatus = () => {
         { user_id: empId },
         {
           onSuccess: response => {
-            const newStatuses = response.reduce((acc, item) => {
+            // Filter response based on user's subsidiary access
+            const filteredResponse = filterStatusByAccess(response);
+
+            const newStatuses = filteredResponse.reduce((acc, item) => {
               const { user_id, date, ...userStatus } = item;
               if (!acc[user_id]) {
                 acc[user_id] = [];
@@ -403,11 +482,13 @@ const EmployeeStatus = () => {
               acc[user_id].push({ date, userStatus });
               return acc;
             }, {});
+
             setAllStatuses(newStatuses);
             queryClient.invalidateQueries('status');
             setIsLoadingStatuses(false);
           },
           onError: error => {
+            console.error('Error fetching statuses:', error);
             setAllStatuses({});
             setIsLoadingStatuses(false);
           },
@@ -415,7 +496,6 @@ const EmployeeStatus = () => {
       );
     }
   }, [empId, getAllStatus, queryClient]);
-
   useEffect(() => {
     if (empId && allStatuses[empId]) {
       setFormattedData(allStatuses[empId]);
@@ -667,63 +747,74 @@ const EmployeeStatus = () => {
                 <div className="overflow-auto">
                   {isLoadingCalendarData ? (
                     <LoadingSpinner text="Loading status data..." />
-                  ) : Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
-                    singleStatus?.map((status, statusIndex) => {
-                      const filteredEntries = Object.entries(status)?.filter(
-                        ([key, value]) =>
-                          value !== '' &&
-                          value !== '0.00' &&
-                          value !== 0 &&
-                          value !== '0' &&
-                          value !== null &&
-                          key !== 'id' &&
-                          key !== 'user_id' &&
-                          key !== 'user_name'
-                      );
+                  ) : Array.isArray(data?.status_updates) &&
+                    data.status_updates.some(item => item.date === selectedDate) ? (
+                    Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
+                      singleStatus?.map((status, statusIndex) => {
+                        const filteredEntries = Object.entries(status)?.filter(
+                          ([key, value]) =>
+                            value !== '' &&
+                            value !== '0.00' &&
+                            value !== 0 &&
+                            value !== '0' &&
+                            value !== null &&
+                            key !== 'id' &&
+                            key !== 'user_id' &&
+                            key !== 'user_name'
+                        );
 
-                      // Remove duplicates based on key
-                      const uniqueEntries = filteredEntries?.reduce((acc, [key, value]) => {
-                        const existingIndex = acc.findIndex(([existingKey]) => existingKey === key);
-                        if (existingIndex === -1) {
-                          acc.push([key, value]);
-                        }
-                        return acc;
-                      }, []);
+                        // Remove duplicates based on key
+                        const uniqueEntries = filteredEntries?.reduce((acc, [key, value]) => {
+                          const existingIndex = acc.findIndex(
+                            ([existingKey]) => existingKey === key
+                          );
+                          if (existingIndex === -1) {
+                            acc.push([key, value]);
+                          }
+                          return acc;
+                        }, []);
 
-                      return (
-                        <div key={statusIndex}>
-                          {uniqueEntries?.map(([key, value], index) => (
-                            <div key={index} className="py-2 border-bottom">
-                              <div className="d-flex flex-column">
-                                <strong className="text-capitalize fs-6 text-break mb-1">
-                                  {key}:
-                                </strong>
-                                <div className="text-break fs-6">
-                                  {key === 'leave' ? (
-                                    value ? (
-                                      'Yes'
+                        return (
+                          <div key={statusIndex}>
+                            {uniqueEntries?.map(([key, value], index) => (
+                              <div key={index} className="py-2 border-bottom">
+                                <div className="d-flex flex-column">
+                                  <strong className="text-capitalize fs-6 text-break mb-1">
+                                    {key}:
+                                  </strong>
+                                  <div className="text-break fs-6">
+                                    {key === 'leave' ? (
+                                      value ? (
+                                        'Yes'
+                                      ) : (
+                                        'No'
+                                      )
+                                    ) : key === 'ticket_link' || key === 'github_link' ? (
+                                      <a
+                                        href={value}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary text-decoration-none"
+                                      >
+                                        {value}
+                                      </a>
                                     ) : (
-                                      'No'
-                                    )
-                                  ) : key === 'ticket_link' || key === 'github_link' ? (
-                                    <a
-                                      href={value}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-primary text-decoration-none"
-                                    >
-                                      {value}
-                                    </a>
-                                  ) : (
-                                    value
-                                  )}
+                                      value
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })
+                            ))}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="alert alert-warning" role="alert">
+                        <i className="bi bi-exclamation-triangle me-2"></i>
+                        You don`t have permission to view this status due to subsidiary
+                        restrictions.
+                      </div>
+                    )
                   ) : (
                     <p className="text-muted fs-6">Select a date to see status</p>
                   )}
