@@ -46,6 +46,13 @@ export const Transaction = () => {
     isLoading,
   } = useQuery('transactions', fetchTransactions);
 
+  const sortedTransactions = useMemo(() => {
+    if (!transactions || transactions.length === 0) return [];
+    return [...transactions].sort((a, b) => {
+      return new Date(b.transaction_datetime) - new Date(a.transaction_datetime);
+    });
+  }, [transactions]);
+
   const handleEdit = transaction => {
     if (transaction) {
       setEditTransaction(transaction);
@@ -226,7 +233,7 @@ export const Transaction = () => {
   } = useTable(
     {
       columns,
-      data: filteredTransactions || transactions, // Use filtered data if available
+      data: filteredTransactions || sortedTransactions, // Use filtered data if available, otherwise sorted data
     },
     useGlobalFilter,
     useSortBy,
@@ -283,7 +290,7 @@ export const Transaction = () => {
     setSelectedPaymentType('');
     setSelectedSubsidiary('');
     setSelectedCurrency('');
-    setFilteredTransactions(transactions); // reset to full list
+    setFilteredTransactions(sortedTransactions); // reset to full list, maintaining sort order
   };
 
   return (
@@ -297,15 +304,23 @@ export const Transaction = () => {
         <nav className="navbar navbar-light bg-light rounded-top flex-column">
           <div className="container-fluid w-100 px-3 py-2 d-flex justify-content-between align-items-center">
             <h5 className="m-0">Transactions</h5>
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={() => setShowFilters(!showFilters)}
-              aria-expanded={showFilters}
-              aria-controls="filterCollapse"
-            >
-              {showFilters ? 'Hide Filters' : 'Show Filters'}
-            </button>
+            <div className="d-flex align-items-center gap-3">
+              <span className="fs-5">
+                <strong>Total:</strong>{' '}
+                <span className={`${total < 0 ? 'text-danger' : 'text-success'} fw-bold`}>
+                  ₹ {total}
+                </span>
+              </span>
+              <button
+                className="btn btn-primary"
+                type="button"
+                onClick={() => setShowFilters(!showFilters)}
+                aria-expanded={showFilters}
+                aria-controls="filterCollapse"
+              >
+                {showFilters ? 'Hide Filters' : 'Show Filters'}
+              </button>
+            </div>
           </div>
 
           <div className={`collapse w-100 ${showFilters ? 'show' : ''}`} id="filterCollapse">
@@ -426,14 +441,6 @@ export const Transaction = () => {
                   <button className="btn btn-outline-secondary w-100" onClick={handleResetData}>
                     Reset
                   </button>
-                </div>
-
-                {/* Total */}
-                <div className="col-12 text-end mt-3">
-                  <span className="fs-5">
-                    <strong>Total:</strong>{' '}
-                    <span className={total < 0 ? 'text-danger' : ''}>₹ {total}</span>
-                  </span>
                 </div>
               </div>
             </Paper>
