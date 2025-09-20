@@ -13,6 +13,8 @@ import {
   Grid,
   IconButton,
   Divider,
+  Tooltip,
+  Chip,
 } from '@mui/material';
 import { Edit, Save, Cancel } from '@mui/icons-material';
 import PropTypes from 'prop-types';
@@ -24,6 +26,36 @@ const StatusTable = ({
   updateMutation,
   subsidaryOptions,
 }) => {
+  // Helper: Only allow editing for currently available (today) records until cutoff
+  const isDateEditable = dateString => {
+    if (!dateString) return false;
+    const getCurrentAvailableDate = () => {
+      const now = new Date();
+      const currentUTCDate = new Date();
+      const utcYear = currentUTCDate.getUTCFullYear();
+      const utcMonth = currentUTCDate.getUTCMonth();
+      const utcDay = currentUTCDate.getUTCDate();
+      // 03:30 AM UTC next day is cutoff
+      const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1, 3, 30, 0, 0));
+      if (now < cutoffTimeUTC) {
+        return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
+      } else {
+        const tomorrowUTCDate = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1));
+        const tomorrowYear = tomorrowUTCDate.getUTCFullYear();
+        const tomorrowMonth = tomorrowUTCDate.getUTCMonth();
+        const tomorrowDay = tomorrowUTCDate.getUTCDate();
+        return `${tomorrowYear}-${String(tomorrowMonth + 1).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`;
+      }
+    };
+    const currentAvailableDate = getCurrentAvailableDate();
+    if (dateString !== currentAvailableDate) return false;
+    const now = new Date();
+    const cutoffTime = new Date(now);
+    cutoffTime.setDate(cutoffTime.getDate() + 1);
+    cutoffTime.setUTCHours(3, 30, 0, 0);
+    return now <= cutoffTime;
+  };
+
   const [editRowId, setEditRowId] = useState(null);
   const [editData, setEditData] = useState({});
   const [filters, setFilters] = useState({
@@ -33,9 +65,20 @@ const StatusTable = ({
   });
   const [msg, setMsg] = useState('');
 
-  // Filtering logic
+  // Sort records by date descending (latest at top)
+  const sortedStatusUpdates = useMemo(() => {
+    return [...statusUpdates].sort((a, b) => {
+      if (a.date && b.date) return new Date(b.date) - new Date(a.date);
+      // Fallback by id if needed
+      const aId = a._id || a.id || '';
+      const bId = b._id || b.id || '';
+      return bId > aId ? 1 : -1;
+    });
+  }, [statusUpdates]);
+
+  // Filtering
   const filteredData = useMemo(() => {
-    return statusUpdates.filter(row => {
+    return sortedStatusUpdates.filter(row => {
       const rowDate = new Date(row.date);
       const start = filters.startDate ? new Date(filters.startDate) : null;
       const end = filters.endDate ? new Date(filters.endDate) : null;
@@ -43,12 +86,11 @@ const StatusTable = ({
       const dateMatch = (!start || rowDate >= start) && (!end || rowDate <= end);
       return subsidaryMatch && dateMatch;
     });
-  }, [statusUpdates, filters]);
+  }, [sortedStatusUpdates, filters]);
 
-  // Columns to show (dynamic for extra fields)
+  // Dynamic columns logic
   const baseColumns = ['date', 'subsidary', 'leave', 'description'];
   const alwaysExclude = ['id', 'user_id', 'user_name'];
-  // Helper to check if a column has any visible value
   const getDisplayValue = val => {
     if (
       val === null ||
@@ -62,27 +104,27 @@ const StatusTable = ({
       return '';
     return val;
   };
-  // Compute all possible columns except always excluded
   const allKeys = useMemo(() => {
     const keys = new Set();
     statusUpdates.forEach(row => Object.keys(row).forEach(k => keys.add(k)));
     alwaysExclude.forEach(k => keys.delete(k));
     return Array.from(keys);
   }, [statusUpdates]);
-  // Only show columns that have at least one non-empty value
   const visibleColumns = useMemo(() => {
     return allKeys.filter(col => statusUpdates.some(row => getDisplayValue(row[col]) !== ''));
   }, [allKeys, statusUpdates]);
-  // Only show base columns if they are present and not excluded, and have at least one value
   const shownBaseColumns = baseColumns.filter(
     col =>
       !alwaysExclude.includes(col) && statusUpdates.some(row => getDisplayValue(row[col]) !== '')
   );
-  // Extra columns are visibleColumns minus shownBaseColumns
   const extraColumns = visibleColumns.filter(col => !shownBaseColumns.includes(col));
 
-  // Handlers
+  // Edit handlers
   const handleEdit = row => {
+    if (!isDateEditable(row.date)) {
+      setMsg("Cannot edit this record. Only today's records can be edited until 9 AM tomorrow.");
+      return;
+    }
     setEditRowId(row.id || row._id || row.date + row.subsidary);
     setEditData({ ...row });
     setMsg('');
@@ -93,6 +135,7 @@ const StatusTable = ({
     setMsg('');
   };
   const handleChange = (e, field) => {
+    if (field === 'subsidary') return;
     setEditData(prev => ({ ...prev, [field]: e.target.value }));
   };
   const handleSave = async () => {
@@ -105,9 +148,17 @@ const StatusTable = ({
     }
   };
 
-  // Format date for display
   const formatDate = dateString => {
     if (!dateString) return '';
+    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    }
     return new Date(dateString).toLocaleString('en-US', {
       timeZone: userTimezone,
       year: 'numeric',
@@ -118,21 +169,22 @@ const StatusTable = ({
 
   return (
     <Paper
-      elevation={4}
+      elevation={5}
       sx={{
         borderRadius: 4,
         p: { xs: 2, md: 4 },
         my: 2,
-        background: 'linear-gradient(135deg, #f8fafc 60%, #e3f0ff 100%)',
+        background: 'linear-gradient(135deg, #eef4fd 60%, #e3f0ff 100%)',
+        boxShadow: 3,
       }}
     >
       <Box
         sx={{
-          background: 'rgba(255,255,255,0.85)',
+          background: 'rgba(255,255,255,0.92)',
           borderRadius: 3,
           p: 2,
           mb: 3,
-          boxShadow: 2,
+          boxShadow: 1,
           display: 'flex',
           flexWrap: 'wrap',
           gap: 2,
@@ -201,8 +253,29 @@ const StatusTable = ({
       </Box>
       <Divider sx={{ my: 2, borderColor: '#e0e7ef' }} />
       {msg && <Box sx={{ mb: 2, color: 'green', fontWeight: 500 }}>{msg}</Box>}
-      <TableContainer component={Box} sx={{ borderRadius: 3, boxShadow: 2, background: 'white' }}>
-        <Table size="small" sx={{ borderRadius: 3, overflow: 'hidden' }}>
+
+      {/* Table Panel with Scrollbar and sticky header */}
+      <TableContainer
+        component={Box}
+        sx={{
+          borderRadius: 3,
+          boxShadow: 2,
+          background: 'white',
+          maxHeight: 470,
+          overflowX: 'auto',
+          overflowY: 'auto',
+          '&::-webkit-scrollbar': {
+            width: 8,
+            height: 10,
+            background: '#f5f5fa',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#c1c7d0',
+            borderRadius: 8,
+          },
+        }}
+      >
+        <Table size="small" stickyHeader>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
               {shownBaseColumns.map(col => (
@@ -218,6 +291,8 @@ const StatusTable = ({
                       extraColumns.length === 0
                         ? 12
                         : 0,
+                    background: '#e5ebf5',
+                    borderBottom: '2px solid #d0d7e5',
                   }}
                 >
                   {col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
@@ -226,7 +301,13 @@ const StatusTable = ({
               {extraColumns.map(col => (
                 <TableCell
                   key={col}
-                  sx={{ fontWeight: 'bold', color: '#333', fontSize: '1.08rem' }}
+                  sx={{
+                    fontWeight: 'bold',
+                    color: '#333',
+                    fontSize: '1.08rem',
+                    background: '#e5ebf5',
+                    borderBottom: '2px solid #d0d7e5',
+                  }}
                 >
                   {col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                 </TableCell>
@@ -237,9 +318,14 @@ const StatusTable = ({
                   color: '#333',
                   fontSize: '1.08rem',
                   borderTopRightRadius: 12,
+                  background: '#e5ebf5',
+                  borderBottom: '2px solid #d0d7e5',
                 }}
               >
                 Actions
+                <Box sx={{ fontSize: '0.75rem', color: '#666', fontWeight: 'normal' }}>
+                  (Edit: Today only until 9 AM tomorrow)
+                </Box>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -257,8 +343,9 @@ const StatusTable = ({
             )}
             {filteredData.map((row, idx) => {
               const rowId = row.id || row._id || row.date + row.subsidary;
-              const editable = isUpdateAllowed(row.date);
+              const editable = isDateEditable(row.date);
               const isEditing = editRowId === rowId;
+
               return (
                 <TableRow
                   key={rowId}
@@ -266,9 +353,10 @@ const StatusTable = ({
                     backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#e3f0ff',
                     '&:hover': {
                       backgroundColor: '#e0e7ef',
-                      boxShadow: 2,
-                      borderLeft: '4px solid #1976d2',
+                      boxShadow: 1,
+                      borderLeft: editable ? '4px solid #4caf50' : '4px solid #1976d2',
                     },
+                    borderLeft: editable ? '2px solid #4caf50' : '2px solid transparent',
                     transition: 'background 0.2s, box-shadow 0.2s',
                   }}
                 >
@@ -280,17 +368,17 @@ const StatusTable = ({
                       {isEditing && col === 'subsidary' ? (
                         <TextField
                           value={editData.subsidary}
-                          onChange={e => handleChange(e, 'subsidary')}
-                          select
+                          disabled
                           size="small"
-                          sx={{ borderRadius: 2, background: '#f5faff' }}
-                        >
-                          {subsidaryOptions.map(opt => (
-                            <MenuItem key={opt} value={opt}>
-                              {opt}
-                            </MenuItem>
-                          ))}
-                        </TextField>
+                          sx={{
+                            borderRadius: 2,
+                            background: '#f5f5f5',
+                            '& .MuiInputBase-input': {
+                              color: '#666',
+                              fontStyle: 'italic',
+                            },
+                          }}
+                        />
                       ) : isEditing && col === 'leave' ? (
                         <TextField
                           value={editData.leave}
@@ -318,7 +406,17 @@ const StatusTable = ({
                           ''
                         )
                       ) : col === 'date' ? (
-                        formatDate(row.date)
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {formatDate(row.date)}
+                          {editable && (
+                            <Chip
+                              label="Editable"
+                              size="small"
+                              color="success"
+                              sx={{ fontSize: '0.6rem', height: '16px' }}
+                            />
+                          )}
+                        </Box>
                       ) : (
                         getDisplayValue(row[col])
                       )}
@@ -349,19 +447,44 @@ const StatusTable = ({
                         </IconButton>
                       </>
                     ) : (
-                      <IconButton
-                        onClick={() => editable && handleEdit(row)}
-                        color="primary"
-                        size="small"
-                        disabled={!editable}
-                        sx={{
-                          borderRadius: 2,
-                          background: editable ? '#e3f0ff' : '#f5faff',
-                          '&:hover': { background: '#1976d2', color: 'white' },
-                        }}
+                      <Tooltip
+                        title={
+                          editable
+                            ? 'Edit this record'
+                            : "Cannot edit. Only today's records can be edited until 9 AM tomorrow."
+                        }
+                        arrow
                       >
-                        <Edit />
-                      </IconButton>
+                        <span>
+                          <IconButton
+                            onClick={() => {
+                              if (editable) {
+                                handleEdit(row);
+                              } else {
+                                setMsg(
+                                  "Cannot edit. Only today's records can be edited until 9 AM tomorrow."
+                                );
+                              }
+                            }}
+                            color="primary"
+                            size="small"
+                            disabled={!editable}
+                            sx={{
+                              borderRadius: 2,
+                              background: editable ? '#e3f0ff' : '#f5faff',
+                              '&:hover': {
+                                background: editable ? '#1976d2' : '#f5faff',
+                                color: editable ? 'white' : 'inherit',
+                              },
+                              opacity: editable ? 1 : 0.3,
+                              cursor: editable ? 'pointer' : 'not-allowed',
+                              pointerEvents: editable ? 'auto' : 'none',
+                            }}
+                          >
+                            <Edit />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
                     )}
                   </TableCell>
                 </TableRow>

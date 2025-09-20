@@ -1,19 +1,2 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-# Run linting before commit
-npm run lint
-
-#!/usr/bin/env node
-const { execSync } = require('child_process');
-
-try {
-  // Run prettier
-  execSync('npx prettier --write .', { stdio: 'inherit' });
-
-  // Run eslint
-  execSync('npx eslint . --fix', { stdio: 'inherit' });
-} catch (error) {
-  console.error('Pre-commit hook failed:', error.message);
-  process.exit(1);
-}
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"

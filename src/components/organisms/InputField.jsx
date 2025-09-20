@@ -8,6 +8,7 @@ const InputField = ({ value, ...props }) => {
   const linkRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/;
   const scoreRegex = /^\d{1,3}(?:\.\d*)?$/;
   const ref = useRef(null);
+
   const linkFields = [
     'website_link',
     'international_UG_link',
@@ -32,6 +33,7 @@ const InputField = ({ value, ...props }) => {
     'graduation_courses_link',
     'link',
   ];
+
   const scoreFields = [
     'score',
     'toefl_UG_score',
@@ -40,6 +42,7 @@ const InputField = ({ value, ...props }) => {
     'ielts_graduation_score',
     'gre_score',
   ];
+
   const inputFields = [
     'score',
     'website_link',
@@ -99,7 +102,8 @@ const InputField = ({ value, ...props }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (inputFields.includes(props.name) && !value) {
+    // Skip required field check if notRequired is true
+    if (!props.notRequired && inputFields.includes(props.name) && (!value || value.trim() === '')) {
       return 'This field should not be empty';
     }
 
@@ -114,12 +118,14 @@ const InputField = ({ value, ...props }) => {
         'receiver_name',
         'sender_name',
       ].includes(props.name) &&
+      value &&
       value.length <= 3
     ) {
       return `${props.label} should be more than 3 characters`;
     }
 
     if (
+      value &&
       ['email', 'international_person_email', 'college_email'].includes(props.name) &&
       !emailPattern.test(value)
     ) {
@@ -135,13 +141,14 @@ const InputField = ({ value, ...props }) => {
     }
 
     if (
+      value &&
       ['phone', 'college_phone', 'phone_number'].includes(props.name) &&
       !phonePattern.test(value)
     ) {
       return 'Enter valid phone number';
     }
 
-    if (props.name === 'phone_number' && value.length !== 10) {
+    if (props.name === 'phone_number' && value && value.length !== 10) {
       return 'Enter 10 digit phone number';
     }
 
@@ -152,11 +159,11 @@ const InputField = ({ value, ...props }) => {
       return 'Enter valid year';
     }
 
-    if (linkFields.includes(props.name) && !linkRegex.test(value)) {
+    if (linkFields.includes(props.name) && value && !linkRegex.test(value)) {
       return 'Link should include with http/https';
     }
 
-    if (scoreFields.includes(props.name) && !scoreRegex.test(value)) {
+    if (scoreFields.includes(props.name) && value && !scoreRegex.test(value)) {
       return 'Score should not be greater that 3 digits';
     }
 
@@ -164,15 +171,15 @@ const InputField = ({ value, ...props }) => {
       return 'Fee should be valid';
     }
 
-    if (['date'].includes(props.name) && new Date(value) > today) {
+    if (['date'].includes(props.name) && value && new Date(value) > today) {
       return 'Date cannot be in the future';
     }
 
-    if (['transaction_datetime'].includes(props.name) && new Date(value) > new Date()) {
+    if (['transaction_datetime'].includes(props.name) && value && new Date(value) > new Date()) {
       return 'DateTime cannot be in the future';
     }
 
-    if (props.name === 'year' && value.length !== 4) {
+    if (props.name === 'year' && value && value.length !== 4) {
       return 'Enter valid year';
     }
 

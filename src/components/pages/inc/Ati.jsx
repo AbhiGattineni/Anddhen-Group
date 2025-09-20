@@ -145,7 +145,7 @@ export const Ati = () => {
   };
 
   return (
-    <div className="section border-top">
+    <div className="section">
       <Routes>
         <Route path="/finance-data" element={<FinanceDataUpload />} />
         <Route
