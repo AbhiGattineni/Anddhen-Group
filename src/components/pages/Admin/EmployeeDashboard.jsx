@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { StatusCalendar } from 'src/components/templates/StatusCalender';
 import { auth } from '../../../services/Authentication/firebase';
 import { useStatusCalendar } from 'src/react-query/useStatusCalender';
@@ -301,7 +301,7 @@ export const EmployeeDashboard = () => {
     if (searchedPlates !== filteredPlates) {
       setSearchedPlates(filteredPlates);
     }
-  }, []);
+  }, [filteredPlates, searchedPlates]);
 
   const handleSearch = e => {
     const query = e.target.value.toLowerCase();
@@ -312,6 +312,11 @@ export const EmployeeDashboard = () => {
           plate.child.toLowerCase().includes(query) || plate.route.toLowerCase().includes(query)
       )
     );
+  };
+
+  const handleEdit = e => {
+    e.preventDefault();
+    setDisableInputs(false);
   };
 
   const resetForm = () => {
@@ -330,7 +335,7 @@ export const EmployeeDashboard = () => {
     if (auth.currentUser && auth.currentUser.displayName) {
       resetForm();
     }
-  }, [auth.currentUser]);
+  }, [auth.currentUser, resetForm]);
 
   const formatDate = date => {
     if (!date) return '';
@@ -405,7 +410,6 @@ export const EmployeeDashboard = () => {
         return statusDateString === formattedSelectedDate;
       });
       setUserSubsidaries(filteredStatuses);
-      // Check if selected subsidiary is multi-status
       const selectedSubsidiaryObj = formValues.selectedSubsidiaryObj;
       const isMultiStatus =
         selectedSubsidiaryObj?.parttimer_multi_status === true ||

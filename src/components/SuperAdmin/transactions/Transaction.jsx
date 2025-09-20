@@ -120,6 +120,16 @@ export const Transaction = () => {
     };
   }, [transactions]);
 
+  // Sort data by newest transaction date first (descending)
+  const baseData = filteredTransactions || transactions;
+  const sortedData = useMemo(() => {
+    const copy = Array.isArray(baseData) ? [...baseData] : [];
+    copy.sort(
+      (a, b) => new Date(b?.transaction_datetime || 0) - new Date(a?.transaction_datetime || 0)
+    );
+    return copy;
+  }, [baseData]);
+
   const columns = useMemo(
     () => [
       { Header: 'Sender', accessor: 'sender_name' },
@@ -185,8 +195,8 @@ export const Transaction = () => {
 
   const calculateRunningTotal = index => {
     let total = 0;
-    for (let i = 0; i <= index && i < transactions.length; i++) {
-      const transaction = transactions[i];
+    for (let i = 0; i <= index && i < sortedData.length; i++) {
+      const transaction = sortedData[i];
       if (transaction && transaction.transaction_type === 'credit') {
         total += parseFloat(transaction.credited_amount);
       } else if (transaction && transaction.transaction_type === 'debit') {
@@ -226,7 +236,7 @@ export const Transaction = () => {
   } = useTable(
     {
       columns,
-      data: filteredTransactions || transactions, // Use filtered data if available
+      data: sortedData, // Use sorted (newest first) data for rendering
     },
     useGlobalFilter,
     useSortBy,

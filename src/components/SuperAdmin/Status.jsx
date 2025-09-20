@@ -37,11 +37,11 @@ const SubsidiaryManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE_URL]);
 
   useEffect(() => {
     fetchSubsidiaries();
-  }, []);
+  }, [fetchSubsidiaries]);
 
   const handleSubmit = async () => {
     try {
