@@ -7,6 +7,8 @@ import { useStatusCalendar } from 'src/react-query/useStatusCalender';
 import useAuthStore from 'src/services/store/globalStore';
 import PropTypes from 'prop-types';
 
+import { useMemo } from 'react';
+
 // Subsidiary Management Component
 const SubsidiaryManagement = () => {
   const [subsidiaries, setSubsidiaries] = useState([]);
@@ -336,6 +338,7 @@ const EmployeeStatus = () => {
   const [singleStatus, setSingleStatus] = useState([]);
   const [allStatuses, setAllStatuses] = useState({});
   const [isLoadingStatuses, setIsLoadingStatuses] = useState(false);
+  const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
 
   // Calendar state management
@@ -351,11 +354,54 @@ const EmployeeStatus = () => {
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
 
   // Fetch data with loading states
-  const { data, isLoading: isLoadingCalendarData } = useStatusCalendar(empId);
-  const { data: employeeData = [], isLoading: isLoadingEmployees } = useFetchData(
-    'status',
-    '/get_status_ids'
-  );
+  const { data: calendarData, isLoading: isLoadingCalendarData } = useStatusCalendar(empId);
+
+  // Filter calendar data based on subsidiary permissions
+  const data = useMemo(() => {
+    if (!calendarData?.status_updates) return calendarData;
+
+    const currentRole = localStorage.getItem('roles');
+    const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+    const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+
+    // If user is superadmin or has no subsidiary restrictions, show all data
+    if (userRoles.includes('superadmin') || !hasSubsidiaryRoles) {
+      return calendarData;
+    }
+
+    // Get user's allowed subsidiaries
+    const userSubsidiaries = userRoles
+      .filter(role => role.startsWith('status_subsidiary_'))
+      .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+
+    // Filter status updates based on subsidiary access
+    return {
+      ...calendarData,
+      status_updates: calendarData.status_updates.filter(item => {
+        const subsidiary = item.subsidiary || item.subsidary;
+        return subsidiary && userSubsidiaries.includes(subsidiary.toUpperCase());
+      }),
+    };
+  }, [calendarData]);
+  const {
+    data: employeeData = [],
+    isLoading: isLoadingEmployees,
+    error: employeeError,
+  } = useFetchData('status', '/get_status_ids');
+
+  // Debug employee data
+  useEffect(() => {
+    console.log('Employee Data received:', employeeData);
+    console.log('Loading state:', isLoadingEmployees);
+  }, [employeeData, isLoadingEmployees]);
+
+  // Log any API errors
+  useEffect(() => {
+    if (employeeError) {
+      console.error('Error fetching employee data:', employeeError);
+      setError(employeeError);
+    }
+  }, [employeeError]);
   const { mutate: getAllStatus } = useAddData('status', '/get_status_update');
 
   // Handle calendar date changes and update global store
@@ -421,6 +467,40 @@ const EmployeeStatus = () => {
     : [];
 
   useEffect(() => {
+    console.log('Processing employee data:', employeeData);
+
+    // If still loading, don't process
+    if (isLoadingEmployees) return;
+
+    // Handle empty or invalid data
+    if (!employeeData || !Array.isArray(employeeData)) {
+      console.warn('Invalid or empty employee data:', employeeData);
+      setEmployees([]);
+      return;
+    }
+
+    // Get user roles
+    const currentRole = localStorage.getItem('roles');
+    console.log('Current roles:', currentRole);
+    const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+
+    // Check subsidiary access
+    const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+    console.log('Has subsidiary roles:', hasSubsidiaryRoles);
+
+    // If superadmin or no subsidiary restrictions, show all
+    if (userRoles.includes('superadmin') || !hasSubsidiaryRoles) {
+      console.log('Setting all employees (superadmin or no restrictions)');
+      setEmployees(employeeData);
+      return;
+    }
+
+    // Get allowed subsidiaries
+    const userSubsidiaries = userRoles
+      .filter(role => role.startsWith('status_subsidiary_'))
+      .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+    console.log('Allowed subsidiaries:', userSubsidiaries);
+
     setEmployees(employeeData);
   }, [employeeData]);
 
@@ -467,6 +547,7 @@ const EmployeeStatus = () => {
   useEffect(() => {
     if (empId) {
       setIsLoadingStatuses(true);
+      setError(null);
       getAllStatus(
         { user_id: empId },
         {
@@ -563,13 +644,24 @@ const EmployeeStatus = () => {
     const selectedEmpId = event.target.value;
     const selectedEmpName = employees?.find(emp => emp.user_id === selectedEmpId)?.user_name;
 
+    // Clear previous data
+    setFormattedData([]);
+    setAllStatuses({});
+    setSingleStatus([]);
+    setFilteredStatuses([]);
+
+    // Set new employee
     setEmpId(selectedEmpId);
     setEmpName(selectedEmpName);
-    setSingleStatus([]);
-    // Reset filters when employee changes
+
+    // Reset filters
     setLeaveFilter('all');
     setStartDateFilter('');
     setEndDateFilter('');
+
+    // Reset calendar
+    setCalendarSelectedDate(new Date());
+    setCurrentMonth(new Date());
   };
 
   const monthStats = calculateMonthStats(formattedCallenderData, currentMonth);
@@ -627,17 +719,30 @@ const EmployeeStatus = () => {
               ) : (
                 <select className="form-select" value={empId} onChange={handleEmployeeChange}>
                   <option value="">Choose an employee...</option>
-                  {employees?.map(employee => (
-                    <option key={employee.user_id} value={employee.user_id}>
-                      {employee.user_name}
+                  {Array.isArray(employees) && employees.length > 0 ? (
+                    employees.map(employee => (
+                      <option key={employee.user_id} value={employee.user_id}>
+                        {employee.user_name || 'Unnamed Employee'}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      {isLoadingEmployees ? 'Loading employees...' : 'No employees available'}
                     </option>
-                  ))}
+                  )}
                 </select>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          {error.message || 'An error occurred while fetching data'}
+        </div>
+      )}
 
       {empId.length === 0 ? (
         <div className="text-center py-4 py-md-5">
