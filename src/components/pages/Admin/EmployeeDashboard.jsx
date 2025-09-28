@@ -213,9 +213,21 @@ export const EmployeeDashboard = () => {
         return '';
 
       case 'description':
-        if (formValues.leave && !value?.trim()) return 'Description is required when taking leave';
-        if (formValues.subsidary === 'ASS' && !value?.trim())
+        // Check character limit first (highest priority)
+        if (value && value.length > 500) {
+          return 'Description must not exceed 500 characters';
+        }
+
+        // Check if description is required for leave
+        if (formValues.leave && !value?.trim()) {
+          return 'Description is required when taking leave';
+        }
+
+        // Check if description is required for ASS subsidiary
+        if (formValues.subsidary === 'ASS' && !value?.trim()) {
           return 'Description is required for ASS subsidiary';
+        }
+
         return '';
 
       default:
