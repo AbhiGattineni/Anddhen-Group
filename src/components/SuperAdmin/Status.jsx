@@ -389,12 +389,6 @@ const EmployeeStatus = () => {
     error: employeeError,
   } = useFetchData('status', '/get_status_ids');
 
-  // Debug employee data
-  useEffect(() => {
-    console.log('Employee Data received:', employeeData);
-    console.log('Loading state:', isLoadingEmployees);
-  }, [employeeData, isLoadingEmployees]);
-
   // Log any API errors
   useEffect(() => {
     if (employeeError) {
@@ -467,8 +461,6 @@ const EmployeeStatus = () => {
     : [];
 
   useEffect(() => {
-    console.log('Processing employee data:', employeeData);
-
     // If still loading, don't process
     if (isLoadingEmployees) return;
 
@@ -481,16 +473,13 @@ const EmployeeStatus = () => {
 
     // Get user roles
     const currentRole = localStorage.getItem('roles');
-    console.log('Current roles:', currentRole);
     const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
 
     // Check subsidiary access
     const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
-    console.log('Has subsidiary roles:', hasSubsidiaryRoles);
 
     // If superadmin or no subsidiary restrictions, show all
     if (userRoles.includes('superadmin') || !hasSubsidiaryRoles) {
-      console.log('Setting all employees (superadmin or no restrictions)');
       setEmployees(employeeData);
       return;
     }
@@ -579,7 +568,10 @@ const EmployeeStatus = () => {
   }, [empId, getAllStatus, queryClient]);
   useEffect(() => {
     if (empId && allStatuses[empId]) {
-      setFormattedData(allStatuses[empId]);
+      const sortedStatuses = [...allStatuses[empId]].sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+      });
+      setFormattedData(sortedStatuses);
     }
   }, [allStatuses, empId]);
 
