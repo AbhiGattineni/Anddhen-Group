@@ -8,6 +8,7 @@ import {
   Box,
   Grid,
   Button,
+  Pagination,
 } from '@mui/material';
 import { useFetchData } from '../../../react-query/useFetchApis';
 import StarIcon from '@mui/icons-material/Star';
@@ -19,10 +20,14 @@ const HappinessIndexList = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(9); // 9 items per page (3x3 grid)
+
   const filteredData = useMemo(() => {
     if (!data) return [];
 
-    return data.filter(({ full_name, date }) => {
+    const filtered = data.filter(({ full_name, date }) => {
       const normalizedName = (full_name || 'Undefined').toLowerCase();
       const nameMatch = normalizedName.includes(searchQuery.toLowerCase());
 
@@ -34,13 +39,38 @@ const HappinessIndexList = () => {
 
       return nameMatch && dateMatch;
     });
+
+    // Sort by date in descending order (latest first)
+    return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [data, searchQuery, fromDate, toDate]);
+
+  // Paginated data
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, currentPage, itemsPerPage]);
+
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredData.length / itemsPerPage);
+  }, [filteredData.length, itemsPerPage]);
 
   const averageScore = useMemo(() => {
     if (filteredData.length === 0) return 0;
     const total = filteredData.reduce((sum, record) => sum + record.happiness_score, 0);
     return (total / filteredData.length).toFixed(2);
   }, [filteredData]);
+
+  // Reset to page 1 when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchQuery, fromDate, toDate]);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const renderStars = score => (
     <Box
@@ -146,58 +176,103 @@ const HappinessIndexList = () => {
         Average Happiness Index: {averageScore} / 5
       </Typography>
 
+      {/* Records Count and Page Info */}
+      <Typography
+        variant="body2"
+        sx={{
+          mb: 2,
+          textAlign: 'center',
+          color: '#666',
+        }}
+      >
+        Showing {filteredData.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} -{' '}
+        {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} records
+      </Typography>
+
       {/* Display Happiness Index Records */}
       {filteredData.length === 0 ? (
         <Typography align="center">No records found.</Typography>
       ) : (
-        <Grid container spacing={2}>
-          {filteredData.map(({ full_name, happiness_score, description, date }, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card
-                sx={{
-                  height: 160,
-                  borderRadius: 2,
-                  boxShadow: 3,
-                  padding: 1,
-                  backgroundColor: '#fafafa',
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" sx={{ color: 'black' }}>
-                    {full_name || 'Undefined'}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      position: 'absolute',
-                      top: 16,
-                      right: 16,
-                      color: 'gray',
-                    }}
-                  >
-                    {new Date(date).toDateString()}
-                  </Typography>
-                  {renderStars(happiness_score)}
-                  <Box sx={{ height: 40, marginTop: 1 }}>
+        <>
+          <Grid container spacing={2}>
+            {paginatedData.map(({ full_name, happiness_score, description, date }, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card
+                  sx={{
+                    height: 160,
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    padding: 1,
+                    backgroundColor: '#fafafa',
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" sx={{ color: 'black' }}>
+                      {full_name || 'Undefined'}
+                    </Typography>
                     <Typography
                       variant="body2"
                       sx={{
-                        fontStyle: 'italic',
-                        visibility: description ? 'visible' : 'hidden',
+                        position: 'absolute',
+                        top: 16,
+                        right: 16,
+                        color: 'gray',
                       }}
                     >
-                      {`"${description || 'placeholder'}"`}
+                      {new Date(date).toDateString()}
                     </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                    {renderStars(happiness_score)}
+                    <Box sx={{ height: 40, marginTop: 1 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontStyle: 'italic',
+                          visibility: description ? 'visible' : 'hidden',
+                        }}
+                      >
+                        {`"${description || 'placeholder'}"`}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Pagination Component */}
+          {totalPages > 1 && (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: 4,
+              }}
+            >
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                size="large"
+                showFirstButton
+                showLastButton
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    color: '#000',
+                  },
+                  '& .Mui-selected': {
+                    backgroundColor: '#ffc107 !important',
+                    color: '#000',
+                  },
+                }}
+              />
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );
