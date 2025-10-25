@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import AddRoleModal from './AddRoleModal';
 import Button from '../../atoms/Button/Button';
 import { useFetchData } from 'src/react-query/useFetchApis';
@@ -7,6 +7,7 @@ import { useQueryClient } from 'react-query';
 import Toast from 'src/components/organisms/Toast';
 import { useDeleteData } from 'src/react-query/useFetchApis';
 import { useUpdateData } from 'src/react-query/useFetchApis';
+import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 
 const RoleAccess = () => {
   const [editingRole, setEditingRole] = useState({
@@ -15,7 +16,10 @@ const RoleAccess = () => {
     admin_access_role: '',
   });
   const [deleteRoleId, setDeleteRoleId] = useState(null);
-  const [deletingRoleId, setDeletingRoleId] = useState(null); // Track ID of role being deleted
+  const [deletingRoleId, setDeletingRoleId] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const queryClient = useQueryClient();
   const [toast, setToast] = useState({
     show: false,
@@ -53,7 +57,7 @@ const RoleAccess = () => {
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries('roles'); // Refresh roles data
+          queryClient.invalidateQueries('roles');
           setShowModal(false);
           setToast({
             show: true,
@@ -85,8 +89,8 @@ const RoleAccess = () => {
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries('roles'); // Refresh the roles data
-          setEditingRole({ id: null, name_of_role: '', admin_access_role: '' }); // Reset editing role state
+          queryClient.invalidateQueries('roles');
+          setEditingRole({ id: null, name_of_role: '', admin_access_role: '' });
           setToast({
             show: true,
             message: 'Role updated successfully!',
@@ -107,49 +111,60 @@ const RoleAccess = () => {
     );
   };
 
-  useEffect(() => {
-    if (deleteRoleId) {
-      handleDelete();
-    }
-  }, [deleteRoleId]);
-
   const { mutate: deleteRole } = useDeleteData('roles', `/roles/delete/${deleteRoleId}/`);
 
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this role?')) {
-      setDeletingRoleId(deleteRoleId); // Set the role ID being deleted
-      deleteRole(null, {
-        onSuccess: () => {
-          queryClient.invalidateQueries('roles'); // Refresh roles data after deletion
-          setDeletingRoleId(null); // Reset deleting role ID
-          setToast({
-            show: true,
-            message: 'Role deleted successfully!',
-            color: '#82DD55',
-          });
-          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
-        },
-        onError: error => {
-          console.error('Error deleting role:', error);
-          setDeletingRoleId(null); // Reset deleting role ID on error
-          setToast({
-            show: true,
-            message: 'Something went wrong!',
-            color: '#E23636',
-          });
-          setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
-        },
-      });
-    }
-  };
-
+  // Handle delete role - opens confirmation dialog
   const handleDeleteRole = roleid => {
     setDeleteRoleId(roleid);
+    setShowConfirmation(true);
+  };
+
+  // Confirm delete - executes after user confirms
+  const handleConfirmDelete = () => {
+    if (!deleteRoleId) return;
+
+    setIsDeleting(true);
+    setDeletingRoleId(deleteRoleId);
+
+    deleteRole(null, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('roles');
+        setShowConfirmation(false);
+        setDeleteRoleId(null);
+        setDeletingRoleId(null);
+        setIsDeleting(false);
+        setToast({
+          show: true,
+          message: 'Role deleted successfully!',
+          color: '#82DD55',
+        });
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
+      },
+      onError: error => {
+        console.error('Error deleting role:', error);
+        setShowConfirmation(false);
+        setDeleteRoleId(null);
+        setDeletingRoleId(null);
+        setIsDeleting(false);
+        setToast({
+          show: true,
+          message: 'Something went wrong!',
+          color: '#E23636',
+        });
+        setTimeout(() => setToast({ show: false, message: '', color: undefined }), 3000);
+      },
+    });
+  };
+
+  // Cancel delete
+  const handleCancelDelete = () => {
+    setShowConfirmation(false);
+    setDeleteRoleId(null);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setEditingRole({ id: null, name: '', admin_access_role: '' }); // Reset editing role
+    setEditingRole({ id: null, name: '', admin_access_role: '' });
   };
 
   // Handle loading state
@@ -231,7 +246,7 @@ const RoleAccess = () => {
                 <button
                   className="btn btn-primary mr-2"
                   onClick={() => handleEditRole(role)}
-                  disabled={editingRole.id === role.id} // Disable button during update
+                  disabled={editingRole.id === role.id}
                 >
                   {editingRole.id === role.id ? (
                     <span
@@ -246,9 +261,9 @@ const RoleAccess = () => {
                 <button
                   className="btn btn-danger"
                   onClick={() => handleDeleteRole(role.id)}
-                  disabled={deletingRoleId === role.id} // Disable only the specific delete button
+                  disabled={deletingRoleId === role.id && isDeleting}
                 >
-                  {deletingRoleId === role.id ? (
+                  {deletingRoleId === role.id && isDeleting ? (
                     <span
                       className="spinner-border spinner-border-sm"
                       role="status"
@@ -263,6 +278,17 @@ const RoleAccess = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        title="Confirmation"
+        show={showConfirmation}
+        isLoading={isDeleting}
+        message="Are you sure you want to delete this role?"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
+
       <Toast
         show={toast.show}
         message={toast.message}
