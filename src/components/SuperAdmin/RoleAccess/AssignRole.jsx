@@ -1,20 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import Select from 'react-select';
 import SearchableTable from 'src/components/atoms/Table/SearchableTable';
 import { useQueryClient } from 'react-query';
 import { useDeleteData } from 'src/react-query/useFetchApis';
 import { useFetchData } from 'src/react-query/useFetchApis';
 import { useAddData } from 'src/react-query/useFetchApis';
+import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 
 const AssignRole = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState(null);
   const [userError, setUserError] = useState(false);
   const [role, setRole] = useState('');
   const [roleError, setRoleError] = useState(false);
   const [deleteRoleId, setDeleteRoleId] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data = [], isLoading, error } = useFetchData('roles', '/api/user_and_role_overview/');
-  const { mutate: assignRole } = useAddData('roles', `/assignrole/`); // Using your custom hook
+  const { mutate: assignRole } = useAddData('roles', `/assignrole/`);
+
+  // Transform users data for react-select
+  const userOptions =
+    data?.users?.map(user => ({
+      value: user.user_id,
+      label: user.full_name,
+    })) || [];
 
   // Function to get user's current roles
   const getUserRoles = userId => {
@@ -24,14 +35,14 @@ const AssignRole = () => {
     );
   };
 
-  const handleAssignRole = (user, role) => {
+  const handleAssignRole = (userId, roleId) => {
     assignRole(
-      { user, role },
+      { user: userId, role: roleId },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries('roles'); // Refresh user data and roles
+          queryClient.invalidateQueries('roles');
           setRole('');
-          setUser('');
+          setUser(null);
         },
         onError: error => {
           console.error('Error assigning role:', error);
@@ -41,45 +52,52 @@ const AssignRole = () => {
   };
 
   const queryClient = useQueryClient();
-  useEffect(() => {
-    if (deleteRoleId) {
-      handleDelete();
-    }
-  }, [deleteRoleId]);
 
   const { mutate: deleteRole } = useDeleteData('roles', `/deleteRole/${deleteRoleId}/`);
 
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this role?')) {
-      deleteRole(null, {
-        onSuccess: () => {
-          queryClient.invalidateQueries('roles'); // Refresh the roles and user data
-        },
-        onError: error => {
-          console.error('Error deleting role:', error);
-        },
-      });
-    }
-  };
-
+  // Handle delete confirmation
   const handleDeleteRole = roleId => {
     setDeleteRoleId(roleId);
+    setShowConfirmation(true);
+  };
+
+  // Execute delete after confirmation
+  const handleConfirmDelete = () => {
+    if (!deleteRoleId) return;
+
+    setIsDeleting(true);
+    deleteRole(null, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('roles');
+        setShowConfirmation(false);
+        setDeleteRoleId(null);
+        setIsDeleting(false);
+      },
+      onError: error => {
+        console.error('Error deleting role:', error);
+        setIsDeleting(false);
+        setShowConfirmation(false);
+        setDeleteRoleId(null);
+      },
+    });
+  };
+
+  // Cancel delete
+  const handleCancelDelete = () => {
+    setShowConfirmation(false);
+    setDeleteRoleId(null);
   };
 
   // Function to validate role assignment
   const validateRoleAssignment = async (userId, roleId) => {
     try {
-      // Get the role name from the roles data
       const selectedRole = data?.roles.find(r => r.id === roleId)?.name_of_role;
 
-      // If it's a subsidiary status role
       if (selectedRole?.startsWith('status_subsidiary_')) {
-        // Find user's current roles
         const userRoles = data?.assigned_roles
           .filter(r => r.user_id === userId)
           .map(r => r.role_name);
 
-        // Check if user has the base 'status' role
         if (!userRoles.includes('status')) {
           return {
             isValid: false,
@@ -120,13 +138,29 @@ const AssignRole = () => {
     if (hasError) return;
 
     // Validate role assignment
-    const validation = await validateRoleAssignment(user, role);
+    const validation = await validateRoleAssignment(user.value, role);
     if (!validation.isValid) {
       alert(validation.message);
       return;
     }
 
-    handleAssignRole(user, role);
+    handleAssignRole(user.value, role);
+  };
+
+  // Custom styles for react-select to match Bootstrap validation
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      borderColor: userError ? '#dc3545' : state.isFocused ? '#86b7fe' : '#ced4da',
+      boxShadow: userError
+        ? '0 0 0 0.25rem rgba(220, 53, 69, 0.25)'
+        : state.isFocused
+          ? '0 0 0 0.25rem rgba(13, 110, 253, 0.25)'
+          : 'none',
+      '&:hover': {
+        borderColor: userError ? '#dc3545' : '#86b7fe',
+      },
+    }),
   };
 
   // Handle loading state
@@ -159,22 +193,17 @@ const AssignRole = () => {
             <label htmlFor="userSelect" className="form-label">
               User
             </label>
-            <select
+            <Select
               id="userSelect"
-              className={`form-select ${userError ? 'is-invalid' : ''}`}
-              value={user || ''}
-              onChange={e => setUser(e.target.value)}
-            >
-              <option value="" disabled>
-                Select User
-              </option>
-              {data?.users.map(user => (
-                <option key={user.user_id} value={user.user_id}>
-                  {user.full_name}
-                </option>
-              ))}
-            </select>
-            {userError && <div className="invalid-feedback">User is required.</div>}
+              options={userOptions}
+              value={user}
+              onChange={setUser}
+              placeholder="Select User"
+              isClearable
+              isSearchable
+              styles={customStyles}
+            />
+            {userError && <div className="text-danger small mt-1">User is required.</div>}
           </div>
 
           <div className={`mb-3 col-md-6 ${roleError ? 'has-error' : ''}`}>
@@ -220,9 +249,9 @@ const AssignRole = () => {
         <button
           className="btn btn-danger"
           onClick={() => handleDeleteRole(role.id)}
-          disabled={deleteRoleId === role.id} // Disable button during delete operation
+          disabled={deleteRoleId === role.id && isDeleting}
         >
-          {deleteRoleId === role.id ? (
+          {deleteRoleId === role.id && isDeleting ? (
             <span
               className="spinner-border spinner-border-sm"
               role="status"
@@ -245,22 +274,17 @@ const AssignRole = () => {
           <label htmlFor="userSelect" className="form-label">
             User
           </label>
-          <select
+          <Select
             id="userSelect"
-            className={`form-select ${userError ? 'is-invalid' : ''}`}
-            value={user || ''}
-            onChange={e => setUser(e.target.value)}
-          >
-            <option value="" disabled>
-              Select User
-            </option>
-            {data?.users.map(user => (
-              <option key={user.user_id} value={user.user_id}>
-                {user.full_name}
-              </option>
-            ))}
-          </select>
-          {userError && <div className="invalid-feedback">User is required.</div>}
+            options={userOptions}
+            value={user}
+            onChange={setUser}
+            placeholder="Select User"
+            isClearable
+            isSearchable
+            styles={customStyles}
+          />
+          {userError && <div className="text-danger small mt-1">User is required.</div>}
         </div>
 
         <div className={`mb-3 col-md-6 ${roleError ? 'has-error' : ''}`}>
@@ -278,7 +302,7 @@ const AssignRole = () => {
             </option>
             {data?.roles.map(role => {
               const isSubsidiaryRole = role.name_of_role.startsWith('status_subsidiary_');
-              const hasStatusRole = user ? getUserRoles(user).includes('status') : false;
+              const hasStatusRole = user ? getUserRoles(user.value).includes('status') : false;
               const isDisabled = isSubsidiaryRole && !hasStatusRole;
 
               return (
@@ -298,6 +322,7 @@ const AssignRole = () => {
           </button>
         </div>
       </form>
+
       <div className="table-responsive">
         <SearchableTable
           data={data?.assigned_roles}
@@ -306,6 +331,16 @@ const AssignRole = () => {
           renderRow={renderRow}
         />
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        title="Confirmation"
+        show={showConfirmation}
+        isLoading={isDeleting}
+        message="Are you sure you want to delete this role?"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 };
