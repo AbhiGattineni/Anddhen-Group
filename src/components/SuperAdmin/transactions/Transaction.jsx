@@ -14,6 +14,7 @@ import { useDeleteData } from 'src/react-query/useFetchApis';
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 import ReactSelectDropdown from 'src/components/atoms/Search/ReactSelectDropdown';
 import { FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material';
+import { generateTransactionPDF } from './TransactionPDFGenerator';
 import './Transaction.css'; // You'll need to create this file
 
 export const Transaction = () => {
@@ -31,6 +32,7 @@ export const Transaction = () => {
   const [selectedSubsidiary, setSelectedSubsidiary] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const fetchTransactions = async () => {
@@ -283,7 +285,12 @@ export const Transaction = () => {
       );
     });
 
-    setFilteredTransactions(filtered);
+    // Sort filtered results by transaction_datetime in descending order (newest first)
+    const sortedFiltered = filtered.sort((a, b) => {
+      return new Date(b.transaction_datetime) - new Date(a.transaction_datetime);
+    });
+
+    setFilteredTransactions(sortedFiltered);
   }, [
     startDate,
     endDate,
@@ -294,6 +301,36 @@ export const Transaction = () => {
     selectedSubsidiary,
     selectedCurrency,
   ]);
+
+  const handleExportPDF = async () => {
+    setIsGeneratingPDF(true);
+
+    try {
+      const dataToExport = filteredTransactions || sortedTransactions;
+
+      if (dataToExport.length === 0) {
+        setIsGeneratingPDF(false);
+        return;
+      }
+
+      const filterData = {
+        startDate,
+        endDate,
+        selectedName,
+        selectedColumn,
+        selectedPaymentType,
+        selectedSubsidiary,
+        selectedCurrency,
+      };
+
+      const result = await generateTransactionPDF(dataToExport, filterData);
+      console.log('PDF generated successfully:', result);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   const handleResetData = useCallback(() => {
     setStartDate(null);
@@ -314,12 +351,26 @@ export const Transaction = () => {
             <h4 className="page-title">Transaction Management</h4>
             <p className="page-subtitle">Track and manage all financial transactions</p>
           </div>
-          <button className="btn-add-transaction" onClick={() => setShowModal(true)}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
-            </svg>
-            Add Transaction
-          </button>
+          <div className="header-actions">
+            <button
+              className="btn-export-pdf"
+              onClick={handleExportPDF}
+              disabled={
+                isGeneratingPDF || (filteredTransactions || sortedTransactions).length === 0
+              }
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+              </svg>
+              {isGeneratingPDF ? 'Generating...' : 'Export PDF'}
+            </button>
+            <button className="btn-add-transaction" onClick={() => setShowModal(true)}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
+              </svg>
+              Add Transaction
+            </button>
+          </div>
         </div>
       </div>
 
