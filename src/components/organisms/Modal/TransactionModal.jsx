@@ -7,6 +7,7 @@ import { capitalizeName } from '../Utils';
 import { Autocomplete, TextField, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
 export const TransactionModal = ({
   editTransaction,
@@ -37,6 +38,27 @@ export const TransactionModal = ({
     if (!response.ok) throw new Error('Network response was not ok');
     return response.json();
   });
+
+  // Fetch subsidiaries from backend
+  const { data: subsidiariesData, isLoading: isSubsidiariesLoading } = useGetSubsidiaries();
+
+  // Only show active subsidiaries
+  const activeSubsidiaries = Array.isArray(subsidiariesData)
+    ? subsidiariesData.filter(sub => sub.active === true || sub.active === 'Yes')
+    : [];
+
+  // Fallback subsidiary options if backend data is not available
+  const fallbackSubsidiaries = [
+    { subName: 'AMS', id: 'ams' },
+    { subName: 'ACS', id: 'acs' },
+    { subName: 'ASS', id: 'ass' },
+    { subName: 'APS', id: 'aps' },
+    { subName: 'ATI', id: 'ati' },
+  ];
+
+  // Use active subsidiaries if available, otherwise use fallback
+  const availableSubsidiaries =
+    activeSubsidiaries.length > 0 ? activeSubsidiaries : fallbackSubsidiaries;
 
   // Extract unique sender and receiver names
   const { senderNames, receiverNames } = useMemo(() => {
@@ -510,6 +532,7 @@ export const TransactionModal = ({
                   value={formData.subsidiary}
                   label="Subsidiary"
                   onChange={e => handleChange('subsidiary', e.target.value)}
+                  disabled={isSubsidiariesLoading}
                   sx={{
                     borderRadius: '8px',
                     backgroundColor: '#ffffff',
@@ -528,11 +551,11 @@ export const TransactionModal = ({
                   <MenuItem value="">
                     <em>Select</em>
                   </MenuItem>
-                  <MenuItem value="AMS">AMS</MenuItem>
-                  <MenuItem value="ACS">ACS</MenuItem>
-                  <MenuItem value="ASS">ASS</MenuItem>
-                  <MenuItem value="APS">APS</MenuItem>
-                  <MenuItem value="ATI">ATI</MenuItem>
+                  {availableSubsidiaries.map(sub => (
+                    <MenuItem key={sub.id || sub.subsidiaryName || sub.subName} value={sub.subName}>
+                      {sub.subName}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </div>
