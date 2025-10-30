@@ -659,21 +659,17 @@ export const EmployeeDashboard = () => {
     const utcMonth = currentUTCDate.getUTCMonth();
     const utcDay = currentUTCDate.getUTCDate();
 
-    // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
-    const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1, 3, 30, 0, 0));
+    // **FIX: Calculate cutoff as 3:30 AM UTC TODAY (not tomorrow)**
+    const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay, 3, 30, 0, 0));
 
-    // If current time is before cutoff, show today's date
-    // If current time is after cutoff, show tomorrow's date
     if (now < cutoffTimeUTC) {
-      // Before cutoff - show today's date
-      return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
+      const yesterdayUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay - 1));
+      const yesterdayYear = yesterdayUTC.getUTCFullYear();
+      const yesterdayMonth = yesterdayUTC.getUTCMonth();
+      const yesterdayDay = yesterdayUTC.getUTCDate();
+      return `${yesterdayYear}-${String(yesterdayMonth + 1).padStart(2, '0')}-${String(yesterdayDay).padStart(2, '0')}`;
     } else {
-      // After cutoff - show tomorrow's date
-      const tomorrowUTCDate = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1));
-      const tomorrowYear = tomorrowUTCDate.getUTCFullYear();
-      const tomorrowMonth = tomorrowUTCDate.getUTCMonth();
-      const tomorrowDay = tomorrowUTCDate.getUTCDate();
-      return `${tomorrowYear}-${String(tomorrowMonth + 1).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`;
+      return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
     }
   }
 
