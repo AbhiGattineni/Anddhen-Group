@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -21,6 +21,7 @@ import {
   InputAdornment,
   Button,
   Collapse,
+  Alert,
 } from '@mui/material';
 import {
   Edit,
@@ -78,9 +79,20 @@ const StatusTable = ({
     subsidary: '',
   });
   const [msg, setMsg] = useState('');
+  const [msgType, setMsgType] = useState('info'); // 'success', 'error', 'info'
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [filtersExpanded, setFiltersExpanded] = useState(false); // Changed to false
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
+
+  // Auto-dismiss message after 5 seconds
+  useEffect(() => {
+    if (msg) {
+      const timer = setTimeout(() => {
+        setMsg('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [msg]);
 
   const sortedStatusUpdates = useMemo(() => {
     return [...statusUpdates].sort((a, b) => {
@@ -162,6 +174,7 @@ const StatusTable = ({
   const handleEdit = row => {
     if (!isDateEditable(row.date)) {
       setMsg("Cannot edit this record. Only today's records can be edited until 9 AM tomorrow.");
+      setMsgType('error');
       return;
     }
     setEditRowId(row.id || row._id || row.date + row.subsidary);
@@ -181,9 +194,11 @@ const StatusTable = ({
     try {
       await updateMutation.mutateAsync(editData);
       setMsg('Status updated successfully.');
+      setMsgType('success');
       setEditRowId(null);
     } catch (err) {
-      setMsg('Update failed.');
+      setMsg('Update failed. Please try again.');
+      setMsgType('error');
     }
   };
 
@@ -453,29 +468,26 @@ const StatusTable = ({
         </Collapse>
       </Box>
 
-      {/* Message Display */}
-      {msg && (
-        <Box
+      {/* Message Display with Close Button and Auto-dismiss */}
+      <Collapse in={!!msg}>
+        <Alert
+          severity={msgType}
+          onClose={() => setMsg('')}
           sx={{
-            px: 3,
-            py: 2,
-            backgroundColor:
-              msg.includes('failed') || msg.includes('Cannot') ? '#FEE2E2' : '#E5F6FD',
+            borderRadius: 0,
             borderBottom: '1px solid #e0e0e0',
-            borderLeft: `4px solid ${msg.includes('failed') || msg.includes('Cannot') ? '#EF4444' : '#60A1FE'}`,
+            '& .MuiAlert-message': {
+              fontSize: '0.875rem',
+              fontWeight: 500,
+            },
+            '& .MuiAlert-icon': {
+              fontSize: 20,
+            },
           }}
         >
-          <Typography
-            sx={{
-              fontSize: '0.875rem',
-              color: msg.includes('failed') || msg.includes('Cannot') ? '#DC2626' : '#212429',
-              fontWeight: 500,
-            }}
-          >
-            {msg}
-          </Typography>
-        </Box>
-      )}
+          {msg}
+        </Alert>
+      </Collapse>
 
       {/* Records count */}
       <Box
@@ -564,7 +576,6 @@ const StatusTable = ({
                     letterSpacing: '0.02em',
                     py: 2,
                     px: 2.5,
-                    // Make description column wider
                     ...(col === 'description' && {
                       minWidth: 300,
                       maxWidth: 500,
@@ -662,7 +673,6 @@ const StatusTable = ({
                         py: 2.5,
                         px: 2.5,
                         borderBottom: '1px solid #EEEEEE',
-                        // Make description column wider and wrap text
                         ...(col === 'description' && {
                           minWidth: 300,
                           maxWidth: 500,
@@ -828,6 +838,7 @@ const StatusTable = ({
                                 setMsg(
                                   "Cannot edit. Only today's records can be edited until 9 AM tomorrow."
                                 );
+                                setMsgType('error');
                               }
                             }}
                             size="small"
