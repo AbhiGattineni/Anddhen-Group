@@ -12,11 +12,27 @@ import {
   Box,
   Grid,
   IconButton,
-  Divider,
   Tooltip,
   Chip,
+  Typography,
+  Pagination,
+  Select,
+  FormControl,
+  InputAdornment,
+  Button,
+  Collapse,
 } from '@mui/material';
-import { Edit, Save, Cancel } from '@mui/icons-material';
+import {
+  Edit,
+  Save,
+  Cancel,
+  FilterList,
+  CalendarToday,
+  Business,
+  ExpandMore,
+  ExpandLess,
+  Clear,
+} from '@mui/icons-material';
 import PropTypes from 'prop-types';
 
 const StatusTable = ({
@@ -26,7 +42,6 @@ const StatusTable = ({
   updateMutation,
   subsidaryOptions,
 }) => {
-  // Helper: Only allow editing for currently available (today) records until cutoff
   const isDateEditable = dateString => {
     if (!dateString) return false;
     const getCurrentAvailableDate = () => {
@@ -35,7 +50,6 @@ const StatusTable = ({
       const utcYear = currentUTCDate.getUTCFullYear();
       const utcMonth = currentUTCDate.getUTCMonth();
       const utcDay = currentUTCDate.getUTCDate();
-      // 03:30 AM UTC next day is cutoff
       const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1, 3, 30, 0, 0));
       if (now < cutoffTimeUTC) {
         return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
@@ -64,19 +78,19 @@ const StatusTable = ({
     subsidary: '',
   });
   const [msg, setMsg] = useState('');
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filtersExpanded, setFiltersExpanded] = useState(false); // Changed to false
 
-  // Sort records by date descending (latest at top)
   const sortedStatusUpdates = useMemo(() => {
     return [...statusUpdates].sort((a, b) => {
       if (a.date && b.date) return new Date(b.date) - new Date(a.date);
-      // Fallback by id if needed
       const aId = a._id || a.id || '';
       const bId = b._id || b.id || '';
       return bId > aId ? 1 : -1;
     });
   }, [statusUpdates]);
 
-  // Filtering
   const filteredData = useMemo(() => {
     return sortedStatusUpdates.filter(row => {
       const rowDate = new Date(row.date);
@@ -88,38 +102,63 @@ const StatusTable = ({
     });
   }, [sortedStatusUpdates, filters]);
 
-  // Dynamic columns logic
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const paginatedData = useMemo(() => {
+    const startIndex = (page - 1) * rowsPerPage;
+    return filteredData.slice(startIndex, startIndex + rowsPerPage);
+  }, [filteredData, page, rowsPerPage]);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const handleRowsPerPageChange = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      startDate: '',
+      endDate: '',
+      subsidary: '',
+    });
+    setPage(1);
+  };
+
+  const hasActiveFilters = filters.startDate || filters.endDate || filters.subsidary;
+
   const baseColumns = ['date', 'subsidary', 'leave', 'description'];
-  const alwaysExclude = ['id', 'user_id', 'user_name'];
+  const alwaysExclude = ['id', 'user_id', 'user_name', '_id'];
+
+  const isEmptyOrZero = val => {
+    if (val === null || val === undefined || val === '') return true;
+    if (typeof val === 'number' && val === 0) return true;
+    if (typeof val === 'string' && (val === '0' || val === '0.0' || val === '0.00')) return true;
+    return false;
+  };
+
   const getDisplayValue = val => {
-    if (
-      val === null ||
-      val === undefined ||
-      val === '' ||
-      val === 0 ||
-      val === 0.0 ||
-      val === '0' ||
-      val === '0.00'
-    )
-      return '';
+    if (isEmptyOrZero(val)) return '';
     return val;
   };
+
   const allKeys = useMemo(() => {
     const keys = new Set();
     statusUpdates.forEach(row => Object.keys(row).forEach(k => keys.add(k)));
     alwaysExclude.forEach(k => keys.delete(k));
     return Array.from(keys);
   }, [statusUpdates]);
-  const visibleColumns = useMemo(() => {
-    return allKeys.filter(col => statusUpdates.some(row => getDisplayValue(row[col]) !== ''));
-  }, [allKeys, statusUpdates]);
-  const shownBaseColumns = baseColumns.filter(
-    col =>
-      !alwaysExclude.includes(col) && statusUpdates.some(row => getDisplayValue(row[col]) !== '')
-  );
-  const extraColumns = visibleColumns.filter(col => !shownBaseColumns.includes(col));
 
-  // Edit handlers
+  const visibleColumns = useMemo(() => {
+    return allKeys.filter(col => {
+      return statusUpdates.some(row => !isEmptyOrZero(row[col]));
+    });
+  }, [allKeys, statusUpdates]);
+
+  const shownBaseColumns = baseColumns.filter(col => visibleColumns.includes(col));
+  const extraColumns = visibleColumns.filter(col => !baseColumns.includes(col));
+
   const handleEdit = row => {
     if (!isDateEditable(row.date)) {
       setMsg("Cannot edit this record. Only today's records can be edited until 9 AM tomorrow.");
@@ -167,181 +206,437 @@ const StatusTable = ({
     });
   };
 
+  const startRecord = filteredData.length === 0 ? 0 : (page - 1) * rowsPerPage + 1;
+  const endRecord = Math.min(page * rowsPerPage, filteredData.length);
+
   return (
     <Paper
-      elevation={5}
+      elevation={0}
       sx={{
-        borderRadius: 4,
-        p: { xs: 2, md: 4 },
-        my: 2,
-        background: 'linear-gradient(135deg, #eef4fd 60%, #e3f0ff 100%)',
-        boxShadow: 3,
+        borderRadius: '4px',
+        border: '1px solid #e0e0e0',
+        overflow: 'hidden',
+        backgroundColor: '#FFFFFF',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
       }}
     >
+      {/* Modern Collapsible Filter Bar */}
       <Box
         sx={{
-          background: 'rgba(255,255,255,0.92)',
-          borderRadius: 3,
-          p: 2,
-          mb: 3,
-          boxShadow: 1,
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 2,
-          alignItems: 'center',
+          borderBottom: '1px solid #e0e0e0',
+          backgroundColor: '#FFFFFF',
         }}
       >
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={4}>
-            <TextField
-              label="Start Date"
-              type="date"
-              value={filters.startDate}
-              onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
+        {/* Filter Header */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 3,
+            py: 2,
+            backgroundColor: '#FAFAFA',
+            borderBottom: filtersExpanded ? '1px solid #e0e0e0' : 'none',
+            cursor: 'pointer',
+          }}
+          onClick={() => setFiltersExpanded(!filtersExpanded)}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <FilterList sx={{ color: '#60A1FE', fontSize: 22 }} />
+            <Typography
               sx={{
-                borderRadius: 2,
-                background: '#f5faff',
-                boxShadow: 1,
-                '& .MuiOutlinedInput-root': { borderRadius: 2 },
-                '&:hover': { boxShadow: 3 },
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              label="End Date"
-              type="date"
-              value={filters.endDate}
-              onChange={e => setFilters(f => ({ ...f, endDate: e.target.value }))}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              sx={{
-                borderRadius: 2,
-                background: '#f5faff',
-                boxShadow: 1,
-                '& .MuiOutlinedInput-root': { borderRadius: 2 },
-                '&:hover': { boxShadow: 3 },
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              select
-              label="Subsidiary"
-              value={filters.subsidary}
-              onChange={e => setFilters(f => ({ ...f, subsidary: e.target.value }))}
-              fullWidth
-              sx={{
-                borderRadius: 2,
-                background: '#f5faff',
-                boxShadow: 1,
-                '& .MuiOutlinedInput-root': { borderRadius: 2 },
-                '&:hover': { boxShadow: 3 },
+                fontWeight: 600,
+                color: '#212429',
+                fontSize: '0.9375rem',
               }}
             >
-              <MenuItem value="">All</MenuItem>
-              {subsidaryOptions.map(opt => (
-                <MenuItem key={opt} value={opt}>
-                  {opt}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-        </Grid>
-      </Box>
-      <Divider sx={{ my: 2, borderColor: '#e0e7ef' }} />
-      {msg && <Box sx={{ mb: 2, color: 'green', fontWeight: 500 }}>{msg}</Box>}
+              Filters
+            </Typography>
+            {hasActiveFilters && (
+              <Chip
+                label={`${
+                  [filters.startDate, filters.endDate, filters.subsidary].filter(Boolean).length
+                } active`}
+                size="small"
+                sx={{
+                  backgroundColor: '#60A1FE',
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '0.6875rem',
+                  height: 22,
+                }}
+              />
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {hasActiveFilters && (
+              <Button
+                size="small"
+                startIcon={<Clear sx={{ fontSize: 16 }} />}
+                onClick={e => {
+                  e.stopPropagation();
+                  handleClearFilters();
+                }}
+                sx={{
+                  fontSize: '0.8125rem',
+                  color: '#666666',
+                  textTransform: 'none',
+                  '&:hover': {
+                    backgroundColor: '#F5F5F5',
+                    color: '#212429',
+                  },
+                }}
+              >
+                Clear all
+              </Button>
+            )}
+            <IconButton
+              size="small"
+              onClick={e => {
+                e.stopPropagation();
+                setFiltersExpanded(!filtersExpanded);
+              }}
+              sx={{
+                color: '#666666',
+                '&:hover': {
+                  backgroundColor: '#F5F5F5',
+                },
+              }}
+            >
+              {filtersExpanded ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+          </Box>
+        </Box>
 
-      {/* Table Panel with Scrollbar and sticky header */}
-      <TableContainer
-        component={Box}
+        {/* Filter Controls - Collapsible */}
+        <Collapse in={filtersExpanded}>
+          <Box sx={{ p: 3, backgroundColor: '#FAFBFF' }}>
+            <Grid container spacing={2.5}>
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  sx={{
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    color: '#212429',
+                    mb: 1,
+                  }}
+                >
+                  Start Date
+                </Typography>
+                <TextField
+                  type="date"
+                  value={filters.startDate}
+                  onChange={e => setFilters(f => ({ ...f, startDate: e.target.value }))}
+                  fullWidth
+                  size="small"
+                  placeholder="Select start date"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CalendarToday sx={{ fontSize: 18, color: '#999999' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    backgroundColor: '#FFFFFF',
+                    '& .MuiOutlinedInput-root': {
+                      fontSize: '0.875rem',
+                      '& fieldset': {
+                        borderColor: '#d0d0d0',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#60A1FE',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#60A1FE',
+                        borderWidth: '2px',
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  sx={{
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    color: '#212429',
+                    mb: 1,
+                  }}
+                >
+                  End Date
+                </Typography>
+                <TextField
+                  type="date"
+                  value={filters.endDate}
+                  onChange={e => setFilters(f => ({ ...f, endDate: e.target.value }))}
+                  fullWidth
+                  size="small"
+                  placeholder="Select end date"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CalendarToday sx={{ fontSize: 18, color: '#999999' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    backgroundColor: '#FFFFFF',
+                    '& .MuiOutlinedInput-root': {
+                      fontSize: '0.875rem',
+                      '& fieldset': {
+                        borderColor: '#d0d0d0',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#60A1FE',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#60A1FE',
+                        borderWidth: '2px',
+                      },
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography
+                  sx={{
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    color: '#212429',
+                    mb: 1,
+                  }}
+                >
+                  Subsidiary
+                </Typography>
+                <TextField
+                  select
+                  value={filters.subsidary}
+                  onChange={e => setFilters(f => ({ ...f, subsidary: e.target.value }))}
+                  fullWidth
+                  size="small"
+                  placeholder="All subsidiaries"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Business sx={{ fontSize: 18, color: '#999999' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    backgroundColor: '#FFFFFF',
+                    '& .MuiOutlinedInput-root': {
+                      fontSize: '0.875rem',
+                      '& fieldset': {
+                        borderColor: '#d0d0d0',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#60A1FE',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#60A1FE',
+                        borderWidth: '2px',
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="">All Subsidiaries</MenuItem>
+                  {subsidaryOptions.map(opt => (
+                    <MenuItem key={opt} value={opt}>
+                      {opt}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            </Grid>
+          </Box>
+        </Collapse>
+      </Box>
+
+      {/* Message Display */}
+      {msg && (
+        <Box
+          sx={{
+            px: 3,
+            py: 2,
+            backgroundColor:
+              msg.includes('failed') || msg.includes('Cannot') ? '#FEE2E2' : '#E5F6FD',
+            borderBottom: '1px solid #e0e0e0',
+            borderLeft: `4px solid ${msg.includes('failed') || msg.includes('Cannot') ? '#EF4444' : '#60A1FE'}`,
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: '0.875rem',
+              color: msg.includes('failed') || msg.includes('Cannot') ? '#DC2626' : '#212429',
+              fontWeight: 500,
+            }}
+          >
+            {msg}
+          </Typography>
+        </Box>
+      )}
+
+      {/* Records count */}
+      <Box
         sx={{
-          borderRadius: 3,
-          boxShadow: 2,
-          background: 'white',
-          maxHeight: 470,
-          overflowX: 'auto',
-          overflowY: 'auto',
+          px: 3,
+          py: 2,
+          borderBottom: '1px solid #e0e0e0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: '#FFFFFF',
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
+        <Typography sx={{ fontSize: '0.875rem', color: '#666666', fontWeight: 500 }}>
+          Showing <strong style={{ color: '#212429' }}>{startRecord}</strong> to{' '}
+          <strong style={{ color: '#212429' }}>{endRecord}</strong> of{' '}
+          <strong style={{ color: '#212429' }}>{filteredData.length}</strong> records
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Typography sx={{ fontSize: '0.875rem', color: '#666666', fontWeight: 500 }}>
+            Rows per page:
+          </Typography>
+          <FormControl size="small">
+            <Select
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+              sx={{
+                fontSize: '0.875rem',
+                minWidth: 80,
+                backgroundColor: '#FFFFFF',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#d0d0d0',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#60A1FE',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#60A1FE',
+                },
+              }}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+      </Box>
+
+      {/* Table */}
+      <TableContainer
+        sx={{
+          maxHeight: 450,
           '&::-webkit-scrollbar': {
             width: 8,
-            height: 10,
-            background: '#f5f5fa',
+            height: 8,
+          },
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: '#F5F5F5',
           },
           '&::-webkit-scrollbar-thumb': {
-            background: '#c1c7d0',
-            borderRadius: 8,
+            backgroundColor: '#C0C0C0',
+            borderRadius: 4,
+            '&:hover': {
+              backgroundColor: '#A0A0A0',
+            },
           },
         }}
       >
-        <Table size="small" stickyHeader>
+        <Table stickyHeader size="small">
           <TableHead>
-            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+            <TableRow>
               {shownBaseColumns.map(col => (
                 <TableCell
                   key={col}
                   sx={{
-                    fontWeight: 'bold',
-                    color: '#333',
-                    fontSize: '1.08rem',
-                    borderTopLeftRadius: col === shownBaseColumns[0] ? 12 : 0,
-                    borderTopRightRadius:
-                      col === shownBaseColumns[shownBaseColumns.length - 1] &&
-                      extraColumns.length === 0
-                        ? 12
-                        : 0,
-                    background: '#e5ebf5',
-                    borderBottom: '2px solid #d0d7e5',
+                    fontWeight: 600,
+                    fontSize: '0.8125rem',
+                    color: '#212429',
+                    backgroundColor: '#F0F0F0',
+                    borderBottom: '2px solid #E0E0E0',
+                    textTransform: 'capitalize',
+                    letterSpacing: '0.02em',
+                    py: 2,
+                    px: 2.5,
+                    // Make description column wider
+                    ...(col === 'description' && {
+                      minWidth: 300,
+                      maxWidth: 500,
+                    }),
                   }}
                 >
-                  {col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                  {col.replace(/_/g, ' ')}
                 </TableCell>
               ))}
               {extraColumns.map(col => (
                 <TableCell
                   key={col}
                   sx={{
-                    fontWeight: 'bold',
-                    color: '#333',
-                    fontSize: '1.08rem',
-                    background: '#e5ebf5',
-                    borderBottom: '2px solid #d0d7e5',
+                    fontWeight: 600,
+                    fontSize: '0.8125rem',
+                    color: '#212429',
+                    backgroundColor: '#F0F0F0',
+                    borderBottom: '2px solid #E0E0E0',
+                    textTransform: 'capitalize',
+                    letterSpacing: '0.02em',
+                    py: 2,
+                    px: 2.5,
                   }}
                 >
-                  {col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                  {col.replace(/_/g, ' ')}
                 </TableCell>
               ))}
               <TableCell
                 sx={{
-                  fontWeight: 'bold',
-                  color: '#333',
-                  fontSize: '1.08rem',
-                  borderTopRightRadius: 12,
-                  background: '#e5ebf5',
-                  borderBottom: '2px solid #d0d7e5',
+                  fontWeight: 600,
+                  fontSize: '0.8125rem',
+                  color: '#212429',
+                  backgroundColor: '#F0F0F0',
+                  borderBottom: '2px solid #E0E0E0',
+                  textTransform: 'capitalize',
+                  letterSpacing: '0.02em',
+                  py: 2,
+                  px: 2.5,
+                  minWidth: 100,
                 }}
               >
                 Actions
-                <Box sx={{ fontSize: '0.75rem', color: '#666', fontWeight: 'normal' }}>
-                  (Edit: Today only until 9 AM tomorrow)
-                </Box>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredData.length === 0 && (
+            {paginatedData.length === 0 && (
               <TableRow>
                 <TableCell
                   colSpan={shownBaseColumns.length + extraColumns.length + 1}
                   align="center"
-                  sx={{ py: 4, color: '#888' }}
+                  sx={{ py: 8 }}
                 >
-                  No records found
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 1,
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '1rem', color: '#999999', fontWeight: 600 }}>
+                      No records found
+                    </Typography>
+                    <Typography sx={{ fontSize: '0.875rem', color: '#CCCCCC' }}>
+                      Try adjusting your filters
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             )}
-            {filteredData.map((row, idx) => {
+            {paginatedData.map((row, idx) => {
               const rowId = row.id || row._id || row.date + row.subsidary;
               const editable = isDateEditable(row.date);
               const isEditing = editRowId === rowId;
@@ -350,32 +645,41 @@ const StatusTable = ({
                 <TableRow
                   key={rowId}
                   sx={{
-                    backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#e3f0ff',
+                    backgroundColor: idx % 2 === 0 ? '#FFFFFF' : '#FAFBFF',
+                    borderLeft: editable ? '3px solid #10B981' : '3px solid transparent',
                     '&:hover': {
-                      backgroundColor: '#e0e7ef',
-                      boxShadow: 1,
-                      borderLeft: editable ? '4px solid #4caf50' : '4px solid #1976d2',
+                      backgroundColor: '#E5F6FD',
+                      transition: 'background-color 0.2s ease',
                     },
-                    borderLeft: editable ? '2px solid #4caf50' : '2px solid transparent',
-                    transition: 'background 0.2s, box-shadow 0.2s',
                   }}
                 >
                   {shownBaseColumns.map(col => (
                     <TableCell
                       key={col}
-                      sx={{ fontWeight: col === 'date' || col === 'subsidary' ? 600 : 400 }}
+                      sx={{
+                        fontSize: '0.875rem',
+                        color: '#212429',
+                        py: 2.5,
+                        px: 2.5,
+                        borderBottom: '1px solid #EEEEEE',
+                        // Make description column wider and wrap text
+                        ...(col === 'description' && {
+                          minWidth: 300,
+                          maxWidth: 500,
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                        }),
+                      }}
                     >
                       {isEditing && col === 'subsidary' ? (
                         <TextField
                           value={editData.subsidary}
                           disabled
                           size="small"
+                          fullWidth
                           sx={{
-                            borderRadius: 2,
-                            background: '#f5f5f5',
-                            '& .MuiInputBase-input': {
-                              color: '#666',
-                              fontStyle: 'italic',
+                            '& .MuiInputBase-input.Mui-disabled': {
+                              WebkitTextFillColor: '#999999',
                             },
                           }}
                         />
@@ -385,7 +689,7 @@ const StatusTable = ({
                           onChange={e => handleChange(e, 'leave')}
                           select
                           size="small"
-                          sx={{ borderRadius: 2, background: '#f5faff' }}
+                          fullWidth
                         >
                           <MenuItem value={true}>Yes</MenuItem>
                           <MenuItem value={false}>No</MenuItem>
@@ -395,25 +699,54 @@ const StatusTable = ({
                           value={editData.description || ''}
                           onChange={e => handleChange(e, 'description')}
                           size="small"
-                          sx={{ borderRadius: 2, background: '#f5faff' }}
+                          fullWidth
+                          multiline
+                          rows={3}
                         />
                       ) : col === 'leave' ? (
                         row.leave ? (
-                          'Yes'
+                          <Chip
+                            label="Yes"
+                            size="small"
+                            sx={{
+                              backgroundColor: '#DDE9FF',
+                              color: '#212429',
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                            }}
+                          />
                         ) : row.leave === false ? (
-                          'No'
+                          <Chip
+                            label="No"
+                            size="small"
+                            sx={{
+                              backgroundColor: '#F0F0F0',
+                              color: '#666666',
+                              fontWeight: 600,
+                              fontSize: '0.75rem',
+                            }}
+                          />
                         ) : (
                           ''
                         )
                       ) : col === 'date' ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {formatDate(row.date)}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Typography
+                            sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#212429' }}
+                          >
+                            {formatDate(row.date)}
+                          </Typography>
                           {editable && (
                             <Chip
                               label="Editable"
                               size="small"
-                              color="success"
-                              sx={{ fontSize: '0.6rem', height: '16px' }}
+                              sx={{
+                                height: 20,
+                                fontSize: '0.6875rem',
+                                fontWeight: 700,
+                                backgroundColor: '#10B981',
+                                color: '#FFFFFF',
+                              }}
                             />
                           )}
                         </Box>
@@ -423,29 +756,60 @@ const StatusTable = ({
                     </TableCell>
                   ))}
                   {extraColumns.map(col => (
-                    <TableCell key={col}>
+                    <TableCell
+                      key={col}
+                      sx={{
+                        fontSize: '0.875rem',
+                        color: '#212429',
+                        py: 2.5,
+                        px: 2.5,
+                        borderBottom: '1px solid #EEEEEE',
+                      }}
+                    >
                       {isEditing ? (
                         <TextField
                           value={editData[col] || ''}
                           onChange={e => handleChange(e, col)}
                           size="small"
-                          sx={{ borderRadius: 2, background: '#f5faff' }}
+                          fullWidth
                         />
                       ) : (
                         getDisplayValue(row[col])
                       )}
                     </TableCell>
                   ))}
-                  <TableCell>
+                  <TableCell sx={{ py: 2.5, px: 2.5, borderBottom: '1px solid #EEEEEE' }}>
                     {isEditing ? (
-                      <>
-                        <IconButton onClick={handleSave} color="primary" size="small">
-                          <Save />
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <IconButton
+                          onClick={handleSave}
+                          size="small"
+                          sx={{
+                            color: '#FFFFFF',
+                            backgroundColor: '#10B981',
+                            p: 1,
+                            '&:hover': {
+                              backgroundColor: '#059669',
+                            },
+                          }}
+                        >
+                          <Save sx={{ fontSize: 16 }} />
                         </IconButton>
-                        <IconButton onClick={handleCancel} color="secondary" size="small">
-                          <Cancel />
+                        <IconButton
+                          onClick={handleCancel}
+                          size="small"
+                          sx={{
+                            color: '#FFFFFF',
+                            backgroundColor: '#999999',
+                            p: 1,
+                            '&:hover': {
+                              backgroundColor: '#777777',
+                            },
+                          }}
+                        >
+                          <Cancel sx={{ fontSize: 16 }} />
                         </IconButton>
-                      </>
+                      </Box>
                     ) : (
                       <Tooltip
                         title={
@@ -466,22 +830,18 @@ const StatusTable = ({
                                 );
                               }
                             }}
-                            color="primary"
                             size="small"
                             disabled={!editable}
                             sx={{
-                              borderRadius: 2,
-                              background: editable ? '#e3f0ff' : '#f5faff',
+                              color: editable ? '#60A1FE' : '#CCCCCC',
+                              p: 1,
                               '&:hover': {
-                                background: editable ? '#1976d2' : '#f5faff',
-                                color: editable ? 'white' : 'inherit',
+                                backgroundColor: editable ? '#E5F6FD' : 'transparent',
+                                color: editable ? '#4080DD' : '#CCCCCC',
                               },
-                              opacity: editable ? 1 : 0.3,
-                              cursor: editable ? 'pointer' : 'not-allowed',
-                              pointerEvents: editable ? 'auto' : 'none',
                             }}
                           >
-                            <Edit />
+                            <Edit sx={{ fontSize: 16 }} />
                           </IconButton>
                         </span>
                       </Tooltip>
@@ -493,6 +853,54 @@ const StatusTable = ({
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Pagination Footer */}
+      <Box
+        sx={{
+          p: 3,
+          borderTop: '1px solid #e0e0e0',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#F9F9F9',
+        }}
+      >
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+          shape="rounded"
+          showFirstButton
+          showLastButton
+          sx={{
+            '& .MuiPaginationItem-root': {
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: '#666666',
+              border: '1px solid #d0d0d0',
+              backgroundColor: '#FFFFFF',
+              '&:hover': {
+                backgroundColor: '#E5F6FD',
+                borderColor: '#60A1FE',
+                color: '#60A1FE',
+              },
+            },
+            '& .MuiPaginationItem-root.Mui-selected': {
+              backgroundColor: '#60A1FE',
+              color: '#FFFFFF',
+              borderColor: '#60A1FE',
+              fontWeight: 700,
+              '&:hover': {
+                backgroundColor: '#4080DD',
+              },
+            },
+            '& .MuiPaginationItem-ellipsis': {
+              color: '#999999',
+            },
+          }}
+        />
+      </Box>
     </Paper>
   );
 };
