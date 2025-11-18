@@ -4,9 +4,10 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import PropTypes from 'prop-types';
 import { useUpdateData } from 'src/react-query/useFetchApis';
 import { capitalizeName } from '../Utils';
-import { Autocomplete, TextField, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
 export const TransactionModal = ({
   editTransaction,
@@ -37,6 +38,27 @@ export const TransactionModal = ({
     if (!response.ok) throw new Error('Network response was not ok');
     return response.json();
   });
+
+  // Fetch subsidiaries from backend
+  const { data: subsidiariesData, isLoading: isSubsidiariesLoading } = useGetSubsidiaries();
+
+  // Only show active subsidiaries
+  const activeSubsidiaries = Array.isArray(subsidiariesData)
+    ? subsidiariesData.filter(sub => sub.active === true || sub.active === 'Yes')
+    : [];
+
+  // Fallback subsidiary options if backend data is not available
+  const fallbackSubsidiaries = [
+    { subName: 'AMS', id: 'ams' },
+    { subName: 'ACS', id: 'acs' },
+    { subName: 'ASS', id: 'ass' },
+    { subName: 'APS', id: 'aps' },
+    { subName: 'ATI', id: 'ati' },
+  ];
+
+  // Use active subsidiaries if available, otherwise use fallback
+  const availableSubsidiaries =
+    activeSubsidiaries.length > 0 ? activeSubsidiaries : fallbackSubsidiaries;
 
   // Extract unique sender and receiver names
   const { senderNames, receiverNames } = useMemo(() => {
@@ -409,173 +431,182 @@ export const TransactionModal = ({
 
             {/* Credit/Debit */}
             <div className="col-md-6">
-              <FormControl fullWidth size="small" required>
-                <InputLabel
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    '&.Mui-focused': {
-                      color: '#3b82f6',
-                    },
-                  }}
-                >
-                  Credit/Debit
-                </InputLabel>
-                <Select
-                  value={formData.transaction_type}
-                  label="Credit/Debit"
-                  onChange={e => handleChange('transaction_type', e.target.value)}
-                  sx={{
-                    borderRadius: '8px',
-                    backgroundColor: '#ffffff',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderWidth: '2px',
-                      borderColor: '#e2e8f0',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#cbd5e1',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#3b82f6',
-                    },
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>Select</em>
-                  </MenuItem>
-                  <MenuItem value="credit">Credit</MenuItem>
-                  <MenuItem value="debit">Debit</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                options={['Credit', 'Debit']}
+                value={
+                  formData.transaction_type
+                    ? formData.transaction_type.charAt(0).toUpperCase() +
+                      formData.transaction_type.slice(1)
+                    : ''
+                }
+                onChange={(event, newValue) => {
+                  handleChange('transaction_type', newValue ? newValue.toLowerCase() : '');
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Credit/Debit"
+                    placeholder="Select Credit or Debit"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
             </div>
 
             {/* Payment Type */}
             <div className="col-md-6">
-              <FormControl fullWidth size="small" required>
-                <InputLabel
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    '&.Mui-focused': {
-                      color: '#3b82f6',
-                    },
-                  }}
-                >
-                  Payment Type
-                </InputLabel>
-                <Select
-                  value={formData.payment_type}
-                  label="Payment Type"
-                  onChange={e => handleChange('payment_type', e.target.value)}
-                  sx={{
-                    borderRadius: '8px',
-                    backgroundColor: '#ffffff',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderWidth: '2px',
-                      borderColor: '#e2e8f0',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#cbd5e1',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#3b82f6',
-                    },
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>Select</em>
-                  </MenuItem>
-                  <MenuItem value="cash">Cash</MenuItem>
-                  <MenuItem value="upi">UPI</MenuItem>
-                  <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                options={['Cash', 'UPI', 'Bank Transfer']}
+                value={
+                  formData.payment_type
+                    ? formData.payment_type
+                        .split('_')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ')
+                    : ''
+                }
+                onChange={(event, newValue) => {
+                  handleChange(
+                    'payment_type',
+                    newValue ? newValue.toLowerCase().replace(' ', '_') : ''
+                  );
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Payment Type"
+                    placeholder="Select Payment Type"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
             </div>
 
             {/* Subsidiary */}
             <div className="col-md-6">
-              <FormControl fullWidth size="small" required>
-                <InputLabel
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    '&.Mui-focused': {
-                      color: '#3b82f6',
-                    },
-                  }}
-                >
-                  Subsidiary
-                </InputLabel>
-                <Select
-                  value={formData.subsidiary}
-                  label="Subsidiary"
-                  onChange={e => handleChange('subsidiary', e.target.value)}
-                  sx={{
-                    borderRadius: '8px',
-                    backgroundColor: '#ffffff',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderWidth: '2px',
-                      borderColor: '#e2e8f0',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#cbd5e1',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#3b82f6',
-                    },
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>Select</em>
-                  </MenuItem>
-                  <MenuItem value="AMS">AMS</MenuItem>
-                  <MenuItem value="ACS">ACS</MenuItem>
-                  <MenuItem value="ASS">ASS</MenuItem>
-                  <MenuItem value="APS">APS</MenuItem>
-                  <MenuItem value="ATI">ATI</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                options={availableSubsidiaries.map(sub => sub.subName)}
+                value={formData.subsidiary}
+                onChange={(event, newValue) => {
+                  handleChange('subsidiary', newValue || '');
+                }}
+                disabled={isSubsidiariesLoading}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Subsidiary"
+                    placeholder="Select Subsidiary"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
             </div>
 
             {/* Currency */}
             <div className="col-md-6">
-              <FormControl fullWidth size="small" required>
-                <InputLabel
-                  sx={{
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    '&.Mui-focused': {
-                      color: '#3b82f6',
-                    },
-                  }}
-                >
-                  Currency
-                </InputLabel>
-                <Select
-                  value={formData.currency}
-                  label="Currency"
-                  onChange={e => handleChange('currency', e.target.value)}
-                  sx={{
-                    borderRadius: '8px',
-                    backgroundColor: '#ffffff',
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderWidth: '2px',
-                      borderColor: '#e2e8f0',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#cbd5e1',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#3b82f6',
-                    },
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>Select</em>
-                  </MenuItem>
-                  <MenuItem value="INR">INR</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                options={['INR']}
+                value={formData.currency}
+                onChange={(event, newValue) => {
+                  handleChange('currency', newValue || '');
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Currency"
+                    placeholder="Select Currency"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
             </div>
 
             {/* Description */}
