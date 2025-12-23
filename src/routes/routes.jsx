@@ -31,6 +31,11 @@ import Ans from 'src/components/pages/inc/Ans';
 import ResumeHome from 'src/components/pages/resume/ResumeHome';
 import FinanceDataUpload from 'src/components/pages/inc/FinanceDataUpload';
 import VideoEditor from 'src/components/pages/inc/VideoEditor';
+import TermsAndConditions from 'src/components/pages/Policies/TermsAndConditions';
+import PrivacyPolicy from 'src/components/pages/Policies/PrivacyPolicy';
+import RefundPolicy from 'src/components/pages/Policies/RefundPolicy';
+import ReturnPolicy from 'src/components/pages/Policies/ReturnPolicy';
+import ShippingPolicy from 'src/components/pages/Policies/ShippingPolicy';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +50,14 @@ const router = createBrowserRouter([
       { path: 'register', element: <Register /> },
       { path: 'resetpassword', element: <ForgotPassword /> },
       { path: 'not-authorized', element: <NotAuthorizedPage /> },
+      // Terms & Conditions - accessible at /t-and-c
+      // Note: For PhonePe approval, if exact URL www.anddhengroup.com/t&c is required,
+      // set up server-side URL rewriting (nginx/Apache) to redirect t&c to t-and-c
+      { path: 't-and-c', element: <TermsAndConditions /> },
+      { path: 'privacypolicy', element: <PrivacyPolicy /> },
+      { path: 'refundpolicy', element: <RefundPolicy /> },
+      { path: 'returnpolicy', element: <ReturnPolicy /> },
+      { path: 'shippingpolicy', element: <ShippingPolicy /> },
     ],
   },
   {
