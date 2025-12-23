@@ -431,6 +431,10 @@ export const adminPlates = [
     child: 'Extension Data',
     route: 'extension',
   },
+  {
+    child: 'Onboarding Task',
+    route: 'onboardingtask',
+  },
 ];
 
 export const adminPortal = [

@@ -7,6 +7,8 @@ import { useStatusCalendar } from 'src/react-query/useStatusCalender';
 import useAuthStore from 'src/services/store/globalStore';
 import PropTypes from 'prop-types';
 
+import { useMemo } from 'react';
+
 // Subsidiary Management Component
 const SubsidiaryManagement = () => {
   const [subsidiaries, setSubsidiaries] = useState([]);
@@ -336,6 +338,7 @@ const EmployeeStatus = () => {
   const [singleStatus, setSingleStatus] = useState([]);
   const [allStatuses, setAllStatuses] = useState({});
   const [isLoadingStatuses, setIsLoadingStatuses] = useState(false);
+  const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
 
   // Calendar state management
@@ -351,11 +354,48 @@ const EmployeeStatus = () => {
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
 
   // Fetch data with loading states
-  const { data, isLoading: isLoadingCalendarData } = useStatusCalendar(empId);
-  const { data: employeeData = [], isLoading: isLoadingEmployees } = useFetchData(
-    'status',
-    '/get_status_ids'
-  );
+  const { data: calendarData, isLoading: isLoadingCalendarData } = useStatusCalendar(empId);
+
+  // Filter calendar data based on subsidiary permissions
+  const data = useMemo(() => {
+    if (!calendarData?.status_updates) return calendarData;
+
+    const currentRole = localStorage.getItem('roles');
+    const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+    const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+
+    // If user is superadmin or has no subsidiary restrictions, show all data
+    if (userRoles.includes('superadmin') || !hasSubsidiaryRoles) {
+      return calendarData;
+    }
+
+    // Get user's allowed subsidiaries
+    const userSubsidiaries = userRoles
+      .filter(role => role.startsWith('status_subsidiary_'))
+      .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+
+    // Filter status updates based on subsidiary access
+    return {
+      ...calendarData,
+      status_updates: calendarData.status_updates.filter(item => {
+        const subsidiary = item.subsidiary || item.subsidary;
+        return subsidiary && userSubsidiaries.includes(subsidiary.toUpperCase());
+      }),
+    };
+  }, [calendarData]);
+  const {
+    data: employeeData = [],
+    isLoading: isLoadingEmployees,
+    error: employeeError,
+  } = useFetchData('status', '/get_status_ids');
+
+  // Log any API errors
+  useEffect(() => {
+    if (employeeError) {
+      console.error('Error fetching employee data:', employeeError);
+      setError(employeeError);
+    }
+  }, [employeeError]);
   const { mutate: getAllStatus } = useAddData('status', '/get_status_update');
 
   // Handle calendar date changes and update global store
@@ -371,12 +411,48 @@ const EmployeeStatus = () => {
       const day = String(inputDate.getDate()).padStart(2, '0');
       const formattedDate = `${year}-${month}-${day}`;
       setSelectedDate(formattedDate);
-      const status = data?.status_updates?.filter(item => item.date === formattedDate);
-      if (status.length > 0) {
-        setSingleStatus(status);
-      } else {
-        setSingleStatus([]);
-      }
+
+      // Get user roles
+      const currentRole = localStorage.getItem('roles');
+      const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+      const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+
+      // Get user's allowed subsidiaries
+      const userSubsidiaries = userRoles
+        .filter(role => role.startsWith('status_subsidiary_'))
+        .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+
+      // Filter statuses for the selected date
+      const dateStatuses = data?.status_updates?.filter(item => item.date === formattedDate) || [];
+
+      // Apply subsidiary access filtering
+      const filteredStatuses = dateStatuses.filter(item => {
+        // If user is superadmin, show all
+        if (userRoles.includes('superadmin')) {
+          return true;
+        }
+
+        // If user has only status role without subsidiary roles, show all
+        if (userRoles.includes('status') && !hasSubsidiaryRoles) {
+          return true;
+        }
+
+        // Get subsidiary from status
+        const subsidiary = item.subsidiary || item.subsidary || '';
+
+        // If user has subsidiary roles, only show matching subsidiaries
+        if (hasSubsidiaryRoles) {
+          // If no subsidiary specified and user has subsidiary roles, don't show
+          if (!subsidiary) {
+            return false;
+          }
+          return userSubsidiaries.includes(subsidiary.toUpperCase());
+        }
+
+        return false;
+      });
+
+      setSingleStatus(filteredStatuses);
     }
   }, [selectedAcsStatusDate, data]);
 
@@ -385,17 +461,90 @@ const EmployeeStatus = () => {
     : [];
 
   useEffect(() => {
+    // If still loading, don't process
+    if (isLoadingEmployees) return;
+
+    // Handle empty or invalid data
+    if (!employeeData || !Array.isArray(employeeData)) {
+      console.warn('Invalid or empty employee data:', employeeData);
+      setEmployees([]);
+      return;
+    }
+
+    // Get user roles
+    const currentRole = localStorage.getItem('roles');
+    const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+
+    // Check subsidiary access
+    const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+
+    // If superadmin or no subsidiary restrictions, show all
+    if (userRoles.includes('superadmin') || !hasSubsidiaryRoles) {
+      setEmployees(employeeData);
+      return;
+    }
+
+    // Get allowed subsidiaries
+    const userSubsidiaries = userRoles
+      .filter(role => role.startsWith('status_subsidiary_'))
+      .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+    console.log('Allowed subsidiaries:', userSubsidiaries);
+
     setEmployees(employeeData);
   }, [employeeData]);
+
+  // Function to filter status updates based on subsidiary access
+  const filterStatusByAccess = statusData => {
+    const currentRole = localStorage.getItem('roles');
+    const userRoles = currentRole?.split(',').map(role => role.trim()) || [];
+
+    // If user is superadmin, show all
+    if (userRoles.includes('superadmin')) {
+      return statusData;
+    }
+
+    // Check if user has any subsidiary-specific access
+    const hasSubsidiaryRoles = userRoles.some(role => role.startsWith('status_subsidiary_'));
+
+    // If user has status role but no subsidiary roles, show all
+    if (userRoles.includes('status') && !hasSubsidiaryRoles) {
+      return statusData;
+    }
+
+    // Get the subsidiaries user has access to
+    const userSubsidiaries = userRoles
+      .filter(role => role.startsWith('status_subsidiary_'))
+      .map(role => role.replace('status_subsidiary_', '').toUpperCase());
+
+    return statusData.filter(item => {
+      // Extract subsidiary from status data
+      const subsidiary =
+        item.subsidiary ||
+        item.userStatus?.subsidiary ||
+        item.subsidary ||
+        item.userStatus?.subsidary; // Handle both spellings
+
+      // If no subsidiary info and user has any subsidiary access, deny
+      if (!subsidiary && userSubsidiaries.length > 0) {
+        return false;
+      }
+
+      return userSubsidiaries.includes(subsidiary?.toUpperCase());
+    });
+  };
 
   useEffect(() => {
     if (empId) {
       setIsLoadingStatuses(true);
+      setError(null);
       getAllStatus(
         { user_id: empId },
         {
           onSuccess: response => {
-            const newStatuses = response.reduce((acc, item) => {
+            // Filter response based on user's subsidiary access
+            const filteredResponse = filterStatusByAccess(response);
+
+            const newStatuses = filteredResponse.reduce((acc, item) => {
               const { user_id, date, ...userStatus } = item;
               if (!acc[user_id]) {
                 acc[user_id] = [];
@@ -403,11 +552,13 @@ const EmployeeStatus = () => {
               acc[user_id].push({ date, userStatus });
               return acc;
             }, {});
+
             setAllStatuses(newStatuses);
             queryClient.invalidateQueries('status');
             setIsLoadingStatuses(false);
           },
           onError: error => {
+            console.error('Error fetching statuses:', error);
             setAllStatuses({});
             setIsLoadingStatuses(false);
           },
@@ -415,10 +566,12 @@ const EmployeeStatus = () => {
       );
     }
   }, [empId, getAllStatus, queryClient]);
-
   useEffect(() => {
     if (empId && allStatuses[empId]) {
-      setFormattedData(allStatuses[empId]);
+      const sortedStatuses = [...allStatuses[empId]].sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+      });
+      setFormattedData(sortedStatuses);
     }
   }, [allStatuses, empId]);
 
@@ -483,13 +636,24 @@ const EmployeeStatus = () => {
     const selectedEmpId = event.target.value;
     const selectedEmpName = employees?.find(emp => emp.user_id === selectedEmpId)?.user_name;
 
+    // Clear previous data
+    setFormattedData([]);
+    setAllStatuses({});
+    setSingleStatus([]);
+    setFilteredStatuses([]);
+
+    // Set new employee
     setEmpId(selectedEmpId);
     setEmpName(selectedEmpName);
-    setSingleStatus([]);
-    // Reset filters when employee changes
+
+    // Reset filters
     setLeaveFilter('all');
     setStartDateFilter('');
     setEndDateFilter('');
+
+    // Reset calendar
+    setCalendarSelectedDate(new Date());
+    setCurrentMonth(new Date());
   };
 
   const monthStats = calculateMonthStats(formattedCallenderData, currentMonth);
@@ -547,17 +711,30 @@ const EmployeeStatus = () => {
               ) : (
                 <select className="form-select" value={empId} onChange={handleEmployeeChange}>
                   <option value="">Choose an employee...</option>
-                  {employees?.map(employee => (
-                    <option key={employee.user_id} value={employee.user_id}>
-                      {employee.user_name}
+                  {Array.isArray(employees) && employees.length > 0 ? (
+                    employees.map(employee => (
+                      <option key={employee.user_id} value={employee.user_id}>
+                        {employee.user_name || 'Unnamed Employee'}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      {isLoadingEmployees ? 'Loading employees...' : 'No employees available'}
                     </option>
-                  ))}
+                  )}
                 </select>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          {error.message || 'An error occurred while fetching data'}
+        </div>
+      )}
 
       {empId.length === 0 ? (
         <div className="text-center py-4 py-md-5">
@@ -667,63 +844,74 @@ const EmployeeStatus = () => {
                 <div className="overflow-auto">
                   {isLoadingCalendarData ? (
                     <LoadingSpinner text="Loading status data..." />
-                  ) : Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
-                    singleStatus?.map((status, statusIndex) => {
-                      const filteredEntries = Object.entries(status)?.filter(
-                        ([key, value]) =>
-                          value !== '' &&
-                          value !== '0.00' &&
-                          value !== 0 &&
-                          value !== '0' &&
-                          value !== null &&
-                          key !== 'id' &&
-                          key !== 'user_id' &&
-                          key !== 'user_name'
-                      );
+                  ) : Array.isArray(data?.status_updates) &&
+                    data.status_updates.some(item => item.date === selectedDate) ? (
+                    Array.isArray(singleStatus) && singleStatus?.length > 0 ? (
+                      singleStatus?.map((status, statusIndex) => {
+                        const filteredEntries = Object.entries(status)?.filter(
+                          ([key, value]) =>
+                            value !== '' &&
+                            value !== '0.00' &&
+                            value !== 0 &&
+                            value !== '0' &&
+                            value !== null &&
+                            key !== 'id' &&
+                            key !== 'user_id' &&
+                            key !== 'user_name'
+                        );
 
-                      // Remove duplicates based on key
-                      const uniqueEntries = filteredEntries?.reduce((acc, [key, value]) => {
-                        const existingIndex = acc.findIndex(([existingKey]) => existingKey === key);
-                        if (existingIndex === -1) {
-                          acc.push([key, value]);
-                        }
-                        return acc;
-                      }, []);
+                        // Remove duplicates based on key
+                        const uniqueEntries = filteredEntries?.reduce((acc, [key, value]) => {
+                          const existingIndex = acc.findIndex(
+                            ([existingKey]) => existingKey === key
+                          );
+                          if (existingIndex === -1) {
+                            acc.push([key, value]);
+                          }
+                          return acc;
+                        }, []);
 
-                      return (
-                        <div key={statusIndex}>
-                          {uniqueEntries?.map(([key, value], index) => (
-                            <div key={index} className="py-2 border-bottom">
-                              <div className="d-flex flex-column">
-                                <strong className="text-capitalize fs-6 text-break mb-1">
-                                  {key}:
-                                </strong>
-                                <div className="text-break fs-6">
-                                  {key === 'leave' ? (
-                                    value ? (
-                                      'Yes'
+                        return (
+                          <div key={statusIndex}>
+                            {uniqueEntries?.map(([key, value], index) => (
+                              <div key={index} className="py-2 border-bottom">
+                                <div className="d-flex flex-column">
+                                  <strong className="text-capitalize fs-6 text-break mb-1">
+                                    {key}:
+                                  </strong>
+                                  <div className="text-break fs-6">
+                                    {key === 'leave' ? (
+                                      value ? (
+                                        'Yes'
+                                      ) : (
+                                        'No'
+                                      )
+                                    ) : key === 'ticket_link' || key === 'github_link' ? (
+                                      <a
+                                        href={value}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary text-decoration-none"
+                                      >
+                                        {value}
+                                      </a>
                                     ) : (
-                                      'No'
-                                    )
-                                  ) : key === 'ticket_link' || key === 'github_link' ? (
-                                    <a
-                                      href={value}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-primary text-decoration-none"
-                                    >
-                                      {value}
-                                    </a>
-                                  ) : (
-                                    value
-                                  )}
+                                      value
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })
+                            ))}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="alert alert-warning" role="alert">
+                        <i className="bi bi-exclamation-triangle me-2"></i>
+                        You don`t have permission to view this status due to subsidiary
+                        restrictions.
+                      </div>
+                    )
                   ) : (
                     <p className="text-muted fs-6">Select a date to see status</p>
                   )}

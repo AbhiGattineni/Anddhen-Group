@@ -23,7 +23,7 @@ import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
 const initialFormState = {
   user_id: auth?.currentUser?.uid || '',
-  user_name: auth?.currentUser?.displayName || '',
+  user_name: '',
   subsidary: '',
   date: '',
   endDate: '',
@@ -61,7 +61,13 @@ const initialFormState = {
 
 export const EmployeeDashboard = () => {
   const empName = '';
-  const [formValues, setFormValues] = useState(initialFormState);
+  // Use full name from API if available, else fallback to displayName
+  const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid);
+  const fullName = statusUpdates?.user_name || auth?.currentUser?.displayName || '';
+  const [formValues, setFormValues] = useState({
+    ...initialFormState,
+    user_name: fullName,
+  });
   const [msgResponse, setMsgResponse] = useState(null);
   const [disableInputs, setDisableInputs] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -76,8 +82,6 @@ export const EmployeeDashboard = () => {
 
   // Calendar state management - NEW
   const [calendarSelectedDate, setCalendarSelectedDate] = useState(new Date());
-
-  const { data: statusUpdates } = useStatusCalendar(auth.currentUser?.uid);
   const selectedAcsStatusDate = useAuthStore(state => state.selectedAcsStatusDate);
 
   // Handle calendar date changes and update global store - NEW
@@ -209,9 +213,21 @@ export const EmployeeDashboard = () => {
         return '';
 
       case 'description':
-        if (formValues.leave && !value?.trim()) return 'Description is required when taking leave';
-        if (formValues.subsidary === 'ASS' && !value?.trim())
+        // Check character limit first (highest priority)
+        if (value && value.length > 500) {
+          return 'Description must not exceed 500 characters';
+        }
+
+        // Check if description is required for leave
+        if (formValues.leave && !value?.trim()) {
+          return 'Description is required when taking leave';
+        }
+
+        // Check if description is required for ASS subsidiary
+        if (formValues.subsidary === 'ASS' && !value?.trim()) {
           return 'Description is required for ASS subsidiary';
+        }
+
         return '';
 
       default:
@@ -315,7 +331,7 @@ export const EmployeeDashboard = () => {
       ...initialFormState,
       date: getCurrentAvailableDate(),
       user_id: auth.currentUser.uid,
-      user_name: auth.currentUser.displayName,
+      user_name: statusUpdates?.user_name || auth.currentUser.displayName || '',
     });
     setFieldErrors({});
     setMsgResponse(null);
@@ -380,6 +396,11 @@ export const EmployeeDashboard = () => {
   }
 
   useEffect(() => {
+    // Always set user_name from API if available
+    setFormValues(prev => ({
+      ...prev,
+      user_name: statusUpdates?.user_name || auth?.currentUser?.displayName || '',
+    }));
     resetForm();
     const formattedSelectedDate = formatDate(selectedAcsStatusDate);
     setMsgResponse(null);
@@ -410,7 +431,7 @@ export const EmployeeDashboard = () => {
         setDisableInputs(true);
       }
     }
-  }, [selectedAcsStatusDate, statusUpdates?.status_updates]);
+  }, [selectedAcsStatusDate, statusUpdates?.status_updates, statusUpdates?.user_name]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -454,7 +475,7 @@ export const EmployeeDashboard = () => {
             ...initialFormState,
             subsidary: value,
             date: formatDate(selectedAcsStatusDate),
-            user_name: auth.currentUser.displayName,
+            user_name: statusUpdates?.user_name || auth.currentUser.displayName || '',
             user_id: auth.currentUser.uid,
             selectedSubsidiaryObj,
             ACS: { ...initialFormState.ACS, whatsappId: '' },
@@ -638,21 +659,17 @@ export const EmployeeDashboard = () => {
     const utcMonth = currentUTCDate.getUTCMonth();
     const utcDay = currentUTCDate.getUTCDate();
 
-    // Calculate the cutoff time for today (3:30 AM UTC tomorrow)
-    const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1, 3, 30, 0, 0));
+    // **FIX: Calculate cutoff as 3:30 AM UTC TODAY (not tomorrow)**
+    const cutoffTimeUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay, 3, 30, 0, 0));
 
-    // If current time is before cutoff, show today's date
-    // If current time is after cutoff, show tomorrow's date
     if (now < cutoffTimeUTC) {
-      // Before cutoff - show today's date
-      return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
+      const yesterdayUTC = new Date(Date.UTC(utcYear, utcMonth, utcDay - 1));
+      const yesterdayYear = yesterdayUTC.getUTCFullYear();
+      const yesterdayMonth = yesterdayUTC.getUTCMonth();
+      const yesterdayDay = yesterdayUTC.getUTCDate();
+      return `${yesterdayYear}-${String(yesterdayMonth + 1).padStart(2, '0')}-${String(yesterdayDay).padStart(2, '0')}`;
     } else {
-      // After cutoff - show tomorrow's date
-      const tomorrowUTCDate = new Date(Date.UTC(utcYear, utcMonth, utcDay + 1));
-      const tomorrowYear = tomorrowUTCDate.getUTCFullYear();
-      const tomorrowMonth = tomorrowUTCDate.getUTCMonth();
-      const tomorrowDay = tomorrowUTCDate.getUTCDate();
-      return `${tomorrowYear}-${String(tomorrowMonth + 1).padStart(2, '0')}-${String(tomorrowDay).padStart(2, '0')}`;
+      return `${utcYear}-${String(utcMonth + 1).padStart(2, '0')}-${String(utcDay).padStart(2, '0')}`;
     }
   }
 

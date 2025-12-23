@@ -1,10 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import InputField from '../InputField';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { auth } from 'src/services/Authentication/firebase';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import PropTypes from 'prop-types';
 import { useUpdateData } from 'src/react-query/useFetchApis';
 import { capitalizeName } from '../Utils';
+import { Autocomplete, TextField } from '@mui/material';
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
 export const TransactionModal = ({
   editTransaction,
@@ -28,12 +31,56 @@ export const TransactionModal = ({
 
   const [fieldErrors, setFieldErrors] = useState({});
   const [disableButton, setDisableButton] = useState(true);
+
+  // Fetch all transactions to get existing names
+  const { data: transactions = [] } = useQuery('transactions', async () => {
+    const response = await fetch(`${API_BASE_URL}/transactions/`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  });
+
+  // Fetch subsidiaries from backend
+  const { data: subsidiariesData, isLoading: isSubsidiariesLoading } = useGetSubsidiaries();
+
+  // Only show active subsidiaries
+  const activeSubsidiaries = Array.isArray(subsidiariesData)
+    ? subsidiariesData.filter(sub => sub.active === true || sub.active === 'Yes')
+    : [];
+
+  // Fallback subsidiary options if backend data is not available
+  const fallbackSubsidiaries = [
+    { subName: 'AMS', id: 'ams' },
+    { subName: 'ACS', id: 'acs' },
+    { subName: 'ASS', id: 'ass' },
+    { subName: 'APS', id: 'aps' },
+    { subName: 'ATI', id: 'ati' },
+  ];
+
+  // Use active subsidiaries if available, otherwise use fallback
+  const availableSubsidiaries =
+    activeSubsidiaries.length > 0 ? activeSubsidiaries : fallbackSubsidiaries;
+
+  // Extract unique sender and receiver names
+  const { senderNames, receiverNames } = useMemo(() => {
+    const senders = new Set();
+    const receivers = new Set();
+
+    transactions.forEach(tx => {
+      if (tx.sender_name) senders.add(tx.sender_name);
+      if (tx.receiver_name) receivers.add(tx.receiver_name);
+    });
+
+    return {
+      senderNames: Array.from(senders).sort(),
+      receiverNames: Array.from(receivers).sort(),
+    };
+  }, [transactions]);
+
   useEffect(() => {
     if (editTransaction) {
-      // Convert ISO string to the format 'YYYY-MM-DDTHH:MM'
       const formattedDate = new Date(editTransaction.transaction_datetime)
         .toISOString()
-        .slice(0, 16); // Remove the 'Z' and keep only 'YYYY-MM-DDTHH:MM'
+        .slice(0, 16);
 
       setFormData({
         receiver_name: editTransaction.receiver_name || '',
@@ -54,9 +101,7 @@ export const TransactionModal = ({
   const resetForm = () => {
     setFormData({
       receiver_name: '',
-      // receiver_id: '',
       sender_name: '',
-      // sender_id: '',
       amount: '',
       transaction_datetime: '',
       transaction_type: '',
@@ -68,16 +113,14 @@ export const TransactionModal = ({
     setFieldErrors({});
   };
 
-  // ... existing code ...
   const handleChange = (field, value) => {
     if (field === 'amount') {
-      // Convert to number and validate
       const numValue = parseFloat(value);
-      if (numValue <= 0) {
+      if (value && numValue <= 0) {
         handleFieldError('amount', 'Amount must be greater than 0');
+        setFormData(prev => ({ ...prev, [field]: value }));
         return;
       }
-      // Clear any previous error if value is valid
       handleFieldError('amount', null);
     }
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -152,9 +195,7 @@ export const TransactionModal = ({
       currency: formData.currency,
       debited_amount: 0.0,
       description: formData.description,
-      // receiver_id: formData.receiver_id,
       receiver_name: capitalizeName(formData.receiver_name),
-      // sender_id: formData.sender_id,
       sender_name: capitalizeName(formData.sender_name),
       subsidiary: formData.subsidiary,
       transaction_datetime: formData.transaction_datetime,
@@ -184,277 +225,478 @@ export const TransactionModal = ({
 
   const toggleModal = useCallback(() => {
     resetForm();
-    document.body.style.overflow = 'auto';
     setShowModal(false);
     setEditTransaction(null);
-  }, [setShowModal]);
-
-  useEffect(() => {
-    if (showModal) {
-      const handleBodyOverflow = () => {
-        document.body.style.overflow = showModal ? 'hidden' : 'auto';
-      };
-
-      handleBodyOverflow();
-
-      return () => {
-        document.body.style.overflow = 'auto'; // Ensure body overflow is restored when unmounting
-      };
-    }
-  }, [showModal]);
-
-  useEffect(() => {
-    if (!showModal) return;
-
-    const handleClickOutside = event => {
-      // 1) Click inside the modal? → ignore
-      if (event.target.closest('.modal-content')) return;
-
-      // 2) Click inside react-select's menu or menu-list? → ignore
-      if (
-        event.target.closest('.react-select__menu') ||
-        event.target.closest('.react-select__menu-list')
-      ) {
-        return;
-      }
-
-      // 3) Otherwise it really is outside → close the modal
-      toggleModal();
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showModal, toggleModal]);
+  }, [setShowModal, setEditTransaction]);
 
   return (
-    <>
-      {/* Dark overlay */}
-      <div
-        className={`position-fixed top-0 start-0 w-100 h-100 ${showModal ? 'd-block' : 'd-none'}`}
+    <Modal
+      show={showModal}
+      onHide={toggleModal}
+      centered
+      backdrop="static"
+      size="lg"
+      style={{
+        backdropFilter: 'blur(4px)',
+      }}
+    >
+      <Modal.Header
+        closeButton
         style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 104,
+          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+          borderBottom: '2px solid #e2e8f0',
+          padding: '20px 24px',
         }}
-      />
-      {/* Modal */}
-      <div
-        className={`position-fixed top-50 start-50 translate-middle bg-white rounded shadow overflow-hidden modal-dialog-centered ${
-          showModal ? 'd-block' : 'd-none'
-        }`}
-        style={{
-          maxHeight: '90vh',
-          maxWidth: '90vw',
-          overflowY: 'auto',
-          zIndex: 105,
-        }} // Limiting modal height and width, allowing overflow
       >
-        <div className="modal-content p-0 h-100">
-          <div className="modal-header py-2 px-3 d-flex justify-content-between">
-            <h1 className="modal-title fs-6" id="exampleModalLabel">
-              {editTransaction ? 'Edit' : 'Add'} Transaction
-            </h1>
-            <button type="button" className="btn-close" onClick={toggleModal}></button>
-          </div>
-          <div
-            className="modal-body row px-3 py-2"
-            style={{ overflowY: 'auto', maxHeight: '80vh' }}
-          >
-            <form className="w-100">
-              <div className="row">
-                <InputField
-                  className="col-12 col-md-6 mb-3"
-                  name="receiver_name"
-                  label="Receiver Name"
-                  placeholder="Receiver Name"
-                  type="text"
-                  value={formData.receiver_name}
-                  onChange={e => handleChange('receiver_name', e.target.value)}
-                  setError={error => handleFieldError('receiver_name', error)}
-                />
-                <InputField
-                  className="col-12 col-md-6 mb-3"
-                  name="sender_name"
-                  label="Sender Name"
-                  placeholder="Sender Name"
-                  type="text"
-                  value={formData.sender_name}
-                  onChange={e => handleChange('sender_name', e.target.value)}
-                  setError={error => handleFieldError('sender_name', error)}
-                />
-                {/* <InputField
-                className="col-12 col-md-6 mb-3"
-                name="receiver_id"
-                label="Receiver ID"
-                placeholder="Receiver ID"
-                type="text"
-                value={formData.receiver_id}
-                onChange={(e) => handleChange('receiver_id', e.target.value)}
-                setError={(error) => handleFieldError('receiver_id', error)}
-              /> */}
-              </div>
-              {/* <div className="row">
+        <Modal.Title
+          style={{
+            fontSize: '20px',
+            fontWeight: '700',
+            color: '#1e293b',
+            letterSpacing: '-0.5px',
+          }}
+        >
+          {editTransaction ? 'Edit' : 'Add'} Transaction
+        </Modal.Title>
+      </Modal.Header>
 
-              <InputField
-                className="col-12 col-md-6 mb-3"
-                name="sender_id"
-                label="Sender ID"
-                placeholder="Sender ID"
-                type="text"
-                value={formData.sender_id}
-                onChange={(e) => handleChange('sender_id', e.target.value)}
-                setError={(error) => handleFieldError('sender_id', error)}
-              />
-            </div> */}
-              <div className="row">
-                <InputField
-                  className="col-12 col-md-6 mb-3"
-                  name="amount"
-                  label="Amount"
-                  placeholder="Amount"
-                  type="number"
-                  value={formData.amount}
-                  onChange={e => handleChange('amount', e.target.value)}
-                  setError={error => handleFieldError('amount', error)}
-                />
-                <InputField
-                  className="col-12 col-md-6 mb-3"
-                  name="transaction_datetime"
-                  label="Transaction Date & Time"
-                  placeholder="Transaction Date & Time"
-                  type="datetime-local"
-                  value={formData.transaction_datetime}
-                  onChange={e => handleChange('transaction_datetime', e.target.value)}
-                  setError={error => handleFieldError('transaction_datetime', error)}
-                />
-              </div>
-              <div className="row">
-                <div className="col-12 col-md-6 mb-3">
-                  <label htmlFor="transaction_type" className="form-label">
-                    Credit/Debit{' '}
-                    <span className="text-danger" style={{ userSelect: 'none' }}>
-                      {' '}
-                      *
-                    </span>
-                  </label>
-                  <select
-                    id="transaction_type"
-                    name="transaction_type"
-                    className="form-select"
-                    value={formData.transaction_type}
-                    onChange={e => handleChange('transaction_type', e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    <option value="credit">Credit</option>
-                    <option value="debit">Debit</option>
-                  </select>
-                </div>
-                <div className="col-12 col-md-6 mb-3">
-                  <label htmlFor="payment_type" className="form-label">
-                    Transaction Type{' '}
-                    <span className="text-danger" style={{ userSelect: 'none' }}>
-                      {' '}
-                      *
-                    </span>
-                  </label>
-                  <select
-                    id="payment_type"
-                    name="payment_type"
-                    className="form-select"
-                    value={formData.payment_type}
-                    onChange={e => handleChange('payment_type', e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    <option value="cash">Cash</option>
-                    <option value="upi">UPI</option>
-                    <option value="bank_transfer">Bank Transfer</option>
-                  </select>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-12 col-md-6 mb-3">
-                  <label htmlFor="subsidiary" className="form-label">
-                    Subsidiary{' '}
-                    <span className="text-danger" style={{ userSelect: 'none' }}>
-                      {' '}
-                      *
-                    </span>
-                  </label>
-                  <select
-                    id="subsidiary"
-                    name="subsidiary"
-                    className="form-select"
-                    value={formData.subsidiary}
-                    onChange={e => handleChange('subsidiary', e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    <option value="AMS">AMS</option>
-                    <option value="ACS">ACS</option>
-                    <option value="ASS">ASS</option>
-                    <option value="APS">APS</option>
-                    <option value="ATI">ATI</option>
-                  </select>
-                </div>
-                <div className="col-12 col-md-6 mb-3">
-                  <label htmlFor="currency" className="form-label">
-                    Currency{' '}
-                    <span className="text-danger" style={{ userSelect: 'none' }}>
-                      {' '}
-                      *
-                    </span>
-                  </label>
-                  <select
-                    id="currency"
-                    name="currency"
-                    className="form-select"
-                    value={formData.currency}
-                    onChange={e => handleChange('currency', e.target.value)}
-                  >
-                    <option value="">Select</option>
-                    <option value="INR">INR</option>
-                    {/* <option value="USD">USD</option> */}
-                  </select>
-                </div>
-                <InputField
-                  className="col-12 mb-3"
-                  name="description"
-                  label="Description"
-                  placeholder="Description"
-                  type="text"
-                  value={formData.description}
-                  onChange={e => handleChange('description', e.target.value)}
-                  setError={error => handleFieldError('description', error)}
-                />
-              </div>
-              <div className="form-group py-3 w-100 d-flex justify-content-center">
-                {editTransaction ? (
-                  // If editTransaction has data, show the Edit button
-                  <button
-                    onClick={handleEdit}
-                    type="button"
-                    className="btn btn-warning shadow px-5"
-                    disabled={disableButton || isLoading}
-                  >
-                    {isUpdating ? 'Updating...' : 'Update'}
-                  </button>
-                ) : (
-                  // If no editTransaction data, show the Submit button
-                  <button
-                    onClick={handleSubmit}
-                    type="submit"
-                    className="btn btn-warning shadow px-5"
-                    disabled={disableButton || isLoading}
-                  >
-                    {isLoading ? 'Submitting...' : 'Submit'}
-                  </button>
+      <Modal.Body style={{ padding: '24px', backgroundColor: '#ffffff' }}>
+        <form>
+          <div className="row g-3">
+            {/* Receiver Name */}
+            <div className="col-md-6">
+              <Autocomplete
+                freeSolo
+                options={receiverNames}
+                value={formData.receiver_name}
+                onChange={(event, newValue) => {
+                  handleChange('receiver_name', newValue || '');
+                }}
+                onInputChange={(event, newInputValue) => {
+                  handleChange('receiver_name', newInputValue);
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Receiver Name"
+                    placeholder="Type or select"
+                    required
+                    fullWidth
+                    size="small"
+                    error={!!fieldErrors.receiver_name}
+                    helperText={fieldErrors.receiver_name}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
                 )}
-              </div>
-            </form>
+              />
+            </div>
+
+            {/* Sender Name */}
+            <div className="col-md-6">
+              <Autocomplete
+                freeSolo
+                options={senderNames}
+                value={formData.sender_name}
+                onChange={(event, newValue) => {
+                  handleChange('sender_name', newValue || '');
+                }}
+                onInputChange={(event, newInputValue) => {
+                  handleChange('sender_name', newInputValue);
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Sender Name"
+                    placeholder="Type or select"
+                    required
+                    fullWidth
+                    size="small"
+                    error={!!fieldErrors.sender_name}
+                    helperText={fieldErrors.sender_name}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
+            </div>
+
+            {/* Amount */}
+            <div className="col-md-6">
+              <TextField
+                label="Amount"
+                placeholder="Amount"
+                type="number"
+                required
+                fullWidth
+                size="small"
+                value={formData.amount}
+                onChange={e => handleChange('amount', e.target.value)}
+                error={!!fieldErrors.amount}
+                helperText={fieldErrors.amount}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                    backgroundColor: '#ffffff',
+                    '& fieldset': {
+                      borderWidth: '2px',
+                      borderColor: '#e2e8f0',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#cbd5e1',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: '14px',
+                    fontWeight: '500',
+                  },
+                }}
+              />
+            </div>
+
+            {/* Transaction Date & Time */}
+            <div className="col-md-6">
+              <TextField
+                label="Transaction Date & Time"
+                type="datetime-local"
+                required
+                fullWidth
+                size="small"
+                value={formData.transaction_datetime}
+                onChange={e => handleChange('transaction_datetime', e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                    backgroundColor: '#ffffff',
+                    '& fieldset': {
+                      borderWidth: '2px',
+                      borderColor: '#e2e8f0',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#cbd5e1',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: '14px',
+                    fontWeight: '500',
+                  },
+                }}
+              />
+            </div>
+
+            {/* Credit/Debit */}
+            <div className="col-md-6">
+              <Autocomplete
+                options={['Credit', 'Debit']}
+                value={
+                  formData.transaction_type
+                    ? formData.transaction_type.charAt(0).toUpperCase() +
+                      formData.transaction_type.slice(1)
+                    : ''
+                }
+                onChange={(event, newValue) => {
+                  handleChange('transaction_type', newValue ? newValue.toLowerCase() : '');
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Credit/Debit"
+                    placeholder="Select Credit or Debit"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
+            </div>
+
+            {/* Payment Type */}
+            <div className="col-md-6">
+              <Autocomplete
+                options={['Cash', 'UPI', 'Bank Transfer']}
+                value={
+                  formData.payment_type
+                    ? formData.payment_type
+                        .split('_')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ')
+                    : ''
+                }
+                onChange={(event, newValue) => {
+                  handleChange(
+                    'payment_type',
+                    newValue ? newValue.toLowerCase().replace(' ', '_') : ''
+                  );
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Payment Type"
+                    placeholder="Select Payment Type"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
+            </div>
+
+            {/* Subsidiary */}
+            <div className="col-md-6">
+              <Autocomplete
+                options={availableSubsidiaries.map(sub => sub.subName)}
+                value={formData.subsidiary}
+                onChange={(event, newValue) => {
+                  handleChange('subsidiary', newValue || '');
+                }}
+                disabled={isSubsidiariesLoading}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Subsidiary"
+                    placeholder="Select Subsidiary"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
+            </div>
+
+            {/* Currency */}
+            <div className="col-md-6">
+              <Autocomplete
+                options={['INR']}
+                value={formData.currency}
+                onChange={(event, newValue) => {
+                  handleChange('currency', newValue || '');
+                }}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label="Currency"
+                    placeholder="Select Currency"
+                    required
+                    fullWidth
+                    size="small"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '8px',
+                        backgroundColor: '#ffffff',
+                        '& fieldset': {
+                          borderWidth: '2px',
+                          borderColor: '#e2e8f0',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: '#cbd5e1',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: '#3b82f6',
+                        },
+                      },
+                      '& .MuiInputLabel-root': {
+                        fontSize: '14px',
+                        fontWeight: '500',
+                      },
+                    }}
+                  />
+                )}
+              />
+            </div>
+
+            {/* Description */}
+            <div className="col-12">
+              <TextField
+                label="Description"
+                placeholder="Description"
+                type="text"
+                required
+                fullWidth
+                size="small"
+                multiline
+                rows={2}
+                value={formData.description}
+                onChange={e => handleChange('description', e.target.value)}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                    backgroundColor: '#ffffff',
+                    '& fieldset': {
+                      borderWidth: '2px',
+                      borderColor: '#e2e8f0',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#cbd5e1',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#3b82f6',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: '14px',
+                    fontWeight: '500',
+                  },
+                }}
+              />
+            </div>
           </div>
-        </div>
-      </div>
-    </>
+        </form>
+      </Modal.Body>
+
+      <Modal.Footer
+        style={{
+          background: '#f8fafc',
+          borderTop: '2px solid #e2e8f0',
+          padding: '16px 24px',
+          justifyContent: 'center',
+        }}
+      >
+        {editTransaction ? (
+          <Button
+            variant="warning"
+            onClick={handleEdit}
+            disabled={disableButton || isUpdating}
+            style={{
+              padding: '12px 40px',
+              fontSize: '15px',
+              fontWeight: '600',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              border: 'none',
+              color: '#ffffff',
+              boxShadow: disableButton ? 'none' : '0 4px 12px rgba(245, 158, 11, 0.3)',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            {isUpdating ? 'Updating...' : 'Update Transaction'}
+          </Button>
+        ) : (
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={disableButton || isLoading}
+            style={{
+              padding: '12px 40px',
+              fontSize: '15px',
+              fontWeight: '600',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              border: 'none',
+              color: '#ffffff',
+              boxShadow: disableButton ? 'none' : '0 4px 12px rgba(59, 130, 246, 0.3)',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            {isLoading ? 'Submitting...' : 'Add Transaction'}
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
   );
 };
 
@@ -477,7 +719,7 @@ TransactionModal.propTypes = {
     transaction_id: PropTypes.string.isRequired,
     transaction_type: PropTypes.string.isRequired,
     uploaded_datetime: PropTypes.string.isRequired,
-  }).isRequired,
+  }),
   setEditTransaction: PropTypes.func.isRequired,
   showModal: PropTypes.bool.isRequired,
   setShowModal: PropTypes.func.isRequired,

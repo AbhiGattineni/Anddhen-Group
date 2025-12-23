@@ -3,7 +3,7 @@ import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import { Carousel, Container, Card, Button } from 'react-bootstrap';
 import { Link, Routes, Route } from 'react-router-dom';
 import FinanceDataUpload from './FinanceDataUpload';
-import InvestmentOptions from 'src/components/organisms/InvestmentOptions';
+import InvestmentOptionsTabs from './InvestmentOptionsTabs';
 
 export const Ati = () => {
   const [setShowToast] = useState(false);
@@ -84,11 +84,17 @@ export const Ati = () => {
               </div>
 
               {/* Explore Global Investment Options - New Section */}
-              <div className="investment-section mt-5 mb-5 p-4 pb-0 bg-white">
-                <InvestmentOptions />
+              <div className="investment-section mt-5 mb-5 p-4 rounded bg-white shadow-sm">
+                <h2
+                  className="text-center mb-4"
+                  style={{ fontWeight: 600, fontSize: '2rem', letterSpacing: '0.5px' }}
+                >
+                  Explore Global Investment Options
+                </h2>
+                <InvestmentOptionsTabs />
               </div>
 
-              <div className="p-3 bg-light">
+              <div className="mt-5 p-3 rounded bg-light">
                 <Container>
                   <p className="p-2" style={{ textAlign: 'justify' }}>
                     Unlock the true potential of your investments with our expert stock market

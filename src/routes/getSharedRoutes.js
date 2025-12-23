@@ -10,6 +10,7 @@ import { PartTimerPortal } from 'src/components/pages/ACS/PartTimerPortal';
 import DeviceAllocation from 'src/components/organisms/Modal/DeviceAllocation';
 import HappinessIndexAdmin from 'src/components/pages/Admin/HappinessIndexAdmin ';
 import ExtensionView from 'src/components/pages/Extension/ExtensionView';
+import OnboardingTask from 'src/components/pages/OnboardingTask';
 export function getSharedRoutes() {
   return [
     { path: 'transactions', element: <Transaction /> },
@@ -23,6 +24,6 @@ export function getSharedRoutes() {
     { path: 'devicetrackingtable', element: <DeviceAllocation /> },
     { path: 'HappinessIndexAdmin', element: <HappinessIndexAdmin /> },
     { path: 'extension', element: <ExtensionView /> },
-    // Add other shared routes here
+    { path: 'onboardingtask', element: <OnboardingTask /> },
   ];
 }
