@@ -47,57 +47,68 @@ function Slider() {
       <div className="carousel-inner">
         <div className="carousel-item active">
           <ResponsiveImage src="/assets/images/marketingupdated.jpg" alt="Slide 1" />
-          <div className="carousel-caption d-none d-md-block ">
-            <h5 className="bg-white rounded-pill d-inline-block p-2 " style={{ color: 'tomato' }}>
-              Anddhen Marketing Services
-            </h5>
+          <div className="carousel-caption d-none d-md-block">
+            <div className="slider-content">
+              <h2 className="slider-title">Anddhen Marketing Services</h2>
+              <p className="slider-subtitle">
+                Comprehensive marketing strategies to boost brand presence
+              </p>
+            </div>
           </div>
-          <div className="text-center d-block d-md-none text-black p-3">
-            <p className="">Anddhen Marketing Services</p>
+          <div className="text-center d-block d-md-none mobile-caption">
+            <h5>Anddhen Marketing Services</h5>
           </div>
         </div>
         <div className="carousel-item">
           <ResponsiveImage src="/assets/images/consultingUpdated.jpg" alt="Slide 2" />
-          <div className="carousel-caption d-none d-md-block text-danger">
-            <h5 className="bg-white rounded-pill d-inline-block p-2">
-              Anddhen Consulting Services
-            </h5>
+          <div className="carousel-caption d-none d-md-block">
+            <div className="slider-content">
+              <h2 className="slider-title">Anddhen Consulting Services</h2>
+              <p className="slider-subtitle">
+                Expert consulting for business development and growth
+              </p>
+            </div>
           </div>
-          <div className="text-center d-block d-md-none text-black p-3">
-            <p>Anddhen Consulting Services</p>
+          <div className="text-center d-block d-md-none mobile-caption">
+            <h5>Anddhen Consulting Services</h5>
           </div>
         </div>
         <div className="carousel-item">
           <ResponsiveImage src="/assets/images/software.jpg" alt="Slide 3" />
           <div className="carousel-caption d-none d-md-block">
-            <h5 className="bg-white rounded-pill d-inline-block p-2" style={{ color: 'tomato' }}>
-              Anddhen Software Services
-            </h5>
+            <div className="slider-content">
+              <h2 className="slider-title">Anddhen Software Services</h2>
+              <p className="slider-subtitle">
+                Innovative software solutions tailored to your needs
+              </p>
+            </div>
           </div>
-          <div className="text-center d-block d-md-none text-black p-3">
-            <p>Anddhen Software Services</p>
+          <div className="text-center d-block d-md-none mobile-caption">
+            <h5>Anddhen Software Services</h5>
           </div>
         </div>
         <div className="carousel-item">
           <ResponsiveImage src="/assets/images/philo1.jpg" alt="Slide 4" />
-          <div className="carousel-caption d-none d-md-block text-danger">
-            <h5 className="bg-white rounded-pill d-inline-block p-2">
-              Anddhen Philanthropy Services
-            </h5>
+          <div className="carousel-caption d-none d-md-block">
+            <div className="slider-content">
+              <h2 className="slider-title">Anddhen Philanthropy Services</h2>
+              <p className="slider-subtitle">Supporting initiatives for positive social impact</p>
+            </div>
           </div>
-          <div className="text-center d-block d-md-none text-black p-3">
-            <p>Anddhen Philanthropy Services</p>
+          <div className="text-center d-block d-md-none mobile-caption">
+            <h5>Anddhen Philanthropy Services</h5>
           </div>
         </div>
         <div className="carousel-item">
           <ResponsiveImage src="/assets/images/tradingupdated.jpg" alt="Slide 5" />
-          <div className="carousel-caption d-none d-md-block ">
-            <h5 className="bg-white rounded-pill d-inline-block p-2  " style={{ color: 'tomato' }}>
-              Anddhen Trading & Investment
-            </h5>
+          <div className="carousel-caption d-none d-md-block">
+            <div className="slider-content">
+              <h2 className="slider-title">Anddhen Trading & Investment</h2>
+              <p className="slider-subtitle">Expert trading and investment services</p>
+            </div>
           </div>
-          <div className="text-center d-block d-md-none text-black p-3">
-            <p>Anddhen Trading & Investment</p>
+          <div className="text-center d-block d-md-none mobile-caption">
+            <h5>Anddhen Trading & Investment</h5>
           </div>
         </div>
       </div>
