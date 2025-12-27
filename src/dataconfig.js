@@ -85,12 +85,12 @@ export const subsidiaries = [
     Description: 'Supporting philanthropic initiatives for positive social impact and change.',
     link: '/aps',
   },
-  {
-    Name: 'Anddhen Trading & Investment',
-    Photo: '/assets/images/trade3.jpg',
-    Description: 'Expert trading and investment services to maximize financial returns.',
-    link: '/ati',
-  },
+  // {
+  //   Name: 'Anddhen Trading & Investment',
+  //   Photo: '/assets/images/trade3.jpg',
+  //   Description: 'Expert trading and investment services to maximize financial returns.',
+  //   link: '/ati',
+  // },
   {
     Name: 'Andhden Travel Services',
     Photo: '/assets/images/subsid6.jpg',

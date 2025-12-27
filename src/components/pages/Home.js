@@ -35,13 +35,13 @@ const Home = () => {
     'Anddhen Consulting Services': <Business />,
     'Anddhen Software Services': <Code />,
     'Anddhen Philanthropy Services': <Favorite />,
-    'Anddhen Trading & Investment': <TrendingUp />,
+    // 'Anddhen Trading & Investment': <TrendingUp />,
     'Andhden Travel Services': <Flight />,
     'Anddhen NRI Services': <AccountBalance />,
   };
 
   const stats = [
-    { number: '7', label: 'Specialized Divisions', icon: <Business /> },
+    { number: '6', label: 'Specialized Divisions', icon: <Business /> },
     { number: '100+', label: 'Projects Delivered', icon: <CheckCircle /> },
   ];
 
@@ -121,8 +121,9 @@ const Home = () => {
                     }}
                   >
                     Deeply invested in India&apos;s dynamic market and beyond, we deliver bespoke
-                    solutions across software, consulting, investment, and marketing while making a
+                    solutions across software, consulting, and marketing while making a
                     difference through philanthropy.
+                    {/* solutions across software, consulting, investment, and marketing while making a */}
                   </Typography>
                   <Stack direction="row" spacing={2} flexWrap="wrap">
                     <Button
@@ -254,8 +255,8 @@ const Home = () => {
                 >
                   At Anddhen, we pride ourselves on being more than just a business—we are a
                   conglomerate with a heart. Our diverse portfolio spans software development,
-                  staffing and consulting, trading and investment, and comprehensive marketing
-                  services.
+                  staffing and consulting, and comprehensive marketing services.
+                  {/* staffing and consulting, trading and investment, and comprehensive marketing */}
                 </Typography>
                 <Typography
                   variant="body1"
@@ -342,11 +343,13 @@ const Home = () => {
                 fontWeight: 400,
               }}
             >
-              Seven specialized divisions, one unified vision for excellence
+              Six specialized divisions, one unified vision for excellence
             </Typography>
           </Box>
           <Grid container spacing={4}>
-            {subsidiaries.map((subsidiary, index) => (
+            {subsidiaries
+              .filter(subsidiary => subsidiary.Name !== 'Anddhen Trading & Investment')
+              .map((subsidiary, index) => (
               <Grid item xs={12} sm={6} md={4} key={subsidiary.Name}>
                 <Fade in timeout={600 + index * 100}>
                   <Card
@@ -530,8 +533,8 @@ const Home = () => {
                   }}
                 >
                   To be a beacon of innovation and integrity in the global marketplace, transforming
-                  businesses and communities through cutting-edge technology, strategic investment,
-                  and dedicated philanthropy.
+                  businesses and communities through cutting-edge technology and dedicated philanthropy.
+                  {/* businesses and communities through cutting-edge technology, strategic investment, */}
                 </Typography>
               </Card>
             </Grid>
@@ -575,8 +578,8 @@ const Home = () => {
                   }}
                 >
                   To empower clients and communities by delivering exceptional services across
-                  software development, staffing and consulting, trading and investment, and
-                  marketing while upholding our commitment to social responsibility.
+                  software development, staffing and consulting, and marketing while upholding our commitment to social responsibility.
+                  {/* software development, staffing and consulting, trading and investment, and */}
                 </Typography>
               </Card>
             </Grid>

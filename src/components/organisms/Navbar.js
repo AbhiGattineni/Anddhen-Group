@@ -100,11 +100,11 @@ function Navbar(props) {
                             Anddhen Philanthropy Services
                           </Link>
                         </li>
-                        <li>
+                        {/* <li>
                           <Link to="/ati" className="dropdown-item">
                             Anddhen Trading & Investiment
                           </Link>
-                        </li>
+                        </li> */}
                         <li>
                           <Link to="/ats" className="dropdown-item">
                             Anddhen Travel Services
@@ -153,7 +153,7 @@ function Navbar(props) {
                         Anddhen Philanthropy Services
                       </Link>
                     </li>
-                    <li className="nav-item d-lg-none">
+                    {/* <li className="nav-item d-lg-none">
                       <Link
                         to="/ati"
                         onClick={handleLinkClick}
@@ -161,7 +161,7 @@ function Navbar(props) {
                       >
                         Anddhen Trading & Investiment
                       </Link>
-                    </li>
+                    </li> */}
                     <li className="nav-item d-lg-none">
                       <Link
                         to="/ats"
