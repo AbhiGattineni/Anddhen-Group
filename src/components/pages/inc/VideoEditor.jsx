@@ -14,28 +14,29 @@ import {
   InputLabel,
   TextField,
 } from '@mui/material';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import TextFormatIcon from '@mui/icons-material/TextFormat';
-import SubtitlesIcon from '@mui/icons-material/Subtitles';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import MicIcon from '@mui/icons-material/Mic';
-import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ContentCutIcon from '@mui/icons-material/ContentCut';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import UndoIcon from '@mui/icons-material/Undo';
-import RedoIcon from '@mui/icons-material/Redo';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-// import FastRewindIcon from '@mui/icons-material/FastRewind';
-import FastForwardIcon from '@mui/icons-material/FastForward';
+import {
+  CloudUpload as UploadFileIcon,
+  FormatSize as TextFormatIcon,
+  Subtitles as SubtitlesIcon,
+  AutoAwesome as AutoAwesomeIcon,
+  Mic as MicIcon,
+  Movie as VideoLibraryIcon,
+  Audiotrack as AudiotrackIcon,
+  Collections as PhotoLibraryIcon,
+  Close as CloseIcon,
+  Add as AddIcon,
+  MusicNote as MusicNoteIcon,
+  Delete as DeleteIcon,
+  ContentCut as ContentCutIcon,
+  FileCopy as FileCopyIcon,
+  Undo as UndoIcon,
+  Redo as RedoIcon,
+  PlayArrow as PlayArrowIcon,
+  Pause as PauseIcon,
+  FastForward as FastForwardIcon,
+} from '@mui/icons-material';
 
 const SIDEBAR_TOOLS = [
   { label: 'Uploads', icon: <UploadFileIcon /> },
