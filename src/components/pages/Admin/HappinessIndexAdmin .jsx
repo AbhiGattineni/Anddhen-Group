@@ -11,8 +11,7 @@ import {
   Pagination,
 } from '@mui/material';
 import { useFetchData } from '../../../react-query/useFetchApis';
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
 
 const HappinessIndexList = () => {
   const { data, isLoading, error } = useFetchData('happiness', '/happiness/');

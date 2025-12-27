@@ -10,9 +10,9 @@ function Footer() {
             <h6>Company Information</h6>
             <hr />
             <p className="text-white">
-              Anddhen is a conglomerate specializing in consulting, travel, marketing,
-              philanthropy, and software services. We provide top-notch consultancy and
-              implementation expertise to enhance the value of your business.
+              Anddhen is a conglomerate specializing in consulting, travel, marketing, philanthropy,
+              and software services. We provide top-notch consultancy and implementation expertise
+              to enhance the value of your business.
               {/* Anddhen is a conglomerate specializing in consulting, trading, travel, marketing, */}
             </p>
             <div className="socials">

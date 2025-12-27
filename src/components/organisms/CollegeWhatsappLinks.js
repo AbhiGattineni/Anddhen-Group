@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { TextField, CircularProgress, Typography } from '@mui/material';
 import { useFetchData } from 'src/react-query/useFetchApis';
-import SearchIcon from '@mui/icons-material/Search';
+import { Search as SearchIcon } from '@mui/icons-material';
 import InputAdornment from '@mui/material/InputAdornment';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { WhatsApp as WhatsAppIcon } from '@mui/icons-material';
 import FacebookIcon from '@mui/icons-material/Facebook';
 
 const CollegeWhatsappLinks = () => {

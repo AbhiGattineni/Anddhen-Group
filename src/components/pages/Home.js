@@ -16,7 +16,6 @@ import {
   ArrowForward,
   Business,
   Code,
-  TrendingUp,
   Campaign,
   Favorite,
   Flight,
@@ -121,8 +120,8 @@ const Home = () => {
                     }}
                   >
                     Deeply invested in India&apos;s dynamic market and beyond, we deliver bespoke
-                    solutions across software, consulting, and marketing while making a
-                    difference through philanthropy.
+                    solutions across software, consulting, and marketing while making a difference
+                    through philanthropy.
                     {/* solutions across software, consulting, investment, and marketing while making a */}
                   </Typography>
                   <Stack direction="row" spacing={2} flexWrap="wrap">
@@ -350,125 +349,125 @@ const Home = () => {
             {subsidiaries
               .filter(subsidiary => subsidiary.Name !== 'Anddhen Trading & Investment')
               .map((subsidiary, index) => (
-              <Grid item xs={12} sm={6} md={4} key={subsidiary.Name}>
-                <Fade in timeout={600 + index * 100}>
-                  <Card
-                    className="subsidiary-card-modern"
-                    sx={{
-                      height: '100%',
-                      borderRadius: '24px',
-                      position: 'relative',
-                      overflow: 'visible',
-                    }}
-                  >
-                    <Box
-                      className="subsidiary-image-container"
+                <Grid item xs={12} sm={6} md={4} key={subsidiary.Name}>
+                  <Fade in timeout={600 + index * 100}>
+                    <Card
+                      className="subsidiary-card-modern"
                       sx={{
-                        height: '220px',
-                        overflow: 'hidden',
+                        height: '100%',
+                        borderRadius: '24px',
                         position: 'relative',
-                        borderRadius: '24px 24px 0 0',
+                        overflow: 'visible',
                       }}
                     >
-                      <img
-                        src={subsidiary.Photo}
-                        alt={subsidiary.Name}
-                        className="subsidiary-image"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                      <Box className="subsidiary-overlay" />
                       <Box
-                        className="subsidiary-icon-badge"
+                        className="subsidiary-image-container"
                         sx={{
-                          position: 'absolute',
-                          top: 20,
-                          right: 20,
-                          width: '60px',
-                          height: '60px',
-                          borderRadius: '16px',
-                          bgcolor: 'white',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#3b82f6',
-                          fontSize: '1.8rem',
-                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-                          transition: 'all 0.4s ease',
+                          height: '220px',
+                          overflow: 'hidden',
+                          position: 'relative',
+                          borderRadius: '24px 24px 0 0',
                         }}
                       >
-                        {subsidiaryIcons[subsidiary.Name] || <Business />}
-                      </Box>
-                    </Box>
-                    <CardContent
-                      sx={{
-                        p: 4,
-                        position: 'relative',
-                        bgcolor: 'white',
-                      }}
-                    >
-                      <Typography
-                        variant="h5"
-                        component={Link}
-                        to={subsidiary.link}
-                        sx={{
-                          fontWeight: 700,
-                          color: '#1a1a1a',
-                          textDecoration: 'none',
-                          mb: 2,
-                          display: 'block',
-                          fontSize: '1.5rem',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
+                        <img
+                          src={subsidiary.Photo}
+                          alt={subsidiary.Name}
+                          className="subsidiary-image"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                        <Box className="subsidiary-overlay" />
+                        <Box
+                          className="subsidiary-icon-badge"
+                          sx={{
+                            position: 'absolute',
+                            top: 20,
+                            right: 20,
+                            width: '60px',
+                            height: '60px',
+                            borderRadius: '16px',
+                            bgcolor: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                             color: '#3b82f6',
-                            transform: 'translateX(5px)',
-                          },
-                        }}
-                      >
-                        {subsidiary.Name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
+                            fontSize: '1.8rem',
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                            transition: 'all 0.4s ease',
+                          }}
+                        >
+                          {subsidiaryIcons[subsidiary.Name] || <Business />}
+                        </Box>
+                      </Box>
+                      <CardContent
                         sx={{
-                          color: '#666',
-                          lineHeight: 1.7,
-                          mb: 3,
-                          minHeight: '50px',
-                          fontSize: '1rem',
+                          p: 4,
+                          position: 'relative',
+                          bgcolor: 'white',
                         }}
                       >
-                        {subsidiary.Description}
-                      </Typography>
-                      <Button
-                        component={Link}
-                        to={subsidiary.link}
-                        variant="text"
-                        endIcon={<ArrowForward />}
-                        className="subsidiary-link-btn"
-                        sx={{
-                          color: '#3b82f6',
-                          fontWeight: 600,
-                          textTransform: 'none',
-                          px: 0,
-                          fontSize: '1rem',
-                          '&:hover': {
-                            bgcolor: 'transparent',
-                            color: '#6366f1',
-                            transform: 'translateX(5px)',
-                          },
-                          transition: 'all 0.3s ease',
-                        }}
-                      >
-                        Explore Service
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Fade>
-              </Grid>
-            ))}
+                        <Typography
+                          variant="h5"
+                          component={Link}
+                          to={subsidiary.link}
+                          sx={{
+                            fontWeight: 700,
+                            color: '#1a1a1a',
+                            textDecoration: 'none',
+                            mb: 2,
+                            display: 'block',
+                            fontSize: '1.5rem',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              color: '#3b82f6',
+                              transform: 'translateX(5px)',
+                            },
+                          }}
+                        >
+                          {subsidiary.Name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: '#666',
+                            lineHeight: 1.7,
+                            mb: 3,
+                            minHeight: '50px',
+                            fontSize: '1rem',
+                          }}
+                        >
+                          {subsidiary.Description}
+                        </Typography>
+                        <Button
+                          component={Link}
+                          to={subsidiary.link}
+                          variant="text"
+                          endIcon={<ArrowForward />}
+                          className="subsidiary-link-btn"
+                          sx={{
+                            color: '#3b82f6',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            px: 0,
+                            fontSize: '1rem',
+                            '&:hover': {
+                              bgcolor: 'transparent',
+                              color: '#6366f1',
+                              transform: 'translateX(5px)',
+                            },
+                            transition: 'all 0.3s ease',
+                          }}
+                        >
+                          Explore Service
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Fade>
+                </Grid>
+              ))}
           </Grid>
         </Container>
       </section>
@@ -533,7 +532,8 @@ const Home = () => {
                   }}
                 >
                   To be a beacon of innovation and integrity in the global marketplace, transforming
-                  businesses and communities through cutting-edge technology and dedicated philanthropy.
+                  businesses and communities through cutting-edge technology and dedicated
+                  philanthropy.
                   {/* businesses and communities through cutting-edge technology, strategic investment, */}
                 </Typography>
               </Card>
@@ -578,7 +578,8 @@ const Home = () => {
                   }}
                 >
                   To empower clients and communities by delivering exceptional services across
-                  software development, staffing and consulting, and marketing while upholding our commitment to social responsibility.
+                  software development, staffing and consulting, and marketing while upholding our
+                  commitment to social responsibility.
                   {/* software development, staffing and consulting, trading and investment, and */}
                 </Typography>
               </Card>
