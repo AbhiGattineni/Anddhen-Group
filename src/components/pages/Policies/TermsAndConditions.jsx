@@ -29,25 +29,24 @@ function TermsAndConditions() {
               This document is published in accordance with the provisions of Rule 3 (1) of the
               Information Technology (Intermediaries guidelines) Rules, 2011 that require publishing
               the rules and regulations, privacy policy and Terms of Use for access or usage of
-              domain name www. anddhengroup.com (&apos;Website&apos;), including the related mobile
+              domain name www.anddhengroup.com (&apos;Website&apos;), including the related mobile
               site and mobile application (hereinafter referred to as &apos;Platform&apos;).
             </p>
             <p>
               The Platform is owned by ANDDHEN, a company incorporated under the Companies Act, 1956
               with its registered office at 61132C VENKATA SUBBA RAO GATTINENI JAGGAYYAPETA SRI
-              NAGAR COLONY ,Jaggayyapet ,India (hereinafter referred to as &apos;Platform
-              Owner&apos;, &apos;we&apos;, &apos;us&apos;, &apos;our&apos;).
+              NAGAR COLONY, Jaggayyapet, Andhra Pradesh, India (hereinafter referred to as
+              &apos;Platform Owner&apos;, &apos;we&apos;, &apos;us&apos;, &apos;our&apos;).
             </p>
             <p>
               Your use of the Platform and services and tools are governed by the following terms
               and conditions (&quot;Terms of Use&quot;) as applicable to the Platform including the
-              applicable policies which are incorporated herein by way of reference. If You transact
-              on the Platform, You shall be subject to the policies that are applicable to the
-              Platform for such transaction. By mere use of the Platform, You shall be contracting
+              applicable policies which are incorporated herein by way of reference. If You avail
+              services on the Platform, You shall be subject to the policies that are applicable to
+              the Platform for such service. By mere use of the Platform, You shall be contracting
               with the Platform Owner and these terms and conditions including the policies
               constitute Your binding obligations, with Platform Owner. These Terms of Use relate to
-              your use of our website, goods (as applicable) or services (as applicable)
-              (collectively, &apos;Services&apos;).
+              your use of our website and services (collectively, &apos;Services&apos;).
             </p>
             <p>
               Any terms and conditions proposed by You which are in addition to or which conflict
@@ -58,8 +57,8 @@ function TermsAndConditions() {
             </p>
             <p>
               For the purpose of these Terms of Use, wherever the context so requires
-              &apos;you&apos;, &apos;your&apos; or &apos;user&apos; shall mean any natural or legal
-              person who has agreed to become a user/buyer on the Platform.
+              &apos;you&apos;, &apos;your&apos; or &apos;user&apos; or &apos;client&apos; shall mean
+              any natural or legal person who has agreed to use our services on the Platform.
             </p>
             <p>
               <strong>
@@ -104,7 +103,7 @@ function TermsAndConditions() {
               </li>
               <li>You agree to pay us the charges associated with availing the Services.</li>
               <li>
-                You agree not to use the Platform and/ or Services for any purpose that is unlawful,
+                You agree not to use the Platform and/or Services for any purpose that is unlawful,
                 illegal or forbidden by these Terms, or Indian or local laws that might apply to
                 you.
               </li>
