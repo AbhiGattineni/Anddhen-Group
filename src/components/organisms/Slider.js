@@ -37,12 +37,6 @@ function Slider() {
           data-bs-slide-to="3"
           aria-label="Slide 4"
         ></button>
-        <button
-          type="button"
-          data-bs-target="#carouselExampleCaptions"
-          data-bs-slide-to="4"
-          aria-label="Slide 5"
-        ></button>
       </div>
       <div className="carousel-inner">
         <div className="carousel-item active">
@@ -97,18 +91,6 @@ function Slider() {
           </div>
           <div className="text-center d-block d-md-none mobile-caption">
             <h5>Anddhen Philanthropy Services</h5>
-          </div>
-        </div>
-        <div className="carousel-item">
-          <ResponsiveImage src="/assets/images/tradingupdated.jpg" alt="Slide 5" />
-          <div className="carousel-caption d-none d-md-block">
-            <div className="slider-content">
-              <h2 className="slider-title">Anddhen Trading & Investment</h2>
-              <p className="slider-subtitle">Expert trading and investment services</p>
-            </div>
-          </div>
-          <div className="text-center d-block d-md-none mobile-caption">
-            <h5>Anddhen Trading & Investment</h5>
           </div>
         </div>
       </div>

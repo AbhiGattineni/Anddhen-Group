@@ -70,7 +70,7 @@ function Footer() {
             </div>
             <div>
               <p className="text-white mb-1">
-                <i className="bi bi-telephone-fill me-3"></i>+91 8801043608
+                <i className="bi bi-telephone-fill me-3"></i>+91 91107 36115
               </p>
             </div>
             <div>
