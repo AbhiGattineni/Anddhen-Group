@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import { acsCards } from '../../../dataconfig';
 import CollegeWhatsappLinks from 'src/components/organisms/CollegeWhatsappLinks';
 import { Helmet } from 'react-helmet-async';
+import { Container, Box, Typography, Grid, Card, CardContent, Fade } from '@mui/material';
+import { Email, Phone, WhatsApp } from '@mui/icons-material';
+import '../Home.css';
 
 export const Acs = () => {
   return (
@@ -46,81 +49,257 @@ export const Acs = () => {
         </script>
       </Helmet>
 
-      <div className="container mt-3">
-        <h1 className="main-heading">Anddhen Consulting Services</h1>
-        <p>
-          Welcome to Anddhen Consulting Services, the emerging leader in next-gen business
-          solutions. As a startup, we understand the nuances and agility required in today&apos;s
-          fast-paced world...
-        </p>
+      <div className="home-page">
+        {/* Hero Section */}
+        <section className="hero-intro-section">
+          <Container maxWidth="lg">
+            <Fade in timeout={800}>
+              <Box className="hero-intro-content" sx={{ textAlign: 'center', mb: 6 }}>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontSize: { xs: '2rem', sm: '2.75rem', md: '3.25rem' },
+                    fontWeight: 700,
+                    lineHeight: 1.1,
+                    mb: 2.5,
+                    color: '#1a1a1a',
+                    letterSpacing: '-0.03em',
+                  }}
+                >
+                  Anddhen Consulting Services
+                </Typography>
+                <Box className="modern-divider" sx={{ mx: 'auto', mb: 3.5 }} />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: { xs: '0.95rem', md: '1.1rem' },
+                    color: '#666',
+                    lineHeight: 1.7,
+                    maxWidth: '800px',
+                    mx: 'auto',
+                  }}
+                >
+                  Welcome to Anddhen Consulting Services, the emerging leader in next-gen business
+                  solutions. As a startup, we understand the nuances and agility required in
+                  today&apos;s fast-paced world.
+                </Typography>
+              </Box>
+            </Fade>
 
-        <div className="row justify-content-md-center">
-          {acsCards.map((data, index) => (
-            <div key={index} className="col-lg-4 col-md-6 mb-4">
-              <div className="card card-cascade shadow">
-                <div className="view view-cascade overlay shadow">
-                  <LazyLoadImage
-                    effect="blur"
-                    height="250px"
-                    width="100%"
-                    className="card-img-top object-fit-fill"
-                    src={data.image}
-                    alt={`${data.heading} image`}
-                  />
-                </div>
-                <div className="card-body card-body-cascade text-center">
-                  <Link to={data.path} className="text-decoration-none">
-                    <h4 className="card-title text-black">{data.heading}</h4>
-                  </Link>
-                  <p className="card-text">{data.description}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+            {/* Services Cards */}
+            <Grid container spacing={4}>
+              {acsCards.map((data, index) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
+                  <Fade in timeout={600 + index * 100}>
+                    <Card
+                      component={Link}
+                      to={data.path}
+                      className="subsidiary-card-modern"
+                      sx={{
+                        height: '100%',
+                        borderRadius: '16px',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          height: '180px',
+                          overflow: 'hidden',
+                          position: 'relative',
+                          borderRadius: '16px 16px 0 0',
+                        }}
+                      >
+                        <LazyLoadImage
+                          effect="blur"
+                          src={data.image}
+                          alt={`${data.heading} image`}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                        <Box className="subsidiary-overlay" />
+                      </Box>
+                      <CardContent
+                        sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+                      >
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 600,
+                            color: '#1a1a1a',
+                            mb: 1.5,
+                            fontSize: '1.25rem',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                              color: '#3b82f6',
+                            },
+                          }}
+                        >
+                          {data.heading}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: '#666',
+                            lineHeight: 1.6,
+                            fontSize: { xs: '0.9rem', md: '0.95rem' },
+                          }}
+                        >
+                          {data.description}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Fade>
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </section>
 
-        <h4 className="text-center pt-4">
-          WhatsApp groups links according to the US university 2024-25
-        </h4>
-        <div className="row justify-content-md-center px-0">
-          <CollegeWhatsappLinks />
-        </div>
-      </div>
-
-      <div className="bg-c-light py-1 mt-4">
-        <div className="container">
-          <h4 className="row justify-content-md-left ps-3 ps-md-0">Contact Us</h4>
-          <div className="ps-2 ps-md-0">
-            <div className="underline"></div>
-          </div>
-          <div className="d-flex flex-column flex-md-row justify-content-between">
-            <p className="fw-bold d-flex align-items-center mb-2">
-              <i className="bi bi-envelope-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
-              <a
-                href="mailto:anddhenconsulting@gmail.com"
-                className="text-decoration-none text-dark fw-bold"
+        {/* WhatsApp Groups Section */}
+        <section className="subsidiaries-section">
+          <Container maxWidth="lg">
+            <Box className="section-header-modern" sx={{ textAlign: 'center', mb: 6 }}>
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.5rem' },
+                  fontWeight: 700,
+                  color: '#1a1a1a',
+                  mb: 2,
+                  letterSpacing: '-0.03em',
+                }}
               >
-                anddhenconsulting@gmail.com
-              </a>
-            </p>
-            <p className="fw-bold d-flex align-items-center mb-2">
-              <i className="bi bi-telephone-fill text-primary bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"></i>
-              +91 9110736115
-            </p>
-            <a
-              href="https://wa.me/919110736115"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="d-flex align-items-center text-decoration-none fw-bold mb-2"
-            >
-              <i
-                className="bi bi-whatsapp bg-white rounded-circle p-2 me-3 d-inline-flex justify-content-center align-items-center"
-                style={{ fontSize: '14px', color: 'green' }}
-              ></i>
-              <span style={{ fontSize: '14px' }}>+91 9110736115</span>
-            </a>
-          </div>
-        </div>
+                WhatsApp Groups for US Universities (2024-25)
+              </Typography>
+              <Box className="modern-divider" />
+            </Box>
+            <Box sx={{ mb: 8 }}>
+              <CollegeWhatsappLinks />
+            </Box>
+          </Container>
+        </section>
+
+        {/* Contact Section */}
+        <section className="company-story-section">
+          <Container maxWidth="lg">
+            <Box className="section-header-modern" sx={{ textAlign: 'center', mb: 6 }}>
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.5rem' },
+                  fontWeight: 700,
+                  color: '#ffffff',
+                  mb: 2,
+                  letterSpacing: '-0.03em',
+                }}
+              >
+                Contact Us
+              </Typography>
+              <Box className="modern-divider" />
+            </Box>
+            <Grid container spacing={4} justifyContent="center">
+              <Grid item xs={12} sm={6} md={4}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    p: 2.5,
+                    borderRadius: '16px',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  <Email sx={{ fontSize: '2rem', color: '#3b82f6', mb: 1.5 }} />
+                  <Typography
+                    variant="body1"
+                    component="a"
+                    href="mailto:anddhenconsulting@gmail.com"
+                    sx={{
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      fontWeight: 600,
+                      fontSize: { xs: '0.95rem', md: '1rem' },
+                      '&:hover': {
+                        color: '#3b82f6',
+                      },
+                    }}
+                  >
+                    anddhenconsulting@gmail.com
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    p: 2.5,
+                    borderRadius: '16px',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  <Phone sx={{ fontSize: '2rem', color: '#3b82f6', mb: 1.5 }} />
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: '#ffffff',
+                      fontWeight: 600,
+                      fontSize: { xs: '0.95rem', md: '1rem' },
+                    }}
+                  >
+                    +91 9110736115
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box
+                  component="a"
+                  href="https://wa.me/919110736115"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    p: 2.5,
+                    borderRadius: '16px',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <WhatsApp sx={{ fontSize: '2rem', color: '#25D366', mb: 1.5 }} />
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: '#ffffff',
+                      fontWeight: 600,
+                      fontSize: { xs: '0.95rem', md: '1rem' },
+                      '&:hover': {
+                        color: '#25D366',
+                      },
+                    }}
+                  >
+                    +91 9110736115
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Container>
+        </section>
       </div>
     </>
   );

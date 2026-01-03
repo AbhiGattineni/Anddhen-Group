@@ -24,6 +24,20 @@ const ImageSlider = ({ title, cards }) => {
   const imagesPerPage = isExtraLargeScreen ? 4 : isLargeScreen ? 3 : isMediumScreen ? 2 : 1;
   const totalImages = cards.length;
 
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (totalImages <= imagesPerPage) return; // Don't auto-scroll if all items fit
+
+    const interval = setInterval(() => {
+      setStartIndex(prevIndex => {
+        const maxIndex = totalImages - imagesPerPage;
+        return prevIndex >= maxIndex ? 0 : prevIndex + 1;
+      });
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [totalImages, imagesPerPage]);
+
   // Scroll Functionality for Mouse Wheel
   const handleScroll = e => {
     e.preventDefault();
@@ -143,28 +157,13 @@ const ImageSlider = ({ title, cards }) => {
                   maxWidth: `${100 / imagesPerPage}%`, // Ensure consistent width
                 }}
               >
-                <Box
-                  sx={{
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    transition: 'all 0.3s ease',
-                    height: '100%', // Ensure consistent height
-                    display: 'flex',
-                    flexDirection: 'column',
-                    '&:hover': {
-                      transform: 'scale(1.02)',
-                      boxShadow: 4,
-                    },
-                  }}
-                >
-                  <Card
-                    image={work.image}
-                    title={work.name}
-                    description={work.description}
-                    link={work.link}
-                    timeline={work.timeline}
-                  />
-                </Box>
+                <Card
+                  image={work.image}
+                  title={work.name}
+                  description={work.description}
+                  link={work.link}
+                  timeline={work.timeline}
+                />
               </Grid>
             ))}
           </Grid>
