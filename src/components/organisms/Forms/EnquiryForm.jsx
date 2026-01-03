@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import PropTypes from 'prop-types'; // Import prop-types library
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  MenuItem,
+  Fade,
+} from '@mui/material';
+import { Send } from '@mui/icons-material';
+import PropTypes from 'prop-types';
 import { sendEmail } from '../../templates/emailService';
 
 const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
@@ -49,6 +61,7 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
         phone: '',
         message: '',
       });
+      setErrors({});
       setToastMsg('Data successfully submitted!');
       setShowToast(true);
     } catch (error) {
@@ -65,103 +78,240 @@ const EnquiryForm = ({ title, setShowToast, setToastMsg }) => {
   };
 
   return (
-    <Container>
-      <Row className="justify-content-center">
-        <Col xs={12} md={8} lg={4}>
-          <div className="border border-2 rounded p-4 bg-light mt-4">
-            <h2 className="text-center">Contact Us</h2>
-            <div className="underline mx-auto mb-4"></div>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label htmlFor="name" className="form-label">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                  id="name"
-                  placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-              </div>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                  id="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-              </div>
-              <Row>
-                <Col xs={4}>
-                  <div className="mb-3">
-                    <label htmlFor="countryCode" className="form-label">
-                      Code
-                    </label>
-                    <select
-                      className="form-control"
-                      id="countryCode"
-                      value={formData.countryCode}
-                      onChange={handleChange}
-                      required
-                    >
-                      <option value="+1">+1 (USA)</option>
-                      <option value="+91">+91 (India)</option>
-                    </select>
-                  </div>
-                </Col>
-                <Col xs={8}>
-                  <div className="mb-3">
-                    <label htmlFor="phone" className="form-label">
-                      Phone
-                    </label>
-                    <input
-                      type="phone"
-                      className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-                      id="phone"
-                      placeholder="Enter your phone number"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                    />
-                    {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
-                  </div>
-                </Col>
-              </Row>
-              <div className="mb-3">
-                <label htmlFor="message" className="form-label">
-                  Message
-                </label>
-                <textarea
-                  className={`form-control ${errors.message ? 'is-invalid' : ''}`}
-                  id="message"
-                  rows="3"
-                  placeholder="Enter your message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                ></textarea>
-                {errors.message && <div className="invalid-feedback">{errors.message}</div>}
-              </div>
-              <div className="d-flex justify-content-center">
-                <button type="submit" className="btn btn-primary">
+    <Container maxWidth="sm">
+      <Fade in timeout={800}>
+        <Card
+          sx={{
+            p: { xs: 2.5, md: 3 },
+            borderRadius: '16px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            bgcolor: '#ffffff',
+            border: '1px solid rgba(0, 0, 0, 0.05)',
+          }}
+        >
+          <CardContent sx={{ p: 0 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                color: '#1a1a1a',
+                mb: 2.5,
+                textAlign: 'center',
+                fontSize: { xs: '1.25rem', md: '1.5rem' },
+              }}
+            >
+              Contact Us
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                id="name"
+                label="Name"
+                variant="outlined"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+                sx={{
+                  mb: 2.5,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    backgroundColor: '#f8f9fa',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#f1f3f5',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#3b82f6',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: '#ffffff',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: '2px',
+                        borderColor: '#3b82f6',
+                      },
+                    },
+                  },
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: '#3b82f6',
+                  },
+                }}
+              />
+              <TextField
+                fullWidth
+                id="email"
+                label="Email"
+                variant="outlined"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+                sx={{
+                  mb: 2.5,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    backgroundColor: '#f8f9fa',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#f1f3f5',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#3b82f6',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: '#ffffff',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: '2px',
+                        borderColor: '#3b82f6',
+                      },
+                    },
+                  },
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: '#3b82f6',
+                  },
+                }}
+              />
+              <Grid container spacing={2} sx={{ mb: 2.5 }}>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    id="countryCode"
+                    label="Code"
+                    select
+                    variant="outlined"
+                    value={formData.countryCode}
+                    onChange={handleChange}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        backgroundColor: '#f8f9fa',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: '#f1f3f5',
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#3b82f6',
+                          },
+                        },
+                        '&.Mui-focused': {
+                          backgroundColor: '#ffffff',
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            borderWidth: '2px',
+                            borderColor: '#3b82f6',
+                          },
+                        },
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#3b82f6',
+                      },
+                    }}
+                  >
+                    <MenuItem value="+1">+1 (USA)</MenuItem>
+                    <MenuItem value="+91">+91 (India)</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={8}>
+                  <TextField
+                    fullWidth
+                    id="phone"
+                    label="Phone"
+                    variant="outlined"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    error={!!errors.phone}
+                    helperText={errors.phone}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        backgroundColor: '#f8f9fa',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: '#f1f3f5',
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#3b82f6',
+                          },
+                        },
+                        '&.Mui-focused': {
+                          backgroundColor: '#ffffff',
+                          '& .MuiOutlinedInput-notchedOutline': {
+                            borderWidth: '2px',
+                            borderColor: '#3b82f6',
+                          },
+                        },
+                      },
+                      '& .MuiInputLabel-root.Mui-focused': {
+                        color: '#3b82f6',
+                      },
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <TextField
+                fullWidth
+                id="message"
+                label="Message"
+                variant="outlined"
+                multiline
+                rows={4}
+                value={formData.message}
+                onChange={handleChange}
+                error={!!errors.message}
+                helperText={errors.message}
+                sx={{
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                    backgroundColor: '#f8f9fa',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#f1f3f5',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#3b82f6',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: '#ffffff',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderWidth: '2px',
+                        borderColor: '#3b82f6',
+                      },
+                    },
+                  },
+                  '& .MuiInputLabel-root.Mui-focused': {
+                    color: '#3b82f6',
+                  },
+                }}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  endIcon={<Send />}
+                  sx={{
+                    px: 4,
+                    py: 1.25,
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    borderRadius: '10px',
+                    bgcolor: '#3b82f6',
+                    boxShadow: '0 4px 14px rgba(59, 130, 246, 0.3)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      bgcolor: '#2563eb',
+                      boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)',
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                >
                   Submit
-                </button>
-              </div>
-            </form>
-          </div>
-        </Col>
-      </Row>
+                </Button>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      </Fade>
     </Container>
   );
 };

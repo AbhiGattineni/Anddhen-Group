@@ -1,5 +1,19 @@
 import React, { useState } from 'react';
-import { sendEmail } from '../templates/emailService'; // Import your email service
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Fade,
+  Alert,
+  Grid,
+} from '@mui/material';
+import { Send } from '@mui/icons-material';
+import { sendEmail } from '../templates/emailService';
+import './Home.css';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -15,28 +29,24 @@ function Contact() {
   const validate = () => {
     const newErrors = {};
 
-    // Full Name validation
     if (!formData.fullName) {
       newErrors.fullName = 'Full name is required';
     } else if (formData.fullName.length < 3) {
       newErrors.fullName = 'Full name must be at least 3 characters';
     }
 
-    // Phone Number validation
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
     } else if (!/^\d{10}$/.test(formData.phone)) {
       newErrors.phone = 'Phone number must be 10 digits';
     }
 
-    // Email validation
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email address is invalid';
     }
 
-    // Message validation
     if (!formData.message) {
       newErrors.message = 'Message is required';
     } else if (formData.message.length < 5) {
@@ -67,6 +77,7 @@ function Contact() {
         message: '',
       });
       setToastMsg('Your message has been sent successfully!');
+      setErrors({});
     } catch (error) {
       setToastMsg('Something went wrong, please try again!');
       console.error('Error:', error);
@@ -77,88 +88,174 @@ function Contact() {
     const { id, value } = e.target;
     setFormData(prevData => ({ ...prevData, [id]: value }));
     setErrors(prevErrors => ({ ...prevErrors, [id]: '' }));
+    if (toastMsg) setToastMsg('');
   };
 
   return (
-    <div>
-      <section className="py-4">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-4 my-auto">
-              <h4>Contact Us</h4>
-            </div>
-            <div className="col-md-8 my-auto">
-              <h6 className="float-end">Home/Contact Us</h6>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="home-page">
+      {/* Hero Section */}
+      <section className="hero-intro-section">
+        <Container maxWidth="lg">
+          <Fade in timeout={800}>
+            <Box className="hero-intro-content" sx={{ textAlign: 'center', mb: 6 }}>
+              <Typography
+                variant="h1"
+                sx={{
+                  fontSize: { xs: '2rem', sm: '2.75rem', md: '3.25rem' },
+                  fontWeight: 700,
+                  lineHeight: 1.1,
+                  mb: 2.5,
+                  color: '#1a1a1a',
+                  letterSpacing: '-0.03em',
+                }}
+              >
+                Contact Us
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: { xs: '0.95rem', md: '1.1rem' },
+                  color: '#666',
+                  lineHeight: 1.7,
+                  maxWidth: '700px',
+                  mx: 'auto',
+                }}
+              >
+                Get in touch with us. We&apos;d love to hear from you and answer any questions you
+                may have.
+              </Typography>
+            </Box>
+          </Fade>
 
-      <section className="section">
-        <div className="container d-flex justify-content-center">
-          <div className="card shadow col-md-6 col-lg-4 mx-auto">
-            <div className="card-body">
-              <h6>Contact Form</h6>
-              <hr />
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label className="mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    className={`form-control ${errors.fullName ? 'is-invalid' : ''}`}
-                    id="fullName"
-                    placeholder="Enter full name"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                  />
-                  {errors.fullName && <div className="invalid-feedback">{errors.fullName}</div>}
-                </div>
-                <div className="form-group">
-                  <label className="mb-1">Phone Number</label>
-                  <input
-                    type="tel"
-                    className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-                    id="phone"
-                    placeholder="Enter phone number"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                  {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
-                </div>
-                <div className="form-group">
-                  <label className="mb-1">Email Address</label>
-                  <input
-                    type="email"
-                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                    id="email"
-                    placeholder="Enter email address"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                  {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-                </div>
-                <div className="form-group">
-                  <label className="mb-1">Message</label>
-                  <textarea
-                    rows="3"
-                    className={`form-control ${errors.message ? 'is-invalid' : ''}`}
-                    id="message"
-                    placeholder="Type your message"
-                    value={formData.message}
-                    onChange={handleChange}
-                  ></textarea>
-                  {errors.message && <div className="invalid-feedback">{errors.message}</div>}
-                </div>
-                <div className="form-group py-3">
-                  <button type="submit" className="btn btn-warning shadow w-100">
-                    Send Message
-                  </button>
-                </div>
-              </form>
-              {toastMsg && <div className="alert alert-info mt-3">{toastMsg}</div>}
-            </div>
-          </div>
-        </div>
+          <Grid container spacing={4} justifyContent="center">
+            <Grid item xs={12} md={8} lg={6}>
+              <Fade in timeout={1000}>
+                <Card
+                  className="cta-card-modern"
+                  sx={{
+                    p: { xs: 2.5, md: 3.5 },
+                    borderRadius: '16px',
+                    boxShadow: '0 25px 80px rgba(0, 0, 0, 0.15)',
+                  }}
+                >
+                  <CardContent>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 600,
+                        color: '#1a1a1a',
+                        mb: 3,
+                        textAlign: 'center',
+                        fontSize: { xs: '1.35rem', md: '1.5rem' },
+                      }}
+                    >
+                      Send us a Message
+                    </Typography>
+                    <Box component="form" onSubmit={handleSubmit}>
+                      <TextField
+                        fullWidth
+                        id="fullName"
+                        label="Full Name"
+                        variant="outlined"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        error={!!errors.fullName}
+                        helperText={errors.fullName}
+                        sx={{ mb: 2.5 }}
+                        InputProps={{
+                          sx: {
+                            borderRadius: '10px',
+                            fontSize: '0.95rem',
+                          },
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        id="phone"
+                        label="Phone Number"
+                        variant="outlined"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        error={!!errors.phone}
+                        helperText={errors.phone}
+                        sx={{ mb: 2.5 }}
+                        InputProps={{
+                          sx: {
+                            borderRadius: '10px',
+                            fontSize: '0.95rem',
+                          },
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        variant="outlined"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        sx={{ mb: 2.5 }}
+                        InputProps={{
+                          sx: {
+                            borderRadius: '10px',
+                            fontSize: '0.95rem',
+                          },
+                        }}
+                      />
+                      <TextField
+                        fullWidth
+                        id="message"
+                        label="Message"
+                        variant="outlined"
+                        multiline
+                        rows={5}
+                        value={formData.message}
+                        onChange={handleChange}
+                        error={!!errors.message}
+                        helperText={errors.message}
+                        sx={{ mb: 2.5 }}
+                        InputProps={{
+                          sx: {
+                            borderRadius: '10px',
+                            fontSize: '0.95rem',
+                          },
+                        }}
+                      />
+                      {toastMsg && (
+                        <Alert
+                          severity={toastMsg.includes('success') ? 'success' : 'error'}
+                          sx={{ mb: 3, borderRadius: '12px' }}
+                        >
+                          {toastMsg}
+                        </Alert>
+                      )}
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        endIcon={<Send />}
+                        className="primary-cta-btn"
+                        sx={{
+                          py: 1.25,
+                          fontSize: '0.95rem',
+                          fontWeight: 600,
+                          textTransform: 'none',
+                          borderRadius: '10px',
+                          mt: 2,
+                        }}
+                      >
+                        Send Message
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Fade>
+            </Grid>
+          </Grid>
+        </Container>
       </section>
     </div>
   );

@@ -84,10 +84,10 @@ const Home = () => {
                   <Chip
                     label="Diversified Conglomerate"
                     sx={{
-                      mb: 3,
+                      mb: 2.5,
                       px: 2,
-                      py: 3,
-                      fontSize: '0.9rem',
+                      py: 2.5,
+                      fontSize: { xs: '0.85rem', md: '0.9rem' },
                       fontWeight: 600,
                       bgcolor: '#3b82f6',
                       color: 'white',
@@ -97,10 +97,10 @@ const Home = () => {
                   <Typography
                     variant="h1"
                     sx={{
-                      fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
-                      fontWeight: 800,
+                      fontSize: { xs: '2rem', sm: '2.75rem', md: '3.25rem' },
+                      fontWeight: 700,
                       lineHeight: 1.1,
-                      mb: 3,
+                      mb: 2.5,
                       color: '#ffffff',
                       letterSpacing: '-0.03em',
                     }}
@@ -112,10 +112,10 @@ const Home = () => {
                   <Typography
                     variant="h6"
                     sx={{
-                      fontSize: { xs: '1rem', md: '1.25rem' },
+                      fontSize: { xs: '0.95rem', md: '1.1rem' },
                       color: '#666',
                       lineHeight: 1.7,
-                      mb: 4,
+                      mb: 3.5,
                       maxWidth: '90%',
                     }}
                   >
@@ -129,16 +129,15 @@ const Home = () => {
                       component={Link}
                       to="/about"
                       variant="contained"
-                      size="large"
                       endIcon={<ArrowForward />}
                       className="primary-cta-btn"
                       sx={{
-                        px: 4,
-                        py: 1.5,
-                        fontSize: '1rem',
+                        px: 3.5,
+                        py: 1.25,
+                        fontSize: '0.95rem',
                         fontWeight: 600,
                         textTransform: 'none',
-                        borderRadius: '50px',
+                        borderRadius: '10px',
                       }}
                     >
                       Discover Our Story
@@ -147,15 +146,14 @@ const Home = () => {
                       component={Link}
                       to="/contact"
                       variant="outlined"
-                      size="large"
                       className="secondary-cta-btn"
                       sx={{
-                        px: 4,
-                        py: 1.5,
-                        fontSize: '1rem',
+                        px: 3.5,
+                        py: 1.25,
+                        fontSize: '0.95rem',
                         fontWeight: 600,
                         textTransform: 'none',
-                        borderRadius: '50px',
+                        borderRadius: '10px',
                         borderWidth: '2px',
                       }}
                     >
@@ -173,14 +171,14 @@ const Home = () => {
                       key={index}
                       className="stat-card"
                       sx={{
-                        p: 4,
+                        p: 3,
                         textAlign: 'center',
-                        borderRadius: '24px',
+                        borderRadius: '16px',
                       }}
                     >
                       <Box
                         sx={{
-                          fontSize: '3rem',
+                          fontSize: '2.5rem',
                           color: '#3b82f6',
                           mb: 1.5,
                         }}
@@ -190,10 +188,10 @@ const Home = () => {
                       <Typography
                         variant="h2"
                         sx={{
-                          fontWeight: 800,
+                          fontWeight: 700,
                           color: '#1a1a1a',
                           mb: 1,
-                          fontSize: { xs: '2.5rem', md: '3rem' },
+                          fontSize: { xs: '2rem', md: '2.5rem' },
                         }}
                       >
                         {stat.number}
@@ -203,7 +201,7 @@ const Home = () => {
                         sx={{
                           color: '#4a5568',
                           fontWeight: 600,
-                          fontSize: '1rem',
+                          fontSize: { xs: '0.9rem', md: '0.95rem' },
                         }}
                       >
                         {stat.label}
@@ -227,8 +225,8 @@ const Home = () => {
                   <Typography
                     variant="h2"
                     sx={{
-                      fontSize: { xs: '2rem', md: '3rem' },
-                      fontWeight: 800,
+                      fontSize: { xs: '1.75rem', md: '2.5rem' },
+                      fontWeight: 700,
                       color: '#ffffff',
                       mb: 2,
                       lineHeight: 1.2,
@@ -246,10 +244,10 @@ const Home = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    fontSize: { xs: '1.1rem', md: '1.25rem' },
-                    lineHeight: 1.9,
+                    fontSize: { xs: '1rem', md: '1.1rem' },
+                    lineHeight: 1.8,
                     color: 'rgba(255, 255, 255, 0.85)',
-                    mb: 3,
+                    mb: 2.5,
                   }}
                 >
                   At Anddhen, we pride ourselves on being more than just a business—we are a
@@ -260,10 +258,10 @@ const Home = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    fontSize: { xs: '1.1rem', md: '1.25rem' },
-                    lineHeight: 1.9,
+                    fontSize: { xs: '1rem', md: '1.1rem' },
+                    lineHeight: 1.8,
                     color: 'rgba(255, 255, 255, 0.85)',
-                    mb: 3,
+                    mb: 2.5,
                   }}
                 >
                   We deliver bespoke solutions tailored to your unique needs while making a
@@ -273,12 +271,12 @@ const Home = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    fontSize: { xs: '1.1rem', md: '1.25rem' },
-                    lineHeight: 1.9,
+                    fontSize: { xs: '1rem', md: '1.1rem' },
+                    lineHeight: 1.8,
                     color: '#ffffff',
                     fontWeight: 600,
                     fontStyle: 'italic',
-                    mb: 4,
+                    mb: 3.5,
                   }}
                 >
                   &quot;Choose Anddhen, where our services meet your ambition, and together we
@@ -290,12 +288,12 @@ const Home = () => {
                   variant="outlined"
                   endIcon={<ArrowForward />}
                   sx={{
-                    px: 4,
-                    py: 1.5,
-                    fontSize: '1rem',
+                    px: 3.5,
+                    py: 1.25,
+                    fontSize: '0.95rem',
                     fontWeight: 600,
                     textTransform: 'none',
-                    borderRadius: '50px',
+                    borderRadius: '10px',
                     borderWidth: '2px',
                     borderColor: '#3b82f6',
                     color: '#3b82f6',
@@ -321,8 +319,8 @@ const Home = () => {
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' },
-                fontWeight: 800,
+                fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem' },
+                fontWeight: 700,
                 color: '#1a1a1a',
                 mb: 2,
                 letterSpacing: '-0.03em',
@@ -334,9 +332,9 @@ const Home = () => {
             <Typography
               variant="h6"
               sx={{
-                fontSize: '1.25rem',
+                fontSize: { xs: '1rem', md: '1.1rem' },
                 color: '#666',
-                mt: 3,
+                mt: 2.5,
                 maxWidth: '700px',
                 mx: 'auto',
                 fontWeight: 400,
@@ -355,7 +353,7 @@ const Home = () => {
                       className="subsidiary-card-modern"
                       sx={{
                         height: '100%',
-                        borderRadius: '24px',
+                        borderRadius: '16px',
                         position: 'relative',
                         overflow: 'visible',
                       }}
@@ -363,10 +361,10 @@ const Home = () => {
                       <Box
                         className="subsidiary-image-container"
                         sx={{
-                          height: '220px',
+                          height: '180px',
                           overflow: 'hidden',
                           position: 'relative',
-                          borderRadius: '24px 24px 0 0',
+                          borderRadius: '16px 16px 0 0',
                         }}
                       >
                         <img
@@ -384,17 +382,17 @@ const Home = () => {
                           className="subsidiary-icon-badge"
                           sx={{
                             position: 'absolute',
-                            top: 20,
-                            right: 20,
-                            width: '60px',
-                            height: '60px',
-                            borderRadius: '16px',
+                            top: 16,
+                            right: 16,
+                            width: '50px',
+                            height: '50px',
+                            borderRadius: '12px',
                             bgcolor: 'white',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#3b82f6',
-                            fontSize: '1.8rem',
+                            fontSize: '1.5rem',
                             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
                             transition: 'all 0.4s ease',
                           }}
@@ -404,22 +402,22 @@ const Home = () => {
                       </Box>
                       <CardContent
                         sx={{
-                          p: 4,
+                          p: 3,
                           position: 'relative',
                           bgcolor: 'white',
                         }}
                       >
                         <Typography
-                          variant="h5"
+                          variant="h6"
                           component={Link}
                           to={subsidiary.link}
                           sx={{
-                            fontWeight: 700,
+                            fontWeight: 600,
                             color: '#1a1a1a',
                             textDecoration: 'none',
-                            mb: 2,
+                            mb: 1.5,
                             display: 'block',
-                            fontSize: '1.5rem',
+                            fontSize: '1.25rem',
                             transition: 'all 0.3s ease',
                             '&:hover': {
                               color: '#3b82f6',
@@ -433,10 +431,10 @@ const Home = () => {
                           variant="body2"
                           sx={{
                             color: '#666',
-                            lineHeight: 1.7,
-                            mb: 3,
+                            lineHeight: 1.6,
+                            mb: 2.5,
                             minHeight: '50px',
-                            fontSize: '1rem',
+                            fontSize: { xs: '0.9rem', md: '0.95rem' },
                           }}
                         >
                           {subsidiary.Description}
@@ -452,7 +450,7 @@ const Home = () => {
                             fontWeight: 600,
                             textTransform: 'none',
                             px: 0,
-                            fontSize: '1rem',
+                            fontSize: { xs: '0.9rem', md: '0.95rem' },
                             '&:hover': {
                               bgcolor: 'transparent',
                               color: '#6366f1',
@@ -479,8 +477,8 @@ const Home = () => {
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' },
-                fontWeight: 800,
+                fontSize: { xs: '2rem', sm: '2.5rem', md: '2.75rem' },
+                fontWeight: 700,
                 color: '#ffffff',
                 mb: 2,
                 letterSpacing: '-0.03em',
@@ -497,28 +495,28 @@ const Home = () => {
                 className="vmv-card-modern vision-card"
                 sx={{
                   height: '100%',
-                  p: 4,
-                  borderRadius: '24px',
+                  p: 3,
+                  borderRadius: '16px',
                   position: 'relative',
                   overflow: 'hidden',
                 }}
               >
                 <Box
                   sx={{
-                    fontSize: '3rem',
+                    fontSize: '2.5rem',
                     color: '#3b82f6',
-                    mb: 2,
+                    mb: 1.5,
                   }}
                 >
                   <EmojiEvents />
                 </Box>
                 <Typography
-                  variant="h4"
+                  variant="h5"
                   sx={{
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: '#1a1a1a',
-                    mb: 2,
-                    fontSize: '1.75rem',
+                    mb: 1.5,
+                    fontSize: '1.35rem',
                   }}
                 >
                   Our Vision
@@ -527,8 +525,8 @@ const Home = () => {
                   variant="body1"
                   sx={{
                     color: '#4a5568',
-                    lineHeight: 1.8,
-                    fontSize: '1.05rem',
+                    lineHeight: 1.7,
+                    fontSize: { xs: '0.95rem', md: '1rem' },
                   }}
                 >
                   To be a beacon of innovation and integrity in the global marketplace, transforming
@@ -543,28 +541,28 @@ const Home = () => {
                 className="vmv-card-modern mission-card"
                 sx={{
                   height: '100%',
-                  p: 4,
-                  borderRadius: '24px',
+                  p: 3,
+                  borderRadius: '16px',
                   position: 'relative',
                   overflow: 'hidden',
                 }}
               >
                 <Box
                   sx={{
-                    fontSize: '3rem',
+                    fontSize: '2.5rem',
                     color: '#3b82f6',
-                    mb: 2,
+                    mb: 1.5,
                   }}
                 >
                   <Business />
                 </Box>
                 <Typography
-                  variant="h4"
+                  variant="h5"
                   sx={{
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: '#1a1a1a',
-                    mb: 2,
-                    fontSize: '1.75rem',
+                    mb: 1.5,
+                    fontSize: '1.35rem',
                   }}
                 >
                   Our Mission
@@ -573,8 +571,8 @@ const Home = () => {
                   variant="body1"
                   sx={{
                     color: '#4a5568',
-                    lineHeight: 1.8,
-                    fontSize: '1.05rem',
+                    lineHeight: 1.7,
+                    fontSize: { xs: '0.95rem', md: '1rem' },
                   }}
                 >
                   To empower clients and communities by delivering exceptional services across
@@ -589,28 +587,28 @@ const Home = () => {
                 className="vmv-card-modern values-card"
                 sx={{
                   height: '100%',
-                  p: 4,
-                  borderRadius: '24px',
+                  p: 3,
+                  borderRadius: '16px',
                   position: 'relative',
                   overflow: 'hidden',
                 }}
               >
                 <Box
                   sx={{
-                    fontSize: '3rem',
+                    fontSize: '2.5rem',
                     color: '#3b82f6',
-                    mb: 2,
+                    mb: 1.5,
                   }}
                 >
                   <Favorite />
                 </Box>
                 <Typography
-                  variant="h4"
+                  variant="h5"
                   sx={{
-                    fontWeight: 700,
+                    fontWeight: 600,
                     color: '#1a1a1a',
-                    mb: 2,
-                    fontSize: '1.75rem',
+                    mb: 1.5,
+                    fontSize: '1.35rem',
                   }}
                 >
                   Our Values
@@ -622,7 +620,7 @@ const Home = () => {
                         sx={{
                           color: '#3b82f6',
                           mt: 0.5,
-                          fontSize: '1.2rem',
+                          fontSize: '1rem',
                         }}
                       >
                         {value.icon}
@@ -634,7 +632,7 @@ const Home = () => {
                             fontWeight: 600,
                             color: '#1a1a1a',
                             mb: 0.5,
-                            fontSize: '0.95rem',
+                            fontSize: '0.9rem',
                           }}
                         >
                           {value.title}:
@@ -644,7 +642,7 @@ const Home = () => {
                           sx={{
                             color: '#4a5568',
                             lineHeight: 1.6,
-                            fontSize: '0.9rem',
+                            fontSize: '0.85rem',
                           }}
                         >
                           {value.description}
@@ -665,20 +663,20 @@ const Home = () => {
           <Card
             className="cta-card-modern"
             sx={{
-              p: { xs: 4, md: 6 },
-              borderRadius: '32px',
+              p: { xs: 3, md: 4 },
+              borderRadius: '16px',
               textAlign: 'center',
               position: 'relative',
               overflow: 'hidden',
             }}
           >
             <Typography
-              variant="h3"
+              variant="h4"
               sx={{
-                fontWeight: 800,
+                fontWeight: 700,
                 color: '#1a1a1a',
                 mb: 2,
-                fontSize: { xs: '1.75rem', md: '2.25rem' },
+                fontSize: { xs: '1.5rem', md: '1.75rem' },
               }}
             >
               Join WhatsApp Groups for US Universities (2024-25)
@@ -687,8 +685,8 @@ const Home = () => {
               variant="body1"
               sx={{
                 color: '#666',
-                mb: 4,
-                fontSize: '1.125rem',
+                mb: 3.5,
+                fontSize: { xs: '1rem', md: '1.05rem' },
                 lineHeight: 1.7,
                 maxWidth: '600px',
                 mx: 'auto',
@@ -702,19 +700,18 @@ const Home = () => {
               component={Link}
               to="/acs"
               variant="contained"
-              size="large"
               startIcon={
-                <Box component="span" sx={{ fontSize: '1.5rem' }}>
+                <Box component="span" sx={{ fontSize: '1.25rem' }}>
                   💬
                 </Box>
               }
               sx={{
-                px: 5,
-                py: 1.75,
-                fontSize: '1.1rem',
+                px: 4,
+                py: 1.25,
+                fontSize: '0.95rem',
                 fontWeight: 600,
                 textTransform: 'none',
-                borderRadius: '50px',
+                borderRadius: '10px',
                 bgcolor: '#25D366',
                 '&:hover': {
                   bgcolor: '#20BA5A',
