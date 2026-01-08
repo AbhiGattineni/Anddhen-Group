@@ -231,19 +231,29 @@ export const Transaction = () => {
         width: 130,
         disableSortBy: true,
         Cell: ({ row }) => {
-          if (!row || !tableData) return '₹ 0.00';
+          if (!row || !tableData || tableData.length === 0) return '₹ 0.00';
 
-          let total = 0;
-          for (let i = 0; i <= row.index && i < tableData.length; i++) {
+          // Since transactions are sorted newest first (descending by date),
+          // Row 0 (top) should show current balance = sum of ALL transactions
+          // For each row, calculate balance from that row to the end (older transactions)
+          // This gives us the running balance at each point in time
+
+          let balance = 0;
+          // Start from current row index and sum all transactions to the end
+          // This includes all transactions from this point forward (chronologically older)
+          for (let i = row.index; i < tableData.length; i++) {
             const transaction = tableData[i];
-            if (transaction && transaction.transaction_type === 'credit') {
-              total += parseFloat(transaction.credited_amount || 0);
-            } else if (transaction && transaction.transaction_type === 'debit') {
-              total -= parseFloat(transaction.debited_amount || 0);
+            if (transaction) {
+              if (transaction.transaction_type === 'credit') {
+                balance += parseFloat(transaction.credited_amount || 0);
+              } else if (transaction.transaction_type === 'debit') {
+                balance -= parseFloat(transaction.debited_amount || 0);
+              }
             }
           }
-          const colorClass = total >= 0 ? 'total-positive' : 'total-negative';
-          return <span className={`total-amount ${colorClass}`}>₹ {total.toFixed(2)}</span>;
+
+          const colorClass = balance >= 0 ? 'total-positive' : 'total-negative';
+          return <span className={`total-amount ${colorClass}`}>₹ {balance.toFixed(2)}</span>;
         },
       },
       {
@@ -293,11 +303,12 @@ export const Transaction = () => {
     ];
   }, [tableData, handleEdit, handleDelete]);
 
+  // Calculate total from ALL transactions (not filtered) - this is the current balance
   const total = useMemo(() => {
-    if (!Array.isArray(tableData)) return '0.00';
+    if (!Array.isArray(sortedTransactions)) return '0.00';
 
     let totalAmount = 0;
-    tableData.forEach(transaction => {
+    sortedTransactions.forEach(transaction => {
       if (!transaction) return;
 
       if (transaction.transaction_type === 'credit') {
@@ -307,7 +318,7 @@ export const Transaction = () => {
       }
     });
     return totalAmount.toFixed(2);
-  }, [tableData]);
+  }, [sortedTransactions]);
 
   // Use stable configuration for useTable
   const tableInstance = useTable(
@@ -467,19 +478,6 @@ export const Transaction = () => {
           </div>
           <div className="header-actions">
             <button
-              className="btn-export-pdf"
-              onClick={handleExportPDF}
-              disabled={
-                isGeneratingPDF || isLoading || !Array.isArray(tableData) || tableData.length === 0
-              }
-              type="button"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-              </svg>
-              {isGeneratingPDF ? 'Generating...' : 'Export PDF'}
-            </button>
-            <button
               className="btn-add-transaction"
               onClick={() => setShowModal(true)}
               disabled={isLoading}
@@ -625,6 +623,23 @@ export const Transaction = () => {
                   </button>
                   <button className="btn-reset-filter" onClick={handleResetData} type="button">
                     Reset
+                  </button>
+                  <button
+                    className="btn-export-pdf"
+                    onClick={handleExportPDF}
+                    disabled={
+                      !isFiltered ||
+                      isGeneratingPDF ||
+                      isLoading ||
+                      !Array.isArray(tableData) ||
+                      tableData.length === 0
+                    }
+                    type="button"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+                    </svg>
+                    {isGeneratingPDF ? 'Generating...' : 'Export PDF'}
                   </button>
                 </div>
               </div>
