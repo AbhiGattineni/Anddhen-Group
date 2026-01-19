@@ -404,6 +404,23 @@
   height: 14px;
 }
 
+/* Ensure visibility of university list items in subsidiaries section */
+.subsidiaries-section ol,
+.subsidiaries-section ol li,
+.subsidiaries-section ol li span {
+  color: #1a1a1a !important;
+  opacity: 1 !important;
+}
+
+.subsidiaries-section ol li a {
+  opacity: 1 !important;
+}
+
+.subsidiaries-section ol li a svg {
+  opacity: 1 !important;
+  fill: currentColor !important;
+}
+
 @keyframes pulse {
   0%, 100% {
     transform: translateY(-50%) scale(1);
