@@ -213,19 +213,14 @@ export const EmployeeDashboard = () => {
         return '';
 
       case 'description':
-        // Check character limit first (highest priority)
+        // Check if description is required (always required)
+        if (!value?.trim()) {
+          return 'Description is required';
+        }
+
+        // Check character limit
         if (value && value.length > 500) {
           return 'Description must not exceed 500 characters';
-        }
-
-        // Check if description is required for leave
-        if (formValues.leave && !value?.trim()) {
-          return 'Description is required when taking leave';
-        }
-
-        // Check if description is required for ASS subsidiary
-        if (formValues.subsidary === 'ASS' && !value?.trim()) {
-          return 'Description is required for ASS subsidiary';
         }
 
         return '';
@@ -262,19 +257,17 @@ export const EmployeeDashboard = () => {
     if (isSubmitting) return false;
     if (!formValues.date || !formValues.subsidary) return false;
 
+    // Description is always required
+    if (!formValues.description?.trim()) return false;
+
     // For non-leave submissions
     if (!formValues.leave) {
       if (!isTodayOrPast(formValues.date) || !isUpdateAllowed(formValues.date)) return false;
-      // For ASS subsidiary, description is always required
-      if (formValues.subsidary === 'ASS' && !formValues.description?.trim()) return false;
       return true;
     }
 
     // For leave submissions
     if (formValues.leave) {
-      // Require description for all leave requests
-      if (!formValues.description?.trim()) return false;
-
       // If endDate is provided, it must be valid
       if (formValues.endDate && formValues.endDate < formValues.date) return false;
 
@@ -550,18 +543,31 @@ export const EmployeeDashboard = () => {
       // Handle leave requests (both single and multiple days)
       if (formValues.leave) {
         let dateArray = [];
-        const startDate = new Date(formValues.date);
+
+        // Parse start date - handle both Date objects and date strings
+        const startDateStr =
+          typeof formValues.date === 'string' ? formValues.date : formatDate(formValues.date);
+        const [startYear, startMonth, startDay] = startDateStr.split('-').map(Number);
+        const startDate = new Date(startYear, startMonth - 1, startDay);
 
         if (formValues.endDate) {
           // Multiple day leave
-          const endDate = new Date(formValues.endDate);
+          const endDateStr =
+            typeof formValues.endDate === 'string'
+              ? formValues.endDate
+              : formatDate(formValues.endDate);
+          const [endYear, endMonth, endDay] = endDateStr.split('-').map(Number);
+          const endDate = new Date(endYear, endMonth - 1, endDay);
+
           // Generate array of dates between start and end date (inclusive)
-          for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-            dateArray.push(new Date(date));
+          const currentDate = new Date(startDate);
+          while (currentDate <= endDate) {
+            dateArray.push(new Date(currentDate));
+            currentDate.setDate(currentDate.getDate() + 1);
           }
         } else {
           // Single day leave
-          dateArray = [startDate];
+          dateArray = [new Date(startDate)];
         }
 
         try {
@@ -853,11 +859,9 @@ export const EmployeeDashboard = () => {
                 error={!!fieldErrors.description}
                 helperText={fieldErrors.description}
                 placeholder={
-                  formValues.subsidary === 'ASS'
-                    ? 'Description is required for ASS subsidiary...'
-                    : formValues.leave
-                      ? 'Please provide a reason for your leave...'
-                      : 'Optional description...'
+                  formValues.leave
+                    ? 'Please provide a reason for your leave (required)...'
+                    : 'Please provide a description (required)...'
                 }
               />
             </Grid>

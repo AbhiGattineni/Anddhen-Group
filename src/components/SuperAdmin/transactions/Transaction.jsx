@@ -59,7 +59,7 @@ export const Transaction = () => {
 
   // Stable table data reference - CRITICAL FIX
   const tableData = useMemo(() => {
-    if (isFiltered && Array.isArray(filteredTransactions) && filteredTransactions.length > 0) {
+    if (isFiltered && Array.isArray(filteredTransactions)) {
       return filteredTransactions;
     }
     return sortedTransactions;
