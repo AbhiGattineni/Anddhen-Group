@@ -36,6 +36,8 @@ import PrivacyPolicy from 'src/components/pages/Policies/PrivacyPolicy';
 import RefundPolicy from 'src/components/pages/Policies/RefundPolicy';
 import ReturnPolicy from 'src/components/pages/Policies/ReturnPolicy';
 import ShippingPolicy from 'src/components/pages/Policies/ShippingPolicy';
+import QuizPlay from 'src/components/pages/Quiz/QuizPlay';
+import SubmitQuestion from 'src/components/pages/Quiz/SubmitQuestion';
 
 const router = createBrowserRouter([
   {
@@ -144,21 +146,21 @@ const router = createBrowserRouter([
       {
         index: true,
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute minRole="employee">
             <EmployeeDashboard />
           </ProtectedRoute>
         ),
       },
       ...getSharedRoutes().map(route => ({
         ...route,
-        element: <ProtectedRoute>{route.element}</ProtectedRoute>,
+        element: <ProtectedRoute minRole="employee">{route.element}</ProtectedRoute>,
       })),
     ],
   },
   {
     path: '/superadmin',
     element: (
-      <ProtectedRoute requiredRoles={['superadmin']}>
+      <ProtectedRoute minRole="superadmin">
         <Layout />
       </ProtectedRoute>
     ),
@@ -193,8 +195,14 @@ const router = createBrowserRouter([
     element: <MainLayout>{/* Add your AdminPortal component here */}</MainLayout>,
   },
   {
+    // Public quiz surface: scan-to-play + community question submission.
     path: '/quiz',
-    element: <MainLayout>{/* Add your Quiz component here */}</MainLayout>,
+    element: <Layout />,
+    children: [
+      { index: true, element: <SubmitQuestion /> },
+      { path: 'submit', element: <SubmitQuestion /> },
+      { path: ':quizId', element: <QuizPlay /> },
+    ],
   },
   {
     path: '/video-editor',

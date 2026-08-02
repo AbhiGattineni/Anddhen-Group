@@ -24,6 +24,7 @@
     "emailjs-com": "^3.2.0",
     "firebase": "^9.23.0",
     "prop-types": "^15.8.1",
+    "qrcode.react": "^3.2.0",
     "react": "^17.0.2",
     "react-bootstrap": "^2.10.4",
     "react-calendar": "^4.6.1",

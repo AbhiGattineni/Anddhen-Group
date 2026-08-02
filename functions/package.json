@@ -1,0 +1,21 @@
+{
+  "name": "anddhen-functions",
+  "description": "Cloud Functions for Anddhen compute endpoints (resume parsing, AI suggestions)",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^5.1.0",
+    "mammoth": "^1.8.0",
+    "pdf-parse": "^1.1.1",
+    "yahoo-finance2": "2.13.3"
+  },
+  "private": true
+}

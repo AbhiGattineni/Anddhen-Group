@@ -1,0 +1,196 @@
+/* Stocks analysis — matches the app's blue/cyan/indigo system. */
+
+.stk-wrap {
+  padding: 8px 4px 40px;
+}
+.stk-title {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+.stk-subtitle {
+  color: #4a5568;
+  margin: 4px 0 0;
+}
+
+.stk-card {
+  background: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+}
+
+/* ⓘ info tooltip */
+.stk-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  cursor: help;
+  vertical-align: middle;
+}
+.stk-info::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 140%;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 280px;
+  background: #1a1a1a;
+  color: #fff;
+  font-weight: 400;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  z-index: 20;
+  white-space: normal;
+}
+.stk-info:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* sign badges */
+.stk-sign {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: #f1f5f9;
+  color: #64748b;
+}
+.stk-sign.pos {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.3);
+}
+.stk-sign.neg {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.stk-dir {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.stk-table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+}
+.stk-value-input {
+  max-width: 160px;
+}
+
+.stk-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 10px !important;
+}
+.stk-btn:disabled {
+  opacity: 0.55;
+}
+
+.stk-note {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* symbol search typeahead */
+.stk-search-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  margin-top: 4px;
+}
+.stk-search-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.stk-search-item:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+.stk-ex-badge {
+  float: right;
+  font-size: 11px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+
+/* sector dashboard */
+.stk-sector-card {
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 14px;
+  padding: 16px;
+  background: #fff;
+  height: 100%;
+}
+.stk-sector-name {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.stk-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.stk-pill.pos {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+.stk-pill.neg {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}

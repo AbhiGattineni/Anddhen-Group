@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import connector from '../services/connector';
 
 const usePostUserData = () => {
   const [response, setResponse] = useState(null);
@@ -8,7 +9,6 @@ const usePostUserData = () => {
   const postUserData = async (userData, first_name, last_name) => {
     setIsLoading(true);
     try {
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
       const requiredUserData = {
         user_id: userData.uid,
         full_name: userData.displayName || userData.full_name || null,
@@ -24,29 +24,25 @@ const usePostUserData = () => {
         const names = requiredUserData.full_name.split(' ');
         requiredUserData.first_name = names[0];
         if (names.length > 1) {
-          requiredUserData.last_name = names[-1];
+          requiredUserData.last_name = names[names.length - 1];
         }
       } else if (first_name) {
         requiredUserData.full_name = first_name + ' ' + last_name;
       }
 
-      const response = await fetch(`${API_BASE_URL}/user/log-first-time/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requiredUserData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error posting new user to backend: ${response.statusText}`);
-      }
-      const responseData = await response.json();
+      // Route through the connector: with the Django provider this POSTs to
+      // /user/log-first-time/ (unchanged); with the Firebase provider it writes
+      // the User doc to Firestore. Either way returns the backend payload
+      // ({ empty_fields, roles } from Django) or the created doc (Firebase).
+      const responseData = await connector.create('users', requiredUserData, userData.uid);
       setResponse(responseData);
       return responseData;
     } catch (error) {
+      // Backend unreachable (e.g. Django decommissioned) must NOT break sign-in.
+      // Return a safe default so the auth flow can still complete.
       setError(error);
-      console.error('API call error:', error);
+      console.error('postUserData failed (continuing sign-in):', error);
+      return { empty_fields: [], roles: [], _backendUnavailable: true };
     } finally {
       setIsLoading(false);
     }

@@ -52,12 +52,17 @@ const useUnifiedAuth = () => {
     try {
       const usersData = await authPromise;
       const userData = await postUserData(usersData.user, first_name, last_name);
-      if (userData.empty_fields.length > 0) {
-        localStorage.setItem('empty_fields', userData.empty_fields);
+      // Guard against a missing/partial payload (e.g. backend unreachable) so a
+      // successful OAuth sign-in is never reported as an auth error.
+      const emptyFields = userData?.empty_fields ?? [];
+      const roles = userData?.roles ?? [];
+
+      if (emptyFields.length > 0) {
+        localStorage.setItem('empty_fields', emptyFields);
         navigate('/profile');
       } else {
-        localStorage.setItem('empty_fields', userData.empty_fields);
-        localStorage.setItem('roles', userData.roles);
+        localStorage.setItem('empty_fields', emptyFields);
+        localStorage.setItem('roles', roles);
         navigate(localStorage.getItem('preLoginPath') || '/');
       }
 

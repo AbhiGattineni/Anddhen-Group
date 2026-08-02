@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { Box, Typography, Paper, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ResumeComponent from './ResumeComponent';
-import axios from 'axios';
 import { fetchAi } from './AISuggestions';
+import { callFunction, fileToBase64 } from '../../../services/connector/functions';
 
 const ResumeHome = () => {
   const theme = useTheme();
   const [showResumeComponent, setShowResumeComponent] = useState(false);
   const [parsed, setParsed] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleGetStartedClick = () => {
     setShowResumeComponent(true);
@@ -23,18 +22,18 @@ const ResumeHome = () => {
   const handleResumeUpload = async event => {
     const file = event.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append('resume', file);
-
       try {
-        const res = await axios.post(`${API_BASE_URL}/api/parse-resume/`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        // Text extraction moved from Django to the `parseResume` Cloud Function.
+        const fileBase64 = await fileToBase64(file);
+        const resumeText = await callFunction('parseResume', {
+          fileBase64,
+          filename: file.name,
         });
 
         const resume_data = await fetchAi(
           `Given the following resume text:
 
-${res.data}
+${resumeText}
 
 Extract the following fields in valid JSON format:
 

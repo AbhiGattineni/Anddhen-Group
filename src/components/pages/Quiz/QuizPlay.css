@@ -1,0 +1,119 @@
+/* Player-facing quiz pages — matches the site's blue #3b82f6 / cyan #06b6d4 /
+   indigo #6366f1 design system (gradient titles + modern divider, like Home). */
+
+.qz-hero-title {
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
+}
+
+.qz-divider {
+  width: 64px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #3b82f6, #06b6d4, #6366f1);
+  margin: 0 auto 1rem;
+}
+
+.qz-spinner {
+  color: #06b6d4;
+}
+
+.qz-card,
+.quiz-join-card {
+  background: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.quiz-join-card {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: left;
+}
+.quiz-join-card .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+}
+.quiz-join-card .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+}
+.quiz-join-card .form-control {
+  border-radius: 10px;
+}
+.quiz-join-card .btn-outline-secondary {
+  border-radius: 10px;
+}
+
+.quiz-lobby-players {
+  max-width: 480px;
+  margin: 0 auto;
+}
+.quiz-lobby-players .badge {
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: rgba(59, 130, 246, 0.06) !important;
+  color: #1a1a1a !important;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+.quiz-centered {
+  min-height: 55vh;
+}
+
+/* Live question options */
+.quiz-option {
+  text-align: left;
+  padding: 0.9rem 1.1rem;
+  font-size: 1.05rem;
+  border-radius: 12px !important;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.quiz-option.btn-outline-primary {
+  border: 1.5px solid rgba(59, 130, 246, 0.35);
+  color: #1a1a1a;
+  background: #fff;
+}
+.quiz-option.btn-outline-primary:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: #3b82f6;
+  color: #1a1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.15);
+}
+.quiz-option strong {
+  color: #3b82f6;
+}
+.quiz-option.btn-success strong,
+.quiz-option.btn-danger strong {
+  color: #fff;
+}
+
+/* Score badge + progress */
+.quiz-play .badge.bg-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%) !important;
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+.quiz-play .progress {
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* Leaderboard */
+.list-group-item.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  border-color: transparent;
+}

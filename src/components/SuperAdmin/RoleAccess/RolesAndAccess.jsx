@@ -1,6 +1,7 @@
 import React from 'react';
 import RoleAccess from './RoleAccess';
 import AssignRole from './AssignRole';
+import RoleManager from './RoleManager';
 
 const RolesAndAccess = () => {
   return (
@@ -10,13 +11,27 @@ const RolesAndAccess = () => {
         <li className="nav-item" role="presentation">
           <button
             className="nav-link active"
+            id="userroles-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#userroles"
+            type="button"
+            role="tab"
+            aria-controls="userroles"
+            aria-selected="true"
+          >
+            User Roles
+          </button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button
+            className="nav-link"
             id="home-tab"
             data-bs-toggle="tab"
             data-bs-target="#home"
             type="button"
             role="tab"
             aria-controls="home"
-            aria-selected="true"
+            aria-selected="false"
           >
             Add Role
           </button>
@@ -53,10 +68,13 @@ const RolesAndAccess = () => {
       <div className="tab-content" id="myTabContent">
         <div
           className="tab-pane fade show active"
-          id="home"
+          id="userroles"
           role="tabpanel"
-          aria-labelledby="home-tab"
+          aria-labelledby="userroles-tab"
         >
+          <RoleManager />
+        </div>
+        <div className="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
           <RoleAccess />
         </div>
         <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">

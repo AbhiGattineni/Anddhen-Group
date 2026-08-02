@@ -1,18 +1,23 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 import PropTypes from 'prop-types';
-import { getSharedRoutes } from '../getSharedRoutes';
+import { useRole } from 'src/services/roles/RoleContext';
+import { hasAtLeast } from 'src/services/roles/roles';
 
-const ProtectedRoute = ({ children, requiredRoles }) => {
+/**
+ * Route guard driven by the Firebase role system.
+ *  - `minRole`: minimum role required (user < employee < admin < superadmin).
+ *    Omitted → any signed-in user may access.
+ *  - `requiredRoles`: legacy prop; its highest entry is treated as the min role.
+ */
+const ProtectedRoute = ({ children, minRole, requiredRoles }) => {
   const { user, loading, error } = useAuth();
+  const { role, loading: roleLoading } = useRole();
   const location = useLocation();
   const navigate = useNavigate();
   const storedEmptyFields = localStorage.getItem('empty_fields');
-
-  // Extract roles from local storage
-  const userRoles = useMemo(() => localStorage.getItem('roles')?.split(',') || [], []);
 
   useEffect(() => {
     if (storedEmptyFields && location.pathname !== '/profile') {
@@ -21,7 +26,7 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
     }
   }, [storedEmptyFields, navigate, location.pathname]);
 
-  if (!user && loading) {
+  if ((loading || roleLoading) && !user) {
     return <LoadingSpinner />;
   }
 
@@ -32,24 +37,20 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Check if the user has the superadmin role
-  const isSuperAdmin = userRoles.includes('superadmin');
-
-  // If the user is a superadmin, allow access to any route
-  if (isSuperAdmin) {
-    return children;
+  // Wait for the role to resolve before making an access decision.
+  if (roleLoading) {
+    return <LoadingSpinner />;
   }
 
-  // Check if the user has the required role for the route (like "superadmin")
-  if (requiredRoles.length && !requiredRoles.every(role => userRoles.includes(role))) {
-    return <Navigate to="/not-authorized" replace />;
-  }
+  // Effective minimum role: explicit minRole wins; else fall back to the
+  // highest of any legacy requiredRoles entries.
+  const effectiveMin =
+    minRole ||
+    (requiredRoles && requiredRoles.length
+      ? requiredRoles.reduce((hi, r) => (hasAtLeast(r, hi) ? r : hi), requiredRoles[0])
+      : null);
 
-  // For shared routes, check if the current path is allowed for the user
-  const sharedRoutesPaths = getSharedRoutes().map(route => route.path);
-  const currentPath = location.pathname.split('/').pop();
-
-  if (sharedRoutesPaths.includes(currentPath) && !userRoles.includes(currentPath)) {
+  if (effectiveMin && !hasAtLeast(role, effectiveMin)) {
     return <Navigate to="/not-authorized" replace />;
   }
 
@@ -58,10 +59,12 @@ const ProtectedRoute = ({ children, requiredRoles }) => {
 
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
+  minRole: PropTypes.string,
   requiredRoles: PropTypes.arrayOf(PropTypes.string),
 };
 
 ProtectedRoute.defaultProps = {
+  minRole: null,
   requiredRoles: [],
 };
 

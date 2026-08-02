@@ -1,14 +1,11 @@
 import { useQuery } from 'react-query';
+import connector from '../services/connector';
 
-const fetchCalendarData = async firebaseId => {
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const response = await fetch(`${API_BASE_URL}/acs_parttimer_status/${firebaseId}`);
-  if (!response.ok) {
-    throw new Error('Error fetching data');
-  }
-  return response.json();
-};
-
+// Migrated to the connector. Django: GET /acs_parttimer_status/:parttimerId (a
+// server-side filtered list). Firebase: where('parttimerId','==',id) on
+// `PartTimer_status`. Both return an array of that part-timer's status rows.
 export const useCalendarData = firebaseId => {
-  return useQuery(['calendarData', firebaseId], () => fetchCalendarData(firebaseId));
+  return useQuery(['calendarData', firebaseId], () =>
+    connector.byField('acsParttimerStatus', 'parttimerId', firebaseId)
+  );
 };

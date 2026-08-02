@@ -1,16 +1,14 @@
 import { useQuery } from 'react-query';
+import connector from '../services/connector';
 
-const fetchCalendarData = async firebaseId => {
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const response = await fetch(`${API_BASE_URL}/get_status_by_id/${firebaseId}`);
-  if (!response.ok) {
-    throw new Error('Error fetching data');
-  }
-  return response.json();
-};
-
+// Migrated to the connector. Django: GET /get_status_by_id/:id (server-side
+// filtered list). Firebase: where('user_id','==',id) on `Status_updates`.
 export const useStatusCalendar = firebaseId => {
-  return useQuery(['calendarData', firebaseId], () => fetchCalendarData(firebaseId), {
-    enabled: !!firebaseId, // API will only be called if firebaseId is truthy
-  });
+  return useQuery(
+    ['calendarData', firebaseId],
+    () => connector.byField('statusUpdates', 'user_id', firebaseId),
+    {
+      enabled: !!firebaseId, // API will only be called if firebaseId is truthy
+    }
+  );
 };

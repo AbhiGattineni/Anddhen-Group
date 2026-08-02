@@ -388,52 +388,94 @@ export const videoLinks = [
 
 export const adminPlates = [
   {
-    child: 'Anddhen Consulting Services',
+    child: 'Quiz',
+    route: 'quiz',
+    icon: 'bi-question-circle',
+    desc: 'Build time-bound quizzes, review community questions, run live games',
+  },
+  {
+    child: 'Ambulance Tracking',
+    route: 'ambulance',
+    icon: 'bi-camera',
+    desc: 'Pi plate-camera health check — uploads, heartbeats and daily stats',
+  },
+  {
+    child: 'Consultants',
     route: 'consultants',
+    icon: 'bi-people',
+    desc: 'Manage consultant profiles and details',
   },
   {
-    child: 'Anddhen Access Services',
+    child: 'Roles & Access',
     route: 'roleaccess',
+    icon: 'bi-shield-lock',
+    desc: 'Assign user roles and permissions',
   },
   {
-    child: 'Anddhen Transactions',
+    child: 'Transactions',
     route: 'transactions',
+    icon: 'bi-cash-coin',
+    desc: 'Track credits, debits and payments',
   },
   {
-    child: 'Anddhen Consulting Services',
+    child: 'Stocks',
+    route: 'stocks',
+    icon: 'bi-graph-up',
+    desc: 'Company fundamentals & health check',
+  },
+  {
+    child: 'Colleges',
     route: 'colleges',
+    icon: 'bi-mortarboard',
+    desc: 'Maintain the college directory',
   },
   {
-    child: 'Anddhen Status',
+    child: 'Status Updates',
     route: 'status',
+    icon: 'bi-graph-up-arrow',
+    desc: 'Daily work and status logs',
   },
   {
-    child: 'Anddhen Shopping Products',
+    child: 'Shopping Products',
     route: 'shopping',
+    icon: 'bi-cart3',
+    desc: 'Curated product listings',
   },
   {
     child: 'Our Team',
     route: 'ourTeam',
+    icon: 'bi-person-badge',
+    desc: 'Team members and profiles',
   },
   {
-    child: 'Partimer Status',
+    child: 'Part-timer Portal',
     route: 'jobapplication/parttimerportal',
+    icon: 'bi-clock-history',
+    desc: 'Part-timer application status',
   },
   {
     child: 'Device Tracking',
     route: 'devicetrackingtable',
+    icon: 'bi-laptop',
+    desc: 'Device allocation records',
   },
   {
-    child: 'HappinessIndexAdmin',
+    child: 'Happiness Index',
     route: 'HappinessIndexAdmin',
+    icon: 'bi-emoji-smile',
+    desc: 'Employee happiness tracking',
   },
   {
     child: 'Extension Data',
     route: 'extension',
+    icon: 'bi-puzzle',
+    desc: 'Browser extension data',
   },
   {
-    child: 'Onboarding Task',
+    child: 'Onboarding Tasks',
     route: 'onboardingtask',
+    icon: 'bi-clipboard-check',
+    desc: 'New joiner onboarding checklist',
   },
 ];
 

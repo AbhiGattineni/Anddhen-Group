@@ -11,9 +11,15 @@ import DeviceAllocation from 'src/components/organisms/Modal/DeviceAllocation';
 import HappinessIndexAdmin from 'src/components/pages/Admin/HappinessIndexAdmin ';
 import ExtensionView from 'src/components/pages/Extension/ExtensionView';
 import OnboardingTask from 'src/components/pages/OnboardingTask';
+import Stocks from 'src/components/SuperAdmin/Stocks/Stocks';
+import QuizAdmin from 'src/components/SuperAdmin/Quiz/QuizAdmin';
+import AmbulanceTracking from 'src/components/SuperAdmin/Ambulance/AmbulanceTracking';
 export function getSharedRoutes() {
   return [
     { path: 'transactions', element: <Transaction /> },
+    { path: 'stocks', element: <Stocks /> },
+    { path: 'quiz', element: <QuizAdmin /> },
+    { path: 'ambulance', element: <AmbulanceTracking /> },
     { path: 'colleges', element: <Colleges /> },
     { path: 'consultants', element: <Consultants /> },
     { path: 'roleaccess', element: <RolesAndAccess /> },

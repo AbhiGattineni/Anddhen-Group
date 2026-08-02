@@ -1,34 +1,13 @@
-import axios from 'axios';
+import { callFunction } from '../../../services/connector/functions';
 
+// Moved server-side: the OpenAI API key no longer ships to the browser. The
+// `aiSuggestions` Cloud Function performs the same gpt-3.5-turbo call and applies
+// the same line cleanup, so the contract (prompt -> cleaned string) is unchanged.
 export const fetchAi = async prompt => {
   try {
-    const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
-
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-3.5-turbo', // Change to 'gpt-3.5-turbo' if needed
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 3000,
-        temperature: 0.7,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    const result = response.data.choices[0].message.content
-      .trim()
-      .split('\n')
-      .map(line => line.replace(/^-\s*/, ''))
-      .join('\n');
-
-    return result;
+    return await callFunction('aiSuggestions', { prompt });
   } catch (error) {
-    console.error('Error fetching AI response:', error.response?.data || error.message);
+    console.error('Error fetching AI response:', error.message);
     return [];
   }
 };

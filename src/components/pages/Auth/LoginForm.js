@@ -67,10 +67,7 @@ const LoginForm = ({ onSubmit }) => {
       </div>
       <div className="row">
         <div className="col"></div>
-        <Link
-          to="/resetpassword"
-          className="col col-auto cursor-pointer m-0 text-decoration-none text-black"
-        >
+        <Link to="/resetpassword" className="col col-auto cursor-pointer m-0 auth-link">
           Forget Password?
         </Link>
       </div>
@@ -78,10 +75,10 @@ const LoginForm = ({ onSubmit }) => {
         <button
           onClick={handleSubmit}
           type="submit"
-          className="btn btn-warning shadow w-100 mt-2"
+          className="btn auth-btn w-100 mt-3 py-2"
           disabled={!isFormValid()}
         >
-          {loading ? 'loading...' : 'Submit'}
+          {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </div>
     </form>

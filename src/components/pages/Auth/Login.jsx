@@ -6,6 +6,7 @@ import Toast from 'src/components/organisms/Toast';
 import useErrorHandling from 'src/hooks/useErrorHandling';
 import useAuthStore from 'src/services/store/globalStore';
 import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
+import './Auth.css';
 
 export const Login = () => {
   const { onGoogleSignIn, onEmailPasswordSignIn } = useUnifiedAuth();
@@ -35,19 +36,21 @@ export const Login = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div className="bg-light min-vh-100 d-flex align-items-center user-select-none">
+        <div className="auth-page user-select-none">
           <div className="container">
-            <div className="card shadow-lg rounded p-4 mx-auto" style={{ maxWidth: '600px' }}>
+            <div className="auth-card p-4 p-md-5 mx-auto" style={{ maxWidth: '600px' }}>
               <div className="text-center mb-4">
-                <h2>Sign In</h2>
+                <h2 className="auth-title mb-0">Sign In</h2>
+                <div className="auth-divider-line"></div>
+                <p className="auth-subtitle mt-3 mb-0">Welcome back to Anddhen Group</p>
               </div>
               <div className="d-flex align-items-center mb-3">
-                <div>Sign in with</div>
+                <div className="text-muted">Sign in with</div>
                 <div className="ms-3 d-flex gap-3">
                   <i
-                    className="bi bi-google fs-4 cursor-pointer"
+                    className="bi bi-google fs-4 auth-social-icon"
                     onClick={handleGoogleSignIn}
-                    style={{ transition: 'transform 0.2s', color: '#4285F4' }}
+                    style={{ color: '#4285F4' }}
                   ></i>
                   {/* <i
                     className="bi bi-facebook fs-4"
@@ -78,30 +81,9 @@ export const Login = () => {
                 </div>
               </div>
               <div className="d-flex align-items-center justify-content-center mb-4">
-                <div
-                  style={{
-                    flexGrow: 1,
-                    height: '1px',
-                    backgroundColor: '#d3d3d3',
-                  }}
-                ></div>
-                <span
-                  className="px-2"
-                  style={{
-                    backgroundColor: '#fff',
-                    position: 'relative',
-                    zIndex: 1,
-                  }}
-                >
-                  or
-                </span>
-                <div
-                  style={{
-                    flexGrow: 1,
-                    height: '1px',
-                    backgroundColor: '#d3d3d3',
-                  }}
-                ></div>
+                <div className="auth-or-line"></div>
+                <span className="px-3 auth-or-text">or</span>
+                <div className="auth-or-line"></div>
               </div>
               {error && (
                 <p className="text-danger">
@@ -111,7 +93,7 @@ export const Login = () => {
               <LoginForm onSubmit={handleEmailPasswordSignIn} />
               <div className="d-flex justify-content-center mt-3">
                 <span>Don&apos;t have an account? </span>
-                <Link to="/register" className="text-primary fw-bold text-decoration-none ms-1">
+                <Link to="/register" className="auth-link ms-1">
                   Register
                 </Link>
               </div>

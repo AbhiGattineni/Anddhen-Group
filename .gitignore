@@ -26,3 +26,9 @@ yarn-error.log*
 # Local Netlify folder
 .netlify
 .vercel
+
+# Firebase service-account key — NEVER commit
+firestore/serviceAccount.json
+serviceAccount.json
+.firebase
+firebase-debug.log

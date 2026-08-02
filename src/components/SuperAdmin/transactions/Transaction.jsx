@@ -17,6 +17,12 @@ import { FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material'
 import { generateTransactionPDF } from './TransactionPDFGenerator';
 import './Transaction.css';
 
+// Stable empty-array reference. Using an inline `= []` default on the useQuery
+// result creates a NEW array every render when data is undefined (e.g. backend
+// down), which destabilizes the downstream useMemos and sends react-table's
+// useTable into an infinite update loop. A module constant keeps it stable.
+const EMPTY_TRANSACTIONS = [];
+
 export const Transaction = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -44,10 +50,12 @@ export const Transaction = () => {
     return response.json();
   };
 
-  const { data: transactions = [], isLoading } = useQuery('transactions', fetchTransactions, {
+  const { data, isLoading } = useQuery('transactions', fetchTransactions, {
     staleTime: 30000, // Cache for 30 seconds
     refetchOnWindowFocus: false,
   });
+  // Keep a stable reference so the memo/react-table chain doesn't loop.
+  const transactions = Array.isArray(data) ? data : EMPTY_TRANSACTIONS;
 
   // Stable sorted transactions reference
   const sortedTransactions = useMemo(() => {

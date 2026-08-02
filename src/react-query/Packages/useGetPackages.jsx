@@ -1,16 +1,10 @@
 import { useQuery } from 'react-query';
+import connector from '../../services/connector';
 
+// Migrated to the connector. Django: GET /packages/. Firebase: `Packages` collection.
 const useGetPackages = () => {
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const getPackages = () => connector.list('packages');
 
-  const getPackages = async () => {
-    const response = await fetch(`${API_BASE_URL}/packages/`);
-    if (!response.ok) {
-      throw new Error(`Error fetching data: ${response.status} - ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
-  };
   const { data, isLoading, isError } = useQuery('packages', getPackages);
   return { data, isLoading, isError };
 };

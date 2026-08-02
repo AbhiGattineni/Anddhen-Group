@@ -1,0 +1,128 @@
+/* Quiz Manager — matches the app's blue #3b82f6 / cyan #06b6d4 / indigo #6366f1 system
+   (same conventions as Stocks.css and Dashboard.css). */
+
+.quiz-admin {
+  padding: 8px 4px 40px;
+}
+
+.qz-title {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+.qz-subtitle {
+  color: #4a5568;
+  margin: 4px 0 0;
+}
+
+/* Tabs */
+.quiz-admin .qz-tab {
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  transition: all 0.25s ease;
+}
+.quiz-admin .qz-tab:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+.quiz-admin .qz-tab.active {
+  color: #fff;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%);
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.3);
+}
+.qz-tab-badge {
+  display: inline-block;
+  min-width: 20px;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #ef4444;
+  color: #fff;
+}
+
+/* Cards */
+.quiz-admin .card {
+  background: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+.quiz-admin .card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.12);
+}
+
+.quiz-section-heading {
+  border-bottom: 2px solid rgba(59, 130, 246, 0.15);
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.quiz-section-heading .text-muted {
+  font-size: 0.85em;
+}
+
+/* Question picker */
+.quiz-question-picker {
+  max-height: 340px;
+  overflow-y: auto;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 8px;
+  background: #f8fafc;
+}
+.quiz-pick {
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.quiz-pick:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+/* QR block */
+.quiz-card canvas {
+  border: 8px solid #fff;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(59, 130, 246, 0.2);
+  border-radius: 14px;
+}
+
+/* Live players table */
+.quiz-admin table thead th {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.15);
+}
+
+/* Buttons — soften bootstrap defaults to match card radius */
+.quiz-admin .btn {
+  border-radius: 10px;
+}
+.quiz-admin .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  border: none;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+}
+.quiz-admin .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+}

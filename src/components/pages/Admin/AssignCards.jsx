@@ -1,22 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import './Dashboard.css';
 
 const AssignCards = ({ adminPlates }) => {
+  if (!adminPlates || adminPlates.length === 0) {
+    return <div className="dash-empty">No matching sections found.</div>;
+  }
+
   return (
-    <div className="row mx-3">
+    <div className="row g-3 g-md-4 px-3 px-md-4">
       {adminPlates.map((data, index) => (
-        <div className="col-md-6 my-3" key={index}>
+        <div className="col-12 col-sm-6 col-lg-4 col-xxl-3" key={`${data.route}-${index}`}>
           <Link to={data.route} className="text-decoration-none">
-            <div className="card shadow">
-              <div className="card-body">
-                <div className="d-flex justify-content-center mb-3">
-                  <p className="font-weight-bold">{data.child}</p>
-                </div>
-                <div className="d-flex justify-content-center">
-                  <code>{data.route}</code>
-                </div>
+            <div className="dash-card">
+              <span className="dash-icon">
+                <i className={`bi ${data.icon || 'bi-grid'}`}></i>
+              </span>
+              <div className="dash-card-body">
+                <h3 className="dash-card-title">{data.child}</h3>
+                <p className="dash-card-desc">{data.desc || data.route}</p>
               </div>
+              <i className="bi bi-arrow-right dash-card-arrow"></i>
             </div>
           </Link>
         </div>
@@ -30,6 +35,8 @@ AssignCards.propTypes = {
     PropTypes.shape({
       child: PropTypes.string.isRequired,
       route: PropTypes.string.isRequired,
+      icon: PropTypes.string,
+      desc: PropTypes.string,
     })
   ).isRequired,
 };

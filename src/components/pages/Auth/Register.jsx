@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import useUnifiedAuth from 'src/hooks/useUnifiedAuth';
 import useErrorHandling from 'src/hooks/useErrorHandling';
 import useAuthStore from 'src/services/store/globalStore';
+import './Auth.css';
 
 export const Register = () => {
   const [formData, setFormData] = useState({
@@ -71,19 +72,24 @@ export const Register = () => {
     );
   };
   return (
-    <div className="bg-light min-vh-100 d-flex justify-content-center align-items-center user-select-none">
-      <div className="bg-white rounded shadow p-4" style={{ maxWidth: '800px', width: '100%' }}>
+    <div className="auth-page user-select-none">
+      <div className="auth-card" style={{ maxWidth: '860px', width: '100%' }}>
         <div className="row g-0">
-          <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center">
+          <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center auth-image-panel p-4">
             <img
               draggable="false"
               src="/loginImage.png"
               alt="Sign Up"
-              className="img-fluid rounded-start user-select-none"
+              className="img-fluid user-select-none"
             />
           </div>
           <div className="col-md-6">
-            <div className="p-4">
+            <div className="p-4 p-md-5">
+              <div className="text-center mb-4">
+                <h2 className="auth-title mb-0">Create Account</h2>
+                <div className="auth-divider-line"></div>
+                <p className="auth-subtitle mt-3 mb-0">Join Anddhen Group</p>
+              </div>
               {/* <div className="d-flex align-items-center mb-3">
                 <div>Sign up with </div>
                 <div className="ms-3 d-flex gap-3">
@@ -192,16 +198,16 @@ export const Register = () => {
                 <div className={`form-group mb-2`}>
                   <button
                     type="submit"
-                    className="btn btn-warning shadow w-100 mt-2"
+                    className="btn auth-btn w-100 mt-3 py-2"
                     disabled={!isFormValid()}
                   >
-                    {loading ? 'loading...' : 'Submit'}
+                    {loading ? 'Creating account...' : 'Sign Up'}
                   </button>
                 </div>
               </form>
               <div className="d-flex justify-content-center align-items-center gap-2 mt-3">
                 <div>Already have an account?</div>
-                <Link to="/login" className="text-primary fw-bold text-decoration-none">
+                <Link to="/login" className="auth-link">
                   Login
                 </Link>
               </div>

@@ -1,0 +1,36 @@
+rules_version = '2';
+
+// Anddhen Storage rules. Holds files that were Django FileField/ImageField:
+//   resumes/**      (consultant original_resume, consulting_resume)
+//   products/**     (ShopingProduct.image)
+//   team_members/** (TeamMember.image)
+// Signed-in read; signed-in write with size + content-type limits.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() { return request.auth != null; }
+    function underSize(mb) { return request.resource.size < mb * 1024 * 1024; }
+
+    match /resumes/{file=**} {
+      allow read: if signedIn();
+      allow write: if signedIn() && underSize(10)
+        && request.resource.contentType.matches('application/pdf|application/.*word.*|image/.*');
+    }
+
+    match /products/{file=**} {
+      allow read: if true; // product images are public-facing
+      allow write: if signedIn() && underSize(5)
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /team_members/{file=**} {
+      allow read: if true; // team photos are public-facing
+      allow write: if signedIn() && underSize(5)
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false; // deny everything else by default
+    }
+  }
+}

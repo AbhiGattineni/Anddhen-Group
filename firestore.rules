@@ -1,0 +1,106 @@
+rules_version = '2';
+
+// Anddhen Firestore security rules.
+// Baseline: every read/write requires an authenticated user (works because Auth
+// and Firestore share the same project — request.auth is populated).
+//
+// Roles live in User/{uid}.role ∈ {user, employee, admin, superadmin}. The
+// requester's role is resolved with get() on their own User doc. Bootstrapping
+// the first superadmin is done out-of-band via the Admin SDK (firestore/
+// setSuperAdmin.js), which bypasses these rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Role of the CURRENT requester (defaults to 'user' if their doc/field is absent).
+    function myRole() {
+      let path = /databases/$(database)/documents/User/$(request.auth.uid);
+      return signedIn() && exists(path) ? get(path).data.get('role', 'user') : 'user';
+    }
+
+    // Bootstrap superadmin(s) by email — keep in sync with SUPERADMIN_EMAILS in
+    // src/services/roles/roles.js. Lets the first superadmin operate before any
+    // role doc is seeded (breaks the chicken-and-egg without the Admin SDK).
+    function isBootstrapSuper() {
+      return signedIn() && request.auth.token.email in ['abhishekgattineni@gmail.com'];
+    }
+
+    function isAdminish() {
+      return myRole() == 'admin' || myRole() == 'superadmin' || isBootstrapSuper();
+    }
+    function isSuper() {
+      return myRole() == 'superadmin' || isBootstrapSuper();
+    }
+
+    // Config/reference data: signed-in read, admin-or-above write.
+    function adminWritable(col) {
+      return col in ['subsidiary', 'access_roles', 'role', 'Packages',
+                     'collegelist', 'social_links',
+                     'stockParameters', 'stockCompanies', 'stockSnapshots',
+                     'quizzes', 'quizQuestions', 'questionSubmissions'];
+    }
+
+    // --- User docs: role-change protection (no self-elevation) ---
+    match /User/{uid} {
+      allow read: if signedIn();
+
+      // First sign-in may self-create only as a plain `user`; admins may create anyone.
+      allow create: if isAdminish()
+        || (request.auth.uid == uid
+            && request.resource.data.get('role', 'user') == 'user');
+
+      allow update: if
+        // Admin/superadmin changing roles, with the superadmin guard:
+        (isAdminish()
+          && (
+            request.resource.data.get('role', 'user') == resource.data.get('role', 'user')
+            || isSuper()
+            || (request.resource.data.get('role', 'user') != 'superadmin'
+                && resource.data.get('role', 'user') != 'superadmin')
+          ))
+        // OR a user editing their OWN profile without changing their role:
+        || (request.auth.uid == uid
+            && request.resource.data.get('role', 'user') == resource.data.get('role', 'user'));
+
+      allow delete: if isAdminish();
+    }
+
+    // --- Quiz: players join via QR without an account, so these need PUBLIC
+    //     access on top of the admin-only writes granted by adminWritable().
+    //     (Rules are OR'd: the catch-all below still gives admins full write.)
+    match /quizQuestions/{qId} {
+      allow read: if true; // players (possibly anonymous) render questions client-side
+    }
+    match /quizzes/{quizId} {
+      allow read: if true;
+      match /players/{playerId} {
+        allow read: if true;
+        // Anyone (incl. anonymous) may create/update their own player doc.
+        // Basic shape guard: bounded field count and a short name.
+        allow create, update: if request.resource.data.keys().size() <= 12
+          && request.resource.data.get('name', '') is string
+          && request.resource.data.get('name', '').size() <= 60;
+        allow delete: if isAdminish();
+      }
+    }
+    match /questionSubmissions/{sId} {
+      // Public community submissions (pending admin review). Shape-guarded.
+      allow create: if request.resource.data.keys().size() <= 10
+        && request.resource.data.get('text', '') is string
+        && request.resource.data.get('text', '').size() > 0
+        && request.resource.data.get('text', '').size() <= 500
+        && request.resource.data.get('status', '') == 'pending';
+    }
+
+    // --- Everything else (User handled above; exclude it here so the
+    //     role-change protection can't be bypassed via this broad rule) ---
+    match /{col}/{docId} {
+      allow read: if signedIn();
+      allow create, update, delete: if col != 'User'
+        && (adminWritable(col) ? isAdminish() : signedIn());
+    }
+  }
+}

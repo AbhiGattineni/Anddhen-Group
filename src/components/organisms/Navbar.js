@@ -2,13 +2,21 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { logout } from '../../services/Authentication/Logout';
 import useAuthStore from '../../services/store/globalStore';
-import PropTypes from 'prop-types';
 import { useAuth } from 'src/hooks/useAuth';
+import { useRole } from 'src/services/roles/RoleContext';
+import { ROLES, hasAtLeast } from 'src/services/roles/roles';
 
-function Navbar(props) {
-  console.log(props.logout);
+function Navbar() {
   const [navbarOpen, setNavbarOpen] = useState(false);
   const { user } = useAuth();
+  const { role } = useRole();
+
+  // Role-gated dashboard entry point (only for employee and above).
+  const dashboardTo = hasAtLeast(role, ROLES.SUPERADMIN)
+    ? '/superadmin'
+    : hasAtLeast(role, ROLES.EMPLOYEE)
+      ? '/employeedashboard'
+      : null;
 
   const setNewUser = useAuthStore(state => state.setParttimer_consent);
   const handleLogout = () => {
@@ -189,16 +197,39 @@ function Navbar(props) {
                         Contact
                       </Link>
                     </li>
-                    {user && props.logout ? (
+                    {user ? (
+                      <>
+                        {dashboardTo && (
+                          <li className="nav-item">
+                            <Link
+                              to={dashboardTo}
+                              onClick={handleLinkClick}
+                              className="nav-link active nav-link-highlight"
+                            >
+                              Dashboard
+                            </Link>
+                          </li>
+                        )}
+                        <li className="nav-item d-flex justify-content-center align-items-center">
+                          <button
+                            onClick={handleLogout}
+                            className="btn btn-outline-light mx-2 btn-sm fw-bold"
+                          >
+                            Logout
+                          </button>
+                        </li>
+                      </>
+                    ) : (
                       <li className="nav-item d-flex justify-content-center align-items-center">
-                        <button
-                          onClick={handleLogout}
+                        <Link
+                          to="/login"
+                          onClick={handleLinkClick}
                           className="btn btn-warning mx-2 btn-sm fw-bold"
                         >
-                          Logout
-                        </button>
+                          Login
+                        </Link>
                       </li>
-                    ) : null}
+                    )}
                   </ul>
                 </div>
               </div>
@@ -209,9 +240,5 @@ function Navbar(props) {
     </div>
   );
 }
-
-Navbar.propTypes = {
-  logout: PropTypes.bool,
-};
 
 export default Navbar;
