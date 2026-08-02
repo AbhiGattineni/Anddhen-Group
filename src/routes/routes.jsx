@@ -38,6 +38,7 @@ import ReturnPolicy from 'src/components/pages/Policies/ReturnPolicy';
 import ShippingPolicy from 'src/components/pages/Policies/ShippingPolicy';
 import QuizPlay from 'src/components/pages/Quiz/QuizPlay';
 import SubmitQuestion from 'src/components/pages/Quiz/SubmitQuestion';
+import AmbulanceTracking from 'src/components/SuperAdmin/Ambulance/AmbulanceTracking';
 
 const router = createBrowserRouter([
   {
@@ -73,7 +74,12 @@ const router = createBrowserRouter([
   {
     path: '/ass',
     element: <Layout />,
-    children: [{ index: true, element: <Ass /> }],
+    children: [
+      { index: true, element: <Ass /> },
+      // TEMP: public ambulance dashboard until prod admin login is restored —
+      // remove once /superadmin works in production.
+      { path: 'ambulance', element: <AmbulanceTracking /> },
+    ],
   },
   {
     path: '/ams',
