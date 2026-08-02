@@ -70,6 +70,30 @@ export async function countAllDetections() {
   return agg.data().count;
 }
 
+/**
+ * Browse the Storage bucket like a file system (challans/, detections/,
+ * heartbeats/, …). Returns immediate subfolders + files under `prefix`.
+ */
+export async function listStorage(prefix = '', pageToken = null) {
+  const params = new URLSearchParams({ delimiter: '/', prefix, maxResults: '60' });
+  if (pageToken) params.set('pageToken', pageToken);
+  const res = await fetch(
+    `https://firebasestorage.googleapis.com/v0/b/${AMB_CONFIG.storageBucket}/o?${params}`
+  );
+  if (!res.ok) throw new Error(`Storage list failed (${res.status})`);
+  const j = await res.json();
+  return {
+    folders: j.prefixes || [],
+    files: (j.items || []).map(i => ({
+      name: i.name,
+      shortName: i.name.split('/').pop(),
+      url: imageUrl(i.name),
+      isImage: /\.(jpe?g|png|gif|webp)$/i.test(i.name),
+    })),
+    nextPageToken: j.nextPageToken || null,
+  };
+}
+
 export async function listDevices() {
   const snap = await getDocs(collection(db, 'deviceStatus'));
   return snap.docs.map(s => ({ id: s.id, ...s.data() }));
