@@ -276,3 +276,218 @@
   color: #475569;
   word-break: break-all;
 }
+
+/* Tabs */
+.amb-tab {
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  transition: all 0.25s ease;
+}
+.amb-tab:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+.amb-tab.active {
+  color: #fff;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%);
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.3);
+}
+.amb-lan-link {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px dashed rgba(100, 116, 139, 0.5);
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.amb-lan-link:hover {
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Alert badges — icon + label, never color alone */
+.amb-alert {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.amb-alert-warn {
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #92400e;
+}
+.amb-alert-serious {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  color: #991b1b;
+}
+.amb-charge {
+  color: #16a34a;
+  font-size: 1rem;
+  vertical-align: super;
+}
+
+/* Charts */
+.amb-win {
+  border-radius: 8px;
+  padding: 4px 14px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+.amb-win.active {
+  color: #fff;
+  background: #3b82f6;
+  border-color: transparent;
+}
+.amb-chart {
+  position: relative;
+  margin-top: 8px;
+}
+.amb-chart-svg {
+  width: 100%;
+  height: 170px;
+  display: block;
+}
+.amb-grid {
+  stroke: rgba(100, 116, 139, 0.18);
+  stroke-width: 1;
+}
+.amb-tick {
+  font-size: 10px;
+  fill: #94a3b8;
+}
+.amb-threshold {
+  stroke: #dc2626;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.6;
+}
+.amb-crosshair {
+  stroke: rgba(26, 26, 26, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.amb-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #475569;
+  font-weight: 600;
+}
+.amb-legend-chip {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-right: 4px;
+}
+.amb-tooltip {
+  position: absolute;
+  top: 6px;
+  transform: translateX(12px);
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 5;
+}
+.amb-tooltip-time {
+  color: #cbd5e1;
+  margin-bottom: 2px;
+}
+
+/* Violations */
+.amb-violation {
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 0;
+  text-align: left;
+}
+.amb-violation:hover {
+  box-shadow: 0 10px 26px rgba(220, 38, 38, 0.18);
+}
+.amb-vio-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+  background: #e2e8f0;
+}
+.amb-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  cursor: zoom-out;
+  padding: 24px;
+}
+.amb-lightbox-body {
+  max-width: min(1100px, 94vw);
+  text-align: center;
+}
+.amb-lightbox-body img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.amb-lightbox-meta {
+  color: #e2e8f0;
+  margin-top: 10px;
+}
+.amb-lightbox-meta a {
+  color: #7dd3fc;
+}
+
+/* Coverage timeline */
+.amb-coverage {
+  position: relative;
+  height: 30px;
+  background: #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.amb-coverage-seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, #22c55e, #16a34a);
+}
+.amb-coverage-hours {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+.amb-gap-chip {
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #991b1b;
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+}
+.amb-heartbeat-img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
