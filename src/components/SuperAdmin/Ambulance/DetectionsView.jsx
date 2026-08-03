@@ -49,12 +49,24 @@ const SOFT_AT = 50;
 /** Last-24h detections (photos expire after ~1 day) + focus assist for OCR tuning. */
 export default function DetectionsView() {
   const [rows, setRows] = useState(null);
+  const [cursor, setCursor] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const load = (after = null) => {
+    setLoading(true);
+    listDetections({ cursor: after })
+      .then(r => {
+        setRows(prev => (after && prev ? [...prev, ...r.rows] : r.rows));
+        setCursor(r.cursor);
+      })
+      .catch(e => setError(e.message || 'Could not load detections'))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
-    listDetections(24, 120)
-      .then(setRows)
-      .catch(e => setError(e.message || 'Could not load detections'));
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -68,7 +80,8 @@ export default function DetectionsView() {
             <div className="amb-card-head">
               Detections — last 24 h{' '}
               <span className="text-muted fw-normal">
-                ({rows.length} plates read · photos older than a day expire)
+                ({rows.length}
+                {cursor ? '+' : ''} plates read · photos older than a day expire)
               </span>
             </div>
             {rows.length === 0 ? (
@@ -97,6 +110,17 @@ export default function DetectionsView() {
                     </a>
                   </div>
                 ))}
+              </div>
+            )}
+            {cursor && (
+              <div className="text-center mt-3">
+                <button
+                  className="btn btn-sm btn-outline-primary"
+                  disabled={loading}
+                  onClick={() => load(cursor)}
+                >
+                  {loading ? 'Loading…' : 'Load more'}
+                </button>
               </div>
             )}
           </div>

@@ -116,17 +116,16 @@ export async function countViolations() {
 }
 
 // ---- detections (OCR tuning; photos live ~24 h) ----
-export async function listDetections(sinceHours = 24, max = 120) {
+export async function listDetections({ sinceHours = 24, pageSize = 60, cursor = null } = {}) {
   const since = new Date(Date.now() - sinceHours * 3600 * 1000);
-  const snap = await getDocs(
-    query(
-      collection(db, 'detections'),
-      where('time', '>=', Timestamp.fromDate(since)),
-      orderBy('time', 'desc'),
-      limit(max)
-    )
-  );
-  return snap.docs.map(photoDoc);
+  const constraints = [where('time', '>=', Timestamp.fromDate(since)), orderBy('time', 'desc')];
+  if (cursor) constraints.push(startAfter(cursor));
+  constraints.push(limit(pageSize));
+  const snap = await getDocs(query(collection(db, 'detections'), ...constraints));
+  return {
+    rows: snap.docs.map(photoDoc),
+    cursor: snap.docs.length === pageSize ? snap.docs[snap.docs.length - 1] : null,
+  };
 }
 
 // ---- heartbeats (coverage audit + latest camera still) ----
