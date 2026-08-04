@@ -400,6 +400,18 @@ export const adminPlates = [
     desc: 'Pi plate-camera health check — uploads, heartbeats and daily stats',
   },
   {
+    child: 'PlanningSaathi',
+    route: 'planningsaathi',
+    icon: 'bi-chat-left-dots',
+    desc: 'Group-chat planning agent — live efforts, todos and money rollups',
+  },
+  {
+    child: 'TripSaathi',
+    route: 'tripsaathi',
+    icon: 'bi-people',
+    desc: 'Multi-agent WhatsApp group assistant — live workspace, one agent per effort',
+  },
+  {
     child: 'Consultants',
     route: 'consultants',
     icon: 'bi-people',

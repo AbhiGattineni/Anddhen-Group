@@ -14,12 +14,14 @@ import OnboardingTask from 'src/components/pages/OnboardingTask';
 import Stocks from 'src/components/SuperAdmin/Stocks/Stocks';
 import QuizAdmin from 'src/components/SuperAdmin/Quiz/QuizAdmin';
 import AmbulanceTracking from 'src/components/SuperAdmin/Ambulance/AmbulanceTracking';
+import TripSaathiDashboard from 'src/components/SuperAdmin/TripSaathi/TripSaathiDashboard';
 export function getSharedRoutes() {
   return [
     { path: 'transactions', element: <Transaction /> },
     { path: 'stocks', element: <Stocks /> },
     { path: 'quiz', element: <QuizAdmin /> },
     { path: 'ambulance', element: <AmbulanceTracking /> },
+    { path: 'planningsaathi', element: <TripSaathiDashboard /> },
     { path: 'colleges', element: <Colleges /> },
     { path: 'consultants', element: <Consultants /> },
     { path: 'roleaccess', element: <RolesAndAccess /> },

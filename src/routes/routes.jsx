@@ -39,6 +39,7 @@ import ShippingPolicy from 'src/components/pages/Policies/ShippingPolicy';
 import QuizPlay from 'src/components/pages/Quiz/QuizPlay';
 import SubmitQuestion from 'src/components/pages/Quiz/SubmitQuestion';
 import AmbulanceTracking from 'src/components/SuperAdmin/Ambulance/AmbulanceTracking';
+import TripSaathiDashboard from 'src/components/SuperAdmin/TripSaathi/TripSaathiDashboard';
 
 const router = createBrowserRouter([
   {
@@ -79,6 +80,7 @@ const router = createBrowserRouter([
       // TEMP: public ambulance dashboard until prod admin login is restored —
       // remove once /superadmin works in production.
       { path: 'ambulance', element: <AmbulanceTracking /> },
+      { path: 'tripsaathi', element: <TripSaathiDashboard /> },
     ],
   },
   {

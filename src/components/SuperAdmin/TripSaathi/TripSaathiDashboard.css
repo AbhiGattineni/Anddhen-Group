@@ -1,0 +1,150 @@
+/* TripSaathi dashboard — app design system (blue #3b82f6 / cyan #06b6d4 /
+   indigo #6366f1), same conventions as Ambulance/AmbulanceTracking.css. */
+
+.ts-dashboard {
+  padding: 8px 4px 40px;
+  font-family: inherit;
+}
+
+.ts-header h2 {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+.ts-sub {
+  color: #4a5568;
+  margin: 4px 0 12px;
+}
+
+.ts-empty {
+  color: #64748b;
+  padding: 1rem 0;
+}
+.ts-error {
+  color: #dc2626;
+}
+
+.ts-daemon-line {
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+.ts-vibe {
+  color: #4a5568;
+}
+
+.ts-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-right: 6px;
+}
+.ts-good { background: #dcfce7; color: #15803d; }
+.ts-warm { background: #fef3c7; color: #b45309; }
+.ts-neutral { background: #e2e8f0; color: #475569; }
+.ts-dim { background: #f1f5f9; color: #94a3b8; }
+
+.ts-where {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-left: 8px;
+}
+
+.ts-queue { list-style: none; margin: 0; padding: 0; }
+.ts-queue li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.ts-queue li:last-child { border-bottom: 0; }
+
+.ts-money-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 12px;
+  margin: 12px 0 20px;
+}
+.ts-money-card {
+  background: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  padding: 14px 16px;
+}
+.ts-money-card h4 {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #64748b;
+}
+.ts-money-total {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.ts-money-card ul { margin: 8px 0 0; padding: 0; list-style: none; }
+.ts-money-card li { padding: 4px 0; font-size: 0.88rem; color: #4a5568; }
+
+.ts-track {
+  background: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.ts-track-summary {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font: inherit;
+}
+.ts-track-summary:hover { background: rgba(59, 130, 246, 0.04); }
+.ts-track-title { font-weight: 600; }
+.ts-track-sub {
+  width: 100%;
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+.ts-track-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid rgba(59, 130, 246, 0.1);
+}
+.ts-track-body h5 {
+  margin: 12px 0 4px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #64748b;
+}
+.ts-track-body ul { margin: 0; padding-left: 1.2rem; }
+.ts-track-body li { padding: 2px 0; font-size: 0.9rem; }
+.ts-conf { color: #94a3b8; }
+
+.ts-past { margin-top: 16px; }
+.ts-past summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
