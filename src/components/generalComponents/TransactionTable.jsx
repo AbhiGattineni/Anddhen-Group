@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TextField,
-  Box,
-  Chip,
-  Button,
-  IconButton,
-  Typography,
-} from '@mui/material';
-import { Refresh, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { connector } from 'src/services/connector';
+import './TransactionTable.css';
+
+const ROWS_PER_PAGE = 10;
+
+const inr = v => `₹${Number(v || 0).toLocaleString('en-IN')}`;
 
 const TransactionTable = () => {
   const [transactions, setTransactions] = useState([]);
@@ -24,7 +13,6 @@ const TransactionTable = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [page, setPage] = useState(0);
-  const rowsPerPage = 10; // Fixed rows per page
 
   // Philanthropy records come straight from the transactions table (APS rows),
   // newest first — anything the admin records there shows up here.
@@ -42,180 +30,134 @@ const TransactionTable = () => {
   }, []);
 
   useEffect(() => {
+    setPage(0);
     if (startDate && endDate) {
-      const filtered = transactions.filter(transaction => {
-        const transactionDate = new Date(transaction.transaction_datetime);
-        const start = new Date(startDate).setHours(0, 0, 0, 0);
-        const end = new Date(endDate).setHours(23, 59, 59, 999);
-        return transactionDate >= start && transactionDate <= end;
-      });
-      setFilteredTransactions(filtered);
+      const start = new Date(startDate).setHours(0, 0, 0, 0);
+      const end = new Date(endDate).setHours(23, 59, 59, 999);
+      setFilteredTransactions(
+        transactions.filter(t => {
+          const d = new Date(t.transaction_datetime);
+          return d >= start && d <= end;
+        })
+      );
     } else {
       setFilteredTransactions(transactions);
     }
   }, [startDate, endDate, transactions]);
 
-  const handleReset = () => {
-    setStartDate('');
-    setEndDate('');
-  };
-
-  const handleNextPage = () => {
-    if ((page + 1) * rowsPerPage < filteredTransactions.length) {
-      setPage(page + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (page > 0) {
-      setPage(page - 1);
-    }
-  };
+  const pageCount = Math.max(1, Math.ceil(filteredTransactions.length / ROWS_PER_PAGE));
+  const shown = filteredTransactions.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <h5 className="pt-5 main-heading text-center">Transactions</h5>
+    <section className="container py-4">
+      <h5 className="pt-4 main-heading text-center">Transactions</h5>
       <div className="underline mx-auto"></div>
 
-      {/* Date Filters and Reset Button */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          gap: 2,
-          my: 3,
-        }}
-      >
-        <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
-          <TextField
-            fullWidth
-            type="date"
-            label="Start Date"
-            InputLabelProps={{ shrink: true }}
-            value={startDate}
-            onChange={e => setStartDate(e.target.value)}
-            variant="outlined"
-            size="small"
-          />
-        </Box>
-        <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
-          <TextField
-            fullWidth
-            type="date"
-            label="End Date"
-            InputLabelProps={{ shrink: true }}
-            value={endDate}
-            onChange={e => setEndDate(e.target.value)}
-            variant="outlined"
-            size="small"
-          />
-        </Box>
-        <Box>
-          <Button
-            variant="contained"
-            sx={{
-              color: 'black',
-              backgroundColor: '#ffc107',
-              '&:hover': {
-                backgroundColor: '#edb100',
-              },
-            }}
-            onClick={handleReset}
-            startIcon={<Refresh />}
-          >
-            Reset
-          </Button>
-        </Box>
-      </Box>
+      <div className="tx-card mx-auto mt-4">
+        <div className="tx-filters">
+          <label>
+            <span>From</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+              className="form-control form-control-sm"
+            />
+          </label>
+          <label>
+            <span>To</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              className="form-control form-control-sm"
+            />
+          </label>
+          {(startDate || endDate) && (
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => {
+                setStartDate('');
+                setEndDate('');
+              }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
 
-      {/* Transaction Table */}
-      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 2 }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: '#f2f2f2' }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Receiver Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Sender Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Amount</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Transaction Date</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {error ? (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  <Typography color="error">Failed to load transactions.</Typography>
-                </TableCell>
-              </TableRow>
-            ) : filteredTransactions.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  <Typography>No records to show.</Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredTransactions
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map(transaction => (
-                  <TableRow key={transaction.id}>
-                    <TableCell>{transaction.receiver_name}</TableCell>
-                    <TableCell>{transaction.sender_name}</TableCell>
-                    <TableCell>
-                      {transaction.credited_amount > 0 ? (
-                        <Chip
-                          label={`₹${transaction.credited_amount}`}
-                          color="success"
-                          variant="outlined"
-                          sx={{ mr: 1 }}
-                        />
-                      ) : transaction.debited_amount > 0 ? (
-                        <Chip
-                          label={`₹${transaction.debited_amount}`}
-                          color="error"
-                          variant="outlined"
-                        />
-                      ) : (
-                        <Chip
-                          label="₹0"
-                          variant="outlined"
-                          sx={{ color: '000000DE', borderColor: '000000DE' }}
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(transaction.transaction_datetime).toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        <div className="tx-scroll">
+          <table className="tx-table">
+            <thead>
+              <tr>
+                <th>Receiver</th>
+                <th>Sender</th>
+                <th className="tx-right">Amount</th>
+                <th className="tx-right">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {error ? (
+                <tr>
+                  <td colSpan={4} className="tx-empty">
+                    Could not load transactions right now.
+                  </td>
+                </tr>
+              ) : shown.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="tx-empty">
+                    No records to show.
+                  </td>
+                </tr>
+              ) : (
+                shown.map(t => {
+                  const credit = Number(t.credited_amount) > 0;
+                  const amount = credit ? t.credited_amount : t.debited_amount;
+                  return (
+                    <tr key={t.id}>
+                      <td>{t.receiver_name}</td>
+                      <td>{t.sender_name}</td>
+                      <td className={`tx-right tx-amount ${credit ? 'tx-credit' : 'tx-debit'}`}>
+                        {credit ? '+' : '−'} {inr(amount)}
+                      </td>
+                      <td className="tx-right tx-date">
+                        {new Date(t.transaction_datetime).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Pagination Controls */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          mt: 2,
-        }}
-      >
-        <IconButton onClick={handlePreviousPage} disabled={page === 0}>
-          <ArrowBackIos />
-        </IconButton>
-        <Typography variant="body1" sx={{ mx: 2 }}>
-          Page {page + 1} of {Math.ceil(filteredTransactions.length / rowsPerPage)}
-        </Typography>
-        <IconButton
-          onClick={handleNextPage}
-          disabled={(page + 1) * rowsPerPage >= filteredTransactions.length}
-        >
-          <ArrowForwardIos />
-        </IconButton>
-      </Box>
-    </Box>
+        {pageCount > 1 && (
+          <div className="tx-pager">
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              disabled={page === 0}
+              onClick={() => setPage(p => p - 1)}
+            >
+              <i className="bi bi-chevron-left" />
+            </button>
+            <span>
+              Page {page + 1} of {pageCount}
+            </span>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              disabled={page + 1 >= pageCount}
+              onClick={() => setPage(p => p + 1)}
+            >
+              <i className="bi bi-chevron-right" />
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 
