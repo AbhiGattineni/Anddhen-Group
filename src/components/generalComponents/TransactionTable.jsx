@@ -90,8 +90,8 @@ const TransactionTable = () => {
           <table className="tx-table">
             <thead>
               <tr>
-                <th>Receiver</th>
                 <th>Sender</th>
+                <th>Receiver</th>
                 <th className="tx-right">Amount</th>
                 <th className="tx-right">Date</th>
               </tr>
@@ -115,8 +115,8 @@ const TransactionTable = () => {
                   const amount = credit ? t.credited_amount : t.debited_amount;
                   return (
                     <tr key={t.id}>
-                      <td>{t.receiver_name}</td>
                       <td>{t.sender_name}</td>
+                      <td>{t.receiver_name}</td>
                       <td className={`tx-right tx-amount ${credit ? 'tx-credit' : 'tx-debit'}`}>
                         {credit ? '+' : '−'} {inr(amount)}
                       </td>
