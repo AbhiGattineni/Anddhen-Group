@@ -15,16 +15,31 @@ import {
   Typography,
 } from '@mui/material';
 import { Refresh, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
-import { useFetchData } from 'src/react-query/useFetchApis';
+import { connector } from 'src/services/connector';
 
 const TransactionTable = () => {
+  const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [error, setError] = useState(null);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [page, setPage] = useState(0);
   const rowsPerPage = 10; // Fixed rows per page
 
-  const { data: transactions = [], error } = useFetchData('apstransactions', `/transactions/aps/`);
+  // Philanthropy records come straight from the transactions table (APS rows),
+  // newest first — anything the admin records there shows up here.
+  useEffect(() => {
+    connector
+      .query('transactions', { filters: [['subsidiary', '==', 'APS']] })
+      .then(rows =>
+        setTransactions(
+          [...rows].sort(
+            (a, b) => new Date(b.transaction_datetime) - new Date(a.transaction_datetime)
+          )
+        )
+      )
+      .catch(setError);
+  }, []);
 
   useEffect(() => {
     if (startDate && endDate) {
