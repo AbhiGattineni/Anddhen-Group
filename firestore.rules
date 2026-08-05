@@ -103,11 +103,25 @@ service cloud.firestore {
       allow read: if resource.data.subsidiary == 'APS';
     }
 
-    // --- Everything else (User handled above; exclude it here so the
-    //     role-change protection can't be bypassed via this broad rule) ---
+    // --- Timesheets: entries are PRIVATE to their owner. Admins may read
+    //     others' PROFESSIONAL entries only (team view queries must filter
+    //     category == 'professional' so Firestore can prove it) — personal
+    //     time is never readable by anyone else. Excluded from the catch-all.
+    match /timesheetEntries/{entryId} {
+      allow read: if signedIn()
+        && (resource.data.uid == request.auth.uid
+            || (isAdminish() && resource.data.category == 'professional'));
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().size() <= 12;
+      allow update, delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // --- Everything else (User and timesheetEntries handled above; exclude
+    //     them here so their protections can't be bypassed via this broad rule) ---
     match /{col}/{docId} {
-      allow read: if signedIn();
-      allow create, update, delete: if col != 'User'
+      allow read: if col != 'timesheetEntries' && signedIn();
+      allow create, update, delete: if col != 'User' && col != 'timesheetEntries'
         && (adminWritable(col) ? isAdminish() : signedIn());
     }
   }

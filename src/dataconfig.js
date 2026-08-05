@@ -406,6 +406,12 @@ export const adminPlates = [
     desc: 'Group-chat planning agent — live efforts, todos and money rollups',
   },
   {
+    child: 'Timesheet',
+    route: 'timesheet',
+    icon: 'bi-stopwatch',
+    desc: 'Log professional & personal hours — balance for you, tracking for the team',
+  },
+  {
     child: 'TripSaathi',
     route: 'tripsaathi',
     icon: 'bi-people',
