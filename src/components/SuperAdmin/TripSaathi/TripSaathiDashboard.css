@@ -140,6 +140,53 @@
 .ts-track-body li { padding: 2px 0; font-size: 0.9rem; }
 .ts-conf { color: #94a3b8; }
 
+/* Manual-agent composer + create form */
+.ts-composer {
+  padding: 10px 16px;
+  border-top: 1px solid rgba(59, 130, 246, 0.1);
+}
+.ts-composer textarea {
+  width: 100%;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+.ts-composer textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.ts-composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.ts-new-agent {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ts-new-agent input,
+.ts-new-agent select {
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font: inherit;
+  font-size: 0.85rem;
+}
+.ts-new-agent input:focus,
+.ts-new-agent select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
 .ts-past { margin-top: 16px; }
 .ts-past summary {
   cursor: pointer;

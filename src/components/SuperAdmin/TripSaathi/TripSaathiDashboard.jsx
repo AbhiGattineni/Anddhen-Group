@@ -5,6 +5,11 @@ import {
   watchDaemon,
   isAgentOnline,
   triggerRefresh,
+  watchAgents,
+  createAgent,
+  sendAgentMessage,
+  runAgent,
+  fetchWorkspaceOnce,
 } from 'src/services/tripsaathi/tripsaathi';
 import './TripSaathiDashboard.css';
 
@@ -65,10 +70,12 @@ function QueueList({ items, owner }) {
   );
 }
 
-function TrackCard({ track }) {
+function TrackCard({ track, manual, online, running, onSend, onRun }) {
   const [open, setOpen] = useState(false);
   const s = track.state;
   const openTodos = (s?.todos ?? []).filter(t => t.status !== 'done').length;
+  const isManual = track.source === 'manual';
+  const pending = manual?.pendingCount ?? 0;
 
   return (
     <div className="ts-track">
@@ -78,9 +85,21 @@ function TrackCard({ track }) {
         <span className={`ts-pill ${STATUS_CLASS[track.status] ?? 'ts-neutral'}`}>
           {track.status}
         </span>
+        {isManual && <span className="ts-pill ts-neutral">manual</span>}
         {openTodos > 0 && <span className="ts-pill ts-warm">{openTodos} open</span>}
+        {isManual && pending > 0 && <span className="ts-pill ts-warm">{pending} new</span>}
         <span className="ts-track-sub">{track.summary}</span>
       </button>
+      {open && isManual && (
+        <Composer
+          trackId={track.id}
+          pending={pending}
+          online={online}
+          running={running}
+          onSend={onSend}
+          onRun={onRun}
+        />
+      )}
       {open && s && (
         <div className="ts-track-body">
           <p className="ts-vibe">{s.vibe}</p>
@@ -116,6 +135,155 @@ function TrackCard({ track }) {
   );
 }
 
+/** Message input box for one manual agent. Sending queues; Run extracts. */
+function Composer({ trackId, pending, online, running, onSend, onRun }) {
+  const [draft, setDraft] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState('');
+
+  const send = async () => {
+    const text = draft.trim();
+    if (!text || busy) return;
+    setBusy(true);
+    setNote('');
+    try {
+      const r = await onSend(trackId, text);
+      setDraft('');
+      setNote(`queued — ${r.pendingCount ?? '?'} message(s) not yet extracted`);
+    } catch (e) {
+      setNote(e.message || 'Could not send.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="ts-composer">
+      <textarea
+        rows={2}
+        value={draft}
+        placeholder="Tell this agent something… (Ctrl+Enter to send)"
+        disabled={!online || busy}
+        onChange={e => setDraft(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) send();
+        }}
+      />
+      <div className="ts-composer-actions">
+        <button
+          className="btn btn-sm btn-primary"
+          disabled={!online || busy || !draft.trim()}
+          onClick={send}
+        >
+          Send
+        </button>
+        {pending > 0 && (
+          <button
+            className="btn btn-sm btn-outline-primary"
+            disabled={!online || running}
+            title="One extraction run over this agent's messages — uses LLM credits"
+            onClick={() => onRun(trackId)}
+          >
+            <i className="bi bi-play-fill me-1" />
+            Run agent ({pending} new)
+          </button>
+        )}
+        {note && <span className="ts-where">{note}</span>}
+        {!online && <span className="ts-where">machine offline — sending disabled</span>}
+      </div>
+    </div>
+  );
+}
+
+Composer.propTypes = {
+  trackId: PropTypes.string.isRequired,
+  pending: PropTypes.number,
+  online: PropTypes.bool,
+  running: PropTypes.bool,
+  onSend: PropTypes.func.isRequired,
+  onRun: PropTypes.func.isRequired,
+};
+
+/** Inline create form — title + profile + optional focus. */
+function NewAgentForm({ online, onCreated }) {
+  const [openForm, setOpenForm] = useState(false);
+  const [title, setTitle] = useState('');
+  const [profile, setProfile] = useState('general');
+  const [focus, setFocus] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async e => {
+    e.preventDefault();
+    if (!title.trim() || busy) return;
+    setBusy(true);
+    setError('');
+    try {
+      await createAgent({ title: title.trim(), profile, focus: focus.trim() || null });
+      setTitle('');
+      setFocus('');
+      setOpenForm(false);
+      onCreated();
+    } catch (err) {
+      setError(err.message || 'Could not create the agent.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!openForm) {
+    return (
+      <button
+        className="btn btn-sm btn-outline-primary"
+        disabled={!online}
+        onClick={() => setOpenForm(true)}
+      >
+        <i className="bi bi-plus-lg me-1" />
+        New agent
+      </button>
+    );
+  }
+
+  return (
+    <form className="ts-new-agent" onSubmit={submit}>
+      <input
+        autoFocus
+        value={title}
+        placeholder="Agent title, e.g. Goa Trip 2027"
+        onChange={e => setTitle(e.target.value)}
+      />
+      <select value={profile} onChange={e => setProfile(e.target.value)}>
+        {['general', 'trip', 'event', 'project', 'purchase'].map(p => (
+          <option key={p} value={p}>
+            {p}
+          </option>
+        ))}
+      </select>
+      <input
+        value={focus}
+        placeholder="Focus (optional)"
+        onChange={e => setFocus(e.target.value)}
+      />
+      <button className="btn btn-sm btn-primary" type="submit" disabled={busy || !title.trim()}>
+        Create
+      </button>
+      <button
+        className="btn btn-sm btn-outline-secondary"
+        type="button"
+        onClick={() => setOpenForm(false)}
+      >
+        Cancel
+      </button>
+      {error && <span className="ts-error">{error}</span>}
+    </form>
+  );
+}
+
+NewAgentForm.propTypes = {
+  online: PropTypes.bool,
+  onCreated: PropTypes.func.isRequired,
+};
+
 MoneyCard.propTypes = {
   title: PropTypes.string.isRequired,
   total: PropTypes.string,
@@ -130,6 +298,11 @@ QueueList.propTypes = {
 
 TrackCard.propTypes = {
   track: PropTypes.object.isRequired,
+  manual: PropTypes.object,
+  online: PropTypes.bool,
+  running: PropTypes.bool,
+  onSend: PropTypes.func.isRequired,
+  onRun: PropTypes.func.isRequired,
 };
 
 export default function TripSaathiDashboard() {
@@ -137,6 +310,7 @@ export default function TripSaathiDashboard() {
   // (through a tunnel in production; see src/services/tripsaathi/tripsaathi.js).
   const [ws, setWs] = useState(null);
   const [daemon, setDaemon] = useState(null);
+  const [agents, setAgents] = useState(null); // manual-agent inbox stats
   // Loading only means "we haven't heard back from the first poll yet" — once
   // we have, "offline" is a normal state shown via `daemon`, not an error.
   const [loading, setLoading] = useState(true);
@@ -148,15 +322,26 @@ export default function TripSaathiDashboard() {
       setLoading(false);
     });
     const unsubDaemon = watchDaemon(setDaemon);
+    const unsubAgents = watchAgents(setAgents);
     return () => {
       unsubWs();
       unsubDaemon();
+      unsubAgents();
     };
   }, []);
 
   const online = isAgentOnline(daemon);
   const running = daemon?.running;
   const lastRunFailed = daemon?.lastRun && daemon.lastRun.ok === false;
+  const agentsById = Object.fromEntries((agents ?? []).map(a => [a.id, a]));
+
+  const refetchWorkspace = async () => {
+    try {
+      setWs(await fetchWorkspaceOnce());
+    } catch {
+      /* next poll will catch up */
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshMsg('');
@@ -165,6 +350,28 @@ export default function TripSaathiDashboard() {
       setRefreshMsg('Refresh started — extraction can take a few minutes.');
     } catch (e) {
       setRefreshMsg(e.message || 'Could not start a refresh.');
+    }
+  };
+
+  const onSend = async (id, text) => {
+    const r = await sendAgentMessage(id, { text, sender: ws?.owner || 'me' });
+    setAgents(prev =>
+      prev
+        ? prev.map(a =>
+            a.id === id ? { ...a, messageCount: r.messageCount, pendingCount: r.pendingCount } : a
+          )
+        : prev
+    );
+    return r;
+  };
+
+  const onRun = async id => {
+    setRefreshMsg('');
+    try {
+      await runAgent(id);
+      setRefreshMsg(`Agent "${id}" is running — data appears when it finishes.`);
+    } catch (e) {
+      setRefreshMsg(e.message || 'Could not start the agent.');
     }
   };
 
@@ -197,15 +404,18 @@ export default function TripSaathiDashboard() {
           </div>
         </div>
         <div className="text-end">
-          <button
-            className="btn btn-sm btn-outline-primary"
-            disabled={!online || running}
-            title="Runs the extraction pipeline on the machine — uses LLM credits"
-            onClick={onRefresh}
-          >
-            <i className="bi bi-arrow-repeat me-1" />
-            {running ? 'Refreshing…' : 'Run refresh'}
-          </button>
+          <div className="d-flex gap-2 justify-content-end flex-wrap">
+            <NewAgentForm online={online} onCreated={refetchWorkspace} />
+            <button
+              className="btn btn-sm btn-outline-primary"
+              disabled={!online || running}
+              title="Runs the extraction pipeline on the machine — uses LLM credits"
+              onClick={onRefresh}
+            >
+              <i className="bi bi-arrow-repeat me-1" />
+              {running ? 'Refreshing…' : 'Run refresh'}
+            </button>
+          </div>
           {refreshMsg && <div className="ts-where mt-1">{refreshMsg}</div>}
         </div>
       </div>
@@ -257,7 +467,15 @@ export default function TripSaathiDashboard() {
             <>
               <h4>Live efforts</h4>
               {liveTracks.map(t => (
-                <TrackCard key={t.id} track={t} />
+                <TrackCard
+                  key={t.id}
+                  track={t}
+                  manual={agentsById[t.id]}
+                  online={online}
+                  running={Boolean(running)}
+                  onSend={onSend}
+                  onRun={onRun}
+                />
               ))}
             </>
           )}
@@ -266,7 +484,15 @@ export default function TripSaathiDashboard() {
             <details className="ts-past">
               <summary>Finished &amp; abandoned ({pastTracks.length})</summary>
               {pastTracks.map(t => (
-                <TrackCard key={t.id} track={t} />
+                <TrackCard
+                  key={t.id}
+                  track={t}
+                  manual={agentsById[t.id]}
+                  online={online}
+                  running={Boolean(running)}
+                  onSend={onSend}
+                  onRun={onRun}
+                />
               ))}
             </details>
           )}

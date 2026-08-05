@@ -16,12 +16,22 @@
  * tunnel URL anywhere public.
  */
 const BASE = process.env.REACT_APP_PLANNINGSAATHI_URL || 'http://localhost:5173';
+// Sent as x-api-key on every request when set; harmless if the server has no key.
+const API_KEY = process.env.REACT_APP_PLANNINGSAATHI_KEY || null;
 
 const WORKSPACE_POLL_MS = 15000;
 const STATUS_POLL_MS = 8000;
 
 async function fetchJson(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, { signal: AbortSignal.timeout(8000), ...options });
+  const res = await fetch(`${BASE}${path}`, {
+    signal: AbortSignal.timeout(8000),
+    ...options,
+    headers: {
+      ...(options.body ? { 'content-type': 'application/json' } : {}),
+      ...(API_KEY ? { 'x-api-key': API_KEY } : {}),
+      ...(options.headers || {}),
+    },
+  });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) {
     const err = new Error(body.error || `HTTP ${res.status}`);
@@ -101,4 +111,56 @@ export async function triggerRefresh() {
 
 export function isAgentOnline(daemon) {
   return Boolean(daemon?.reachable);
+}
+
+// ---- manual agents (dashboard-created, each with its own message inbox) ----
+
+/** One-off workspace fetch — used to show a just-created agent immediately. */
+export async function fetchWorkspaceOnce() {
+  return fetchJson('/api/workspace');
+}
+
+/** Poll GET /api/agents for pending counts; same unsubscribe pattern. */
+export function watchAgents(onData) {
+  let stopped = false;
+  const poll = async () => {
+    try {
+      const { agents } = await fetchJson('/api/agents');
+      if (!stopped) onData(agents || []);
+    } catch {
+      if (!stopped) onData(null); // unreachable or old server — hide badges
+    }
+  };
+  poll();
+  const id = setInterval(poll, STATUS_POLL_MS);
+  return () => {
+    stopped = true;
+    clearInterval(id);
+  };
+}
+
+export async function createAgent({ title, profile, focus }) {
+  const r = await fetchJson('/api/agents', {
+    method: 'POST',
+    body: JSON.stringify({ title, profile, focus: focus || null }),
+  });
+  return r.agent;
+}
+
+export async function sendAgentMessage(id, { text, sender }) {
+  return fetchJson(`/api/agents/${id}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ text, sender }),
+  });
+}
+
+/** One small LLM run on the machine, over this agent's inbox only. */
+export async function runAgent(id) {
+  try {
+    return await fetchJson(`/api/agents/${id}/refresh`, { method: 'POST' });
+  } catch (err) {
+    if (err.status === 409) throw new Error('Busy — another run is in progress, try in a moment.');
+    if (err.status === 501) throw new Error('The server was started without agent support.');
+    throw err;
+  }
 }
