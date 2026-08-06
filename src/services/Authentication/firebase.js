@@ -13,18 +13,20 @@ import {
 } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
-// Your web app's Firebase configuration — env-driven with fallbacks to the
-// CONSOLIDATED `anddhen` project (web config values are public, not secrets).
-// The fallbacks mean production works even if Vercel's env vars are missing
-// or stale; set REACT_APP_FIREBASE_* in Vercel only to point elsewhere.
+// Firebase web config for the CONSOLIDATED `anddhen` project. HARDCODED ON
+// PURPOSE — do not reintroduce process.env here. A stale REACT_APP_FIREBASE_APP_KEY
+// in Vercel (pointing at the retired `anddhen-group` project) silently overrode
+// the old env-driven config and broke production Google login with
+// auth/invalid-continue-uri (API key and authDomain from different projects).
+// These values are public client identifiers, not secrets.
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_APP_KEY || 'AIzaSyDyF8KL3IriKUnNDYhhZXBoxwqbxxhqqpY',
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || 'anddhen.firebaseapp.com',
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || 'anddhen',
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || 'anddhen.firebasestorage.app',
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || '258132609295',
-  appId: process.env.REACT_APP_FIREBASE_APP_ID || '1:258132609295:web:57d3f5211a038c85ce167a',
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || 'G-JZEQ2L9FEV',
+  apiKey: 'AIzaSyDyF8KL3IriKUnNDYhhZXBoxwqbxxhqqpY',
+  authDomain: 'anddhen.firebaseapp.com',
+  projectId: 'anddhen',
+  storageBucket: 'anddhen.firebasestorage.app',
+  messagingSenderId: '258132609295',
+  appId: '1:258132609295:web:57d3f5211a038c85ce167a',
+  measurementId: 'G-JZEQ2L9FEV',
 };
 
 // Initialize Firebase
