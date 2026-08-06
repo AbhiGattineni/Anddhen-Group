@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import useUnifiedAuth from 'src/hooks/useUnifiedAuth';
@@ -9,8 +9,17 @@ import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 import './Auth.css';
 
 export const Login = () => {
-  const { onGoogleSignIn, onEmailPasswordSignIn } = useUnifiedAuth();
+  const { onGoogleSignIn, onEmailPasswordSignIn, onRedirectResult } = useUnifiedAuth();
   const [error, setError] = useState(null); // Use state to manage the raw error
+
+  // When the popup is blocked (phones, strict browsers) sign-in falls back to
+  // a full-page redirect; this completes that round-trip after landing back.
+  useEffect(() => {
+    onRedirectResult().then(result => {
+      if (result && !result.success) setError(result.error);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Use the useErrorHandling hook with the current error state
   const { errorCode, title, message } = useErrorHandling(error);

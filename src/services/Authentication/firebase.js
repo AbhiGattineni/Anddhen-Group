@@ -3,6 +3,8 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   FacebookAuthProvider,
   GithubAuthProvider,
@@ -44,10 +46,34 @@ facebookAuthProvider.setCustomParameters({ display: 'popup' });
 const githubAuthProvider = new GithubAuthProvider();
 githubAuthProvider.addScope('read:user');
 
+// Popup sign-in fails outright in popup-hostile environments (mobile
+// browsers, in-app webviews, strict blockers). For those error codes we fall
+// back to the full-page redirect flow instead of surfacing an error; the
+// Login page completes the round-trip via completeRedirectSignIn() on mount.
+const POPUP_FALLBACK_CODES = [
+  'auth/popup-blocked',
+  'auth/cancelled-popup-request',
+  'auth/operation-not-supported-in-this-environment',
+];
+
+const popupWithRedirectFallback = async provider => {
+  try {
+    return await signInWithPopup(auth, provider);
+  } catch (err) {
+    if (POPUP_FALLBACK_CODES.includes(err?.code)) {
+      await signInWithRedirect(auth, provider); // navigates away from the app
+      return new Promise(() => {}); // page is leaving — never resolves
+    }
+    throw err;
+  }
+};
+
 // Exported sign-in methods
-export const signInWithGoogle = () => signInWithPopup(auth, googleAuthProvider);
-export const signInWithFacebook = () => signInWithPopup(auth, facebookAuthProvider);
-export const signInWithGitHub = () => signInWithPopup(auth, githubAuthProvider);
+export const signInWithGoogle = () => popupWithRedirectFallback(googleAuthProvider);
+export const signInWithFacebook = () => popupWithRedirectFallback(facebookAuthProvider);
+export const signInWithGitHub = () => popupWithRedirectFallback(githubAuthProvider);
+/** Result of a redirect round-trip (null user when none happened). */
+export const completeRedirectSignIn = () => getRedirectResult(auth);
 export const signInWithEmailPassword = (email, password) =>
   signInWithEmailAndPassword(auth, email, password);
 export const createUserWithEmailPassword = (email, password) =>
