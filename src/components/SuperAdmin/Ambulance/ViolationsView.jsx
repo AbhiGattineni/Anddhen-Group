@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { listViolations, countViolations } from 'src/services/ambulance/ambulance';
-import { SafeImg, fmt } from './shared';
+import { SafeImg, fmt, Lightbox, useLightbox } from './shared';
 
 /**
  * The primary screen: vehicles that blocked the ambulance 10+ seconds.
@@ -15,7 +15,7 @@ export default function ViolationsView() {
   const [plateQ, setPlateQ] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [zoom, setZoom] = useState(null); // violation shown full-size
+  const viewer = useLightbox();
 
   const load = useCallback(
     async (reset = true, after = null) => {
@@ -99,9 +99,9 @@ export default function ViolationsView() {
       )}
 
       <div className="row g-3">
-        {shown.map(v => (
+        {shown.map((v, i) => (
           <div className="col-6 col-md-4 col-xl-3" key={v.id}>
-            <button className="amb-photo amb-violation w-100" onClick={() => setZoom(v)}>
+            <button className="amb-photo amb-violation w-100" onClick={() => viewer.open(i)}>
               <SafeImg src={v.photoUrl} alt={v.plate} className="amb-vio-img" />
               <div className="amb-photo-meta">
                 <span className="amb-plate">{v.plate || '—'}</span>
@@ -129,19 +129,13 @@ export default function ViolationsView() {
         </div>
       )}
 
-      {zoom && (
-        <div className="amb-lightbox" onClick={() => setZoom(null)} role="presentation">
-          <div className="amb-lightbox-body">
-            <img src={zoom.photoUrl} alt={zoom.plate} />
-            <div className="amb-lightbox-meta">
-              <span className="amb-plate">{zoom.plate}</span> · {fmt(zoom.time)}
-              {zoom.confidence != null && ` · confidence ${Math.round(zoom.confidence * 100)}%`}
-              <a className="ms-2" href={zoom.photoUrl} target="_blank" rel="noreferrer">
-                open original
-              </a>
-            </div>
-          </div>
-        </div>
+      {viewer.isOpen && (
+        <Lightbox
+          items={shown}
+          index={viewer.index}
+          onClose={viewer.close}
+          onIndex={viewer.setIndex}
+        />
       )}
     </>
   );

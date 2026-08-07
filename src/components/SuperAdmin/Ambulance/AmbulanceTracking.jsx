@@ -4,6 +4,8 @@ import ViolationsView from './ViolationsView';
 import PowerCharts from './PowerCharts';
 import TimelineView from './TimelineView';
 import DetectionsView from './DetectionsView';
+import AccuracyView from './AccuracyView';
+import QualityStatsView from './QualityStatsView';
 import FolderBrowser from './FolderBrowser';
 import { ago, fmt } from './shared';
 import './AmbulanceTracking.css';
@@ -12,6 +14,8 @@ const STATUS_REFRESH_SEC = 30;
 
 const TABS = [
   ['violations', 'Violations', 'bi-exclamation-octagon'],
+  ['quality', 'Capture Stats', 'bi-bar-chart-line'],
+  ['accuracy', 'Accuracy', 'bi-bullseye'],
   ['power', 'Power & Health', 'bi-battery-charging'],
   ['timeline', 'Timeline', 'bi-clock-history'],
   ['detections', 'Detections', 'bi-camera'],
@@ -209,6 +213,8 @@ export default function AmbulanceTracking() {
       </ul>
 
       {tab === 'violations' && <ViolationsView />}
+      {tab === 'quality' && <QualityStatsView />}
+      {tab === 'accuracy' && <AccuracyView />}
       {tab === 'power' && <PowerCharts />}
       {tab === 'timeline' && <TimelineView />}
       {tab === 'detections' && <DetectionsView />}

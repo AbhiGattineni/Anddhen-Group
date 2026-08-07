@@ -1,50 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { listDetections } from 'src/services/ambulance/ambulance';
-import { SafeImg, fmt } from './shared';
-
-/**
- * Sharpness = variance of the Laplacian on a downscaled grayscale copy.
- * Higher is sharper; typical range 0 (flat/blurred) to 1500+ (crisp).
- */
-async function sharpnessOf(url) {
-  const img = await new Promise((resolve, reject) => {
-    const i = new Image();
-    i.crossOrigin = 'anonymous';
-    i.onload = () => resolve(i);
-    i.onerror = reject;
-    i.src = url;
-  });
-  const w = 96;
-  const h = Math.max(8, Math.round((img.height / img.width) * w) || w);
-  const c = document.createElement('canvas');
-  c.width = w;
-  c.height = h;
-  const ctx = c.getContext('2d');
-  ctx.drawImage(img, 0, 0, w, h);
-  const { data } = ctx.getImageData(0, 0, w, h);
-  const g = new Float32Array(w * h);
-  for (let i = 0; i < w * h; i++) {
-    g[i] = 0.299 * data[i * 4] + 0.587 * data[i * 4 + 1] + 0.114 * data[i * 4 + 2];
-  }
-  let sum = 0;
-  let sum2 = 0;
-  let n = 0;
-  for (let yy = 1; yy < h - 1; yy++) {
-    for (let xx = 1; xx < w - 1; xx++) {
-      const i = yy * w + xx;
-      const lap = 4 * g[i] - g[i - 1] - g[i + 1] - g[i - w] - g[i + w];
-      sum += lap;
-      sum2 += lap * lap;
-      n++;
-    }
-  }
-  const mean = sum / n;
-  return sum2 / n - mean * mean;
-}
-
-const SHARP_AT = 150;
-const SOFT_AT = 50;
+import { SafeImg, fmt, sharpnessOf, SHARP_AT, SOFT_AT, Lightbox, useLightbox } from './shared';
 
 /** Last-24h detections (photos expire after ~1 day) + focus assist for OCR tuning. */
 export default function DetectionsView() {
@@ -52,6 +9,7 @@ export default function DetectionsView() {
   const [cursor, setCursor] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const viewer = useLightbox();
 
   const load = (after = null) => {
     setLoading(true);
@@ -88,14 +46,13 @@ export default function DetectionsView() {
               <p className="text-muted mb-0">No detections in the last 24 hours.</p>
             ) : (
               <div className="row g-2">
-                {rows.map(d => (
+                {rows.map((d, i) => (
                   <div className="col-6 col-md-3 col-xl-2" key={d.id}>
-                    <a
-                      className="amb-photo"
-                      href={d.photoUrl}
-                      target="_blank"
-                      rel="noreferrer"
+                    <button
+                      className="amb-photo w-100"
+                      onClick={() => viewer.open(i)}
                       title={d.photo}
+                      type="button"
                     >
                       <SafeImg src={d.photoUrl} alt={d.plate} className="amb-thumb" />
                       <div className="amb-photo-meta">
@@ -107,7 +64,7 @@ export default function DetectionsView() {
                           )}
                         </span>
                       </div>
-                    </a>
+                    </button>
                   </div>
                 ))}
               </div>
@@ -124,6 +81,14 @@ export default function DetectionsView() {
               </div>
             )}
           </div>
+          {viewer.isOpen && (
+            <Lightbox
+              items={rows}
+              index={viewer.index}
+              onClose={viewer.close}
+              onIndex={viewer.setIndex}
+            />
+          )}
         </>
       )}
     </>

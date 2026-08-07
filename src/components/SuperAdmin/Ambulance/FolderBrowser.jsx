@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { listStorage } from 'src/services/ambulance/ambulance';
-import { SafeImg } from './shared';
+import { SafeImg, Lightbox, useLightbox } from './shared';
 
 /** Browse the ambulance Storage bucket (violations/, detections/, heartbeats/, …). */
 export default function FolderBrowser() {
@@ -10,6 +10,7 @@ export default function FolderBrowser() {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const viewer = useLightbox();
 
   const load = useCallback(async (pfx, pageToken = null) => {
     setLoading(true);
@@ -31,6 +32,8 @@ export default function FolderBrowser() {
   }, [prefix, load]);
 
   const crumbs = prefix.split('/').filter(Boolean);
+  // the viewer steps through images only, so non-image files don't break paging
+  const images = files.filter(f => f.isImage);
 
   return (
     <div className="amb-card">
@@ -73,15 +76,10 @@ export default function FolderBrowser() {
 
       {files.length > 0 && (
         <div className="row g-2">
-          {files.map(f => (
-            <div className="col-6 col-md-3 col-xl-2" key={f.name}>
-              <a
-                className="amb-photo"
-                href={f.url}
-                target="_blank"
-                rel="noreferrer"
-                title={f.shortName}
-              >
+          {files.map(f => {
+            const imgIndex = images.findIndex(i => i.name === f.name);
+            const inner = (
+              <>
                 {f.isImage ? (
                   <SafeImg src={f.url} alt={f.shortName} className="amb-thumb" />
                 ) : (
@@ -92,10 +90,43 @@ export default function FolderBrowser() {
                 <div className="amb-photo-meta">
                   <span className="amb-file-name">{f.shortName}</span>
                 </div>
-              </a>
-            </div>
-          ))}
+              </>
+            );
+            return (
+              <div className="col-6 col-md-3 col-xl-2" key={f.name}>
+                {f.isImage ? (
+                  <button
+                    className="amb-photo w-100"
+                    onClick={() => viewer.open(imgIndex)}
+                    title={f.shortName}
+                    type="button"
+                  >
+                    {inner}
+                  </button>
+                ) : (
+                  <a
+                    className="amb-photo"
+                    href={f.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={f.shortName}
+                  >
+                    {inner}
+                  </a>
+                )}
+              </div>
+            );
+          })}
         </div>
+      )}
+
+      {viewer.isOpen && (
+        <Lightbox
+          items={images}
+          index={viewer.index}
+          onClose={viewer.close}
+          onIndex={viewer.setIndex}
+        />
       )}
 
       {!loading && folders.length === 0 && files.length === 0 && !error && (

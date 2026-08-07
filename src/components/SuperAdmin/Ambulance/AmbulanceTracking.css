@@ -457,6 +457,225 @@
   color: #7dd3fc;
 }
 
+/* Full-screen photo viewer (shared by every photo grid) */
+.amb-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  background: rgba(8, 12, 24, 0.94);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.amb-viewer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  flex: 0 0 auto;
+}
+.amb-viewer-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.amb-viewer-title .amb-plate {
+  font-size: 1.05rem;
+  color: #fff;
+}
+.amb-viewer-sub {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+.amb-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.amb-viewer-count {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.amb-viewer-btn {
+  background: rgba(148, 163, 184, 0.16);
+  border: none;
+  color: #e2e8f0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.amb-viewer-btn:hover {
+  background: rgba(148, 163, 184, 0.3);
+  color: #fff;
+}
+.amb-viewer-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  cursor: zoom-out;
+}
+.amb-viewer-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+  cursor: default;
+}
+.amb-viewer-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  color: #e2e8f0;
+  width: 44px;
+  height: 64px;
+  border-radius: 10px;
+  font-size: 1.3rem;
+}
+.amb-viewer-nav:hover {
+  background: rgba(30, 41, 59, 0.9);
+  color: #fff;
+}
+.amb-viewer-prev {
+  left: 14px;
+}
+.amb-viewer-next {
+  right: 14px;
+}
+.amb-viewer-meta {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px 14px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+.amb-viewer-chip {
+  background: rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+}
+.amb-viewer-chip-k {
+  color: #94a3b8;
+}
+.amb-viewer-chip-v {
+  color: #f1f5f9;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 576px) {
+  .amb-viewer-nav {
+    width: 36px;
+    height: 52px;
+  }
+  .amb-viewer-meta {
+    max-height: 30vh;
+    overflow-y: auto;
+  }
+}
+
+/* Stats view */
+.amb-bar-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 108px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.amb-bar-track {
+  background: #e2e8f0;
+  border-radius: 6px;
+  height: 20px;
+  overflow: hidden;
+}
+.amb-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+}
+.amb-bar-label {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: #475569;
+}
+.amb-bar-value {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: #334155;
+  text-align: right;
+}
+.amb-finding {
+  border-left: 4px solid #cbd5e1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  margin-bottom: 10px;
+}
+.amb-finding-bad {
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+.amb-finding-warn {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+.amb-finding-ok {
+  border-left-color: #16a34a;
+  background: #f0fdf4;
+}
+.amb-finding-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.amb-finding-body {
+  font-size: 0.9rem;
+  color: #475569;
+}
+.amb-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+.amb-stat-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.amb-stat-box-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.amb-stat-box-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+.amb-stat-box-sub {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
 /* Coverage timeline */
 .amb-coverage {
   position: relative;
@@ -490,4 +709,87 @@
   width: 100%;
   border-radius: 10px;
   display: block;
+}
+
+/* Accuracy: confidence-bucket bars */
+.amb-buckets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.amb-bucket-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.amb-bucket-label {
+  width: 64px;
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 600;
+}
+.amb-bucket-track {
+  flex: 1;
+  height: 14px;
+  background: #eef2f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.amb-bucket-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.amb-bucket-good {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+.amb-bucket-mid {
+  background: linear-gradient(90deg, #fbbf24, #d97706);
+}
+.amb-bucket-bad {
+  background: linear-gradient(90deg, #f87171, #dc2626);
+}
+.amb-bucket-empty {
+  background: #cbd5e1;
+}
+.amb-bucket-value {
+  width: 84px;
+  flex: 0 0 auto;
+  text-align: right;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Accuracy: recommendations */
+.amb-recs {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.05), #fff 60%);
+}
+.amb-recs ul {
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+
+/* Accuracy: review queue cards */
+.amb-review-card {
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+.amb-badge-src {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #64748b;
+  background: #e2e8f0;
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.amb-badge-src.is-violation {
+  color: #991b1b;
+  background: rgba(220, 38, 38, 0.12);
 }
