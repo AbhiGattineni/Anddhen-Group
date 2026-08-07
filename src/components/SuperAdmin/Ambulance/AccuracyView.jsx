@@ -9,7 +9,7 @@ import {
   countViolations,
   countDetections,
 } from 'src/services/ambulance/ambulance';
-import { SafeImg, fmt, sharpnessOf, Chart } from './shared';
+import { SafeImg, fmt, sharpnessOf, Chart, Lightbox, useLightbox } from './shared';
 
 const BUCKET_COLOR = acc => {
   if (acc == null) return 'amb-bucket-empty';
@@ -30,6 +30,7 @@ export default function AccuracyView() {
   const [totals, setTotals] = useState(null);
   const [error, setError] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
+  const viewer = useLightbox();
 
   const load = useCallback(async () => {
     setError('');
@@ -282,16 +283,26 @@ export default function AccuracyView() {
           </p>
         ) : (
           <div className="row g-3">
-            {queue.map(c => (
+            {queue.map((c, i) => (
               <ReviewCard
                 key={`${c.sourceCollection}_${c.id}`}
                 candidate={c}
                 onSaved={handleReviewed}
+                onPreview={() => viewer.open(i)}
               />
             ))}
           </div>
         )}
       </div>
+
+      {viewer.isOpen && (
+        <Lightbox
+          items={queue}
+          index={viewer.index}
+          onClose={viewer.close}
+          onIndex={viewer.setIndex}
+        />
+      )}
     </>
   );
 }
@@ -351,7 +362,7 @@ Recommendations.propTypes = {
   stats: PropTypes.object.isRequired,
 };
 
-function ReviewCard({ candidate, onSaved }) {
+function ReviewCard({ candidate, onSaved, onPreview }) {
   const [mode, setMode] = useState(null); // null | 'wrong'
   const [correctedPlate, setCorrectedPlate] = useState('');
   const [busy, setBusy] = useState(false);
@@ -387,7 +398,17 @@ function ReviewCard({ candidate, onSaved }) {
   return (
     <div className="col-6 col-md-4 col-xl-3">
       <div className="amb-review-card">
-        <SafeImg src={candidate.photoUrl} alt={candidate.plate} className="amb-thumb" />
+        <button
+          className="amb-thumb-btn"
+          onClick={onPreview}
+          title="Preview full-size before deciding"
+          type="button"
+        >
+          <SafeImg src={candidate.photoUrl} alt={candidate.plate} className="amb-thumb" />
+          <span className="amb-thumb-zoom">
+            <i className="bi bi-arrows-fullscreen" /> Preview
+          </span>
+        </button>
         <div className="p-2">
           <div className="d-flex justify-content-between align-items-center">
             <span className="amb-plate">{candidate.plate || 'UNKNOWN'}</span>
@@ -406,6 +427,14 @@ function ReviewCard({ candidate, onSaved }) {
 
           {mode !== 'wrong' ? (
             <div className="d-flex gap-1">
+              <button
+                className="btn btn-sm btn-outline-secondary"
+                disabled={busy}
+                onClick={onPreview}
+                title="Preview full-size"
+              >
+                <i className="bi bi-zoom-in" />
+              </button>
               <button
                 className="btn btn-sm btn-success flex-fill"
                 disabled={busy}
@@ -457,4 +486,5 @@ function ReviewCard({ candidate, onSaved }) {
 ReviewCard.propTypes = {
   candidate: PropTypes.object.isRequired,
   onSaved: PropTypes.func.isRequired,
+  onPreview: PropTypes.func.isRequired,
 };

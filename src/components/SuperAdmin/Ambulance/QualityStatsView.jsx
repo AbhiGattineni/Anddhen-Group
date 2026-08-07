@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {
   listQualitySample,
   computeQualityStats,
-  CONF_FLOORS,
   NIGHT_LUX,
   TWILIGHT_LUX,
 } from 'src/services/ambulance/ambulance';
@@ -185,30 +184,26 @@ export default function QualityStatsView() {
             <div className="amb-card-head">
               Confidence distribution{' '}
               <span className="text-muted fw-normal">
-                — how many reads clear each bar ({stats.withConfidence} with a confidence score)
+                — each read counted once, in its own band ({stats.withConfidence} with a confidence
+                score)
               </span>
             </div>
-            {stats.byFloor.map((b, i) => (
+            {stats.byBand.map((b, i) => (
               <Bar
-                key={b.floor}
-                label={`≥ ${Math.round(b.floor * 100)}%`}
+                key={b.label}
+                label={b.label}
                 count={b.count}
                 share={b.share}
                 total={stats.withConfidence}
-                color={['#15803d', '#16a34a', '#65a30d', '#ca8a04', '#ea580c', '#dc2626'][i]}
+                color={
+                  ['#15803d', '#16a34a', '#65a30d', '#ca8a04', '#ea580c', '#dc2626', '#94a3b8'][i]
+                }
               />
             ))}
-            <Bar
-              label={`< ${Math.round(CONF_FLOORS[CONF_FLOORS.length - 1] * 100)}%`}
-              count={stats.belowLowest}
-              share={stats.belowLowestShare}
-              total={stats.withConfidence}
-              color="#94a3b8"
-            />
             <p className="text-muted small mb-0 mt-2">
-              These bars are cumulative: a read counted at 95% is also counted at 90%. Note this is
-              the OCR model&apos;s own certainty, not verified accuracy — the Accuracy tab measures
-              that against human verdicts.
+              Bands do not overlap — a 95% read is counted in 95–100% only, not in every lower band
+              too. This is the OCR model&apos;s own certainty, not verified accuracy — the Accuracy
+              tab measures that against human verdicts.
             </p>
           </div>
 

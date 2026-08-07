@@ -437,7 +437,19 @@ export const lightClass = lux =>
         : 'day';
 
 /** Confidence floors, highest first — "how many reads clear this bar". */
-export const CONF_FLOORS = [0.95, 0.9, 0.8, 0.7, 0.6, 0.5];
+/** Discrete, non-overlapping confidence bands, high to low. Each read falls
+ *  into exactly one band — unlike a cumulative "≥ X%" threshold, where a 95%
+ *  read would also be counted inside every lower bucket, making "≥ 50%" look
+ *  like it is mostly full even when almost all of it is really 90%+ reads. */
+export const CONF_BANDS = [
+  { label: '95–100%', min: 0.95, max: 1.01 },
+  { label: '90–94%', min: 0.9, max: 0.95 },
+  { label: '80–89%', min: 0.8, max: 0.9 },
+  { label: '70–79%', min: 0.7, max: 0.8 },
+  { label: '60–69%', min: 0.6, max: 0.7 },
+  { label: '50–59%', min: 0.5, max: 0.6 },
+  { label: '< 50%', min: 0, max: 0.5 },
+];
 
 const median = a => (a.length ? [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)] : null);
 const pct = (n, d) => (d ? Math.round((n / d) * 100) : 0);
@@ -456,14 +468,11 @@ export const BLUR_EXPOSURE_US = 20000;
 export function computeQualityStats(rows) {
   const withConf = rows.filter(r => typeof r.confidence === 'number');
 
-  // "at or above X" — cumulative, because that is how a threshold behaves
-  const byFloor = CONF_FLOORS.map(floor => {
-    const n = withConf.filter(r => r.confidence >= floor).length;
-    return { floor, count: n, share: pct(n, withConf.length) };
+  // each read counted once, in its own band — see CONF_BANDS comment
+  const byBand = CONF_BANDS.map(b => {
+    const n = withConf.filter(r => r.confidence >= b.min && r.confidence < b.max).length;
+    return { ...b, count: n, share: pct(n, withConf.length) };
   });
-  const belowLowest = withConf.filter(
-    r => r.confidence < CONF_FLOORS[CONF_FLOORS.length - 1]
-  ).length;
 
   const group = cls => rows.filter(r => lightClass(r.lux) === cls);
   const summarise = list => {
@@ -506,9 +515,7 @@ export function computeQualityStats(rows) {
   return {
     total: rows.length,
     withConfidence: withConf.length,
-    byFloor,
-    belowLowest,
-    belowLowestShare: pct(belowLowest, withConf.length),
+    byBand,
     all,
     day,
     twilight,
