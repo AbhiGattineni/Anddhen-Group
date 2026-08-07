@@ -311,6 +311,40 @@
   box-shadow: inset 0 0 0 1px #e2e8f0;
 }
 
+/* Voided (soft-deleted) rows: kept for transparency, struck through and
+   excluded from every balance calculation. text-decoration is set on every
+   descendant directly (not just the row) because inline-block badges like
+   .amount-badge don't inherit a line-through drawn by an ancestor. */
+.table-row.deleted-row {
+  background: #f8fafc;
+  opacity: 0.55;
+}
+
+.table-row.deleted-row td,
+.table-row.deleted-row td * {
+  text-decoration: line-through;
+}
+
+.table-row.deleted-row:hover {
+  background: #f1f5f9;
+}
+
+.total-voided {
+  color: #94a3b8;
+}
+
+.voided-label {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #94a3b8;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
 .data-table tbody td {
   padding: 16px 20px;
   font-size: 14px;

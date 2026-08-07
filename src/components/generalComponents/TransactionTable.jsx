@@ -21,9 +21,9 @@ const TransactionTable = () => {
       .query('transactions', { filters: [['subsidiary', '==', 'APS']] })
       .then(rows =>
         setTransactions(
-          [...rows].sort(
-            (a, b) => new Date(b.transaction_datetime) - new Date(a.transaction_datetime)
-          )
+          rows
+            .filter(r => !r.deleted)
+            .sort((a, b) => new Date(b.transaction_datetime) - new Date(a.transaction_datetime))
         )
       )
       .catch(setError);

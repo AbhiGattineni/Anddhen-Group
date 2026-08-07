@@ -120,7 +120,8 @@ future Django reconnect maps 1:1. Field names are preserved from the models.
 `sender_id` str · `accountant_name` str · `accountant_id` str · `credited_amount` num ·
 `debited_amount` num · `transaction_datetime` ts · `uploaded_datetime` ts ·
 `transaction_type` enum(credit|debit) · `payment_type` enum(cash|upi|bank_transfer) ·
-`subsidiary` enum(AMS|ACS|ASS|APS|ATI) · `currency` str · `description` str
+`subsidiary` enum(AMS|ACS|ASS|APS|ATI) · `currency` str · `description` str ·
+`deleted` bool (default false — soft-delete: row stays for audit transparency, excluded from balance calculations)
 
 ---
 

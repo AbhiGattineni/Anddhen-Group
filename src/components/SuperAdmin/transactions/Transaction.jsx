@@ -10,7 +10,7 @@ import {
 } from 'react-table';
 import { TransactionModal } from 'src/components/organisms/Modal/TransactionModal';
 import PropTypes from 'prop-types';
-import { useDeleteData } from 'src/react-query/useFetchApis';
+import { useUpdateData } from 'src/react-query/useFetchApis';
 import { fetchData } from 'src/react-query/useApis';
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 import ReactSelectDropdown from 'src/components/atoms/Search/ReactSelectDropdown';
@@ -93,26 +93,32 @@ export const Transaction = () => {
     }
   }, []);
 
-  const { mutate: deleteTransaction, isLoading: isDeleting } = useDeleteData(
+  // "Delete" voids the transaction instead of removing it: the row stays in
+  // the table (struck through) for audit transparency, but is excluded from
+  // every balance calculation below.
+  const { mutate: voidTransaction, isLoading: isDeleting } = useUpdateData(
     'transactions',
-    `/transactions/${deleteTransactionId}/delete/`
+    `/transactions/${deleteTransactionId}/update/`
   );
 
   const handleDeleteTransation = useCallback(
     e => {
       if (e) e.preventDefault();
-      deleteTransaction(null, {
-        onSuccess: () => {
-          setShowConfirmation(false);
-          queryClient.invalidateQueries('transactions');
-          setDeleteTransactionId(null);
-        },
-        onError: error => {
-          console.error('An error occurred:', error);
-        },
-      });
+      voidTransaction(
+        { deleted: true },
+        {
+          onSuccess: () => {
+            setShowConfirmation(false);
+            queryClient.invalidateQueries('transactions');
+            setDeleteTransactionId(null);
+          },
+          onError: error => {
+            console.error('An error occurred:', error);
+          },
+        }
+      );
     },
-    [deleteTransaction, queryClient, deleteTransactionId]
+    [voidTransaction, queryClient]
   );
 
   const handleDelete = useCallback(transactionId => {
@@ -241,12 +247,17 @@ export const Transaction = () => {
           // For each row, calculate balance from that row to the end (older transactions)
           // This gives us the running balance at each point in time
 
+          // Deleted transactions stay in the table but never contribute to the balance.
+          if (tableData[row.index]?.deleted) {
+            return <span className="total-amount total-voided">—</span>;
+          }
+
           let balance = 0;
           // Start from current row index and sum all transactions to the end
           // This includes all transactions from this point forward (chronologically older)
           for (let i = row.index; i < tableData.length; i++) {
             const transaction = tableData[i];
-            if (transaction) {
+            if (transaction && !transaction.deleted) {
               if (transaction.transaction_type === 'credit') {
                 balance += parseFloat(transaction.credited_amount || 0);
               } else if (transaction.transaction_type === 'debit') {
@@ -266,6 +277,10 @@ export const Transaction = () => {
         disableSortBy: true,
         Cell: ({ row }) => {
           if (!row || !row.original) return null;
+
+          if (row.original.deleted) {
+            return <span className="voided-label">Voided</span>;
+          }
 
           return (
             <div className="action-buttons">
@@ -312,7 +327,7 @@ export const Transaction = () => {
 
     let totalAmount = 0;
     sortedTransactions.forEach(transaction => {
-      if (!transaction) return;
+      if (!transaction || transaction.deleted) return;
 
       if (transaction.transaction_type === 'credit') {
         totalAmount += parseFloat(transaction.credited_amount || 0);
@@ -441,7 +456,12 @@ export const Transaction = () => {
         selectedCurrency,
       };
 
-      const result = await generateTransactionPDF(tableData, filterData);
+      // Voided transactions stay visible on-screen but never enter calculations,
+      // including the PDF's credit/debit/net-balance statistics.
+      const result = await generateTransactionPDF(
+        tableData.filter(tx => !tx.deleted),
+        filterData
+      );
       console.log('PDF generated successfully:', result);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -717,8 +737,11 @@ export const Transaction = () => {
                     page.map((row, rowIndex) => {
                       prepareRow(row);
                       const { key: rowKey, ...rowProps } = row.getRowProps();
+                      const rowClassName = row.original?.deleted
+                        ? 'table-row deleted-row'
+                        : 'table-row';
                       return (
-                        <tr key={rowKey || rowIndex} {...rowProps} className="table-row">
+                        <tr key={rowKey || rowIndex} {...rowProps} className={rowClassName}>
                           {row.cells.map((cell, cellIndex) => {
                             const { key: cellKey, ...cellProps } = cell.getCellProps();
                             return (
@@ -813,7 +836,7 @@ export const Transaction = () => {
           title="Confirmation"
           show={showConfirmation}
           isLoading={isDeleting}
-          message="Are you sure you want to delete transaction?"
+          message="Are you sure you want to delete this transaction? It will stay visible in the table, struck through, but will no longer count toward any balance."
           onConfirm={handleDeleteTransation}
           onCancel={() => setShowConfirmation(false)}
         />
@@ -831,6 +854,7 @@ Transaction.propTypes = {
       total: PropTypes.number,
       credited_amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       debited_amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      deleted: PropTypes.bool,
     }),
   }),
 };
