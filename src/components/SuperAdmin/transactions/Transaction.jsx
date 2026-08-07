@@ -11,6 +11,7 @@ import {
 import { TransactionModal } from 'src/components/organisms/Modal/TransactionModal';
 import PropTypes from 'prop-types';
 import { useDeleteData } from 'src/react-query/useFetchApis';
+import { fetchData } from 'src/react-query/useApis';
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 import ReactSelectDropdown from 'src/components/atoms/Search/ReactSelectDropdown';
 import { FormControl, InputLabel, MenuItem, Paper, Select } from '@mui/material';
@@ -40,17 +41,11 @@ export const Transaction = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isFiltered, setIsFiltered] = useState(false);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  const fetchTransactions = async () => {
-    const response = await fetch(`${API_BASE_URL}/transactions/`);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  };
-
-  const { data, isLoading } = useQuery('transactions', fetchTransactions, {
+  // Goes through the connector's fetchData (Firebase or Django, whichever is
+  // active) instead of hitting REACT_APP_API_BASE_URL directly, matching how
+  // every other admin CRUD page in the app reads/writes data.
+  const { data, isLoading } = useQuery('transactions', () => fetchData('/transactions/'), {
     staleTime: 30000, // Cache for 30 seconds
     refetchOnWindowFocus: false,
   });
