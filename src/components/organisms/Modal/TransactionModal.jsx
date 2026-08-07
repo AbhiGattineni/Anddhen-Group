@@ -3,6 +3,7 @@ import { auth } from 'src/services/Authentication/firebase';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import PropTypes from 'prop-types';
 import { useUpdateData } from 'src/react-query/useFetchApis';
+import { fetchData, addData } from 'src/react-query/useApis';
 import { capitalizeName } from '../Utils';
 import { Autocomplete, TextField } from '@mui/material';
 import { Modal, Button } from 'react-bootstrap';
@@ -16,7 +17,6 @@ export const TransactionModal = ({
   setShowModal,
 }) => {
   const queryClient = useQueryClient();
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const [formData, setFormData] = useState({
     receiver_name: '',
     sender_name: '',
@@ -32,12 +32,11 @@ export const TransactionModal = ({
   const [fieldErrors, setFieldErrors] = useState({});
   const [disableButton, setDisableButton] = useState(true);
 
-  // Fetch all transactions to get existing names
-  const { data: transactions = [] } = useQuery('transactions', async () => {
-    const response = await fetch(`${API_BASE_URL}/transactions/`);
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
-  });
+  // Fetch all transactions to get existing names. Goes through the connector's
+  // fetchData (Firebase or Django, whichever is active) instead of hitting
+  // REACT_APP_API_BASE_URL directly, and shares the 'transactions' query key
+  // with the Transaction list page so both stay in sync.
+  const { data: transactions = [] } = useQuery('transactions', () => fetchData('/transactions/'));
 
   // Fetch subsidiaries from backend
   const { data: subsidiariesData, isLoading: isSubsidiariesLoading } = useGetSubsidiaries();
@@ -134,14 +133,7 @@ export const TransactionModal = ({
   };
 
   const { mutate: createTransaction, isLoading } = useMutation(
-    formData =>
-      fetch(`${API_BASE_URL}/transactions/create/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      }).then(res => res.json()),
+    formData => addData('/transactions/create/', formData),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('transactions');
@@ -212,7 +204,6 @@ export const TransactionModal = ({
     }
 
     createTransaction(upload_data);
-    toggleModal();
   };
 
   useEffect(() => {
