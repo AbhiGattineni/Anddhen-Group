@@ -1,0 +1,69 @@
+# Deploys Firestore security rules to the `anddhen` Firebase project.
+#
+# Rules are the one part of this repo that Vercel does NOT ship — Vercel builds
+# and hosts the frontend only. Before this workflow, a rules change merged to
+# main sat un-deployed until someone remembered to run the CLI by hand, which
+# silently breaks any feature whose writes the new rules are meant to allow.
+#
+# Requires a repository secret named FIREBASE_SERVICE_ACCOUNT containing the
+# full JSON key of a service account in the `anddhen` project. See
+# firestore/README.md for how to generate it and which IAM roles it needs.
+name: Deploy Firestore rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'firestore.rules'
+      - '.github/workflows/deploy-firestore-rules.yml'
+  # Lets you re-run a deploy without pushing a commit (Actions tab > Run workflow).
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two rules deploys race each other; the last one merged should win.
+concurrency:
+  group: deploy-firestore-rules
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Fail with a readable message rather than an opaque CLI auth error.
+      - name: Check the service account secret is present
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT is not set. Add the service account JSON under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Write service account credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
+
+      # Only `firestore:rules` — deploying indexes can drop indexes missing from
+      # firestore.indexes.json, so that stays a deliberate manual step. Add
+      # `,storage` here if you want storage.rules shipped the same way.
+      - name: Deploy Firestore rules
+        run: |
+          npx --yes firebase-tools@15 deploy \
+            --only firestore:rules \
+            --project anddhen \
+            --non-interactive
+
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-service-account.json"
