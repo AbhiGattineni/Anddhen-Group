@@ -15,6 +15,46 @@ firebase use anddhen          # select the project
 firebase deploy --only firestore:rules,firestore:indexes,storage
 ```
 
+## Automatic rules deploy (CI)
+
+`firestore.rules` deploys itself. Any change to that file merged to `main` triggers
+`.github/workflows/deploy-firestore-rules.yml`, which runs
+`firebase deploy --only firestore:rules --project anddhen`. You can also re-run it by
+hand from the repo's **Actions** tab → *Deploy Firestore rules* → **Run workflow**.
+
+Vercel builds and hosts the frontend only — it never ships rules. Without this
+workflow a rules change stays un-deployed after merge, and any feature relying on the
+new rules fails with `PERMISSION_DENIED` while the UI looks fine.
+
+Indexes and storage rules are deliberately **not** automated: deploying
+`firestore:indexes` can drop indexes that aren't in `firestore.indexes.json`. Ship
+those with the manual command above.
+
+### One-time: the CI service account
+
+1. [Firebase Console](https://console.firebase.google.com/project/anddhen/settings/serviceaccounts/adminsdk)
+   → ⚙️ **Project settings** → **Service accounts** → **Generate new private key** →
+   **Generate key**. A `.json` file downloads. Treat it as a password — it grants
+   write access to the project.
+2. Grant it the roles it needs, in the
+   [Google Cloud IAM console](https://console.cloud.google.com/iam-admin/iam?project=anddhen)
+   (find the `firebase-adminsdk-…@anddhen.iam.gserviceaccount.com` principal → ✏️ edit):
+   - **Firebase Rules Admin** (`roles/firebaserules.admin`) — required, publishes rules
+   - **Service Usage Consumer** (`roles/serviceusage.serviceUsageConsumer`) — required by
+     the CLI's API calls
+   - **Cloud Datastore Index Admin** — only if you later add `firestore:indexes` to the
+     workflow
+3. GitHub → repo **Settings** → **Secrets and variables** → **Actions** →
+   **New repository secret**:
+   - Name: `FIREBASE_SERVICE_ACCOUNT`
+   - Value: the **entire contents** of the downloaded JSON file, pasted as-is
+     (open it in a text editor, select all, paste — including the outer `{ }`)
+4. Delete the downloaded file from your machine. GitHub can't show a secret again
+   after saving; to rotate, generate a new key and update the secret.
+
+Never commit the JSON, and don't put it in a Claude Code cloud-environment variable —
+those are plain text readable by anyone using the environment.
+
 ## Seed reference data
 1. Console → Project settings → Service accounts → **Generate new private key**.
 2. Save as `firestore/serviceAccount.json` (gitignored).
