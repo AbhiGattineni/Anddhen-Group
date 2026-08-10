@@ -92,24 +92,29 @@ export async function getUserRole(uid) {
 }
 
 /**
- * Ensure a User doc exists for this signed-in user and return their role.
- * Creates the doc with role `user` on first sign-in WITHOUT clobbering an
- * existing role. This is what makes "everyone is a user by default" work.
+ * Ensure a User doc exists for this signed-in user and return their access:
+ * `{ role, cards }`, where `cards` are the dashboard-card grants an admin has
+ * handed them (see services/roles/cards.js). Creates the doc with role `user`
+ * and no grants on first sign-in WITHOUT clobbering either field on an existing
+ * doc. This is what makes "everyone is a user by default" work.
  */
-export async function ensureUserRole(user) {
-  if (!user) return ROLES.USER;
+export async function ensureUserProfile(user) {
+  const empty = { role: ROLES.USER, cards: [] };
+  if (!user) return empty;
 
   // Bootstrap superadmins are honored even if Firestore is unreachable/disabled,
   // so the first superadmin is never locked out.
   const bootstrap = isBootstrapSuperadmin(user.email);
-  const fallback = bootstrap ? ROLES.SUPERADMIN : ROLES.USER;
+  const fallback = { role: bootstrap ? ROLES.SUPERADMIN : ROLES.USER, cards: [] };
 
   try {
     const ref = doc(db, 'User', user.uid);
     const snap = await getDoc(ref);
 
     if (snap.exists()) {
-      const stored = snap.data().role || ROLES.USER;
+      const data = snap.data();
+      const stored = data.role || ROLES.USER;
+      const cards = data.cardAccess || [];
       // Promote a bootstrap superadmin whose stored role hasn't caught up yet.
       if (bootstrap && stored !== ROLES.SUPERADMIN) {
         try {
@@ -121,9 +126,9 @@ export async function ensureUserRole(user) {
         } catch (_) {
           /* rules/offline may block the write; client role still applies */
         }
-        return ROLES.SUPERADMIN;
+        return { role: ROLES.SUPERADMIN, cards };
       }
-      return stored;
+      return { role: stored, cards };
     }
 
     await setDoc(
@@ -132,14 +137,15 @@ export async function ensureUserRole(user) {
         user_id: user.uid,
         email_id: user.email || '',
         full_name: user.displayName || '',
-        role: fallback,
+        role: fallback.role,
+        cardAccess: [],
         createdAt: serverTimestamp(),
       },
       { merge: true }
     );
     return fallback;
   } catch (e) {
-    console.error('ensureUserRole failed, using fallback role:', e);
+    console.error('ensureUserProfile failed, using fallback access:', e);
     return fallback;
   }
 }

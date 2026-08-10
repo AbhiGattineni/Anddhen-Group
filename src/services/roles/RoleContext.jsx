@@ -1,15 +1,18 @@
 /**
- * RoleContext — exposes the signed-in user's role (from Firestore) app-wide.
- * On sign-in it ensures a User doc exists (default role `user`) and loads the
- * role; on sign-out it resets to `user`. Consumers use useRole().
+ * RoleContext — exposes the signed-in user's role AND their dashboard-card
+ * grants (both from Firestore) app-wide. On sign-in it ensures a User doc
+ * exists (default role `user`, no grants) and loads the access; on sign-out it
+ * resets. Consumers use useRole().
  */
 import React, { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../hooks/useAuth';
-import { ensureUserRole, ROLES, hasAtLeast, canManageRoles } from './roles';
+import { ensureUserProfile, ROLES, hasAtLeast, canManageRoles } from './roles';
+import { canAccessCard, visibleCards } from './cards';
 
 const RoleContext = createContext({
   role: ROLES.USER,
+  cards: [],
   loading: true,
   refresh: () => {},
 });
@@ -17,6 +20,7 @@ const RoleContext = createContext({
 export function RoleProvider({ children }) {
   const { user, loading: authLoading } = useAuth();
   const [role, setRole] = useState(ROLES.USER);
+  const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Depend the effect on the STABLE uid string, not the `user` object. Firebase
@@ -31,12 +35,14 @@ export function RoleProvider({ children }) {
     const u = userRef.current;
     if (!u) {
       setRole(ROLES.USER);
+      setCards([]);
       setLoading(false);
       return;
     }
     setLoading(true);
-    const r = await ensureUserRole(u);
-    setRole(r);
+    const access = await ensureUserProfile(u);
+    setRole(access.role);
+    setCards(access.cards);
     setLoading(false);
   }, []);
 
@@ -48,14 +54,16 @@ export function RoleProvider({ children }) {
       if (!u) {
         if (!cancelled) {
           setRole(ROLES.USER);
+          setCards([]);
           setLoading(false);
         }
         return;
       }
       setLoading(true);
-      const r = await ensureUserRole(u);
+      const access = await ensureUserProfile(u);
       if (!cancelled) {
-        setRole(r);
+        setRole(access.role);
+        setCards(access.cards);
         setLoading(false);
       }
     })();
@@ -66,10 +74,14 @@ export function RoleProvider({ children }) {
 
   const value = {
     role,
+    cards,
     loading: loading || authLoading,
     refresh: applyRole,
     isAtLeast: required => hasAtLeast(role, required),
     canManageRoles: canManageRoles(role),
+    // Card grants: admin and above implicitly hold every card.
+    canAccessCard: key => canAccessCard(role, cards, key),
+    myCards: () => visibleCards(role, cards),
   };
 
   return <RoleContext.Provider value={value}>{children}</RoleContext.Provider>;

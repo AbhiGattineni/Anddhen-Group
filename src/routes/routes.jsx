@@ -159,9 +159,15 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      // Each shared page sits behind the card of the same key, so an employee
+      // can only reach what a super admin granted them on Roles & Access.
       ...getSharedRoutes().map(route => ({
         ...route,
-        element: <ProtectedRoute minRole="employee">{route.element}</ProtectedRoute>,
+        element: (
+          <ProtectedRoute minRole="employee" card={route.path}>
+            {route.element}
+          </ProtectedRoute>
+        ),
       })),
     ],
   },

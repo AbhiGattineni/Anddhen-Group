@@ -44,16 +44,22 @@ service cloud.firestore {
     }
 
     // --- User docs: role-change protection (no self-elevation) ---
+    //     `cardAccess` (dashboard-card grants, see services/roles/cards.js) is
+    //     protected exactly like `role`: admin-or-above writes it, and a user
+    //     editing their own profile must leave it untouched — otherwise anyone
+    //     could grant themselves every card.
     match /User/{uid} {
       allow read: if signedIn();
 
-      // First sign-in may self-create only as a plain `user`; admins may create anyone.
+      // First sign-in may self-create only as a plain `user` with no grants;
+      // admins may create anyone.
       allow create: if isAdminish()
         || (request.auth.uid == uid
-            && request.resource.data.get('role', 'user') == 'user');
+            && request.resource.data.get('role', 'user') == 'user'
+            && request.resource.data.get('cardAccess', []).size() == 0);
 
       allow update: if
-        // Admin/superadmin changing roles, with the superadmin guard:
+        // Admin/superadmin changing roles or grants, with the superadmin guard:
         (isAdminish()
           && (
             request.resource.data.get('role', 'user') == resource.data.get('role', 'user')
@@ -61,9 +67,11 @@ service cloud.firestore {
             || (request.resource.data.get('role', 'user') != 'superadmin'
                 && resource.data.get('role', 'user') != 'superadmin')
           ))
-        // OR a user editing their OWN profile without changing their role:
+        // OR a user editing their OWN profile, changing neither role nor grants:
         || (request.auth.uid == uid
-            && request.resource.data.get('role', 'user') == resource.data.get('role', 'user'));
+            && request.resource.data.get('role', 'user') == resource.data.get('role', 'user')
+            && request.resource.data.get('cardAccess', [])
+                 == resource.data.get('cardAccess', []));
 
       allow delete: if isAdminish();
     }

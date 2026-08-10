@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StatusCalendar } from 'src/components/templates/StatusCalender';
 import { auth } from '../../../services/Authentication/firebase';
 import { useStatusCalendar } from 'src/react-query/useStatusCalender';
@@ -6,8 +6,9 @@ import { useStatusUpdateMutation } from 'src/react-query/useStatusUpdateMutation
 import { useQueryClient } from 'react-query';
 import useAuthStore from 'src/services/store/globalStore';
 import AssignCards from './AssignCards';
-import { adminPlates } from 'src/dataconfig';
 import HappinessIndex from './HappinessIndex';
+import { useRole } from 'src/services/roles/RoleContext';
+import { visibleCards } from 'src/services/roles/cards';
 import {
   FormControl,
   Grid,
@@ -76,7 +77,6 @@ export const EmployeeDashboard = () => {
   const queryClient = useQueryClient();
   const { statusMutation, updateMutation } = useStatusUpdateMutation();
   const [search, setSearch] = useState('');
-  const [searchedPlates, setSearchedPlates] = useState(adminPlates);
   const [userSubsidaries, setUserSubsidaries] = useState([]);
   const [userTimezone, setUserTimezone] = useState('UTC');
 
@@ -93,11 +93,9 @@ export const EmployeeDashboard = () => {
     ? statusUpdates?.status_updates?.map(item => [item.date, item.leave])
     : [];
 
-  const currentRole = localStorage.getItem('roles');
-  const current_roles = currentRole?.split(',');
-  const filteredPlates = current_roles?.some(role => role.trim() === 'superadmin')
-    ? adminPlates
-    : adminPlates.filter(plate => current_roles?.some(role => role.trim() === plate.route.trim()));
+  // Cards an admin granted this user (admins/superadmins get all of them).
+  const { role, cards } = useRole();
+  const myPlates = useMemo(() => visibleCards(role, cards), [role, cards]);
   const [openHappinessDialog, setOpenHappinessDialog] = useState(
     !statusUpdates?.has_submitted_happiness_today
   );
@@ -302,22 +300,16 @@ export const EmployeeDashboard = () => {
     formValues.endDate,
   ]);
 
-  useEffect(() => {
-    if (searchedPlates !== filteredPlates) {
-      setSearchedPlates(filteredPlates);
-    }
-  }, []);
-
-  const handleSearch = e => {
-    const query = e.target.value.toLowerCase();
-    setSearch(query);
-    setSearchedPlates(
-      filteredPlates.filter(
-        plate =>
-          plate.child.toLowerCase().includes(query) || plate.route.toLowerCase().includes(query)
-      )
+  const searchedPlates = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return myPlates;
+    return myPlates.filter(
+      plate =>
+        plate.child.toLowerCase().includes(query) || plate.route.toLowerCase().includes(query)
     );
-  };
+  }, [myPlates, search]);
+
+  const handleSearch = e => setSearch(e.target.value);
 
   const resetForm = () => {
     setFormValues({
@@ -892,18 +884,25 @@ export const EmployeeDashboard = () => {
         </div>
       </div>
 
-      {searchedPlates?.length > 0 && (
-        <div className="input-group px-5 mt-4">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search cards..."
-            value={search}
-            onChange={handleSearch}
-          />
-        </div>
+      {myPlates.length > 0 && (
+        <>
+          <div className="row mb-2 mt-4">
+            <div className="col-12 text-center">
+              <h4 className="text-primary mb-0">Your sections</h4>
+            </div>
+          </div>
+          <div className="input-group px-5 mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search cards..."
+              value={search}
+              onChange={handleSearch}
+            />
+          </div>
+          <AssignCards adminPlates={searchedPlates} />
+        </>
       )}
-      <AssignCards adminPlates={searchedPlates} />
     </div>
   );
 };
