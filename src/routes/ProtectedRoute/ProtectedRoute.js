@@ -5,16 +5,20 @@ import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 import PropTypes from 'prop-types';
 import { useRole } from 'src/services/roles/RoleContext';
 import { hasAtLeast } from 'src/services/roles/roles';
+import { canAccessCard } from 'src/services/roles/cards';
 
 /**
  * Route guard driven by the Firebase role system.
  *  - `minRole`: minimum role required (user < employee < admin < superadmin).
  *    Omitted → any signed-in user may access.
+ *  - `card`: dashboard-card key this route sits behind. The user must have been
+ *    granted that card (admins and above hold every card). Omitted → no grant
+ *    needed, so role alone decides.
  *  - `requiredRoles`: legacy prop; its highest entry is treated as the min role.
  */
-const ProtectedRoute = ({ children, minRole, requiredRoles }) => {
+const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
   const { user, loading, error } = useAuth();
-  const { role, loading: roleLoading } = useRole();
+  const { role, cards, loading: roleLoading } = useRole();
   const location = useLocation();
   const navigate = useNavigate();
   const storedEmptyFields = localStorage.getItem('empty_fields');
@@ -54,17 +58,24 @@ const ProtectedRoute = ({ children, minRole, requiredRoles }) => {
     return <Navigate to="/not-authorized" replace />;
   }
 
+  // The role opens the dashboard; the grant opens the individual card.
+  if (card && !canAccessCard(role, cards, card)) {
+    return <Navigate to="/not-authorized" replace />;
+  }
+
   return children;
 };
 
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
   minRole: PropTypes.string,
+  card: PropTypes.string,
   requiredRoles: PropTypes.arrayOf(PropTypes.string),
 };
 
 ProtectedRoute.defaultProps = {
   minRole: null,
+  card: null,
   requiredRoles: [],
 };
 
