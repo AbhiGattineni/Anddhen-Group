@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from 'src/hooks/useAuth';
 import { useRole } from 'src/services/roles/RoleContext';
+import DailyStatus from 'src/components/pages/Admin/DailyStatus';
 import {
   addEntry,
   deleteEntry,
@@ -78,7 +79,7 @@ export default function Timesheet() {
       <div className="py-3">
         <h1 className="tsh-title h3">Timesheet</h1>
         <p className="tsh-subtitle">
-          Log where your hours go — professional and personal — and see the balance.
+          Log where your hours go — professional and personal — and submit your daily status.
         </p>
       </div>
 
@@ -86,25 +87,28 @@ export default function Timesheet() {
         <p className="text-muted">Sign in to log your time.</p>
       ) : (
         <>
-          {isAtLeast('admin') && (
-            <ul className="nav gap-2 mb-3">
-              {[
-                ['mine', 'My time', 'bi-person'],
-                ['team', 'Team', 'bi-people'],
-              ].map(([key, label, icon]) => (
-                <li className="nav-item" key={key}>
-                  <button
-                    className={`tsh-tab ${tab === key ? 'active' : ''}`}
-                    onClick={() => setTab(key)}
-                  >
-                    <i className={`bi ${icon} me-1`} />
-                    {label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          {tab === 'mine' ? <MyTime user={user} /> : <TeamView />}
+          {/* Daily status is available to everyone who can open this card; the
+              team view stays admin-only. */}
+          <ul className="nav gap-2 mb-3">
+            {[
+              ['mine', 'My time', 'bi-person'],
+              ['status', 'Daily status', 'bi-calendar-check'],
+              ...(isAtLeast('admin') ? [['team', 'Team', 'bi-people']] : []),
+            ].map(([key, label, icon]) => (
+              <li className="nav-item" key={key}>
+                <button
+                  className={`tsh-tab ${tab === key ? 'active' : ''}`}
+                  onClick={() => setTab(key)}
+                >
+                  <i className={`bi ${icon} me-1`} />
+                  {label}
+                </button>
+              </li>
+            ))}
+          </ul>
+          {tab === 'mine' && <MyTime user={user} />}
+          {tab === 'status' && <DailyStatus />}
+          {tab === 'team' && <TeamView />}
         </>
       )}
     </div>

@@ -1,36 +1,28 @@
 /**
  * Where a user should land right after signing in.
  *
- * Two rules, in order:
  *  1. If they were bounced to /login while trying to reach a protected page,
  *     send them back to it. `preLoginPath` is consumed here — it's a one-shot
  *     hand-off, and leaving it behind meant a path from an old session kept
  *     hijacking later logins.
- *  2. Otherwise employees and above go to their dashboard, not the marketing
- *     home page. Everyone else goes home.
+ *  2. Otherwise always the dashboard. ProtectedRoute owns the access decision
+ *     from there: authorized users see it, everyone else gets a 403 that names
+ *     what they're missing.
  *
- * The role is read from Firestore rather than from RoleContext, because this
- * runs inside the sign-in handler — before the provider has resolved the new
- * user's role.
+ * Deliberately no role check here. Branching on the role meant a brand-new
+ * account — which resolves as a plain `user` until an admin promotes it — got
+ * dropped on the marketing home page with no hint that a dashboard exists or
+ * that access has to be granted. Landing on the dashboard and being told why
+ * it's closed is more useful than landing nowhere.
  */
-import { ensureUserProfile, hasAtLeast, ROLES } from './roles';
-
 export const DASHBOARD_PATH = '/employeedashboard';
 
-export async function postLoginPath(user) {
+const AUTH_PATHS = ['/login', '/register', '/resetpassword'];
+
+export async function postLoginPath() {
   const stored = localStorage.getItem('preLoginPath');
   localStorage.removeItem('preLoginPath');
   // Never send them back to an auth page they just came through.
-  if (stored && !['/login', '/register', '/resetpassword'].includes(stored)) {
-    return stored;
-  }
-
-  try {
-    const { role } = await ensureUserProfile(user);
-    return hasAtLeast(role, ROLES.EMPLOYEE) ? DASHBOARD_PATH : '/';
-  } catch (e) {
-    // A role lookup failure must never block a successful sign-in.
-    console.error('postLoginPath: role lookup failed, sending home:', e);
-    return '/';
-  }
+  if (stored && !AUTH_PATHS.includes(stored)) return stored;
+  return DASHBOARD_PATH;
 }
