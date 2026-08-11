@@ -8,6 +8,7 @@ import {
   completeRedirectSignIn,
 } from '../services/Authentication/firebase';
 import usePostUserData from '../hooks/usePostUserData';
+import { postLoginPath } from '../services/roles/postLoginPath';
 
 const useUnifiedAuth = () => {
   const navigate = useNavigate();
@@ -58,11 +59,12 @@ const useUnifiedAuth = () => {
 
     if (emptyFields.length > 0) {
       localStorage.setItem('empty_fields', emptyFields);
+      // Keep preLoginPath: Profile consumes it once the missing fields are in.
       navigate('/profile');
     } else {
       localStorage.setItem('empty_fields', emptyFields);
       localStorage.setItem('roles', roles);
-      navigate(localStorage.getItem('preLoginPath') || '/');
+      navigate(await postLoginPath(usersData.user));
     }
     return null; // Indicates success
   };
