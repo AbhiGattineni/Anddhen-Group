@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../../services/Authentication/Logout';
 import useAuthStore from '../../services/store/globalStore';
 import { useAuth } from 'src/hooks/useAuth';
@@ -17,15 +17,20 @@ function Navbar() {
   const dashboardTo = hasAtLeast(role, ROLES.EMPLOYEE) ? '/employeedashboard' : null;
 
   const setNewUser = useAuthStore(state => state.setParttimer_consent);
-  const handleLogout = () => {
-    logout()
-      .then(() => {
-        setNewUser(false);
-      })
-      .catch(error => {
-        console.error(error);
-      });
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
     setNavbarOpen(false);
+    // Leave the protected page BEFORE auth clears. Signing out first would let
+    // ProtectedRoute see a signed-out user still sitting on a guarded route and
+    // send them to /login (recording it as preLoginPath) instead of home.
+    navigate('/', { replace: true });
+    try {
+      await logout();
+      setNewUser(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleLinkClick = () => {
