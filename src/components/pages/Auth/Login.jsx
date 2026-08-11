@@ -11,6 +11,9 @@ import './Auth.css';
 export const Login = () => {
   const { onGoogleSignIn, onEmailPasswordSignIn, onRedirectResult } = useUnifiedAuth();
   const [error, setError] = useState(null); // Use state to manage the raw error
+  // True from the moment a sign-in starts until it fails or we navigate away,
+  // so the form isn't left sitting there looking untouched mid-sign-in.
+  const [signingIn, setSigningIn] = useState(false);
 
   // When the popup is blocked (phones, strict browsers) sign-in falls back to
   // a full-page redirect; this completes that round-trip after landing back.
@@ -27,11 +30,15 @@ export const Login = () => {
   const { loading } = useAuthStore();
 
   const handleSignIn = async signInMethod => {
+    setSigningIn(true);
     const result = await signInMethod();
     if (result && !result.success) {
       setError(result.error); // Set the raw error for processing
+      setSigningIn(false); // Back to the form so they can try again
     } else {
       setError(null); // Clear error on successful authentication or if result is unexpectedly null/undefined
+      // Deliberately stays true on success: navigation is under way, and
+      // flipping back would flash the form for a frame.
     }
   };
 
@@ -42,7 +49,7 @@ export const Login = () => {
 
   return (
     <>
-      {loading ? (
+      {loading || signingIn ? (
         <LoadingSpinner />
       ) : (
         <div className="auth-page user-select-none">
