@@ -1,6 +1,6 @@
 import React from 'react';
 import { MainLayout } from 'src/App';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useParams } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
 import Home from 'src/components/pages/Home';
 import About from 'src/components/pages/About';
@@ -13,7 +13,6 @@ import { EducationConsultant } from 'src/components/pages/ACS/EducationConsultan
 import { Login } from 'src/components/pages/Auth/Login';
 import { Register } from 'src/components/pages/Auth/Register';
 import { ForgotPassword } from 'src/components/pages/Auth/ForgotPassword';
-import SuperAdmin from 'src/components/SuperAdmin/SuperAdmin';
 import { Aps } from 'src/components/pages/inc/Aps';
 import { Ati } from 'src/components/pages/inc/Ati';
 import { StudentPortal } from 'src/components/pages/ACS/StudentPortal';
@@ -40,6 +39,12 @@ import QuizPlay from 'src/components/pages/Quiz/QuizPlay';
 import SubmitQuestion from 'src/components/pages/Quiz/SubmitQuestion';
 import AmbulanceTracking from 'src/components/SuperAdmin/Ambulance/AmbulanceTracking';
 import TripSaathiDashboard from 'src/components/SuperAdmin/TripSaathi/TripSaathiDashboard';
+
+/** Carries a deep /superadmin/<rest> link over to /employeedashboard/<rest>. */
+const SuperAdminRedirect = () => {
+  const { '*': rest } = useParams();
+  return <Navigate to={`/employeedashboard${rest ? `/${rest}` : ''}`} replace />;
+};
 
 const router = createBrowserRouter([
   {
@@ -171,15 +176,12 @@ const router = createBrowserRouter([
       })),
     ],
   },
-  {
-    path: '/superadmin',
-    element: (
-      <ProtectedRoute minRole="superadmin">
-        <Layout />
-      </ProtectedRoute>
-    ),
-    children: [{ index: true, element: <SuperAdmin /> }, ...getSharedRoutes()],
-  },
+  // /superadmin is retired: admins, super admins and employees all use
+  // /employeedashboard, which shows every card to admin-and-above and only the
+  // granted ones to employees. Kept as a redirect so old links and bookmarks
+  // (including deep ones like /superadmin/transactions) still land correctly.
+  { path: '/superadmin', element: <Navigate to="/employeedashboard" replace /> },
+  { path: '/superadmin/*', element: <SuperAdminRedirect /> },
   {
     path: '/acs/educationconsulting/addcolleges',
     element: (

@@ -8,8 +8,11 @@ const AssignCards = ({ adminPlates }) => {
     return <div className="dash-empty">No matching sections found.</div>;
   }
 
+  // No horizontal padding on the row: its negative gutters align the cards flush
+  // with the page container, matching the dashboard header above. Padding here
+  // indented the grid relative to the heading and search box.
   return (
-    <div className="row g-3 g-md-4 px-3 px-md-4">
+    <div className="row g-3 g-md-4">
       {adminPlates.map((data, index) => (
         <div className="col-12 col-sm-6 col-lg-4 col-xxl-3" key={`${data.route}-${index}`}>
           <Link to={data.route} className="text-decoration-none">

@@ -884,24 +884,30 @@ export const EmployeeDashboard = () => {
         </div>
       </div>
 
+      {/* Granted cards. Mirrors the Super Admin dashboard header so both
+          surfaces read the same: title left, search right, grid flush below. */}
       {myPlates.length > 0 && (
-        <>
-          <div className="row mb-2 mt-4">
-            <div className="col-12 text-center">
-              <h4 className="text-primary mb-0">Your sections</h4>
+        <div className="dash-wrap mt-4">
+          <div className="dash-header d-flex flex-wrap justify-content-between align-items-end gap-3">
+            <div>
+              <h2 className="dash-title h4">Your sections</h2>
+              <p className="dash-subtitle mb-0">
+                {myPlates.length} section{myPlates.length === 1 ? '' : 's'} available to you
+              </p>
+            </div>
+            <div className="dash-search w-100" style={{ maxWidth: 420 }}>
+              <i className="bi bi-search"></i>
+              <input
+                type="search"
+                className="form-control"
+                placeholder="Search sections…"
+                value={search}
+                onChange={handleSearch}
+              />
             </div>
           </div>
-          <div className="input-group px-5 mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search cards..."
-              value={search}
-              onChange={handleSearch}
-            />
-          </div>
           <AssignCards adminPlates={searchedPlates} />
-        </>
+        </div>
       )}
     </div>
   );

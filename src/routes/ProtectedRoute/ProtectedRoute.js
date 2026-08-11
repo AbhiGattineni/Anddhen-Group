@@ -54,13 +54,34 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
       ? requiredRoles.reduce((hi, r) => (hasAtLeast(r, hi) ? r : hi), requiredRoles[0])
       : null);
 
+  // Pass the reason along so /not-authorized can say what's actually missing
+  // instead of a bare 403 — the difference between "your role is too low" and
+  // "nobody granted you this card" is the difference between two fixes.
   if (effectiveMin && !hasAtLeast(role, effectiveMin)) {
-    return <Navigate to="/not-authorized" replace />;
+    return (
+      <Navigate
+        to="/not-authorized"
+        replace
+        state={{ reason: 'role', role, requiredRole: effectiveMin, from: location.pathname }}
+      />
+    );
   }
 
   // The role opens the dashboard; the grant opens the individual card.
   if (card && !canAccessCard(role, cards, card)) {
-    return <Navigate to="/not-authorized" replace />;
+    return (
+      <Navigate
+        to="/not-authorized"
+        replace
+        state={{
+          reason: 'card',
+          role,
+          requiredCard: card,
+          granted: cards,
+          from: location.pathname,
+        }}
+      />
+    );
   }
 
   return children;

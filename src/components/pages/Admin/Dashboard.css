@@ -5,8 +5,10 @@
   padding: 8px 4px 32px;
 }
 
+/* No left/right padding: the card grid below sits flush with the container, so
+   any inset here would misalign the heading against the cards. */
 .dash-header {
-  padding: 12px 4px 20px;
+  padding: 12px 0 20px;
 }
 .dash-title {
   font-weight: 700;
@@ -116,6 +118,8 @@
 
 .dash-card-body {
   min-width: 0;
+  /* Keep the wrapped description clear of the arrow pinned bottom-right. */
+  padding-right: 20px;
 }
 .dash-card-title {
   font-size: 1.05rem;

@@ -22,6 +22,13 @@ export function RoleProvider({ children }) {
   const [role, setRole] = useState(ROLES.USER);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Which uid the current role/cards were actually resolved for. Effects run
+  // AFTER the render that follows a sign-in, so without this there is one
+  // commit where `uid` is the new user but `role` is still the signed-out
+  // default and `loading` is already false from the previous run — long enough
+  // for ProtectedRoute to read `user` and bounce a real employee to
+  // /not-authorized on their first login. Undefined until the first resolve.
+  const [resolvedFor, setResolvedFor] = useState(undefined);
 
   // Depend the effect on the STABLE uid string, not the `user` object. Firebase
   // can re-fire onAuthStateChanged with a fresh user object for the same account
@@ -36,6 +43,7 @@ export function RoleProvider({ children }) {
     if (!u) {
       setRole(ROLES.USER);
       setCards([]);
+      setResolvedFor(null);
       setLoading(false);
       return;
     }
@@ -43,6 +51,7 @@ export function RoleProvider({ children }) {
     const access = await ensureUserProfile(u);
     setRole(access.role);
     setCards(access.cards);
+    setResolvedFor(u.uid);
     setLoading(false);
   }, []);
 
@@ -55,6 +64,7 @@ export function RoleProvider({ children }) {
         if (!cancelled) {
           setRole(ROLES.USER);
           setCards([]);
+          setResolvedFor(null);
           setLoading(false);
         }
         return;
@@ -64,6 +74,7 @@ export function RoleProvider({ children }) {
       if (!cancelled) {
         setRole(access.role);
         setCards(access.cards);
+        setResolvedFor(u.uid);
         setLoading(false);
       }
     })();
@@ -72,10 +83,14 @@ export function RoleProvider({ children }) {
     };
   }, [uid, authLoading]);
 
+  // Stale until the resolved uid matches the signed-in one, so consumers keep
+  // waiting instead of acting on another session's (or the default) role.
+  const stale = resolvedFor !== uid;
+
   const value = {
     role,
     cards,
-    loading: loading || authLoading,
+    loading: loading || authLoading || stale,
     refresh: applyRole,
     isAtLeast: required => hasAtLeast(role, required),
     canManageRoles: canManageRoles(role),
