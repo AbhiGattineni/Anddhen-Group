@@ -60,6 +60,24 @@ those with the manual command above.
 Never commit the JSON, and don't put it in a Claude Code cloud-environment variable —
 those are plain text readable by anyone using the environment.
 
+## Remove profiles for deleted Auth accounts
+
+Deleting someone from Firebase Authentication does **not** delete their
+`User/{uid}` document — Auth and Firestore are separate stores. They keep appearing
+in Roles Management, and their old role and card grants would be inherited by anyone
+who later signs up with the same address.
+
+Three ways to clear them, in order of convenience:
+
+- **One row, from the app**: Roles & Access → User Roles → **Remove**. Deletes the
+  profile only; the Auth account (if any) is untouched.
+- **All at once**: `node firestore/pruneDeletedUsers.js` lists every document whose
+  Auth account is gone; add `--apply` to delete them. Needs `serviceAccount.json`
+  (see below).
+- **Automatically, from now on**: the `cleanupUserProfile` Cloud Function deletes the
+  document when an Auth account is deleted. It only works once functions are deployed
+  — see `functions/README.md`.
+
 ## Seed reference data
 1. Console → Project settings → Service accounts → **Generate new private key**.
 2. Save as `firestore/serviceAccount.json` (gitignored).

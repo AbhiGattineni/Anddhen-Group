@@ -3,6 +3,12 @@
 Callable (v2) compute endpoints for the `anddhen` project — see the header comment in
 `index.js` for the contract of each one.
 
+Plus one background trigger: **`cleanupUserProfile`** deletes `User/{uid}` when that
+Auth account is deleted, so a removed user stops appearing in Roles Management. It's a
+v1 Auth trigger (v2 has no non-blocking `onDelete`), and it only takes effect once
+functions actually deploy. For accounts deleted before then, run
+`node firestore/pruneDeletedUsers.js --apply` once.
+
 ## Deploy
 
 `functions/**` changes merged to `main` deploy automatically via

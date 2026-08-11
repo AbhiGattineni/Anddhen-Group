@@ -14,6 +14,9 @@
  * Stocks functions need NO API key (Yahoo Finance via yahoo-finance2).
  */
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
+// v1 API, needed only for the Auth account-deletion trigger at the bottom of
+// this file; v2 has no equivalent non-blocking onDelete.
+const functionsV1 = require('firebase-functions/v1');
 const { defineSecret } = require('firebase-functions/params');
 const admin = require('firebase-admin');
 const yahooFinance = require('yahoo-finance2').default;
@@ -253,7 +256,15 @@ exports.searchSymbols = onCall(async request => {
   }
 
   // Map Yahoo exchange codes to friendly labels (India: NSI=NSE, BSE; US: NMS/NGM=NASDAQ, NYQ=NYSE).
-  const LABEL = { NMS: 'NASDAQ', NGM: 'NASDAQ', NCM: 'NASDAQ', NYQ: 'NYSE', PCX: 'NYSE', NSI: 'NSE', BSE: 'BSE' };
+  const LABEL = {
+    NMS: 'NASDAQ',
+    NGM: 'NASDAQ',
+    NCM: 'NASDAQ',
+    NYQ: 'NYSE',
+    PCX: 'NYSE',
+    NSI: 'NSE',
+    BSE: 'BSE',
+  };
   const PRIORITY = ['NSE', 'BSE', 'NASDAQ', 'NYSE'];
   const rank = ex => {
     const i = PRIORITY.indexOf(ex);
@@ -270,4 +281,26 @@ exports.searchSymbols = onCall(async request => {
     .sort((a, b) => rank(a.exchange) - rank(b.exchange));
 
   return { results };
+});
+
+/**
+ * Delete a user's profile document when their Auth account is deleted.
+ *
+ * Auth and Firestore are separate stores, so removing someone from
+ * Authentication otherwise leaves User/{uid} behind: they keep appearing in
+ * Roles Management, and their old role and card grants would be inherited by
+ * anyone who later signs up with that address.
+ *
+ * Auth triggers are a v1 API — the callables above are v2, and the two coexist
+ * in one codebase. To clean up documents for accounts already deleted before
+ * this deployed, run firestore/pruneDeletedUsers.js once.
+ */
+exports.cleanupUserProfile = functionsV1.auth.user().onDelete(async user => {
+  try {
+    await db.doc(`User/${user.uid}`).delete();
+    console.log(`Deleted User/${user.uid} after auth account removal.`);
+  } catch (e) {
+    // Never throw: a failed cleanup must not retry-loop on account deletion.
+    console.error(`Failed to delete User/${user.uid}:`, e);
+  }
 });
