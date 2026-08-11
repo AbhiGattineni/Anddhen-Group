@@ -122,6 +122,10 @@ export function RoleProvider({ children }) {
     role,
     cards,
     error,
+    // The uid these values were resolved for. Consumers hold their own view of
+    // who is signed in; comparing against this is the only way to know the role
+    // in hand actually belongs to the user they are gating.
+    roleUid: resolvedFor,
     loading: loading || authLoading || stale,
     refresh: applyRole,
     isAtLeast: required => hasAtLeast(role, required),

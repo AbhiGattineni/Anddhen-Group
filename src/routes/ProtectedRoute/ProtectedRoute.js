@@ -18,7 +18,7 @@ import { canAccessCard } from 'src/services/roles/cards';
  */
 const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
   const { user, loading, error } = useAuth();
-  const { role, cards, loading: roleLoading, error: roleError, refresh } = useRole();
+  const { role, cards, loading: roleLoading, error: roleError, refresh, roleUid } = useRole();
   const location = useLocation();
   const navigate = useNavigate();
   const storedEmptyFields = localStorage.getItem('empty_fields');
@@ -41,8 +41,10 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Wait for the role to resolve before making an access decision.
-  if (roleLoading) {
+  // Wait for the role to resolve before making an access decision — and for it
+  // to have been resolved for THIS user. A role belonging to nobody (the
+  // signed-out default) or to a previous session must never be judged.
+  if (roleLoading || roleUid !== user.uid) {
     return <LoadingSpinner />;
   }
 
