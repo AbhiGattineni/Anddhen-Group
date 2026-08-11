@@ -115,7 +115,11 @@ export async function ensureUserProfile(user) {
 
     if (snap.exists()) {
       const data = snap.data();
-      const stored = data.role || ROLES.USER;
+      // Prefer the claim: same value, but it came with the token rather than
+      // from a lookup, and it's what security rules will judge. Fall back to
+      // the document whenever the claim hasn't been synced for this account.
+      const claimed = await roleFromToken(user);
+      const stored = claimed || data.role || ROLES.USER;
       const cards = data.cardAccess || [];
       // Promote a bootstrap superadmin whose stored role hasn't caught up yet.
       if (bootstrap && stored !== ROLES.SUPERADMIN) {
@@ -157,6 +161,30 @@ export async function ensureUserProfile(user) {
 }
 
 /**
+ * Read the role from the user's ID token.
+ *
+ * The claim is written by the syncRoleClaim function (or the backfill script)
+ * from the same Firestore field, so it says the same thing — it just arrives
+ * with the identity instead of needing a second lookup. Returns null when the
+ * account has no claim yet, so callers fall back to Firestore rather than
+ * treating an un-synced user as a plain `user`.
+ *
+ * `force` re-fetches the token, which is how a role change reaches a session
+ * that already holds an older one.
+ */
+export async function roleFromToken(user, force = false) {
+  if (!user) return null;
+  try {
+    const token = await user.getIdTokenResult(force);
+    const claim = token && token.claims && token.claims.role;
+    return RANK[claim] !== undefined ? claim : null;
+  } catch (e) {
+    console.error('roleFromToken failed:', e);
+    return null;
+  }
+}
+
+/**
  * Watch a user's role/card grants and call `onChange` whenever they change.
  * Without this the role resolves once per session, so an admin's change didn't
  * reach an already-open tab until the user signed out and back in — which looks
@@ -168,10 +196,15 @@ export function subscribeUserProfile(user, onChange, onError) {
   const bootstrap = isBootstrapSuperadmin(user.email);
   return onSnapshot(
     doc(db, 'User', user.uid),
-    snap => {
+    async snap => {
       const data = snap.exists() ? snap.data() : {};
+      // The document changed, so the claim may have too — the sync writes
+      // claimsUpdatedAt precisely to wake this up. Force a token refresh so a
+      // role change lands now instead of at the token's natural expiry, and
+      // prefer the refreshed claim over the field it was copied from.
+      const claimed = await roleFromToken(user, true);
       onChange({
-        role: bootstrap ? ROLES.SUPERADMIN : data.role || ROLES.USER,
+        role: bootstrap ? ROLES.SUPERADMIN : claimed || data.role || ROLES.USER,
         cards: data.cardAccess || [],
       });
     },

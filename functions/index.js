@@ -304,3 +304,56 @@ exports.cleanupUserProfile = functionsV1.auth.user().onDelete(async user => {
     console.error(`Failed to delete User/${user.uid}:`, e);
   }
 });
+
+/**
+ * Mirror User/{uid}.role into a custom auth claim.
+ *
+ * Firestore stays the source of truth — it's what the admin UI writes and what
+ * a browser can change without the Admin SDK. The claim is a copy that rides
+ * along in the ID token, which buys two things Firestore can't:
+ *   - security rules read `request.auth.token.role` instead of a get() on the
+ *     user's doc, saving a billed read and a round trip on every evaluation;
+ *   - the client knows the role the moment it knows the identity, with no
+ *     second async lookup that can be observed mid-flight.
+ *
+ * Only writes when the role actually changed: setCustomUserClaims invalidates
+ * nothing by itself, but every call is an Auth write, and doc updates that
+ * touch other fields are far more common than role changes.
+ *
+ * Existing users get their claim from firestore/syncRoleClaims.js — this
+ * trigger only fires on future writes.
+ */
+exports.syncRoleClaim = functionsV1.firestore
+  .document('User/{uid}')
+  .onWrite(async (change, context) => {
+    const { uid } = context.params;
+    const before = change.before.exists ? change.before.data() : null;
+    const after = change.after.exists ? change.after.data() : null;
+
+    const previous = before ? before.role || 'user' : null;
+    const next = after ? after.role || 'user' : null;
+    if (previous === next) return null;
+
+    try {
+      if (!after) {
+        // Document deleted. Clearing the claim keeps a re-created profile from
+        // inheriting the old role via a token that outlives the document.
+        await admin.auth().setCustomUserClaims(uid, null);
+        console.log(`Cleared role claim for ${uid}`);
+        return null;
+      }
+      await admin.auth().setCustomUserClaims(uid, { role: next });
+      // Bump a field the client watches, so it knows to refresh its token
+      // rather than waiting up to an hour for the natural refresh.
+      await db.doc(`User/${uid}`).set({ claimsUpdatedAt: Date.now() }, { merge: true });
+      console.log(`Set role claim for ${uid}: ${previous} -> ${next}`);
+    } catch (e) {
+      // A missing Auth account is expected for an orphaned profile.
+      if (e && e.code === 'auth/user-not-found') {
+        console.log(`No auth account for ${uid}; nothing to claim.`);
+        return null;
+      }
+      console.error(`Failed to sync role claim for ${uid}:`, e);
+    }
+    return null;
+  });

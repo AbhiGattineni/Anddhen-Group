@@ -1,0 +1,75 @@
+# Copies each user's Firestore role into their `role` custom auth claim.
+#
+# Needed because the syncRoleClaim Cloud Function only fires on future writes,
+# and can't deploy until Cloud Functions are unblocked. This covers everyone who
+# already exists, and needs only Firebase Authentication Admin — which the CI
+# key already has — so claims work before functions do.
+#
+# Manual only, dry run by default. Re-runnable: matching claims are skipped.
+name: Sync role claims
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Actually write claims (false = dry run, just counts)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-role-claims
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install the Admin SDK
+        run: npm install --no-save --no-audit --no-fund firebase-admin@12
+
+      - name: Check the service account secret is present
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT is not set."
+            exit 1
+          fi
+
+      - name: Write service account credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
+
+      - name: Confirm the key targets anddhen
+        run: |
+          node -e '
+            const sa = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+            console.log("project_id:", sa.project_id);
+            if (sa.project_id !== "anddhen") {
+              console.log("::error::Key belongs to \"" + sa.project_id + "\", not \"anddhen\".");
+              process.exit(1);
+            }
+          '
+
+      - name: Sync claims
+        env:
+          GCLOUD_PROJECT: anddhen
+        run: |
+          node firestore/syncRoleClaims.js \
+            ${{ inputs.apply && '--apply' || '' }}
+
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-service-account.json"
