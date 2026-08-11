@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useRole } from 'src/services/roles/RoleContext';
 import { ROLE_LABELS, ROLES } from 'src/services/roles/roles';
 import { cardLabel, normalizeCards } from 'src/services/roles/cards';
+import { auth } from 'src/services/Authentication/firebase';
 
 /**
  * 403 page. ProtectedRoute passes a `reason` in navigation state, so instead of
@@ -69,7 +70,15 @@ const NotAuthorizedPage = () => {
         <p className="fs-5 mb-2">{detail.headline}</p>
         <p className="text-muted">{detail.body}</p>
         {detail.fix && <p className="text-muted small">{detail.fix}</p>}
-        {state?.from && <p className="text-muted small mb-4">Requested page: {state.from}</p>}
+        {state?.from && <p className="text-muted small mb-1">Requested page: {state.from}</p>}
+        {/* The app resolves roles from User/<uid>, so showing the uid lets an
+            admin confirm they edited that exact document and not a stale
+            duplicate that happens to carry the same name or email. */}
+        {auth.currentUser && (
+          <p className="text-muted small mb-4">
+            Signed in as {auth.currentUser.email} · UID <code>{auth.currentUser.uid}</code>
+          </p>
+        )}
         <div className="d-flex gap-2 justify-content-center">
           <Link to="/" className="btn btn-primary">
             Go Home
