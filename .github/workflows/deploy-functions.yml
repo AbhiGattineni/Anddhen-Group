@@ -1,0 +1,74 @@
+# Deploys the Cloud Functions in functions/ to the `anddhen` Firebase project.
+#
+# Like firestore.rules, functions are not shipped by Vercel — Vercel builds and
+# hosts the frontend only. Without this, a change to functions/ merged to main
+# stays un-deployed and the callable endpoints keep running old code.
+#
+# Requires more than the rules deploy does. See functions/README.md:
+#   - Blaze (pay-as-you-go) billing on the project — v2 functions won't deploy on Spark
+#   - The FIREBASE_SERVICE_ACCOUNT principal needs the deploy roles listed there
+#   - The OPENAI_API_KEY secret must exist in Secret Manager (aiSuggestions binds it)
+name: Deploy Cloud Functions
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - '.github/workflows/deploy-functions.yml'
+  # Lets you deploy without pushing a commit (Actions tab > Run workflow).
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Function deploys are slow and mutate live infrastructure; never overlap them.
+concurrency:
+  group: deploy-functions
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Match functions/package.json `engines.node` so CI installs resolve the
+      # same tree the runtime will execute.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install function dependencies
+        working-directory: functions
+        run: npm ci
+
+      # Fail with a readable message rather than an opaque CLI auth error.
+      - name: Check the service account secret is present
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT is not set. Add the service account JSON under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Write service account credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
+
+      - name: Deploy functions
+        run: |
+          npx --yes firebase-tools@15 deploy \
+            --only functions \
+            --project anddhen \
+            --non-interactive
+
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-service-account.json"
