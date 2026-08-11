@@ -15,6 +15,7 @@ import {
   setDoc,
   updateDoc,
   getDocs,
+  onSnapshot,
   collection,
   serverTimestamp,
 } from 'firebase/firestore';
@@ -145,9 +146,39 @@ export async function ensureUserProfile(user) {
     );
     return fallback;
   } catch (e) {
+    // IMPORTANT: report the failure rather than only falling back. A denied or
+    // failed read used to be indistinguishable from "this person is a plain
+    // user", so an infrastructure problem surfaced as a confident 403 telling a
+    // real employee their role was User. Callers decide what to do with it.
     console.error('ensureUserProfile failed, using fallback access:', e);
-    return fallback;
+    return { ...fallback, error: e?.code || e?.message || String(e) };
   }
+}
+
+/**
+ * Watch a user's role/card grants and call `onChange` whenever they change.
+ * Without this the role resolves once per session, so an admin's change didn't
+ * reach an already-open tab until the user signed out and back in — which looks
+ * exactly like the change not having worked.
+ * Returns an unsubscribe function.
+ */
+export function subscribeUserProfile(user, onChange, onError) {
+  if (!user) return () => {};
+  const bootstrap = isBootstrapSuperadmin(user.email);
+  return onSnapshot(
+    doc(db, 'User', user.uid),
+    snap => {
+      const data = snap.exists() ? snap.data() : {};
+      onChange({
+        role: bootstrap ? ROLES.SUPERADMIN : data.role || ROLES.USER,
+        cards: data.cardAccess || [],
+      });
+    },
+    err => {
+      console.error('subscribeUserProfile failed:', err);
+      if (onError) onError(err?.code || err?.message || String(err));
+    }
+  );
 }
 
 /** List all users with their roles (for the management UI). Admin/superadmin only via rules. */
