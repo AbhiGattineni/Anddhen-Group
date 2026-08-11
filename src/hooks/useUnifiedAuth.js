@@ -51,20 +51,27 @@ const useUnifiedAuth = () => {
   //   );
 
   const finishAuth = async (usersData, first_name, last_name) => {
-    const userData = await postUserData(usersData.user, first_name, last_name);
-    // Guard against a missing/partial payload (e.g. backend unreachable) so a
-    // successful OAuth sign-in is never reported as an auth error.
-    const emptyFields = userData?.empty_fields ?? [];
-    const roles = userData?.roles ?? [];
+    // Leave the login page the moment sign-in succeeds. This used to await
+    // postUserData first — a Firestore round trip — which left the form on
+    // screen for a second or two after the user had already signed in, looking
+    // like nothing had happened. Nothing downstream needs that write to have
+    // landed: ensureUserProfile creates the profile if it's missing.
+    navigate(await postLoginPath(), { replace: true });
 
-    if (emptyFields.length > 0) {
+    try {
+      const userData = await postUserData(usersData.user, first_name, last_name);
+      // Guard against a missing/partial payload (e.g. backend unreachable) so a
+      // successful OAuth sign-in is never reported as an auth error.
+      const emptyFields = userData?.empty_fields ?? [];
       localStorage.setItem('empty_fields', emptyFields);
-      // Keep preLoginPath: Profile consumes it once the missing fields are in.
-      navigate('/profile');
-    } else {
-      localStorage.setItem('empty_fields', emptyFields);
-      localStorage.setItem('roles', roles);
-      navigate(await postLoginPath());
+      localStorage.setItem('roles', userData?.roles ?? []);
+
+      // Only the Django provider reports missing fields; when it does, the
+      // profile form takes over from wherever we just landed.
+      if (emptyFields.length > 0) navigate('/profile', { replace: true });
+    } catch (error) {
+      // A failed profile write must not undo a successful sign-in.
+      console.error('finishAuth: profile write failed (continuing):', error);
     }
     return null; // Indicates success
   };
