@@ -16,10 +16,19 @@
 const admin = require('firebase-admin');
 const path = require('path');
 
-const serviceAccount = require(path.join(__dirname, 'serviceAccount.json'));
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+// Local runs use firestore/serviceAccount.json; CI has no such file and supplies
+// the key through GOOGLE_APPLICATION_CREDENTIALS instead.
+let credential;
+try {
+  credential = admin.credential.cert(require(path.join(__dirname, 'serviceAccount.json')));
+} catch (e) {
+  credential = admin.credential.applicationDefault();
+}
+admin.initializeApp({ credential, projectId: process.env.GCLOUD_PROJECT || 'anddhen' });
 
 const apply = process.argv.includes('--apply');
+// CI logs on a public repo are public: print counts only, never emails or uids.
+const summary = process.argv.includes('--summary');
 
 /** Every uid that currently has an Auth account (paginated, 1000 per page). */
 async function allAuthUids() {
@@ -39,6 +48,12 @@ async function run() {
     admin.firestore().collection('User').get(),
   ]);
 
+  // Refuse to act on an empty account list: a partial or failed listUsers would
+  // otherwise class every profile as an orphan and wipe the collection.
+  if (authUids.size === 0) {
+    throw new Error('No Auth accounts returned — refusing to treat every profile as orphaned.');
+  }
+
   const orphans = snap.docs.filter(d => !authUids.has(d.id));
 
   console.log(`Auth accounts: ${authUids.size}`);
@@ -47,10 +62,21 @@ async function run() {
 
   if (orphans.length === 0) return;
 
-  orphans.forEach(d => {
-    const data = d.data();
-    console.log(`  ${d.id}  ${data.email_id || '(no email)'}  role=${data.role || 'user'}`);
-  });
+  // Deleting every document means the uid comparison is wrong, not that every
+  // account was deleted. Require an explicit override rather than guessing.
+  if (orphans.length === snap.size && !process.argv.includes('--force-all')) {
+    throw new Error(
+      `Every one of the ${snap.size} profiles looks orphaned. That is almost certainly a bug, ` +
+        'not reality. Re-run with --force-all if you really mean it.'
+    );
+  }
+
+  if (!summary) {
+    orphans.forEach(d => {
+      const data = d.data();
+      console.log(`  ${d.id}  ${data.email_id || '(no email)'}  role=${data.role || 'user'}`);
+    });
+  }
 
   if (!apply) {
     console.log('\nDry run — nothing deleted. Re-run with --apply to remove these.');
