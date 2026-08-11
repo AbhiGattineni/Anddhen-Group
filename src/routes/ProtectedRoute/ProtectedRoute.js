@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { useRole } from 'src/services/roles/RoleContext';
 import { hasAtLeast } from 'src/services/roles/roles';
 import { canAccessCard } from 'src/services/roles/cards';
+import { trace, flushTrace } from 'src/services/roles/authTrace';
 
 /**
  * Route guard driven by the Firebase role system.
@@ -30,11 +31,25 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
     }
   }, [storedEmptyFields, navigate, location.pathname]);
 
+  trace('guard:render', {
+    path: location.pathname,
+    minRole: minRole || null,
+    card: card || null,
+    authLoading: loading,
+    roleLoading,
+    userUid: user ? user.uid : null,
+    roleUid: roleUid || null,
+    role,
+    cards: (cards || []).length,
+  });
+
   if ((loading || roleLoading) && !user) {
+    trace('guard:wait', { why: 'auth' });
     return <LoadingSpinner />;
   }
 
   if (error || !user) {
+    trace('guard:tologin', { authError: String(error || ''), hasUser: !!user });
     if (location.pathname !== '/profile') {
       localStorage.setItem('preLoginPath', location.pathname);
     }
@@ -45,6 +60,7 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
   // to have been resolved for THIS user. A role belonging to nobody (the
   // signed-out default) or to a previous session must never be judged.
   if (roleLoading || roleUid !== user.uid) {
+    trace('guard:wait', { why: roleLoading ? 'roleLoading' : 'uidMismatch' });
     return <LoadingSpinner />;
   }
 
@@ -85,6 +101,8 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
   // instead of a bare 403 — the difference between "your role is too low" and
   // "nobody granted you this card" is the difference between two fixes.
   if (effectiveMin && !hasAtLeast(role, effectiveMin)) {
+    trace('guard:deny:role', { role, required: effectiveMin });
+    flushTrace('deny:role', user);
     return (
       <Navigate
         to="/not-authorized"
@@ -96,6 +114,8 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
 
   // The role opens the dashboard; the grant opens the individual card.
   if (card && !canAccessCard(role, cards, card)) {
+    trace('guard:deny:card', { role, card });
+    flushTrace('deny:card', user);
     return (
       <Navigate
         to="/not-authorized"
@@ -111,6 +131,8 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
     );
   }
 
+  trace('guard:allow', { role, path: location.pathname });
+  flushTrace('allow', user);
   return children;
 };
 

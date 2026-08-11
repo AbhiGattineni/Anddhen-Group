@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { trace } from '../services/roles/authTrace';
 
 /**
  * Shared auth state.
@@ -29,8 +30,14 @@ function startOnce() {
   started = true;
   onAuthStateChanged(
     getAuth(),
-    user => emit({ user, loading: false, error: null }),
-    error => emit({ user: null, loading: false, error })
+    user => {
+      trace('auth:changed', { uid: user ? user.uid : null, subscribers: subscribers.size });
+      emit({ user, loading: false, error: null });
+    },
+    error => {
+      trace('auth:error', { error: String(error && error.code) });
+      emit({ user: null, loading: false, error });
+    }
   );
 }
 

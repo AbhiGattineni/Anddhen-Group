@@ -15,6 +15,7 @@ import {
   canManageRoles,
 } from './roles';
 import { canAccessCard, visibleCards } from './cards';
+import { trace } from './authTrace';
 
 const RoleContext = createContext({
   role: ROLES.USER,
@@ -74,6 +75,7 @@ export function RoleProvider({ children }) {
       const u = userRef.current;
       if (!u) {
         if (!cancelled) {
+          trace('role:signedout');
           setRole(ROLES.USER);
           setCards([]);
           setError(null);
@@ -83,10 +85,17 @@ export function RoleProvider({ children }) {
         return;
       }
       setLoading(true);
+      trace('role:resolve:start', { uid: u.uid });
       // One read first: it creates the doc on first sign-in and honors the
       // bootstrap superadmin, neither of which a listener can do.
       const access = await ensureUserProfile(u);
       if (cancelled) return;
+      trace('role:resolve:done', {
+        uid: u.uid,
+        role: access.role,
+        cards: (access.cards || []).length,
+        error: access.error || null,
+      });
       setRole(access.role);
       setCards(access.cards);
       setError(access.error || null);
