@@ -54,6 +54,23 @@ jobs:
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
 
+      # A 403 here is ambiguous: it can mean the roles are missing, OR that the
+      # key belongs to a different project than the one being deployed to, in
+      # which case granting roles on `anddhen` changes nothing. These two fields
+      # are identifiers, not credentials — printing them makes that distinction
+      # obvious instead of guesswork. project_id MUST read `anddhen`.
+      - name: Show which identity is deploying
+        run: |
+          node -e '
+            const sa = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+            console.log("project_id  :", sa.project_id);
+            console.log("client_email:", sa.client_email);
+            if (sa.project_id !== "anddhen") {
+              console.log("::error::This key belongs to project \"" + sa.project_id + "\", not \"anddhen\". Regenerate the key from the anddhen project and update the FIREBASE_SERVICE_ACCOUNT secret.");
+              process.exit(1);
+            }
+          '
+
       # Only `firestore:rules` — deploying indexes can drop indexes missing from
       # firestore.indexes.json, so that stays a deliberate manual step. Add
       # `,storage` here if you want storage.rules shipped the same way.

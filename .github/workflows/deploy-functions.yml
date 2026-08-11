@@ -62,6 +62,20 @@ jobs:
           printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
 
+      # See the same step in deploy-firestore-rules.yml — a 403 can mean missing
+      # roles OR a key from the wrong project; these identifiers tell them apart.
+      - name: Show which identity is deploying
+        run: |
+          node -e '
+            const sa = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+            console.log("project_id  :", sa.project_id);
+            console.log("client_email:", sa.client_email);
+            if (sa.project_id !== "anddhen") {
+              console.log("::error::This key belongs to project \"" + sa.project_id + "\", not \"anddhen\". Regenerate the key from the anddhen project and update the FIREBASE_SERVICE_ACCOUNT secret.");
+              process.exit(1);
+            }
+          '
+
       - name: Deploy functions
         run: |
           npx --yes firebase-tools@15 deploy \
