@@ -90,6 +90,18 @@ const RoleManager = () => {
       (u.full_name || '').toLowerCase().includes(q)
   );
 
+  // Same email on more than one document means only one of them is the doc the
+  // app actually reads (User/{firebase-uid}); a role set on the other is
+  // invisible at runtime. Catching it by email also flags legacy rows that
+  // carry no user_id field at all, which the per-row id check can't see.
+  const emailCounts = users.reduce((acc, u) => {
+    const key = (u.email_id || '').toLowerCase();
+    if (key) acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+  const isDuplicated = u => (emailCounts[(u.email_id || '').toLowerCase()] || 0) > 1;
+  const duplicateCount = Object.values(emailCounts).filter(n => n > 1).length;
+
   const badgeClass = role => ROLE_BADGE[role] || 'bg-secondary';
 
   return (
@@ -107,6 +119,15 @@ const RoleManager = () => {
       </div>
 
       {error && <div className="alert alert-danger py-2">{error}</div>}
+
+      {duplicateCount > 0 && (
+        <div className="alert alert-warning py-2">
+          {duplicateCount} email{duplicateCount === 1 ? ' is' : 's are'} on more than one document.
+          Access is decided by the document whose <strong>Doc ID</strong> equals the user&apos;s
+          Firebase UID — a role set on any other copy is ignored. The user can read their UID off
+          the 403 page.
+        </div>
+      )}
 
       {loading ? (
         <div className="text-muted">Loading users…</div>
@@ -144,12 +165,16 @@ const RoleManager = () => {
                     <td>{u.email_id || u.id}</td>
                     <td>
                       <code className="small">{u.id}</code>
-                      {orphaned && (
+                      {(orphaned || isDuplicated(u)) && (
                         <span
                           className="badge bg-warning text-dark ms-2"
-                          title={`This document's id does not match its user_id field (${u.user_id}). The app reads User/<uid>, so a role set here has no effect. Edit the row whose Doc ID equals the user's UID instead.`}
+                          title={
+                            orphaned
+                              ? `This document's id does not match its user_id field (${u.user_id}). The app reads User/<uid>, so a role set here has no effect.`
+                              : 'Another document shares this email. Only the one whose Doc ID equals the signed-in UID governs access — a role set on the other is ignored. The user can read their UID off the 403 page.'
+                          }
                         >
-                          stale doc
+                          check UID
                         </span>
                       )}
                     </td>
