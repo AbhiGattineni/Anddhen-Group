@@ -14,6 +14,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   getDocs,
   onSnapshot,
   collection,
@@ -191,4 +192,19 @@ export async function listUsersWithRoles() {
  *  should also gate the UI with canAssign() for a good UX. */
 export async function setUserRole(uid, role) {
   await updateDoc(doc(db, 'User', uid), { role, updatedAt: serverTimestamp() });
+}
+
+/**
+ * Delete a user's profile document (role and card grants with it).
+ *
+ * Firebase Auth and Firestore are separate stores: removing someone from
+ * Authentication leaves this document behind, so they keep appearing in the
+ * role manager and their old grants would be waiting for them if they ever
+ * signed up again with the same address. This is the cleanup for that.
+ *
+ * It does NOT delete the Auth account — that needs the Admin SDK. Authorization
+ * is enforced by firestore.rules (admin or above).
+ */
+export async function deleteUserProfile(uid) {
+  await deleteDoc(doc(db, 'User', uid));
 }

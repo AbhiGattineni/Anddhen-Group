@@ -3,11 +3,13 @@ import { useRole } from 'src/services/roles/RoleContext';
 import {
   listUsersWithRoles,
   setUserRole,
+  deleteUserProfile,
   canAssign,
   assignableOptions,
   ROLE_LABELS,
   ROLES,
 } from 'src/services/roles/roles';
+import { auth } from 'src/services/Authentication/firebase';
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 
 const ROLE_BADGE = {
@@ -31,6 +33,8 @@ const RoleManager = () => {
   const [query, setQuery] = useState('');
   // Pending role change awaiting confirmation: { user, newRole } | null
   const [pending, setPending] = useState(null);
+  // Pending profile deletion awaiting confirmation: user | null
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -81,6 +85,28 @@ const RoleManager = () => {
       setSavingId(null);
     }
   };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    const u = pendingDelete;
+    setSavingId(u.id);
+    setError(null);
+    try {
+      await deleteUserProfile(u.id);
+      await load();
+      setPendingDelete(null);
+    } catch (e) {
+      setError(`Could not remove ${u.email_id || u.id}: ${e.message || e}`);
+      setPendingDelete(null);
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  // You can't remove your own profile, and an admin can't remove someone they
+  // aren't allowed to manage — same rule the role dropdown enforces.
+  const canDelete = u =>
+    u.id !== auth.currentUser?.uid && canAssign(myRole, u.role || ROLES.USER, ROLES.USER);
 
   const q = query.trim().toLowerCase();
   const filtered = users.filter(
@@ -141,12 +167,13 @@ const RoleManager = () => {
                 <th>Doc ID (UID)</th>
                 <th>Current role</th>
                 <th style={{ minWidth: 180 }}>Change role</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-center text-muted py-4">
+                  <td colSpan={6} className="text-center text-muted py-4">
                     No users found.
                   </td>
                 </tr>
@@ -198,6 +225,23 @@ const RoleManager = () => {
                       </select>
                       {savingId === u.id && <small className="text-muted ms-2">saving…</small>}
                     </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        disabled={!canDelete(u) || savingId === u.id}
+                        title={
+                          canDelete(u)
+                            ? 'Remove this profile document (role and card grants). Does not delete their Auth account.'
+                            : u.id === auth.currentUser?.uid
+                              ? "You can't remove your own profile."
+                              : 'You are not allowed to manage this user.'
+                        }
+                        onClick={() => setPendingDelete(u)}
+                      >
+                        Remove
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -219,6 +263,21 @@ const RoleManager = () => {
         }
         onConfirm={confirmChange}
         onCancel={() => setPending(null)}
+      />
+
+      <ConfirmationDialog
+        show={!!pendingDelete}
+        title="Remove user profile"
+        isLoading={!!pendingDelete && savingId === pendingDelete.id}
+        message={
+          pendingDelete
+            ? `Remove the profile for ${
+                pendingDelete.email_id || pendingDelete.full_name || pendingDelete.id
+              }? This deletes their role and card grants. It does NOT delete their sign-in account — if that still exists, a fresh profile is created as a plain User next time they sign in.`
+            : ''
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
       />
     </div>
   );
