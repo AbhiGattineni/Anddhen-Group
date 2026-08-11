@@ -18,7 +18,7 @@ import { canAccessCard } from 'src/services/roles/cards';
  */
 const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
   const { user, loading, error } = useAuth();
-  const { role, cards, loading: roleLoading } = useRole();
+  const { role, cards, loading: roleLoading, error: roleError, refresh } = useRole();
   const location = useLocation();
   const navigate = useNavigate();
   const storedEmptyFields = localStorage.getItem('empty_fields');
@@ -53,6 +53,31 @@ const ProtectedRoute = ({ children, minRole, card, requiredRoles }) => {
     (requiredRoles && requiredRoles.length
       ? requiredRoles.reduce((hi, r) => (hasAtLeast(r, hi) ? r : hi), requiredRoles[0])
       : null);
+
+  // A failed role lookup is NOT a denial. Falling through here would tell a
+  // legitimate employee their role is "User" — the exact misdiagnosis that sent
+  // us hunting through Firestore documents that turned out to be correct. Say
+  // the check failed, show why, and offer a retry.
+  if (roleError && (effectiveMin || card)) {
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100 px-3">
+        <div className="text-center" style={{ maxWidth: 560 }}>
+          <h1 className="h3 fw-bold">Couldn&apos;t verify your access</h1>
+          <p className="text-muted">
+            We couldn&apos;t read your role from the server, so we don&apos;t know what you&apos;re
+            allowed to see. This is a connection or permissions problem, not a decision about your
+            account.
+          </p>
+          <p className="text-muted small">
+            Error: <code>{String(roleError)}</code>
+          </p>
+          <button type="button" className="btn btn-primary" onClick={refresh}>
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Pass the reason along so /not-authorized can say what's actually missing
   // instead of a bare 403 — the difference between "your role is too low" and

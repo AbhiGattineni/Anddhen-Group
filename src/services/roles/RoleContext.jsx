@@ -7,12 +7,19 @@
 import React, { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../../hooks/useAuth';
-import { ensureUserProfile, ROLES, hasAtLeast, canManageRoles } from './roles';
+import {
+  ensureUserProfile,
+  subscribeUserProfile,
+  ROLES,
+  hasAtLeast,
+  canManageRoles,
+} from './roles';
 import { canAccessCard, visibleCards } from './cards';
 
 const RoleContext = createContext({
   role: ROLES.USER,
   cards: [],
+  error: null,
   loading: true,
   refresh: () => {},
 });
@@ -22,6 +29,9 @@ export function RoleProvider({ children }) {
   const [role, setRole] = useState(ROLES.USER);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Non-null when the role lookup itself failed, as opposed to resolving to a
+  // genuine plain `user`. Consumers must not treat this as a denial.
+  const [error, setError] = useState(null);
   // Which uid the current role/cards were actually resolved for. Effects run
   // AFTER the render that follows a sign-in, so without this there is one
   // commit where `uid` is the new user but `role` is still the signed-out
@@ -51,6 +61,7 @@ export function RoleProvider({ children }) {
     const access = await ensureUserProfile(u);
     setRole(access.role);
     setCards(access.cards);
+    setError(access.error || null);
     setResolvedFor(u.uid);
     setLoading(false);
   }, []);
@@ -58,28 +69,48 @@ export function RoleProvider({ children }) {
   useEffect(() => {
     if (authLoading) return undefined;
     let cancelled = false;
+    let unsubscribe = () => {};
     (async () => {
       const u = userRef.current;
       if (!u) {
         if (!cancelled) {
           setRole(ROLES.USER);
           setCards([]);
+          setError(null);
           setResolvedFor(null);
           setLoading(false);
         }
         return;
       }
       setLoading(true);
+      // One read first: it creates the doc on first sign-in and honors the
+      // bootstrap superadmin, neither of which a listener can do.
       const access = await ensureUserProfile(u);
-      if (!cancelled) {
-        setRole(access.role);
-        setCards(access.cards);
-        setResolvedFor(u.uid);
-        setLoading(false);
-      }
+      if (cancelled) return;
+      setRole(access.role);
+      setCards(access.cards);
+      setError(access.error || null);
+      setResolvedFor(u.uid);
+      setLoading(false);
+
+      // Then keep it live, so an admin changing a role or granting a card takes
+      // effect in an open tab instead of waiting for the next sign-in.
+      unsubscribe = subscribeUserProfile(
+        u,
+        next => {
+          if (cancelled) return;
+          setRole(next.role);
+          setCards(next.cards);
+          setError(null);
+        },
+        err => {
+          if (!cancelled) setError(err);
+        }
+      );
     })();
     return () => {
       cancelled = true;
+      unsubscribe();
     };
   }, [uid, authLoading]);
 
@@ -90,6 +121,7 @@ export function RoleProvider({ children }) {
   const value = {
     role,
     cards,
+    error,
     loading: loading || authLoading || stale,
     refresh: applyRole,
     isAtLeast: required => hasAtLeast(role, required),
