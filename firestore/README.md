@@ -40,10 +40,15 @@ those with the manual command above.
    [Google Cloud IAM console](https://console.cloud.google.com/iam-admin/iam?project=anddhen)
    (find the `firebase-adminsdk-…@anddhen.iam.gserviceaccount.com` principal → ✏️ edit):
    - **Firebase Rules Admin** (`roles/firebaserules.admin`) — required, publishes rules
-   - **Service Usage Consumer** (`roles/serviceusage.serviceUsageConsumer`) — required by
-     the CLI's API calls
+   - **Service Usage Consumer** (`roles/serviceusage.serviceUsageConsumer`) — required.
+     Every deploy first checks that `firestore.googleapis.com` is enabled; without this
+     role the run dies on `HTTP Error: 403, Caller does not have required permission to
+     use project anddhen` before it ever reaches the rules
    - **Cloud Datastore Index Admin** — only if you later add `firestore:indexes` to the
      workflow
+
+   Granting the key alone is not enough — a valid credential with no roles still gets a
+   403. Deploying functions needs a wider set again; see `functions/README.md`.
 3. GitHub → repo **Settings** → **Secrets and variables** → **Actions** →
    **New repository secret**:
    - Name: `FIREBASE_SERVICE_ACCOUNT`
