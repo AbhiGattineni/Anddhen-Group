@@ -4,6 +4,7 @@ import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
 import InputField from 'src/components/organisms/InputField';
 import usePostUserData from 'src/hooks/usePostUserData';
 import { auth } from 'src/services/Authentication/firebase';
+import { postLoginPath } from 'src/services/roles/postLoginPath';
 
 export const Profile = () => {
   const [loading, setLoading] = useState(false);
@@ -60,7 +61,9 @@ export const Profile = () => {
       } else {
         localStorage.setItem('empty_fields', response.empty_fields);
         localStorage.setItem('roles', userData.roles);
-        navigate(localStorage.getItem('preLoginPath') || '/');
+        // Same destination rules as a normal sign-in: back to whatever they were
+        // trying to reach, else the dashboard for employees and above.
+        navigate(await postLoginPath(auth.currentUser));
       }
     } catch (error) {
       console.error(error);
