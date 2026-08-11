@@ -159,7 +159,7 @@ const RoleManager = () => {
         <div className="text-muted">Loading users…</div>
       ) : (
         <div className="table-responsive">
-          <table className="table table-hover align-middle">
+          <table className="table table-hover align-middle rt-stack">
             <thead>
               <tr>
                 <th>Name</th>
@@ -188,9 +188,9 @@ const RoleManager = () => {
                 const orphaned = !!u.user_id && u.user_id !== u.id;
                 return (
                   <tr key={u.id}>
-                    <td>{u.full_name || '—'}</td>
-                    <td>{u.email_id || u.id}</td>
-                    <td>
+                    <td data-label="Name">{u.full_name || '—'}</td>
+                    <td data-label="Email">{u.email_id || u.id}</td>
+                    <td data-label="Doc ID">
                       <code className="small">{u.id}</code>
                       {(orphaned || isDuplicated(u)) && (
                         <span
@@ -205,12 +205,12 @@ const RoleManager = () => {
                         </span>
                       )}
                     </td>
-                    <td>
+                    <td data-label="Current role">
                       <span className={`badge ${badgeClass(current)}`}>
                         {ROLE_LABELS[current] || current}
                       </span>
                     </td>
-                    <td>
+                    <td data-label="Change role" className="rt-block">
                       <select
                         className="form-select form-select-sm"
                         value={current}
@@ -225,7 +225,7 @@ const RoleManager = () => {
                       </select>
                       {savingId === u.id && <small className="text-muted ms-2">saving…</small>}
                     </td>
-                    <td>
+                    <td data-label="Actions">
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-danger"

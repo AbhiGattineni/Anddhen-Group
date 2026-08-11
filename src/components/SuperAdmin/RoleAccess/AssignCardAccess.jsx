@@ -265,7 +265,7 @@ const AssignCardAccess = () => {
         <div className="text-muted">Loading users…</div>
       ) : (
         <div className="table-responsive">
-          <table className="table table-hover align-middle">
+          <table className="table table-hover align-middle rt-stack">
             <thead>
               <tr>
                 <th>Name</th>
@@ -285,14 +285,14 @@ const AssignCardAccess = () => {
               )}
               {granted.map(u => (
                 <tr key={u.id}>
-                  <td>{u.full_name || '—'}</td>
-                  <td>{u.email_id || u.id}</td>
-                  <td>
+                  <td data-label="Name">{u.full_name || '—'}</td>
+                  <td data-label="Email">{u.email_id || u.id}</td>
+                  <td data-label="Role">
                     <span className="badge bg-secondary">
                       {ROLE_LABELS[u.role || ROLES.USER] || u.role}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Cards" className="rt-block">
                     {hasAllCards(u.role) ? (
                       <span className="text-muted">All cards (by role)</span>
                     ) : (
@@ -305,7 +305,7 @@ const AssignCardAccess = () => {
                       </div>
                     )}
                   </td>
-                  <td>
+                  <td data-label="Actions">
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-primary"

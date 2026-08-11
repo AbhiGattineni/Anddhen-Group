@@ -1,0 +1,127 @@
+/* Cross-cutting responsive rules for the admin/employee surfaces.
+   Loaded once from index.js, after Bootstrap so these win.
+
+   Three concerns:
+     1. Nothing may push the page itself sideways on a phone.
+     2. Wide tables scroll inside their own box, or stack into rows.
+     3. Tab strips scroll instead of wrapping into a broken stack. */
+
+/* ---- 1. No page-level horizontal scroll ------------------------------- */
+/* A single overflowing element (usually a table or a long unbroken string)
+   otherwise drags the whole document sideways, which reads as "the site is
+   broken on mobile" even when only one component is at fault. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ---- 2. Tables --------------------------------------------------------- */
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+/*
+ * Most tables in the app aren't wrapped in .table-responsive, and with the
+ * overflow guard above an unwrapped wide table would be clipped rather than
+ * reachable. Making the table itself the scroll container fixes every one of
+ * them without touching markup: `display: block` lets overflow-x apply, and
+ * nowrap stops columns collapsing into unreadable slivers first.
+ * Excludes .rt-stack, which has its own layout below.
+ */
+@media (max-width: 767.98px) {
+  table.table:not(.rt-stack) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+}
+
+/* Long values — UIDs, emails, URLs — must wrap rather than force a min width. */
+.table td code,
+.table td a {
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Opt-in stacked layout: add `rt-stack` to a <table> and `data-label="…"` to
+ * each <td>. Below the md breakpoint each row becomes a card with the column
+ * name printed beside its value, which beats sideways-scrolling a six-column
+ * table on a 390px screen. Tables without the class keep scrolling as before.
+ */
+@media (max-width: 767.98px) {
+  table.rt-stack thead {
+    display: none;
+  }
+  table.rt-stack,
+  table.rt-stack tbody,
+  table.rt-stack tr,
+  table.rt-stack td {
+    display: block;
+    width: 100%;
+  }
+  table.rt-stack tr {
+    margin-bottom: 12px;
+    padding: 4px 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    background: #fff;
+  }
+  table.rt-stack td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 10px 14px;
+    text-align: right;
+  }
+  table.rt-stack td:last-child {
+    border-bottom: 0;
+  }
+  table.rt-stack td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #64748b;
+    text-align: left;
+  }
+  /* Cells holding a control get the control on its own line, full width. */
+  table.rt-stack td.rt-block {
+    display: block;
+    text-align: left;
+  }
+  table.rt-stack td.rt-block::before {
+    display: block;
+    margin-bottom: 6px;
+  }
+  /* A stacked table never needs its wrapper's horizontal scrollbar. */
+  .table-responsive:has(table.rt-stack) {
+    overflow-x: visible;
+  }
+}
+
+/* ---- 3. Tab strips ----------------------------------------------------- */
+/* nav-tabs wrap onto two ragged lines on a phone; scrolling keeps one row. */
+@media (max-width: 767.98px) {
+  .nav-tabs,
+  .nav.gap-2 {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar,
+  .nav.gap-2::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-tabs .nav-link,
+  .nav.gap-2 .nav-item {
+    white-space: nowrap;
+  }
+}

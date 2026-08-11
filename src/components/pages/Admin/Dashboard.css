@@ -156,3 +156,48 @@
 @media (prefers-color-scheme: dark) {
   /* app is light-themed; leave as-is */
 }
+
+/* ---- Small screens ------------------------------------------------------
+   The desktop layout assumes a wide header row and roomy cards. On a phone the
+   title/search row must stack, the search must span the width rather than sit
+   at 420px, and the card padding has to come down or three lines of copy plus
+   a 52px icon leaves no room for the text. */
+@media (max-width: 575.98px) {
+  .dash-wrap {
+    padding: 4px 0 24px;
+  }
+  .dash-header {
+    padding: 8px 0 14px;
+  }
+  .dash-search {
+    max-width: 100% !important;
+  }
+  .dash-card {
+    gap: 12px;
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+  .dash-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.2rem;
+    border-radius: 11px;
+  }
+  .dash-card-title {
+    font-size: 1rem;
+  }
+  .dash-card-desc {
+    font-size: 0.82rem;
+  }
+  /* Tap targets shouldn't shrink under a finger the way hover scaling does. */
+  .dash-card:hover {
+    transform: none;
+  }
+}
+
+/* Tablet: keep two comfortable columns rather than three cramped ones. */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .dash-card {
+    padding: 18px 16px;
+  }
+}
