@@ -11,12 +11,10 @@ function Navbar() {
   const { user } = useAuth();
   const { role } = useRole();
 
-  // Role-gated dashboard entry point (only for employee and above).
-  const dashboardTo = hasAtLeast(role, ROLES.SUPERADMIN)
-    ? '/superadmin'
-    : hasAtLeast(role, ROLES.EMPLOYEE)
-      ? '/employeedashboard'
-      : null;
+  // Role-gated dashboard entry point (only for employee and above). One
+  // dashboard for everyone now: it shows all cards to admin-and-above and the
+  // granted ones to employees.
+  const dashboardTo = hasAtLeast(role, ROLES.EMPLOYEE) ? '/employeedashboard' : null;
 
   const setNewUser = useAuthStore(state => state.setParttimer_consent);
   const handleLogout = () => {
