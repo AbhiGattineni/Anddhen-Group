@@ -64,7 +64,7 @@ const useUnifiedAuth = () => {
     } else {
       localStorage.setItem('empty_fields', emptyFields);
       localStorage.setItem('roles', roles);
-      navigate(await postLoginPath(usersData.user));
+      navigate(await postLoginPath());
     }
     return null; // Indicates success
   };

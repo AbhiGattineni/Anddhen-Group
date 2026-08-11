@@ -409,7 +409,7 @@ export const adminPlates = [
     child: 'Timesheet',
     route: 'timesheet',
     icon: 'bi-stopwatch',
-    desc: 'Log professional & personal hours — balance for you, tracking for the team',
+    desc: 'Log hours and submit your daily status update',
   },
   {
     child: 'TripSaathi',

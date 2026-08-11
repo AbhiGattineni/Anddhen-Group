@@ -61,9 +61,9 @@ export const Profile = () => {
       } else {
         localStorage.setItem('empty_fields', response.empty_fields);
         localStorage.setItem('roles', userData.roles);
-        // Same destination rules as a normal sign-in: back to whatever they were
-        // trying to reach, else the dashboard for employees and above.
-        navigate(await postLoginPath(auth.currentUser));
+        // Same destination rules as a normal sign-in: back to whatever they
+        // were trying to reach, else the dashboard.
+        navigate(await postLoginPath());
       }
     } catch (error) {
       console.error(error);
