@@ -7,6 +7,8 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js';
+// After Bootstrap, so the responsive overrides win.
+import './styles/responsive.css';
 import { RouterProvider } from 'react-router-dom';
 import router from './routes/routes';
 import { HelmetProvider } from 'react-helmet-async';
