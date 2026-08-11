@@ -117,6 +117,7 @@ const RoleManager = () => {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Doc ID (UID)</th>
                 <th>Current role</th>
                 <th style={{ minWidth: 180 }}>Change role</th>
               </tr>
@@ -124,7 +125,7 @@ const RoleManager = () => {
             <tbody>
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="text-center text-muted py-4">
+                  <td colSpan={5} className="text-center text-muted py-4">
                     No users found.
                   </td>
                 </tr>
@@ -133,10 +134,25 @@ const RoleManager = () => {
                 const current = u.role || ROLES.USER;
                 const options = assignableOptions(myRole, current);
                 const locked = !canAssign(myRole, current, ROLES.EMPLOYEE) && options.length <= 1;
+                // The app resolves a role by reading User/{firebase-uid}, so a doc
+                // whose id doesn't match its own user_id is a stale/duplicate row:
+                // editing it changes nothing the signed-in user will ever see.
+                const orphaned = !!u.user_id && u.user_id !== u.id;
                 return (
                   <tr key={u.id}>
                     <td>{u.full_name || '—'}</td>
                     <td>{u.email_id || u.id}</td>
+                    <td>
+                      <code className="small">{u.id}</code>
+                      {orphaned && (
+                        <span
+                          className="badge bg-warning text-dark ms-2"
+                          title={`This document's id does not match its user_id field (${u.user_id}). The app reads User/<uid>, so a role set here has no effect. Edit the row whose Doc ID equals the user's UID instead.`}
+                        >
+                          stale doc
+                        </span>
+                      )}
+                    </td>
                     <td>
                       <span className={`badge ${badgeClass(current)}`}>
                         {ROLE_LABELS[current] || current}
