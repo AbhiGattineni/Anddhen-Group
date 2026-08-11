@@ -101,3 +101,45 @@ Point the app at emulators by setting `REACT_APP_USE_EMULATORS=true` (wire-up TO
    or set `REACT_APP_DATA_PROVIDER=firebase`.
 
 See `firestore/schema.md` for the full 21-collection field map.
+
+## Roles in the ID token (custom claims)
+
+`User/{uid}.role` stays the source of truth — it's what the admin UI writes and
+what a browser can change without the Admin SDK. The `role` **custom claim** is a
+copy of it that rides in the ID token, which buys two things Firestore can't:
+
+- **Security rules read `request.auth.token.role`** instead of a `get()` on the
+  user's document — no billed read, no round trip, on every evaluation.
+- **The client knows the role the moment it knows the identity**, rather than
+  doing a second async lookup that can be observed mid-flight.
+
+`myRole()` in `firestore.rules` prefers the claim and falls back to the document,
+so accounts whose claim hasn't synced yet keep working rather than being locked
+out. `roleFromToken()` on the client does the same.
+
+### Keeping claims in step
+
+| When | What updates the claim |
+| --- | --- |
+| Any write to `User/{uid}` | the `syncRoleClaim` Cloud Function (needs functions deployed) |
+| Existing users, or before functions deploy | **Sync role claims** workflow, or `node firestore/syncRoleClaims.js --apply` |
+
+Both write `claimsUpdatedAt` on the profile. The client watches that document, so
+the change wakes its listener, which force-refreshes the ID token — a new role
+applies immediately instead of waiting out the token's hour.
+
+Setting a claim needs only **Firebase Authentication Admin**, which the CI service
+account already has: claims work before Cloud Functions do. The function only
+makes it automatic.
+
+### Unblocking the Cloud Function
+
+Three things, none of which CI can do for itself:
+
+1. **Blaze billing** on the project — v2 functions build a container; Spark refuses.
+2. **IAM roles** on the deploy principal: `Cloud Functions Admin`, `Cloud Run Admin`,
+   `Service Account User`, `Artifact Registry Administrator`, `Cloud Build Editor`,
+   `Service Usage Consumer`.
+3. Nothing else for this function — deploy it alone with
+   **Deploy Cloud Functions** → `only: functions:syncRoleClaim`. It binds no
+   secret, so `OPENAI_API_KEY` is only needed for the AI callables.

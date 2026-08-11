@@ -17,7 +17,14 @@ on:
       - 'functions/**'
       - '.github/workflows/deploy-functions.yml'
   # Lets you deploy without pushing a commit (Actions tab > Run workflow).
+  # `only` narrows the deploy: functions:syncRoleClaim ships the role-claim
+  # sync alone, which needs no OPENAI_API_KEY because it binds no secret.
   workflow_dispatch:
+    inputs:
+      only:
+        description: 'Deploy target (e.g. functions, or functions:syncRoleClaim)'
+        type: string
+        default: functions
 
 permissions:
   contents: read
@@ -77,9 +84,11 @@ jobs:
           '
 
       - name: Deploy functions
+        env:
+          ONLY: ${{ inputs.only || 'functions' }}
         run: |
           npx --yes firebase-tools@15 deploy \
-            --only functions \
+            --only "$ONLY" \
             --project anddhen \
             --non-interactive
 

@@ -15,10 +15,20 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Role of the CURRENT requester (defaults to 'user' if their doc/field is absent).
+    // Role of the CURRENT requester.
+    //
+    // Prefers the `role` custom claim, which rides in the ID token and costs
+    // nothing to read. The get() fallback stays for accounts whose claim hasn't
+    // been synced yet (see functions syncRoleClaim and
+    // firestore/syncRoleClaims.js) — dropping it would lock those users out,
+    // and it costs a billed document read on every evaluation that needs it.
     function myRole() {
       let path = /databases/$(database)/documents/User/$(request.auth.uid);
-      return signedIn() && exists(path) ? get(path).data.get('role', 'user') : 'user';
+      return !signedIn()
+        ? 'user'
+        : request.auth.token.get('role', '') != ''
+          ? request.auth.token.role
+          : (exists(path) ? get(path).data.get('role', 'user') : 'user');
     }
 
     // Bootstrap superadmin(s) by email — keep in sync with SUPERADMIN_EMAILS in
