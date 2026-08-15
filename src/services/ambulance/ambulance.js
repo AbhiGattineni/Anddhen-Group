@@ -75,7 +75,23 @@ const QUALITY_KEYS = [
   'vehicle_type',
   'vehicle_color',
   'vehicle_conf',
+  // the frame-by-frame burst that built a violation's streak — present only
+  // on `violations` docs; frames themselves are storage-only (no Firestore
+  // doc each), named predictably so no extra query is needed to list them
+  'sequenceFolder',
+  'frameCount',
 ];
+
+/** Build the burst-frame URLs for a violation doc with sequenceFolder/frameCount.
+ *  Frame paths are deterministic (frame_01.jpg, frame_02.jpg, …) so this needs
+ *  no Storage list call — just string construction against the known prefix. */
+export function sequenceFrameUrls(v) {
+  if (!v?.sequenceFolder || !v?.frameCount) return [];
+  return Array.from({ length: v.frameCount }, (_, i) => {
+    const n = String(i + 1).padStart(2, '0');
+    return imageUrl(`${v.sequenceFolder}frame_${n}.jpg`);
+  });
+}
 
 const photoDoc = s => {
   const d = s.data();

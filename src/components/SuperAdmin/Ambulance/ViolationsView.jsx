@@ -1,10 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { listViolations, countViolations } from 'src/services/ambulance/ambulance';
+import {
+  listViolations,
+  countViolations,
+  sequenceFrameUrls,
+} from 'src/services/ambulance/ambulance';
 import { SafeImg, fmt, Lightbox, useLightbox } from './shared';
 
 /**
  * The primary screen: vehicles that blocked the ambulance 10+ seconds.
  * Server-side date-range filter + client-side plate substring search.
+ *
+ * A violation with a saved burst (sequenceFolder/frameCount — the device's
+ * frame-by-frame proof of the 10-second streak) opens straight into that
+ * frame sequence, since that IS the evidence a demo shows. Older violations
+ * without a burst fall back to the plain cover-photo viewer, stepping across
+ * the grid instead of within one event.
  */
 export default function ViolationsView() {
   const [rows, setRows] = useState([]);
@@ -16,6 +26,19 @@ export default function ViolationsView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const viewer = useLightbox();
+  const burstViewer = useLightbox();
+  const [burstItems, setBurstItems] = useState([]);
+
+  const openViolation = (v, i) => {
+    const frames = sequenceFrameUrls(v);
+    if (frames.length > 0) {
+      // Lightbox already shows "n / N" in its header — no per-frame label needed
+      setBurstItems(frames.map(url => ({ url, plate: v.plate, time: v.time })));
+      burstViewer.open(0);
+    } else {
+      viewer.open(i);
+    }
+  };
 
   const load = useCallback(
     async (reset = true, after = null) => {
@@ -101,8 +124,22 @@ export default function ViolationsView() {
       <div className="row g-3">
         {shown.map((v, i) => (
           <div className="col-6 col-md-4 col-xl-3" key={v.id}>
-            <button className="amb-photo amb-violation w-100" onClick={() => viewer.open(i)}>
+            <button
+              className="amb-photo amb-violation w-100"
+              onClick={() => openViolation(v, i)}
+              title={
+                v.frameCount
+                  ? `View the ${v.frameCount}-frame sequence that proves this violation`
+                  : undefined
+              }
+            >
               <SafeImg src={v.photoUrl} alt={v.plate} className="amb-vio-img" />
+              {v.frameCount > 0 && (
+                <span className="amb-burst-badge">
+                  <i className="bi bi-collection-play-fill me-1" />
+                  {v.frameCount}
+                </span>
+              )}
               <div className="amb-photo-meta">
                 <span className="amb-plate">{v.plate || '—'}</span>
                 <span className="amb-photo-time">
@@ -135,6 +172,14 @@ export default function ViolationsView() {
           index={viewer.index}
           onClose={viewer.close}
           onIndex={viewer.setIndex}
+        />
+      )}
+      {burstViewer.isOpen && (
+        <Lightbox
+          items={burstItems}
+          index={burstViewer.index}
+          onClose={burstViewer.close}
+          onIndex={burstViewer.setIndex}
         />
       )}
     </>
