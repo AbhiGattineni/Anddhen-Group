@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { BRAND_NAME, TAGLINE } from '../../config/brand';
 
 function Footer() {
   return (
@@ -9,6 +10,9 @@ function Footer() {
           <div className="col-md-4">
             <h6>Company Information</h6>
             <hr />
+            <p className="footer-tagline text-white mb-2">
+              {BRAND_NAME}, {TAGLINE}.
+            </p>
             <p className="text-white">
               Anddhen is a conglomerate specializing in consulting, travel, marketing, philanthropy,
               and software services. We provide top-notch consultancy and implementation expertise

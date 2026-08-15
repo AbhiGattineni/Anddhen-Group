@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Box, Typography, Grid, Card, Fade } from '@mui/material';
 import { EmojiEvents, Business, Favorite, Groups } from '@mui/icons-material';
+import { BRAND_NAME, TAGLINE } from '../../config/brand';
 import './Home.css';
 
 function About() {
@@ -50,6 +51,18 @@ function About() {
                 }}
               >
                 About Us
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: { xs: '1.05rem', md: '1.35rem' },
+                  fontWeight: 600,
+                  letterSpacing: '0.01em',
+                }}
+              >
+                <span className="gradient-accent">
+                  {BRAND_NAME}, {TAGLINE}.
+                </span>
               </Typography>
             </Box>
           </Fade>
