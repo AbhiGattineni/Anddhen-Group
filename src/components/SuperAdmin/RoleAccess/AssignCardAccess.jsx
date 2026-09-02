@@ -63,6 +63,21 @@ const AssignCardAccess = () => {
   // Admin/superadmin grants are implied by the role — nothing to hand out.
   const targetHasAll = hasAllCards(targetRole);
 
+  const emailCounts = useMemo(
+    () =>
+      users.reduce((acc, u) => {
+        const key = (u.email_id || '').toLowerCase();
+        if (key) acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {}),
+    [users]
+  );
+  const isOrphaned = u => !!u.user_id && u.user_id !== u.id;
+  const isDuplicated = u => (emailCounts[(u.email_id || '').toLowerCase()] || 0) > 1;
+  // Saving to an orphaned or duplicated doc writes to the wrong Firestore path —
+  // the employee's session reads User/{firebase-uid}, not this document's id.
+  const targetIsUnsafe = !!target && (isOrphaned(target) || isDuplicated(target));
+
   // Load the selected user's saved grants into the checklist. Also re-syncs
   // after a save reloads the list, so the checklist always mirrors Firestore.
   // The success notice is cleared on user change, not here — this effect fires
@@ -185,6 +200,25 @@ const AssignCardAccess = () => {
               )}
             </div>
 
+            {targetIsUnsafe && (
+              <div className="alert alert-danger">
+                <strong>⚠ UID mismatch — saving will have no effect.</strong>
+                <br />
+                This document&apos;s ID (<code>{target.id}</code>) does not match the UID the app
+                reads at sign-in
+                {target.user_id ? (
+                  <>
+                    {' '}(<code>{target.user_id}</code>)
+                  </>
+                ) : (
+                  ' (another document shares this email)'
+                )}
+                . Any card grant saved here is written to the wrong document and the employee will
+                still see 403. The correct UID appears on their 403 page — ask a Super Admin to
+                update the Firestore document at that UID directly.
+              </div>
+            )}
+
             {targetHasAll ? (
               <div className="alert alert-info mb-0">
                 {ROLE_LABELS[targetRole]}s already have access to every card. To limit this person
@@ -227,7 +261,7 @@ const AssignCardAccess = () => {
                     type="button"
                     className="btn btn-primary"
                     onClick={() => setConfirming(true)}
-                    disabled={!dirty || saving}
+                    disabled={!dirty || saving || targetIsUnsafe}
                   >
                     {saving ? 'Saving…' : 'Save access'}
                   </button>
@@ -235,7 +269,7 @@ const AssignCardAccess = () => {
                     type="button"
                     className="btn btn-link"
                     onClick={() => setChecked(saved)}
-                    disabled={!dirty || saving}
+                    disabled={!dirty || saving || targetIsUnsafe}
                   >
                     Reset
                   </button>
