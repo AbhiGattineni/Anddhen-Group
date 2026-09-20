@@ -13,12 +13,13 @@ import {
 import ConfirmationDialog from 'src/components/organisms/Modal/ConfirmationDialog';
 
 /**
- * Grant dashboard cards to a user. Picking a user loads their current grants
- * into the checklist; saving replaces them. Admins and superadmins already hold
- * every card by virtue of their role, so the checklist is read-only for them.
+ * Grant dashboard cards to a user. Only superadmins may assign cards.
+ * Admins/superadmins already hold every card by virtue of their role, so the
+ * checklist is read-only for them.
  */
 const AssignCardAccess = () => {
-  const { canManageRoles: canManage, refresh } = useRole();
+  const { isAtLeast, refresh } = useRole();
+  const canManage = isAtLeast(ROLES.SUPERADMIN);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,8 +75,7 @@ const AssignCardAccess = () => {
   if (!canManage) {
     return (
       <div className="alert alert-warning my-4">
-        You need an <strong>Admin</strong> or <strong>Super Admin</strong> role to assign card
-        access.
+        You need a <strong>Super Admin</strong> role to assign card access.
       </div>
     );
   }
