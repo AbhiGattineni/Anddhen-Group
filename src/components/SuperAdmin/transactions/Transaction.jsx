@@ -9,6 +9,7 @@ import {
   useFlexLayout,
 } from 'react-table';
 import { TransactionModal } from 'src/components/organisms/Modal/TransactionModal';
+import { AddSubsidiaryModal } from 'src/components/organisms/Modal/AddSubsidiaryModal';
 import PropTypes from 'prop-types';
 import { useUpdateData } from 'src/react-query/useFetchApis';
 import { fetchData } from 'src/react-query/useApis';
@@ -41,6 +42,7 @@ export const Transaction = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isFiltered, setIsFiltered] = useState(false);
+  const [showSubsidiaryModal, setShowSubsidiaryModal] = useState(false);
 
   // Goes through the connector's fetchData (Firebase or Django, whichever is
   // active) instead of hitting REACT_APP_API_BASE_URL directly, matching how
@@ -501,6 +503,16 @@ export const Transaction = () => {
           </div>
           <div className="header-actions">
             <button
+              className="btn-add-subsidiary"
+              onClick={() => setShowSubsidiaryModal(true)}
+              type="button"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
+              </svg>
+              Add Subsidiary
+            </button>
+            <button
               className="btn-add-transaction"
               onClick={() => setShowModal(true)}
               disabled={isLoading}
@@ -830,6 +842,11 @@ export const Transaction = () => {
           setShowModal={setShowModal}
         />
       )}
+
+      <AddSubsidiaryModal
+        show={showSubsidiaryModal}
+        onHide={() => setShowSubsidiaryModal(false)}
+      />
 
       {showConfirmation && (
         <ConfirmationDialog
