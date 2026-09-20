@@ -96,7 +96,9 @@ export const AddSubsidiaryModal = ({ show, onHide }) => {
           padding: '20px 24px',
         }}
       >
-        <Modal.Title style={{ fontSize: '20px', fontWeight: '700', color: '#1e293b', letterSpacing: '-0.5px' }}>
+        <Modal.Title
+          style={{ fontSize: '20px', fontWeight: '700', color: '#1e293b', letterSpacing: '-0.5px' }}
+        >
           Add Subsidiary
         </Modal.Title>
       </Modal.Header>
@@ -143,7 +145,16 @@ export const AddSubsidiaryModal = ({ show, onHide }) => {
                 onChange={e => handleChange('active', e.target.checked)}
                 style={{ width: '16px', height: '16px', cursor: 'pointer' }}
               />
-              <label htmlFor="sub-active" style={{ fontSize: '14px', fontWeight: '500', color: '#475569', cursor: 'pointer', margin: 0 }}>
+              <label
+                htmlFor="sub-active"
+                style={{
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  color: '#475569',
+                  cursor: 'pointer',
+                  margin: 0,
+                }}
+              >
                 Active (visible in transaction subsidiary dropdown)
               </label>
             </div>
