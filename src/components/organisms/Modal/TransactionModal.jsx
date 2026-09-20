@@ -41,12 +41,9 @@ export const TransactionModal = ({
   // Fetch subsidiaries from backend
   const { data: subsidiariesData, isLoading: isSubsidiariesLoading } = useGetSubsidiaries();
 
-  // Only show active subsidiaries
-  const activeSubsidiaries = Array.isArray(subsidiariesData)
-    ? subsidiariesData.filter(sub => sub.active === true || sub.active === 'Yes')
-    : [];
-
-  // Fallback subsidiary options if backend data is not available
+  // Hardcoded fallback shown only while Firestore is loading or errored.
+  // Once the list is loaded (even if empty) we show Firestore data so that
+  // adds/edits from ManageSubsidiariesModal are reflected immediately.
   const fallbackSubsidiaries = [
     { subName: 'AMS', id: 'ams' },
     { subName: 'ACS', id: 'acs' },
@@ -55,9 +52,11 @@ export const TransactionModal = ({
     { subName: 'ATI', id: 'ati' },
   ];
 
-  // Use active subsidiaries if available, otherwise use fallback
-  const availableSubsidiaries =
-    activeSubsidiaries.length > 0 ? activeSubsidiaries : fallbackSubsidiaries;
+  const availableSubsidiaries = isSubsidiariesLoading || !Array.isArray(subsidiariesData)
+    ? fallbackSubsidiaries
+    : subsidiariesData.filter(
+        sub => sub.active === true || sub.active === 'Yes' || sub.active === 'true'
+      );
 
   // Extract unique sender and receiver names
   const { senderNames, receiverNames } = useMemo(() => {
