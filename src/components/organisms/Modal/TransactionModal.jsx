@@ -52,11 +52,12 @@ export const TransactionModal = ({
     { subName: 'ATI', id: 'ati' },
   ];
 
-  const availableSubsidiaries = isSubsidiariesLoading || !Array.isArray(subsidiariesData)
-    ? fallbackSubsidiaries
-    : subsidiariesData.filter(
-        sub => sub.active === true || sub.active === 'Yes' || sub.active === 'true'
-      );
+  const availableSubsidiaries =
+    isSubsidiariesLoading || !Array.isArray(subsidiariesData)
+      ? fallbackSubsidiaries
+      : subsidiariesData.filter(
+          sub => sub.active === true || sub.active === 'Yes' || sub.active === 'true'
+        );
 
   // Extract unique sender and receiver names
   const { senderNames, receiverNames } = useMemo(() => {

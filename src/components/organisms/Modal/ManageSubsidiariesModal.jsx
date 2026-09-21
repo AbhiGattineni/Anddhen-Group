@@ -42,7 +42,11 @@ const AddRow = ({ onCreate, disabled }) => {
   const submit = () => {
     setTouched(true);
     if (!isValid(form)) return;
-    onCreate({ ...form, subsidiaryName: form.subsidiaryName.trim(), parttimer_multi_status: false });
+    onCreate({
+      ...form,
+      subsidiaryName: form.subsidiaryName.trim(),
+      parttimer_multi_status: false,
+    });
     setForm(EMPTY_FORM);
     setTouched(false);
   };
@@ -228,9 +232,7 @@ export const ManageSubsidiariesModal = ({ show, onHide }) => {
 
   const busy = creating || updating || removing;
 
-  const sorted = [...subsidiaries].sort((a, b) =>
-    (a.subName || '').localeCompare(b.subName || '')
-  );
+  const sorted = [...subsidiaries].sort((a, b) => (a.subName || '').localeCompare(b.subName || ''));
 
   return (
     <Modal
@@ -254,7 +256,14 @@ export const ManageSubsidiariesModal = ({ show, onHide }) => {
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body style={{ padding: '20px 24px', backgroundColor: '#ffffff', maxHeight: '65vh', overflowY: 'auto' }}>
+      <Modal.Body
+        style={{
+          padding: '20px 24px',
+          backgroundColor: '#ffffff',
+          maxHeight: '65vh',
+          overflowY: 'auto',
+        }}
+      >
         {isLoading ? (
           <div className="text-center text-muted py-4">Loading subsidiaries…</div>
         ) : (
@@ -262,14 +271,34 @@ export const ManageSubsidiariesModal = ({ show, onHide }) => {
             <table className="table table-hover align-middle mb-0" style={{ fontSize: 14 }}>
               <thead>
                 <tr style={{ backgroundColor: '#f8fafc' }}>
-                  <th style={{ width: '20%', padding: '10px 8px', fontWeight: 600, color: '#475569' }}>
+                  <th
+                    style={{ width: '20%', padding: '10px 8px', fontWeight: 600, color: '#475569' }}
+                  >
                     Short Code
                   </th>
-                  <th style={{ padding: '10px 8px', fontWeight: 600, color: '#475569' }}>Full Name</th>
-                  <th style={{ width: '80px', padding: '10px 8px', fontWeight: 600, color: '#475569', textAlign: 'center' }}>
+                  <th style={{ padding: '10px 8px', fontWeight: 600, color: '#475569' }}>
+                    Full Name
+                  </th>
+                  <th
+                    style={{
+                      width: '80px',
+                      padding: '10px 8px',
+                      fontWeight: 600,
+                      color: '#475569',
+                      textAlign: 'center',
+                    }}
+                  >
                     Active
                   </th>
-                  <th style={{ width: '140px', padding: '10px 8px', fontWeight: 600, color: '#475569', textAlign: 'center' }}>
+                  <th
+                    style={{
+                      width: '140px',
+                      padding: '10px 8px',
+                      fontWeight: 600,
+                      color: '#475569',
+                      textAlign: 'center',
+                    }}
+                  >
                     Actions
                   </th>
                 </tr>
@@ -294,7 +323,9 @@ export const ManageSubsidiariesModal = ({ show, onHide }) => {
                   ) : (
                     <tr key={sub.id}>
                       <td style={{ padding: '10px 8px', fontWeight: 600 }}>{sub.subName}</td>
-                      <td style={{ padding: '10px 8px', color: '#374151' }}>{sub.subsidiaryName}</td>
+                      <td style={{ padding: '10px 8px', color: '#374151' }}>
+                        {sub.subsidiaryName}
+                      </td>
                       <td style={{ padding: '10px 8px', textAlign: 'center' }}>
                         <span
                           className={`badge ${sub.active !== false ? 'bg-success' : 'bg-secondary'}`}
