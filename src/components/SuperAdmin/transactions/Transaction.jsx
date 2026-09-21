@@ -9,7 +9,7 @@ import {
   useFlexLayout,
 } from 'react-table';
 import { TransactionModal } from 'src/components/organisms/Modal/TransactionModal';
-import { AddSubsidiaryModal } from 'src/components/organisms/Modal/AddSubsidiaryModal';
+import { ManageSubsidiariesModal } from 'src/components/organisms/Modal/ManageSubsidiariesModal';
 import PropTypes from 'prop-types';
 import { useUpdateData } from 'src/react-query/useFetchApis';
 import { fetchData } from 'src/react-query/useApis';
@@ -508,9 +508,9 @@ export const Transaction = () => {
               type="button"
             >
               <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 010 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h6a1 1 0 010 2H4a1 1 0 01-1-1z" />
               </svg>
-              Add Subsidiary
+              Manage Subsidiaries
             </button>
             <button
               className="btn-add-transaction"
@@ -843,7 +843,7 @@ export const Transaction = () => {
         />
       )}
 
-      <AddSubsidiaryModal show={showSubsidiaryModal} onHide={() => setShowSubsidiaryModal(false)} />
+      <ManageSubsidiariesModal show={showSubsidiaryModal} onHide={() => setShowSubsidiaryModal(false)} />
 
       {showConfirmation && (
         <ConfirmationDialog
