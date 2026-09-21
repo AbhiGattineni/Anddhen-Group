@@ -41,10 +41,11 @@ export const TransactionModal = ({
   // Fetch subsidiaries from backend
   const { data: subsidiariesData, isLoading: isSubsidiariesLoading } = useGetSubsidiaries();
 
-  // Hardcoded fallback shown only while Firestore is loading or errored.
-  // Once the list is loaded (even if empty) we show Firestore data so that
-  // adds/edits from ManageSubsidiariesModal are reflected immediately.
-  const fallbackSubsidiaries = [
+  // Original subsidiaries kept as a baseline so the dropdown never goes empty.
+  // Firestore entries (from ManageSubsidiariesModal) are merged on top; any
+  // hardcoded entry whose subName already exists in Firestore is replaced by
+  // the managed version.
+  const baseSubsidiaries = [
     { subName: 'AMS', id: 'ams' },
     { subName: 'ACS', id: 'acs' },
     { subName: 'ASS', id: 'ass' },
@@ -52,12 +53,18 @@ export const TransactionModal = ({
     { subName: 'ATI', id: 'ati' },
   ];
 
-  const availableSubsidiaries =
-    isSubsidiariesLoading || !Array.isArray(subsidiariesData)
-      ? fallbackSubsidiaries
-      : subsidiariesData.filter(
+  const firestoreActive =
+    !isSubsidiariesLoading && Array.isArray(subsidiariesData)
+      ? subsidiariesData.filter(
           sub => sub.active === true || sub.active === 'Yes' || sub.active === 'true'
-        );
+        )
+      : [];
+
+  const managedKeys = new Set(firestoreActive.map(s => s.subName));
+  const availableSubsidiaries = [
+    ...firestoreActive,
+    ...baseSubsidiaries.filter(s => !managedKeys.has(s.subName)),
+  ];
 
   // Extract unique sender and receiver names
   const { senderNames, receiverNames } = useMemo(() => {
