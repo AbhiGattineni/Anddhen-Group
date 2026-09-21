@@ -843,7 +843,10 @@ export const Transaction = () => {
         />
       )}
 
-      <ManageSubsidiariesModal show={showSubsidiaryModal} onHide={() => setShowSubsidiaryModal(false)} />
+      <ManageSubsidiariesModal
+        show={showSubsidiaryModal}
+        onHide={() => setShowSubsidiaryModal(false)}
+      />
 
       {showConfirmation && (
         <ConfirmationDialog
