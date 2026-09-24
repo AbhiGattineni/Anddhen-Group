@@ -4,6 +4,7 @@ import { Carousel, Container, Card, Button } from 'react-bootstrap';
 import { Link, Routes, Route } from 'react-router-dom';
 import FinanceDataUpload from './FinanceDataUpload';
 import InvestmentOptionsTabs from './InvestmentOptionsTabs';
+import PortfolioDashboard from './PortfolioDashboard';
 
 export const Ati = () => {
   const [setShowToast] = useState(false);
@@ -81,6 +82,11 @@ export const Ati = () => {
                     </Card>
                   </div>
                 </div>
+              </div>
+
+              {/* Portfolio Dashboard */}
+              <div className="mt-5 p-0">
+                <PortfolioDashboard />
               </div>
 
               {/* Explore Global Investment Options - New Section */}
