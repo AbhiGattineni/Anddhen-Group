@@ -60,6 +60,111 @@ function fmt(val, currency) {
   return `$${Math.round(val).toLocaleString('en-US')}`;
 }
 
+function fmtAxis(val, currency) {
+  if (currency === 'INR') {
+    if (val >= 1e7) return `₹${+(val / 1e7).toFixed(1)}Cr`;
+    if (val >= 1e5) return `₹${+(val / 1e5).toFixed(1)}L`;
+    if (val >= 1e3) return `₹${+(val / 1e3).toFixed(0)}K`;
+    return `₹${Math.round(val)}`;
+  }
+  if (val >= 1e6) return `$${+(val / 1e6).toFixed(1)}M`;
+  if (val >= 1e3) return `$${+(val / 1e3).toFixed(0)}K`;
+  return `$${Math.round(val)}`;
+}
+
+// Rule-based pros/cons of the user's allocation relative to Shan's model portfolio.
+function analyzeAllocation(userPct, userCagr, shansCagr) {
+  const pros = [];
+  const cons = [];
+  const us = userPct['US Equity (S&P 500)'];
+  const gold = userPct['Gold'];
+  const large = userPct['Large Cap (Nifty 50)'];
+  const midSmall = userPct['Midcap (Nifty 150)'] + userPct['Smallcap (Nifty 250)'];
+  const fd = userPct['FDs / Silver / Misc'];
+  const equity = us + large + midSmall;
+  const used = ASSETS.filter(a => userPct[a.name] > 0).length;
+  const top = ASSETS.reduce((m, a) => (userPct[a.name] > userPct[m.name] ? a : m), ASSETS[0]);
+  const cagrDiff = userCagr - shansCagr;
+
+  if (cagrDiff >= 0.1) {
+    pros.push(
+      `Higher expected return: ~${userCagr.toFixed(1)}% p.a. vs ${shansCagr.toFixed(1)}% for the model.`
+    );
+  } else if (cagrDiff <= -0.1) {
+    cons.push(
+      `Lower expected return: ~${userCagr.toFixed(1)}% p.a. vs ${shansCagr.toFixed(1)}% for the model.`
+    );
+  } else {
+    pros.push('Expected return is in line with the model portfolio.');
+  }
+
+  if (used <= 2) {
+    cons.push(
+      `Concentrated in only ${used} asset class${used === 1 ? '' : 'es'} (model uses ${ASSETS.length}). A downturn in one hits the whole portfolio.`
+    );
+  } else if (used >= 5) {
+    pros.push(`Well diversified across ${used} asset classes, similar to the model.`);
+  }
+  if (top && userPct[top.name] > 50) {
+    cons.push(
+      `${userPct[top.name].toFixed(0)}% sits in ${top.name}, which is a single point of risk.`
+    );
+  }
+
+  if (gold === 0) {
+    cons.push(
+      'No gold. The model holds 15% as a hedge against inflation, rupee fall and equity crashes.'
+    );
+  } else if (gold >= 10) {
+    pros.push('Holds gold, which tends to cushion equity sell-offs and rupee depreciation.');
+  }
+
+  if (us === 0) {
+    cons.push(
+      'No US equity, so no global diversification or USD hedge against rupee depreciation.'
+    );
+  } else if (us > 40) {
+    pros.push('Strong global/USD exposure protects against rupee depreciation.');
+    cons.push(
+      `${us.toFixed(0)}% in US equity adds currency risk and is well above the model's 15%.`
+    );
+  } else {
+    pros.push('Includes US equity for global diversification.');
+  }
+
+  if (midSmall === 0) {
+    pros.push('No mid/small caps, so lower volatility and shallower drawdowns.');
+    cons.push("Misses mid/small-cap growth, which is the model's highest-returning segment (40%).");
+  } else if (midSmall > 55) {
+    pros.push('Heavy mid/small-cap tilt gives higher long-term growth potential.');
+    cons.push(
+      `${midSmall.toFixed(0)}% in mid/small caps means high volatility; 30–50% drawdowns are common in bear markets.`
+    );
+  }
+
+  if (large >= 20) {
+    pros.push('Solid large-cap core adds stability and liquidity.');
+  }
+
+  if (fd === 0) {
+    cons.push('No FD/debt cushion for emergencies or buying opportunities during market dips.');
+  } else if (fd > 25) {
+    cons.push(
+      `${fd.toFixed(0)}% in FDs/misc drags long-term returns and may not beat inflation after tax.`
+    );
+  }
+
+  if (equity > 90) {
+    cons.push(
+      `About ${equity.toFixed(0)}% equity (model: 75%), so expect larger swings in bad years.`
+    );
+  } else if (equity < 60) {
+    pros.push(`Lower equity share (${equity.toFixed(0)}%) makes for a smoother ride.`);
+  }
+
+  return { pros, cons };
+}
+
 const LABEL_SX = { fontSize: 11 };
 
 const renderPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, pct }) => {
@@ -119,6 +224,32 @@ export default function PortfolioDashboard() {
   const userProjected = totalUserAmt
     ? totalUserAmt * Math.pow(1 + userCagr / 100, projYears)
     : null;
+
+  const userPct = useMemo(() => {
+    const m = {};
+    ASSETS.forEach(
+      a => (m[a.name] = totalUserAmt ? (userAllocMap[a.name] / totalUserAmt) * 100 : 0)
+    );
+    return m;
+  }, [userAllocMap, totalUserAmt]);
+
+  const growthData = useMemo(() => {
+    if (!totalUserAmt) return [];
+    const data = [];
+    for (let n = 0; n <= projYears; n++) {
+      data.push({
+        year: n,
+        "Shan's Portfolio": Math.round(totalUserAmt * Math.pow(1 + shansCagr / 100, n)),
+        'Your Portfolio': Math.round(totalUserAmt * Math.pow(1 + userCagr / 100, n)),
+      });
+    }
+    return data;
+  }, [totalUserAmt, projYears, shansCagr, userCagr]);
+
+  const analysis = useMemo(
+    () => (totalUserAmt ? analyzeAllocation(userPct, userCagr, shansCagr) : null),
+    [userPct, userCagr, shansCagr, totalUserAmt]
+  );
 
   const comparisonData = useMemo(
     () =>
@@ -594,7 +725,7 @@ export default function PortfolioDashboard() {
               />
               <YAxis tick={LABEL_SX} unit="%" />
               <Tooltip formatter={(v, n) => [`${v}%`, n]} contentStyle={{ fontSize: 12 }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Legend verticalAlign="top" wrapperStyle={{ fontSize: 12, paddingBottom: 8 }} />
               <Bar dataKey="Shan's Target" fill="#3b82f6" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Your Allocation" fill="#10b981" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -686,6 +817,112 @@ export default function PortfolioDashboard() {
               )}
             </div>
           </div>
+
+          {/* Growth over time */}
+          <div style={{ marginTop: 28 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#475569', marginBottom: 12 }}>
+              Growth Over {projYears} Years ({fmt(totalUserAmt, currency)} invested)
+            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={growthData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="year"
+                  tick={LABEL_SX}
+                  tickFormatter={v => `Yr ${v}`}
+                  interval="preserveStartEnd"
+                />
+                <YAxis tick={LABEL_SX} tickFormatter={v => fmtAxis(v, currency)} width={64} />
+                <Tooltip
+                  formatter={(v, n) => [fmt(v, currency), n]}
+                  labelFormatter={v => `Year ${v}`}
+                  contentStyle={{ fontSize: 12 }}
+                />
+                <Legend verticalAlign="top" wrapperStyle={{ fontSize: 12, paddingBottom: 8 }} />
+                <Line
+                  type="monotone"
+                  dataKey="Shan's Portfolio"
+                  stroke="#3b82f6"
+                  strokeWidth={2.5}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Your Portfolio"
+                  stroke="#10b981"
+                  strokeWidth={2.5}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+            <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, marginBottom: 0 }}>
+              Move the Projection Horizon slider above to change the number of years.
+            </p>
+          </div>
+
+          {/* Pros & cons */}
+          {analysis && (
+            <div style={{ marginTop: 28 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#475569', marginBottom: 12 }}>
+                Your Allocation vs Shan&apos;s: Pros &amp; Cons
+              </div>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                {[
+                  {
+                    title: 'Pros',
+                    items: analysis.pros,
+                    bg: '#f0fdf4',
+                    color: '#15803d',
+                    icon: '✓',
+                  },
+                  {
+                    title: 'Cons',
+                    items: analysis.cons,
+                    bg: '#fef2f2',
+                    color: '#b91c1c',
+                    icon: '!',
+                  },
+                ].map(col => (
+                  <div
+                    key={col.title}
+                    style={{
+                      flex: '1 1 260px',
+                      background: col.bg,
+                      borderRadius: 10,
+                      padding: '14px 18px',
+                    }}
+                  >
+                    <div
+                      style={{ fontWeight: 700, color: col.color, marginBottom: 8, fontSize: 14 }}
+                    >
+                      {col.title}
+                    </div>
+                    {col.items.length ? (
+                      <ul style={{ margin: 0, paddingLeft: 0, listStyle: 'none' }}>
+                        {col.items.map(item => (
+                          <li
+                            key={item}
+                            style={{
+                              display: 'flex',
+                              gap: 8,
+                              fontSize: 13,
+                              color: '#374151',
+                              marginBottom: 6,
+                            }}
+                          >
+                            <span style={{ color: col.color, fontWeight: 700 }}>{col.icon}</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div style={{ fontSize: 13, color: '#64748b' }}>Nothing notable.</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
