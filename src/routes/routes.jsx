@@ -29,6 +29,10 @@ import Ats from 'src/components/pages/inc/Ats';
 import Ans from 'src/components/pages/inc/Ans';
 import ResumeHome from 'src/components/pages/resume/ResumeHome';
 import FinanceDataUpload from 'src/components/pages/inc/FinanceDataUpload';
+import AtiSubPage from 'src/components/pages/inc/AtiSubPage';
+import PortfolioDashboard from 'src/components/pages/inc/PortfolioDashboard';
+import GlobalInvestmentOptions from 'src/components/pages/inc/GlobalInvestmentOptions';
+import HousePricePredictor from 'src/components/pages/inc/HousePricePredictor';
 import VideoEditor from 'src/components/pages/inc/VideoEditor';
 import TermsAndConditions from 'src/components/pages/Policies/TermsAndConditions';
 import PrivacyPolicy from 'src/components/pages/Policies/PrivacyPolicy';
@@ -104,6 +108,30 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Ati /> },
       { path: 'finance-data', element: <FinanceDataUpload /> },
+      {
+        path: 'portfolio-dashboard',
+        element: (
+          <AtiSubPage>
+            <PortfolioDashboard />
+          </AtiSubPage>
+        ),
+      },
+      {
+        path: 'global-investments',
+        element: (
+          <AtiSubPage>
+            <GlobalInvestmentOptions />
+          </AtiSubPage>
+        ),
+      },
+      {
+        path: 'house-price-predictor',
+        element: (
+          <AtiSubPage>
+            <HousePricePredictor />
+          </AtiSubPage>
+        ),
+      },
     ],
   },
   {

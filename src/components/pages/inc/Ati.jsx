@@ -3,8 +3,6 @@ import EnquiryForm from 'src/components/organisms/Forms/EnquiryForm';
 import { Carousel, Container, Card, Button } from 'react-bootstrap';
 import { Link, Routes, Route } from 'react-router-dom';
 import FinanceDataUpload from './FinanceDataUpload';
-import InvestmentOptionsTabs from './InvestmentOptionsTabs';
-import PortfolioDashboard from './PortfolioDashboard';
 
 export const Ati = () => {
   const [setShowToast] = useState(false);
@@ -60,44 +58,68 @@ export const Ati = () => {
               <div className="container mt-5">
                 <div className="row justify-content-center">
                   <div className="col-md-6 mb-4">
-                    <Card className="shadow border-0">
-                      <Card.Body className="text-center">
+                    <Card className="shadow border-0 h-100">
+                      <Card.Body className="text-center d-flex flex-column">
                         <Card.Title>House Price Predictor</Card.Title>
-                        <Card.Text>Enter house features to predict its price instantly.</Card.Text>
-                        <Button as={Link} to="house-price-predictor" variant="primary">
-                          Predict Now
-                        </Button>
+                        <Card.Text className="flex-grow-1">
+                          Enter house features to predict its price instantly.
+                        </Card.Text>
+                        <div>
+                          <Button as={Link} to="house-price-predictor" variant="primary">
+                            Predict Now
+                          </Button>
+                        </div>
                       </Card.Body>
                     </Card>
                   </div>
                   <div className="col-md-6 mb-4">
-                    <Card className="shadow border-0">
-                      <Card.Body className="text-center">
+                    <Card className="shadow border-0 h-100">
+                      <Card.Body className="text-center d-flex flex-column">
                         <Card.Title>Finance Data Management</Card.Title>
-                        <Card.Text>Upload and analyze your financial statements.</Card.Text>
-                        <Button as={Link} to="finance-data" variant="primary">
-                          Manage Finance Data
-                        </Button>
+                        <Card.Text className="flex-grow-1">
+                          Upload and analyze your financial statements.
+                        </Card.Text>
+                        <div>
+                          <Button as={Link} to="finance-data" variant="primary">
+                            Manage Finance Data
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                  <div className="col-md-6 mb-4">
+                    <Card className="shadow border-0 h-100">
+                      <Card.Body className="text-center d-flex flex-column">
+                        <Card.Title>ATI Portfolio Dashboard</Card.Title>
+                        <Card.Text className="flex-grow-1">
+                          Compare your allocation against our model portfolio and see projected
+                          growth.
+                        </Card.Text>
+                        <div>
+                          <Button as={Link} to="portfolio-dashboard" variant="primary">
+                            Open Dashboard
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                  <div className="col-md-6 mb-4">
+                    <Card className="shadow border-0 h-100">
+                      <Card.Body className="text-center d-flex flex-column">
+                        <Card.Title>Explore Global Investment Options</Card.Title>
+                        <Card.Text className="flex-grow-1">
+                          Browse investment options across the USA, India, Canada, Australia and the
+                          UK.
+                        </Card.Text>
+                        <div>
+                          <Button as={Link} to="global-investments" variant="primary">
+                            Explore Options
+                          </Button>
+                        </div>
                       </Card.Body>
                     </Card>
                   </div>
                 </div>
-              </div>
-
-              {/* Portfolio Dashboard */}
-              <div className="mt-5 p-0">
-                <PortfolioDashboard />
-              </div>
-
-              {/* Explore Global Investment Options - New Section */}
-              <div className="investment-section mt-5 mb-5 p-4 rounded bg-white shadow-sm">
-                <h2
-                  className="text-center mb-4"
-                  style={{ fontWeight: 600, fontSize: '2rem', letterSpacing: '0.5px' }}
-                >
-                  Explore Global Investment Options
-                </h2>
-                <InvestmentOptionsTabs />
               </div>
 
               <div className="mt-5 p-3 rounded bg-light">
