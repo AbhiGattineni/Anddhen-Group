@@ -412,6 +412,12 @@ export const adminPlates = [
     desc: 'Log hours and submit your daily status update',
   },
   {
+    child: 'Jira',
+    route: 'jira',
+    icon: 'bi-kanban',
+    desc: 'Team ticket board — assign work and move it from Backlog to Done',
+  },
+  {
     child: 'TripSaathi',
     route: 'tripsaathi',
     icon: 'bi-people',
