@@ -8,6 +8,7 @@ import {
   TYPES,
   PRIORITIES,
   subscribeTickets,
+  subscribeProducts,
   createTicket,
   updateTicket,
   deleteTicket,
@@ -49,9 +50,10 @@ const EMPTY_FORM = {
   priority: 'medium',
   status: 'todo',
   assigneeUid: '',
+  product: '',
 };
 
-function TicketModal({ show, ticket, people, onClose, onSave, onDelete }) {
+function TicketModal({ show, ticket, people, products, onClose, onSave, onDelete }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -68,6 +70,7 @@ function TicketModal({ show, ticket, people, onClose, onSave, onDelete }) {
             priority: ticket.priority || 'medium',
             status: ticket.status || 'todo',
             assigneeUid: ticket.assigneeUid || '',
+            product: ticket.product || '',
           }
         : EMPTY_FORM
     );
@@ -218,7 +221,49 @@ function TicketModal({ show, ticket, people, onClose, onSave, onDelete }) {
               </select>
             </div>
           </div>
-          {ticket && (
+          <div className="mt-3">
+            <label className="form-label fw-semibold" htmlFor="jira-product">
+              Product / Client
+            </label>
+            <select
+              id="jira-product"
+              className="form-select"
+              value={form.product}
+              onChange={set('product')}
+            >
+              <option value="">None (internal)</option>
+              {products.map(name => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {ticket?.source === 'contact' && ticket.contact && (
+            <div className="jira-contact mt-3">
+              <div className="fw-semibold mb-1">
+                <i className="bi bi-envelope-paper me-1" />
+                Reported via the Contact page
+              </div>
+              <div>{ticket.contact.name}</div>
+              {ticket.contact.company && <div>{ticket.contact.company}</div>}
+              {ticket.contact.email && (
+                <div>
+                  <a
+                    href={`mailto:${ticket.contact.email}?subject=${encodeURIComponent(`${ticket.key}: ${ticket.title}`)}`}
+                  >
+                    {ticket.contact.email}
+                  </a>
+                </div>
+              )}
+              {ticket.contact.phone && (
+                <div>
+                  <a href={`tel:${ticket.contact.phone}`}>{ticket.contact.phone}</a>
+                </div>
+              )}
+            </div>
+          )}
+          {ticket && ticket.source !== 'contact' && (
             <p className="text-muted small mt-3 mb-0">
               Reported by {ticket.reporterName || 'unknown'}
             </p>
@@ -256,6 +301,7 @@ TicketModal.propTypes = {
   show: PropTypes.bool.isRequired,
   ticket: PropTypes.object,
   people: PropTypes.array.isRequired,
+  products: PropTypes.array.isRequired,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
@@ -275,6 +321,16 @@ function TicketCard({ ticket, onOpen, onDragStart }) {
       tabIndex={0}
     >
       <div className="jira-card-title">{ticket.title}</div>
+      {ticket.product && (
+        <div className="mb-2">
+          <span className="jira-product" title="Product / client">
+            {ticket.product}
+          </span>
+          {ticket.source === 'contact' && (
+            <i className="bi bi-envelope-paper ms-2 text-muted" title="Reported by a customer" />
+          )}
+        </div>
+      )}
       <div className="jira-card-meta">
         <span className="d-flex align-items-center gap-2">
           <i className={`bi ${type.icon}`} style={{ color: type.color }} title={type.label} />
@@ -313,6 +369,8 @@ export default function JiraBoard() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [assigneeFilter, setAssigneeFilter] = useState([]);
+  const [productFilter, setProductFilter] = useState('');
+  const [productDocs, setProductDocs] = useState([]);
   const [modal, setModal] = useState({ show: false, ticket: null });
   const [dragOver, setDragOver] = useState(null);
 
@@ -330,6 +388,16 @@ export default function JiraBoard() {
       ),
     []
   );
+
+  useEffect(() => subscribeProducts(setProductDocs), []);
+
+  // Product names for the filter and editor: managed products plus any still
+  // used by tickets (renamed or deleted products stay readable).
+  const productNames = useMemo(() => {
+    const names = new Set(productDocs.map(p => p.name).filter(Boolean));
+    tickets.forEach(t => t.product && names.add(t.product));
+    return [...names].sort((a, b) => a.localeCompare(b));
+  }, [productDocs, tickets]);
 
   useEffect(() => {
     listUsersWithRoles()
@@ -370,14 +438,16 @@ export default function JiraBoard() {
       if (assigneeFilter.length && !assigneeFilter.includes(t.assigneeUid || UNASSIGNED)) {
         return false;
       }
+      if (productFilter && (t.product || '') !== productFilter) return false;
       if (!q) return true;
       return (
         (t.title || '').toLowerCase().includes(q) ||
+        (t.product || '').toLowerCase().includes(q) ||
         (t.key || '').toLowerCase().includes(q) ||
         (t.assigneeName || '').toLowerCase().includes(q)
       );
     });
-  }, [tickets, search, assigneeFilter]);
+  }, [tickets, search, assigneeFilter, productFilter]);
 
   const columns = useMemo(
     () =>
@@ -400,6 +470,7 @@ export default function JiraBoard() {
       type: form.type,
       priority: form.priority,
       status: form.status,
+      product: form.product,
       assigneeUid: form.assigneeUid || '',
       assigneeName: form.assigneeUid
         ? nameFor(form.assigneeUid) || modal.ticket?.assigneeName || ''
@@ -437,7 +508,7 @@ export default function JiraBoard() {
     }
   };
 
-  const filtersOn = search.trim() || assigneeFilter.length;
+  const filtersOn = search.trim() || assigneeFilter.length || productFilter;
 
   return (
     <div className="jira-wrap">
@@ -469,6 +540,21 @@ export default function JiraBoard() {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
+        {productNames.length > 0 && (
+          <select
+            className="form-select jira-product-filter"
+            value={productFilter}
+            onChange={e => setProductFilter(e.target.value)}
+            aria-label="Filter by product"
+          >
+            <option value="">All products</option>
+            {productNames.map(n => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        )}
         <div className="jira-people">
           {filterPeople.map(p => (
             <button
@@ -512,6 +598,7 @@ export default function JiraBoard() {
             onClick={() => {
               setSearch('');
               setAssigneeFilter([]);
+              setProductFilter('');
             }}
           >
             Clear filters
@@ -562,6 +649,7 @@ export default function JiraBoard() {
         show={modal.show}
         ticket={modal.ticket}
         people={people}
+        products={productNames}
         onClose={() => setModal({ show: false, ticket: null })}
         onSave={save}
         onDelete={() => deleteTicket(modal.ticket.id)}

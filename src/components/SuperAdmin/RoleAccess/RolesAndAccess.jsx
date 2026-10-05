@@ -2,6 +2,7 @@ import React from 'react';
 import RoleAccess from './RoleAccess';
 import AssignCardAccess from './AssignCardAccess';
 import RoleManager from './RoleManager';
+import ProductManager from './ProductManager';
 
 const RolesAndAccess = () => {
   return (
@@ -50,6 +51,20 @@ const RolesAndAccess = () => {
             Add Role
           </button>
         </li>
+        <li className="nav-item" role="presentation">
+          <button
+            className="nav-link"
+            id="products-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#products"
+            type="button"
+            role="tab"
+            aria-controls="products"
+            aria-selected="false"
+          >
+            Products
+          </button>
+        </li>
         {/* <li className="nav-item" role="presentation">
           <button
             className="nav-link"
@@ -84,6 +99,9 @@ const RolesAndAccess = () => {
         </div>
         <div className="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
           <RoleAccess />
+        </div>
+        <div className="tab-pane fade" id="products" role="tabpanel" aria-labelledby="products-tab">
+          <ProductManager />
         </div>
         {/* <div
           className="tab-pane fade"
