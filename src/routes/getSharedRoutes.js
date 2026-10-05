@@ -16,6 +16,7 @@ import QuizAdmin from 'src/components/SuperAdmin/Quiz/QuizAdmin';
 import AmbulanceTracking from 'src/components/SuperAdmin/Ambulance/AmbulanceTracking';
 import TripSaathiDashboard from 'src/components/SuperAdmin/TripSaathi/TripSaathiDashboard';
 import Timesheet from 'src/components/SuperAdmin/Timesheet/Timesheet';
+import JiraBoard from 'src/components/SuperAdmin/Jira/JiraBoard';
 export function getSharedRoutes() {
   return [
     { path: 'transactions', element: <Transaction /> },
@@ -24,6 +25,7 @@ export function getSharedRoutes() {
     { path: 'ambulance', element: <AmbulanceTracking /> },
     { path: 'planningsaathi', element: <TripSaathiDashboard /> },
     { path: 'timesheet', element: <Timesheet /> },
+    { path: 'jira', element: <JiraBoard /> },
     { path: 'colleges', element: <Colleges /> },
     { path: 'consultants', element: <Consultants /> },
     { path: 'roleaccess', element: <RolesAndAccess /> },
