@@ -50,7 +50,8 @@ service cloud.firestore {
       return col in ['subsidiary', 'access_roles', 'role', 'Packages',
                      'collegelist', 'social_links',
                      'stockParameters', 'stockCompanies', 'stockSnapshots',
-                     'quizzes', 'quizQuestions', 'questionSubmissions'];
+                     'quizzes', 'quizQuestions', 'questionSubmissions',
+                     'jiraProducts'];
     }
 
     // --- User docs: role-change protection (no self-elevation) ---
@@ -145,7 +146,37 @@ service cloud.firestore {
             && 'jira' in get(/databases/$(database)/documents/User/$(request.auth.uid))
                            .data.get('cardAccess', []));
     }
+    // A customer issue from the public Contact page: anyone (signed in or not)
+    // may create a ticket of exactly this shape, straight into Backlog. Its key
+    // must be the next AG-n, and the same write must bump jiraMeta/board.
+    function isContactReport() {
+      let d = request.resource.data;
+      let meta = /databases/$(database)/documents/jiraMeta/board;
+      let n = exists(meta) ? get(meta).data.nextNumber : 1;
+      return d.keys().hasOnly(['key', 'title', 'description', 'type', 'priority', 'status',
+                               'product', 'source', 'contact', 'assigneeUid', 'assigneeName',
+                               'reporterUid', 'reporterName', 'createdAt', 'updatedAt'])
+        && d.source == 'contact'
+        && d.status == 'backlog'
+        && d.assigneeUid == '' && d.assigneeName == '' && d.reporterUid == ''
+        && d.type in ['task', 'story', 'bug']
+        && d.priority in ['highest', 'high', 'medium', 'low']
+        && d.title is string && d.title.size() > 0 && d.title.size() <= 200
+        && d.description is string && d.description.size() <= 5000
+        && d.product is string && d.product.size() > 0 && d.product.size() <= 100
+        && d.reporterName is string && d.reporterName.size() <= 100
+        && d.contact is map
+        && d.contact.keys().hasOnly(['name', 'email', 'phone', 'company'])
+        && d.contact.name is string && d.contact.name.size() <= 100
+        && d.contact.email is string && d.contact.email.size() <= 200
+        && d.contact.phone is string && d.contact.phone.size() <= 20
+        && d.contact.company is string && d.contact.company.size() <= 100
+        && d.createdAt == request.time && d.updatedAt == request.time
+        && d.key == 'AG-' + string(n)
+        && getAfter(meta).data.nextNumber == n + 1;
+    }
     match /jiraTickets/{ticketId} {
+      allow create: if isContactReport();
       allow read, delete: if signedIn() && canUseJira();
       allow create, update: if signedIn() && canUseJira()
         && request.resource.data.keys().size() <= 16
@@ -154,7 +185,21 @@ service cloud.firestore {
         && request.resource.data.get('title', '').size() <= 200;
     }
     match /jiraMeta/{docId} {
-      allow read, write: if signedIn() && canUseJira();
+      // Only the ticket counter lives here; the Contact page reads it and may
+      // advance it by exactly one (to allocate a key for a customer report).
+      allow read: if true;
+      allow write: if signedIn() && canUseJira();
+      allow create: if docId == 'board'
+        && request.resource.data.keys().hasOnly(['nextNumber'])
+        && request.resource.data.nextNumber == 2;
+      allow update: if docId == 'board'
+        && request.resource.data.keys().hasOnly(['nextNumber'])
+        && request.resource.data.nextNumber == resource.data.nextNumber + 1;
+    }
+    // Products/clients shown in the Contact page dropdown: public read; writes
+    // are admin-only via adminWritable() in the catch-all below.
+    match /jiraProducts/{productId} {
+      allow read: if true;
     }
 
     // --- Everything else (User, timesheetEntries and the Jira board handled

@@ -6,9 +6,13 @@
  *      assigneeUid, assigneeName, reporterUid, reporterName,
  *      createdAt, updatedAt }
  *  jiraMeta/board — { nextNumber } (counter behind the AG-n keys)
+ *  jiraProducts/{autoId} — { name, active, createdAt } (products/clients that
+ *    customers can report issues against; managed under Roles & Access)
  *
  * Access (enforced in firestore.rules): admins and above, plus employees who
  * hold the `jira` card. Anyone with access may create, edit and move tickets.
+ * The public Contact page may additionally create Backlog tickets with
+ * source 'contact' (see reportIssue below), and anyone may read products.
  */
 import {
   collection,
@@ -17,11 +21,13 @@ import {
   runTransaction,
   updateDoc,
   deleteDoc,
+  addDoc,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../connector/firebase';
 
 const TICKETS = 'jiraTickets';
+const PRODUCTS = 'jiraProducts';
 const META_DOC = doc(db, 'jiraMeta', 'board');
 
 export const KEY_PREFIX = 'AG';
@@ -78,12 +84,75 @@ export async function createTicket(fields) {
   return ref.id;
 }
 
+/**
+ * File a customer issue from the public Contact page straight into Backlog.
+ * Works signed out: firestore.rules accept exactly this shape (and nothing
+ * else) from anyone. Returns the new ticket's key, e.g. 'AG-14'.
+ */
+export async function reportIssue({ product, type, priority, title, description, contact }) {
+  const ref = doc(collection(db, TICKETS));
+  let key = '';
+  await runTransaction(db, async tx => {
+    const meta = await tx.get(META_DOC);
+    const n = (meta.exists() ? meta.data().nextNumber : 1) || 1;
+    key = `${KEY_PREFIX}-${n}`;
+    tx.set(META_DOC, { nextNumber: n + 1 }, { merge: true });
+    tx.set(ref, {
+      key,
+      title,
+      description,
+      type,
+      priority,
+      status: 'backlog',
+      product,
+      source: 'contact',
+      contact,
+      assigneeUid: '',
+      assigneeName: '',
+      reporterUid: '',
+      reporterName: contact.name,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  });
+  return key;
+}
+
 export async function updateTicket(id, fields) {
   await updateDoc(doc(db, TICKETS, id), { ...fields, updatedAt: serverTimestamp() });
 }
 
 export async function deleteTicket(id) {
   await deleteDoc(doc(db, TICKETS, id));
+}
+
+/** Live list of products/clients, sorted by name. Returns the unsubscribe function. */
+export function subscribeProducts(onChange, onError) {
+  return onSnapshot(
+    collection(db, PRODUCTS),
+    snap =>
+      onChange(snap.docs.map(withId).sort((a, b) => (a.name || '').localeCompare(b.name || ''))),
+    err => {
+      console.error('subscribeProducts failed:', err);
+      if (onError) onError(err?.code || err?.message || String(err));
+    }
+  );
+}
+
+export async function addProduct(name) {
+  await addDoc(collection(db, PRODUCTS), {
+    name: name.trim(),
+    active: true,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateProduct(id, fields) {
+  await updateDoc(doc(db, PRODUCTS, id), fields);
+}
+
+export async function deleteProduct(id) {
+  await deleteDoc(doc(db, PRODUCTS, id));
 }
 
 /** Two-letter initials for an avatar. */

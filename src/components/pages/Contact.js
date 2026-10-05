@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Container,
   Box,
@@ -10,21 +10,54 @@ import {
   Fade,
   Alert,
   Grid,
+  MenuItem,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 import { Send } from '@mui/icons-material';
 import { sendEmail } from '../templates/emailService';
+import { subscribeProducts, reportIssue } from 'src/services/jira/jiraBoard';
 import './Home.css';
 
-function Contact() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    message: '',
-  });
+const EMPTY_FORM = {
+  fullName: '',
+  phone: '',
+  email: '',
+  message: '',
+  company: '',
+  product: '',
+  issueType: 'bug',
+  priority: 'medium',
+  title: '',
+};
 
+// Customer-facing labels -> Jira board ticket types / priorities.
+const ISSUE_TYPES = [
+  { value: 'bug', label: 'Bug / something is broken' },
+  { value: 'story', label: 'Feature request' },
+  { value: 'task', label: 'Question / support' },
+];
+const PRIORITIES = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' },
+  { value: 'highest', label: 'Urgent — blocking our work' },
+];
+
+const inputSx = { borderRadius: '10px', fontSize: '0.95rem' };
+
+function Contact() {
+  const [mode, setMode] = useState('enquiry');
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
-  const [toastMsg, setToastMsg] = useState('');
+  const [toast, setToast] = useState({ type: '', text: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  // Products/clients are managed under Roles & Access -> Products.
+  useEffect(() => subscribeProducts(setProducts), []);
+  const activeProducts = useMemo(() => products.filter(p => p.active !== false), [products]);
+  const isIssue = mode === 'issue' && activeProducts.length > 0;
 
   const validate = () => {
     const newErrors = {};
@@ -36,7 +69,7 @@ function Contact() {
     }
 
     if (!formData.phone) {
-      newErrors.phone = 'Phone number is required';
+      if (!isIssue) newErrors.phone = 'Phone number is required';
     } else if (!/^\d{10}$/.test(formData.phone)) {
       newErrors.phone = 'Phone number must be 10 digits';
     }
@@ -47,8 +80,13 @@ function Contact() {
       newErrors.email = 'Email address is invalid';
     }
 
+    if (isIssue) {
+      if (!formData.product) newErrors.product = 'Choose the product or client';
+      if (!formData.title.trim()) newErrors.title = 'Give the issue a short title';
+    }
+
     if (!formData.message) {
-      newErrors.message = 'Message is required';
+      newErrors.message = isIssue ? 'Describe the issue' : 'Message is required';
     } else if (formData.message.length < 5) {
       newErrors.message = 'Message is too short';
     }
@@ -63,33 +101,109 @@ function Contact() {
       return;
     }
 
+    setSubmitting(true);
     try {
-      await sendEmail('Contact Us Form', {
-        name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        message: formData.message,
-      });
-      setFormData({
-        fullName: '',
-        phone: '',
-        email: '',
-        message: '',
-      });
-      setToastMsg('Your message has been sent successfully!');
+      if (isIssue) {
+        const product = activeProducts.find(p => p.id === formData.product)?.name || '';
+        const key = await reportIssue({
+          product,
+          type: formData.issueType,
+          priority: formData.priority,
+          title: formData.title.trim().slice(0, 200),
+          description: formData.message.trim().slice(0, 5000),
+          contact: {
+            name: formData.fullName.trim().slice(0, 100),
+            email: formData.email.trim().slice(0, 200),
+            phone: formData.phone.trim().slice(0, 20),
+            company: formData.company.trim().slice(0, 100),
+          },
+        });
+        sendEmail('Issue Report', {
+          ticket: key,
+          product,
+          type: ISSUE_TYPES.find(t => t.value === formData.issueType)?.label,
+          priority: PRIORITIES.find(p => p.value === formData.priority)?.label,
+          title: formData.title,
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          company: formData.company,
+          description: formData.message,
+        });
+        setToast({
+          type: 'success',
+          text: `Thanks! Your issue was logged as ${key}. Our team will pick it up shortly — quote ${key} if you contact us about it.`,
+        });
+      } else {
+        await sendEmail('Contact Us Form', {
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        });
+        setToast({ type: 'success', text: 'Your message has been sent successfully!' });
+      }
+      setFormData(EMPTY_FORM);
       setErrors({});
     } catch (error) {
-      setToastMsg('Something went wrong, please try again!');
+      setToast({ type: 'error', text: 'Something went wrong, please try again!' });
       console.error('Error:', error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleChange = e => {
-    const { id, value } = e.target;
+  const setField = (id, value) => {
     setFormData(prevData => ({ ...prevData, [id]: value }));
     setErrors(prevErrors => ({ ...prevErrors, [id]: '' }));
-    if (toastMsg) setToastMsg('');
+    if (toast.text) setToast({ type: '', text: '' });
   };
+
+  const handleChange = e => setField(e.target.id, e.target.value);
+
+  const switchMode = (_e, next) => {
+    if (!next) return;
+    setMode(next);
+    setErrors({});
+    setToast({ type: '', text: '' });
+  };
+
+  const field = (id, label, { hint, ...extra } = {}) => (
+    <TextField
+      fullWidth
+      id={id}
+      label={label}
+      variant="outlined"
+      value={formData[id]}
+      onChange={handleChange}
+      sx={{ mb: 2.5 }}
+      InputProps={{ sx: inputSx }}
+      {...extra}
+      error={!!errors[id]}
+      helperText={errors[id] || hint}
+    />
+  );
+
+  const select = (id, label, options) => (
+    <TextField
+      select
+      fullWidth
+      id={id}
+      label={label}
+      value={formData[id]}
+      onChange={e => setField(id, e.target.value)}
+      error={!!errors[id]}
+      helperText={errors[id]}
+      sx={{ mb: 2.5 }}
+      InputProps={{ sx: inputSx }}
+    >
+      {options.map(o => (
+        <MenuItem key={o.value} value={o.value}>
+          {o.label}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
 
   return (
     <div className="home-page">
@@ -149,87 +263,62 @@ function Contact() {
                         fontSize: { xs: '1.35rem', md: '1.5rem' },
                       }}
                     >
-                      Send us a Message
+                      {isIssue ? 'Report an Issue' : 'Send us a Message'}
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit}>
-                      <TextField
+                    {activeProducts.length > 0 && (
+                      <ToggleButtonGroup
+                        value={mode}
+                        exclusive
                         fullWidth
-                        id="fullName"
-                        label="Full Name"
-                        variant="outlined"
-                        value={formData.fullName}
-                        onChange={handleChange}
-                        error={!!errors.fullName}
-                        helperText={errors.fullName}
-                        sx={{ mb: 2.5 }}
-                        InputProps={{
-                          sx: {
-                            borderRadius: '10px',
-                            fontSize: '0.95rem',
-                          },
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        id="phone"
-                        label="Phone Number"
-                        variant="outlined"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        error={!!errors.phone}
-                        helperText={errors.phone}
-                        sx={{ mb: 2.5 }}
-                        InputProps={{
-                          sx: {
-                            borderRadius: '10px',
-                            fontSize: '0.95rem',
-                          },
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        variant="outlined"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        error={!!errors.email}
-                        helperText={errors.email}
-                        sx={{ mb: 2.5 }}
-                        InputProps={{
-                          sx: {
-                            borderRadius: '10px',
-                            fontSize: '0.95rem',
-                          },
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        id="message"
-                        label="Message"
-                        variant="outlined"
-                        multiline
-                        rows={5}
-                        value={formData.message}
-                        onChange={handleChange}
-                        error={!!errors.message}
-                        helperText={errors.message}
-                        sx={{ mb: 2.5 }}
-                        InputProps={{
-                          sx: {
-                            borderRadius: '10px',
-                            fontSize: '0.95rem',
-                          },
-                        }}
-                      />
-                      {toastMsg && (
-                        <Alert
-                          severity={toastMsg.includes('success') ? 'success' : 'error'}
-                          sx={{ mb: 3, borderRadius: '12px' }}
+                        onChange={switchMode}
+                        color="primary"
+                        sx={{ mb: 3 }}
+                      >
+                        <ToggleButton
+                          value="enquiry"
+                          sx={{ textTransform: 'none', fontWeight: 600 }}
                         >
-                          {toastMsg}
+                          General enquiry
+                        </ToggleButton>
+                        <ToggleButton value="issue" sx={{ textTransform: 'none', fontWeight: 600 }}>
+                          Report an issue
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    )}
+                    <Box component="form" onSubmit={handleSubmit} noValidate>
+                      {isIssue &&
+                        select(
+                          'product',
+                          'Product / Client',
+                          activeProducts.map(p => ({ value: p.id, label: p.name }))
+                        )}
+                      {field('fullName', 'Full Name')}
+                      {field('email', 'Email Address', { type: 'email' })}
+                      {field('phone', isIssue ? 'Phone Number (optional)' : 'Phone Number', {
+                        type: 'tel',
+                      })}
+                      {isIssue && field('company', 'Company (optional)')}
+                      {isIssue && (
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={6}>
+                            {select('issueType', 'Issue type', ISSUE_TYPES)}
+                          </Grid>
+                          <Grid item xs={12} sm={6}>
+                            {select('priority', 'Priority', PRIORITIES)}
+                          </Grid>
+                        </Grid>
+                      )}
+                      {isIssue && field('title', 'Issue title', { inputProps: { maxLength: 200 } })}
+                      {field('message', isIssue ? 'Describe the issue' : 'Message', {
+                        multiline: true,
+                        rows: 5,
+                        hint: isIssue
+                          ? 'What happened, what you expected, and steps to reproduce it.'
+                          : undefined,
+                      })}
+                      {toast.text && (
+                        <Alert severity={toast.type || 'info'} sx={{ mb: 3, borderRadius: '12px' }}>
+                          {toast.text}
                         </Alert>
                       )}
                       <Button
@@ -238,6 +327,7 @@ function Contact() {
                         fullWidth
                         endIcon={<Send />}
                         className="primary-cta-btn"
+                        disabled={submitting}
                         sx={{
                           py: 1.25,
                           fontSize: '0.95rem',
@@ -247,7 +337,7 @@ function Contact() {
                           mt: 2,
                         }}
                       >
-                        Send Message
+                        {submitting ? 'Sending…' : isIssue ? 'Submit Issue' : 'Send Message'}
                       </Button>
                     </Box>
                   </CardContent>

@@ -167,3 +167,24 @@
 .jira-card-key.done {
   text-decoration: line-through;
 }
+
+.jira-product-filter {
+  width: auto;
+  max-width: 220px;
+}
+.jira-product {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4338ca;
+  background: #eef2ff;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+.jira-contact {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
