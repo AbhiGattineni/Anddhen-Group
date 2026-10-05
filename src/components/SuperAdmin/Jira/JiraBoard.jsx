@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from 'react-bootstrap';
+import { Dropdown, Modal } from 'react-bootstrap';
 import { useAuth } from 'src/hooks/useAuth';
-import { listUsersWithRoles, hasAtLeast, ROLES } from 'src/services/roles/roles';
+import { listUsersWithRoles, ROLES } from 'src/services/roles/roles';
+import { canAccessCard } from 'src/services/roles/cards';
 import {
   STAGES,
   TYPES,
@@ -167,6 +168,11 @@ function TicketModal({ show, ticket, people, products, onClose, onSave, onDelete
                     {p.name}
                   </option>
                 ))}
+                {ticket?.assigneeUid && !people.some(p => p.uid === ticket.assigneeUid) && (
+                  <option value={ticket.assigneeUid}>
+                    {ticket.assigneeName || 'Unknown'} (no Jira access)
+                  </option>
+                )}
               </select>
             </div>
             <div className="col-sm-6">
@@ -307,7 +313,58 @@ TicketModal.propTypes = {
   onDelete: PropTypes.func.isRequired,
 };
 
-function TicketCard({ ticket, onOpen, onDragStart }) {
+/** Click the avatar on a card to reassign it without opening the editor. */
+function AssigneePicker({ ticket, people, onAssign }) {
+  const stop = e => e.stopPropagation();
+  return (
+    // Keep clicks/keys inside the picker from opening the ticket editor.
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+    <span onClick={stop} onKeyDown={stop}>
+      <Dropdown align="end">
+        <Dropdown.Toggle
+          as="button"
+          type="button"
+          className="jira-assign-toggle"
+          title={ticket.assigneeName ? `Assigned to ${ticket.assigneeName}` : 'Assign'}
+          aria-label={
+            ticket.assigneeName ? `Assigned to ${ticket.assigneeName}. Change` : 'Assign ticket'
+          }
+        >
+          <Avatar name={ticket.assigneeName} seed={ticket.assigneeUid} size={24} />
+        </Dropdown.Toggle>
+        <Dropdown.Menu className="jira-assign-menu" popperConfig={{ strategy: 'fixed' }}>
+          <Dropdown.Header>Assign to</Dropdown.Header>
+          <Dropdown.Item active={!ticket.assigneeUid} onClick={() => onAssign(ticket, null)}>
+            <Avatar size={22} /> <span className="ms-2">Unassigned</span>
+          </Dropdown.Item>
+          {people.map(p => (
+            <Dropdown.Item
+              key={p.uid}
+              active={ticket.assigneeUid === p.uid}
+              onClick={() => onAssign(ticket, p)}
+            >
+              <Avatar name={p.name} seed={p.uid} size={22} />
+              <span className="ms-2">{p.name}</span>
+            </Dropdown.Item>
+          ))}
+          {people.length === 0 && (
+            <Dropdown.ItemText className="text-muted small">
+              Nobody has Jira access yet.
+            </Dropdown.ItemText>
+          )}
+        </Dropdown.Menu>
+      </Dropdown>
+    </span>
+  );
+}
+
+AssigneePicker.propTypes = {
+  ticket: PropTypes.object.isRequired,
+  people: PropTypes.array.isRequired,
+  onAssign: PropTypes.func.isRequired,
+};
+
+function TicketCard({ ticket, people, onOpen, onDragStart, onAssign }) {
   const type = TYPES[ticket.type] || TYPES.task;
   const priority = PRIORITIES[ticket.priority] || PRIORITIES.medium;
   return (
@@ -344,7 +401,7 @@ function TicketCard({ ticket, onOpen, onDragStart }) {
             style={{ color: priority.color }}
             title={`${priority.label} priority`}
           />
-          <Avatar name={ticket.assigneeName} seed={ticket.assigneeUid} size={24} />
+          <AssigneePicker ticket={ticket} people={people} onAssign={onAssign} />
         </span>
       </div>
     </div>
@@ -353,8 +410,10 @@ function TicketCard({ ticket, onOpen, onDragStart }) {
 
 TicketCard.propTypes = {
   ticket: PropTypes.object.isRequired,
+  people: PropTypes.array.isRequired,
   onOpen: PropTypes.func.isRequired,
   onDragStart: PropTypes.func.isRequired,
+  onAssign: PropTypes.func.isRequired,
 };
 
 const byPriorityThenNewest = (a, b) =>
@@ -405,11 +464,13 @@ export default function JiraBoard() {
       .catch(err => console.error('Could not load people for the Jira board:', err));
   }, []);
 
-  // Everyone who can be assigned work: employees and above.
+  // Everyone who can be assigned work: whoever can open this board — admins and
+  // above, plus employees granted the Jira card under Roles & Access.
   const people = useMemo(
     () =>
       users
-        .filter(u => hasAtLeast(u.role || ROLES.USER, ROLES.EMPLOYEE))
+        .filter(u => (u.role || ROLES.USER) !== ROLES.USER)
+        .filter(u => canAccessCard(u.role, u.cardAccess, 'jira'))
         .map(u => ({ uid: u.id, name: u.full_name || u.email_id || u.id }))
         .sort((a, b) => a.name.localeCompare(b.name)),
     [users]
@@ -484,6 +545,25 @@ export default function JiraBoard() {
         reporterUid: user?.uid || '',
         reporterName: user?.displayName || user?.email || '',
       });
+    }
+  };
+
+  const assign = async (ticket, person) => {
+    const fields = { assigneeUid: person?.uid || '', assigneeName: person?.name || '' };
+    if (ticket.assigneeUid === fields.assigneeUid) return;
+    // Optimistic; the live listener confirms (or reverts) it.
+    setTickets(list => list.map(t => (t.id === ticket.id ? { ...t, ...fields } : t)));
+    try {
+      await updateTicket(ticket.id, fields);
+    } catch (err) {
+      setError(err?.message || 'Could not assign the ticket.');
+      setTickets(list =>
+        list.map(t =>
+          t.id === ticket.id
+            ? { ...t, assigneeUid: ticket.assigneeUid, assigneeName: ticket.assigneeName }
+            : t
+        )
+      );
     }
   };
 
@@ -634,6 +714,8 @@ export default function JiraBoard() {
                   <TicketCard
                     key={t.id}
                     ticket={t}
+                    people={people}
+                    onAssign={assign}
                     onOpen={ticket => setModal({ show: true, ticket })}
                     onDragStart={onDragStart}
                   />
