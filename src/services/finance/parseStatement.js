@@ -19,7 +19,15 @@ const BANKS = {
   chase: { name: 'Chase', test: /\bchase\b|jpmorgan/i },
   amex: { name: 'American Express', test: /american\s+express|\bamex\b/i },
   discover: { name: 'Discover', test: /\bdiscover\b/i },
+  usbank: { name: 'U.S. Bank', test: /u\.\s?s\.\s+bank\b|\busbank\b/i },
+  // Recognised for labelling; their rows go through the generic parser.
+  wellsfargo: { name: 'Wells Fargo', test: /wells\s+fargo/i },
+  bofa: { name: 'Bank of America', test: /bank\s+of\s+america/i },
+  capitalone: { name: 'Capital One', test: /capital\s+one/i },
+  citi: { name: 'Citi', test: /\bcitibank\b|\bciti\s+(card|double|custom|premier|rewards)/i },
 };
+
+const MONTH_NAME = '(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\\.?';
 
 const MONTHS = {
   jan: 1,
@@ -82,23 +90,35 @@ export function findPeriod(text) {
   return null;
 }
 
+// The issuing bank is named in the statement header, before any row can
+// mention another bank ("Payment to Chase card" on a U.S. Bank statement), so
+// the earliest mention wins.
 function detectBank(text, fileName) {
-  const head = text.slice(0, 4000);
-  for (const [id, bank] of Object.entries(BANKS)) {
-    if (bank.test.test(head)) return id;
-  }
-  for (const [id, bank] of Object.entries(BANKS)) {
-    if (bank.test.test(text) || bank.test.test(fileName || '')) return id;
-  }
-  return 'other';
+  let best = 'other';
+  let bestAt = Infinity;
+  Object.entries(BANKS).forEach(([id, bank]) => {
+    const m = text.match(bank.test);
+    if (m && m.index < bestAt) {
+      best = id;
+      bestAt = m.index;
+    }
+  });
+  if (best !== 'other') return best;
+  const byName = Object.entries(BANKS).find(([, bank]) => bank.test.test(fileName || ''));
+  return byName ? byName[0] : 'other';
 }
 
 function detectAccountType(text) {
   const debit =
-    /(checking|savings)\s+(account|summary)|total\s+checking|beginning\s+balance|deposits\s+and\s+additions|atm\s*&\s*debit\s+card\s+withdrawals/i;
+    /(checking|savings)\s+(account|summary)|total\s+checking|beginning\s+balance|deposits\s*\/\s*credits|deposits\s+and\s+additions|atm\s*&\s*debit\s+card\s+withdrawals/i;
   const credit =
     /minimum\s+payment\s+due|credit\s+(limit|access\s+line)|new\s+balance|payment\s+due\s+date|purchase\s+interest|cash\s+advance/i;
-  if (credit.test(text)) return 'credit';
+  // Judge by the summary at the top: checking statements' fine print often
+  // mentions "credit limit" (overdraft lines), which mustn't make them cards.
+  const head = text.slice(0, 5000);
+  if (/minimum\s+payment\s+due|payment\s+due\s+date/i.test(head)) return 'credit';
+  if (debit.test(head) || /\b(checking|savings)\b/i.test(head)) return 'debit';
+  if (credit.test(head)) return 'credit';
   if (debit.test(text)) return 'debit';
   return 'credit';
 }
@@ -112,6 +132,7 @@ const CARD_NAMES = [
   /prime\s+visa/i,
   /(united|southwest|marriott\s+bonvoy|ihg|disney|aeroplan)\s+[\w\s]{0,20}?card/i,
   /total\s+checking/i,
+  /\b(student|premier|smartly|easy|essential|silver|gold|platinum|standard|elite|interest)\s+(checking|savings)\b/i,
   /premier\s+plus\s+checking/i,
   /chase\s+savings/i,
   /(platinum|gold|green)\s+card/i,
@@ -140,8 +161,13 @@ function detectCardName(text) {
 
 function detectLast4(text) {
   const head = text.slice(0, 6000);
+  // First "Account number …" that is actually followed by digits (the label
+  // and the number are sometimes in different columns).
+  const labelled = [
+    ...head.matchAll(/account\s+(?:number|ending)(?:\s+in)?\s*:?\s*([\dx*•\s-]{4,25})/gi),
+  ].find(x => x[1].replace(/\D/g, '').length >= 4);
   const m =
-    head.match(/account\s+(?:number|ending)(?:\s+in)?\s*:?\s*([\dx*•\s-]{4,25})/i) ||
+    labelled ||
     head.match(/((?:x{4}|\*{4})[\s-]*(?:x{4}|\*{4})[\s-]*(?:x{4}|\*{4})[\s-]*\d{4})/i) ||
     head.match(/account\s+ending\s+in\s+(\d{4,6})/i);
   if (!m) return '';
@@ -150,16 +176,38 @@ function detectLast4(text) {
 }
 
 // A money amount: 1,234.56  -1,234.56  $1,234.56  -$1,234.56  ($12.00)  12.00 CR
-const AMOUNT_RE = /(\(?-?\s?\$?\s?-?\d{1,3}(?:,\d{3})*\.\d{2}\)?(?:\s?CR\b)?)/gi;
+const AMOUNT_RE = /(\(?-?\s?\$?\s?-?\d{1,3}(?:,\d{3})*\.\d{2}(?:-(?![\d]))?\)?(?:\s?CR\b)?)/gi;
 
 function toNumber(raw) {
-  const neg = /^\(|-|CR$/i.test(raw.trim());
+  const neg = /^\(|-|CR$/i.test(raw.trim()); // "-12.00", "(12.00)", "12.00-", "12.00 CR"
   const n = parseFloat(raw.replace(/[^\d.]/g, ''));
   return neg ? -n : n;
 }
 
 /** Leading date on a row: "08/15", "08/15/25", "08/15/2025", optional trailing "*". */
-const ROW_DATE_RE = /^\s*(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\*?\s+/;
+/** …or "Aug 28" / "Sep 1, 2026" (U.S. Bank and others). */
+const ROW_DATE_RE = new RegExp(
+  `^\\s*(?:(\\d{1,2})\\/(\\d{1,2})(?:\\/(\\d{2,4}))?|${MONTH_NAME}\\s+(\\d{1,2})(?:,?\\s+(\\d{4}))?)\\*?\\s+`,
+  'i'
+);
+
+function rowDate(dm) {
+  if (dm[1]) return { month: +dm[1], day: +dm[2], year: dm[3] ? fullYear(+dm[3]) : null };
+  return {
+    month: MONTHS[dm[4].slice(0, 3).toLowerCase()],
+    day: +dm[5],
+    year: dm[6] ? +dm[6] : null,
+  };
+}
+
+// Lines under a transaction row that carry more of its description (U.S. Bank
+// puts "PAYROLL" and debit-card merchants there) — but not headers or totals.
+const NOT_CONTINUATION =
+  /^(date\b|total\b|subtotal\b|card\s+number|card\s+\d{4}\s+withdrawals|page\s+\d|balance|beginning|ending|deposits|withdrawals|other\s+withdrawals|card\s+withdrawals|checks|fees|interest|daily|this\s+page|continued)/i;
+
+// Reference numbers and IDs that only add noise to a description.
+const NOISE_RE =
+  /\b(ref\s*[=#]\s*\S+|pmt\s+id=\S+|serial\s+no\.?\s*\S+|on\s+\d{2}\/\d{2}\/\d{2,4}|on\s+\d{6})\b|\b\d{9,}\b/gi;
 
 function yearFor(month, period) {
   if (!period) return new Date().getFullYear();
@@ -185,6 +233,7 @@ const TRANSFER_RE =
   /online\s+transfer|transfer\s+(to|from)|zelle|venmo|cash\s*app|paypal\s+transfer|wire\s+(in|out)|book\s+transfer|ach\s+(credit|debit)\s+transfer/i;
 const INCOME_RE = /payroll|direct\s+dep|salary|dir\s+dep|paycheck|irs\s+treas|tax\s+ref/i;
 const CASH_RE = /\batm\b.*(withdrawal|w\/d)|cash\s+withdrawal/i;
+const LEADING_FEE_RE = /^fee\b/i;
 
 function classify(description, amount, accountType) {
   if (accountType === 'credit') {
@@ -194,7 +243,7 @@ function classify(description, amount, accountType) {
     return 'purchase';
   }
   if (amount > 0) {
-    if (FEE_RE.test(description)) return 'fee';
+    if (FEE_RE.test(description) || LEADING_FEE_RE.test(description)) return 'fee';
     if (CARD_PAYMENT_RE.test(description)) return 'card_payment';
     if (TRANSFER_RE.test(description)) return 'transfer';
     if (CASH_RE.test(description)) return 'cash';
@@ -202,7 +251,7 @@ function classify(description, amount, accountType) {
   }
   if (INCOME_RE.test(description)) return 'income';
   if (TRANSFER_RE.test(description)) return 'transfer';
-  if (/refund|return|reversal/i.test(description)) return 'refund';
+  if (/refund|return|revers/i.test(description)) return 'refund';
   return 'deposit';
 }
 
@@ -270,16 +319,24 @@ export function parseStatement(lines, fileName = '') {
   lines.forEach((rawLine, idx) => {
     const line = rawLine.replace(/\s+/g, ' ').trim();
 
+    // Daily-balance tables ("Aug 28 2,422.72 Sep 3 2,203.30 …") look like rows.
+    if (
+      /^(daily\s+)?(ending\s+)?balance\s+summary\b|^daily\s+(ending\s+)?balances?\b/i.test(line)
+    ) {
+      section = 'balances';
+      return;
+    }
+
     // Track section headers: they disambiguate the sign on checking statements
     // that print withdrawals as positive numbers in their own section.
     if (
-      /^(deposits\s+and\s+additions|deposits|credits|payments\s+and\s+(other\s+)?credits)\b/i.test(
+      /^(deposits\s+and\s+additions|deposits|credits|payments\s+and\s+(other\s+)?credits|other\s+deposits)\b/i.test(
         line
       )
     )
       section = 'in';
     else if (
-      /^(atm\s*&\s*debit\s+card\s+withdrawals|electronic\s+withdrawals|other\s+withdrawals|withdrawals|checks\s+paid|fees|purchases?|new\s+charges)\b/i.test(
+      /^(atm\s*&\s*debit\s+card\s+withdrawals|electronic\s+withdrawals|other\s+withdrawals|card\s+withdrawals|withdrawals|checks\s+paid|checks|fees|purchases?|new\s+charges)\b/i.test(
         line
       )
     )
@@ -308,11 +365,10 @@ export function parseStatement(lines, fileName = '') {
       }
       return;
     }
-    if (SKIP_ROW.test(line)) return;
+    if (SKIP_ROW.test(line) || section === 'balances') return;
 
-    const month = +dm[1];
-    const day = +dm[2];
-    const year = dm[3] ? fullYear(+dm[3]) : yearFor(month, period);
+    const { month, day, year: printedYear } = rowDate(dm);
+    const year = printedYear || yearFor(month, period);
     if (!validDate(year, month, day)) return;
 
     const rest = line.slice(dm[0].length);
@@ -333,6 +389,32 @@ export function parseStatement(lines, fileName = '') {
     // this row's description is too thin to be useful.
     if (description.length < 3 && lines[idx + 1] && !ROW_DATE_RE.test(lines[idx + 1])) {
       description = lines[idx + 1].replace(AMOUNT_RE, ' ').replace(/\s+/g, ' ').trim();
+    }
+    if (flip) {
+      // Checking statements wrap details onto the next line(s).
+      const extra = [];
+      for (let k = idx + 1; k < lines.length && extra.length < 2; k += 1) {
+        const next = lines[k].replace(/\s+/g, ' ').trim();
+        if (
+          !next ||
+          ROW_DATE_RE.test(next) ||
+          NOT_CONTINUATION.test(next) ||
+          AMOUNT_RE.test(next)
+        ) {
+          AMOUNT_RE.lastIndex = 0;
+          break;
+        }
+        extra.push(next);
+      }
+      const more = extra.join(' ').replace(NOISE_RE, ' ').replace(/\s+/g, ' ').trim();
+      description = description.replace(NOISE_RE, ' ').replace(/\s+/g, ' ').trim();
+      // U.S. Bank debit-card rows: the merchant is on the next line.
+      if (/^debit\s+purchase/i.test(description) && more) {
+        description =
+          `${more} · ${description.replace(/^debit\s+purchase\s*-?\s*(visa|mastercard)?\s*/i, '')}`.trim();
+      } else if (more) {
+        description = `${description} ${more}`;
+      }
     }
     if (!description) return;
 
@@ -360,7 +442,7 @@ export function parseStatement(lines, fileName = '') {
   if (!transactions.length) {
     warnings.push(
       bank === 'other'
-        ? 'No transactions found. Is this a Chase, American Express or Discover statement?'
+        ? 'No transactions found. Supported: Chase, American Express, Discover and U.S. Bank statements.'
         : `No transactions found in this ${bankName} statement. The layout may have changed — please report it.`
     );
   } else if (!period) {
