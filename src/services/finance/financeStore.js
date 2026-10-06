@@ -20,8 +20,6 @@ import {
   getDoc,
   getDocs,
   setDoc,
-  updateDoc,
-  deleteField,
   query,
   where,
   writeBatch,
@@ -122,20 +120,28 @@ export async function deleteAnalysis(id, uid) {
 
 const PREFS = 'financePrefs';
 
-/** merchantKey -> category the user picked (empty when none / signed out). */
-export async function getCategoryOverrides(uid) {
+export const EMPTY_PREFS = { overrides: {}, rules: [], customCategories: [] };
+
+/**
+ * The user's category mapper: per-merchant choices, their own rules and their
+ * own categories. Owner-only (firestore.rules).
+ */
+export async function getFinancePrefs(uid) {
   const snap = await getDoc(doc(db, PREFS, uid));
-  return (snap.exists() && snap.data().categoryOverrides) || {};
+  if (!snap.exists()) return EMPTY_PREFS;
+  const d = snap.data();
+  return {
+    overrides: d.categoryOverrides || {},
+    rules: Array.isArray(d.rules) ? d.rules : [],
+    customCategories: Array.isArray(d.customCategories) ? d.customCategories : [],
+  };
 }
 
-/** Remember (or with category=null, forget) a user's category for a merchant. */
-export async function setCategoryOverride(uid, merchantKey, category) {
-  const ref = doc(db, PREFS, uid);
-  if (category) {
-    await setDoc(ref, { categoryOverrides: { [merchantKey]: category } }, { merge: true });
-  } else {
-    await updateDoc(ref, { [`categoryOverrides.${merchantKey}`]: deleteField() }).catch(err => {
-      if (err?.code !== 'not-found') throw err;
-    });
-  }
+export async function saveFinancePrefs(uid, prefs) {
+  await setDoc(doc(db, PREFS, uid), {
+    categoryOverrides: prefs.overrides || {},
+    rules: (prefs.rules || []).map(({ id, contains, category }) => ({ id, contains, category })),
+    customCategories: prefs.customCategories || [],
+    updatedAt: serverTimestamp(),
+  });
 }

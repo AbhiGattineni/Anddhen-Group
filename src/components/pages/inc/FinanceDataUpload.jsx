@@ -11,11 +11,13 @@ import {
   loadAnalysis,
   deleteAnalysis,
   fileUrl,
-  getCategoryOverrides,
-  setCategoryOverride,
+  getFinancePrefs,
+  saveFinancePrefs,
+  EMPTY_PREFS,
 } from 'src/services/finance/financeStore';
 import { stashFiles, takeStashedFiles, clearStash } from 'src/services/finance/pendingStash';
 import FinanceAnalytics from './FinanceAnalytics';
+import CategoryMapper from './CategoryMapper';
 import './FinanceDataUpload.css';
 
 const MAX_FILES = 24;
@@ -75,9 +77,11 @@ const FinanceDataUpload = () => {
   const [saved, setSaved] = useState([]);
   const [savedLoading, setSavedLoading] = useState(false);
   const [openSaved, setOpenSaved] = useState(null); // loaded saved analysis
-  // merchantKey -> category the user picked. Saved to their account when
-  // signed in; kept only for this tab when signed out.
-  const [overrides, setOverrides] = useState({});
+  // The user's category mapper (merchant choices, rules, own categories).
+  // Saved to their account when signed in; kept only for this tab otherwise.
+  const [prefs, setPrefs] = useState(EMPTY_PREFS);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const [showMapper, setShowMapper] = useState(false);
 
   const addFiles = useCallback(async list => {
     const incoming = Array.from(list || []);
@@ -144,40 +148,58 @@ const FinanceDataUpload = () => {
   }, [user, refreshSaved]);
 
   useEffect(() => {
-    if (!user) return;
+    setPrefsLoaded(false);
+    if (!user) return undefined;
     let cancelled = false;
-    getCategoryOverrides(user.uid)
+    getFinancePrefs(user.uid)
       .then(saved => {
-        // Choices made before the load finished win over the stored ones.
-        if (!cancelled) setOverrides(prev => ({ ...saved, ...prev }));
+        if (cancelled) return;
+        // Anything changed before the load finished wins over the stored copy.
+        setPrefs(prev => ({
+          overrides: { ...saved.overrides, ...prev.overrides },
+          rules: [...saved.rules, ...prev.rules.filter(r => !saved.rules.some(x => x.id === r.id))],
+          customCategories: [...new Set([...saved.customCategories, ...prev.customCategories])],
+        }));
+        setPrefsLoaded(true);
       })
-      .catch(err => console.error('getCategoryOverrides failed:', err));
+      .catch(err => console.error('getFinancePrefs failed:', err));
     return () => {
       cancelled = true;
     };
   }, [user]);
 
-  const changeCategory = useCallback(
-    (merchantKey, category) => {
-      if (!merchantKey) return;
-      setOverrides(prev => {
-        const next = { ...prev };
-        if (category) next[merchantKey] = category;
-        else delete next[merchantKey];
-        return next;
-      });
-      if (user) {
-        setCategoryOverride(user.uid, merchantKey, category).catch(err => {
-          console.error('setCategoryOverride failed:', err);
-          setNotice({
-            variant: 'warning',
-            text: 'Your category change applies here but could not be saved to your account.',
-          });
+  // Save the mapper shortly after the last change (signed in only).
+  const prefsDirty = useRef(false);
+  useEffect(() => {
+    if (!user || !prefsLoaded || !prefsDirty.current) return undefined;
+    const timer = setTimeout(() => {
+      prefsDirty.current = false;
+      saveFinancePrefs(user.uid, prefs).catch(err => {
+        console.error('saveFinancePrefs failed:', err);
+        setNotice({
+          variant: 'warning',
+          text: 'Your category changes apply here but could not be saved to your account.',
         });
-      }
-    },
-    [user]
-  );
+      });
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [prefs, user, prefsLoaded]);
+
+  const updatePrefs = useCallback(next => {
+    prefsDirty.current = true;
+    setPrefs(next);
+  }, []);
+
+  const changeCategory = useCallback((merchantKey, category) => {
+    if (!merchantKey) return;
+    prefsDirty.current = true;
+    setPrefs(prev => {
+      const overrides = { ...prev.overrides };
+      if (category) overrides[merchantKey] = category;
+      else delete overrides[merchantKey];
+      return { ...prev, overrides };
+    });
+  }, []);
 
   // One list for the sidebar, whether showing fresh uploads or a saved analysis.
   const items = useMemo(() => {
@@ -232,8 +254,8 @@ const FinanceDataUpload = () => {
   const statements = useMemo(() => selected.map(it => it.statement), [selected]);
 
   const analysis = useMemo(
-    () => (statements.length ? analyze(statements, overrides) : null),
-    [statements, overrides]
+    () => (statements.length ? analyze(statements, prefs) : null),
+    [statements, prefs]
   );
   const reading = entries.some(e => e.status === 'reading');
 
@@ -521,6 +543,25 @@ const FinanceDataUpload = () => {
         </Card.Body>
       </Card>
 
+      <Card className="fin-card mb-3">
+        <Card.Body className="d-flex align-items-center justify-content-between gap-2">
+          <div>
+            <div className="fin-side-h">Category mapper</div>
+            <div className="small text-muted">
+              {prefs.rules.length} rule{prefs.rules.length === 1 ? '' : 's'} ·{' '}
+              {prefs.customCategories.length} own categor
+              {prefs.customCategories.length === 1 ? 'y' : 'ies'} ·{' '}
+              {Object.keys(prefs.overrides).length} merchant choice
+              {Object.keys(prefs.overrides).length === 1 ? '' : 's'}
+            </div>
+          </div>
+          <Button size="sm" variant="outline-primary" onClick={() => setShowMapper(true)}>
+            <i className="bi bi-sliders me-1" />
+            Edit
+          </Button>
+        </Card.Body>
+      </Card>
+
       {user && (
         <Card className="fin-card">
           <Card.Body>
@@ -568,6 +609,14 @@ const FinanceDataUpload = () => {
 
   return (
     <div className="fin-wrap">
+      <CategoryMapper
+        show={showMapper}
+        onHide={() => setShowMapper(false)}
+        prefs={prefs}
+        onChange={updatePrefs}
+        transactions={analysis?.transactions || []}
+        signedIn={!!user}
+      />
       <div className="mb-3">
         <h2 className="fin-title">Statement Analyzer</h2>
         <p className="text-muted mb-0">
@@ -622,6 +671,8 @@ const FinanceDataUpload = () => {
                 <FinanceAnalytics
                   analysis={analysis}
                   onCategoryChange={changeCategory}
+                  onOpenMapper={() => setShowMapper(true)}
+                  customCategories={prefs.customCategories}
                   signedIn={!!user}
                 />
               </Card.Body>
