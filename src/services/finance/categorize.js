@@ -63,7 +63,7 @@ const RULES = [
   ],
   [
     'Housing',
-    /rent\b|apartment|property\s+mgmt|property\s+management|mortgage|hoa\b|homeowners\s+assoc|realty|zillow\s+rent|avail\b|bilt/i,
+    /newrez|shellpoint|mr\.?\s*cooper|rocket\s+mortgage|pennymac|loancare|freedom\s+mortgage|home\s+mtg|rent\b|apartment|property\s+mgmt|property\s+management|mortgage|hoa\b|homeowners\s+assoc|realty|zillow\s+rent|avail\b|bilt/i,
   ],
   [
     'Health',
@@ -147,6 +147,12 @@ const BRANDS = [
 export function merchantName(description) {
   for (const [re, name] of BRANDS) if (re.test(description)) return name;
   let s = description
+    .split(' · ')[0]
+    // Bank-transfer wording: keep who it went to / came from.
+    .replace(/^electronic\s+(withdrawal|deposit|payment)\s+(to|from)\s+/i, '')
+    .replace(/^zelle\s+(instant\s+)?(pmt|payment)\s+(to|from)\s+/i, m =>
+      /from/i.test(m) ? 'Zelle from ' : 'Zelle to '
+    )
     // Checking-account wrappers: "Card Purchase 01/07 <merchant> … Card 1234"
     .replace(
       /^(recurring\s+)?card\s+purchase(\s+with\s+pin)?(\s+return)?\s+(\d{1,2}\/\d{1,2}\s+)?/i,

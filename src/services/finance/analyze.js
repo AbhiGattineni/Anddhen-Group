@@ -447,6 +447,19 @@ export function analyze(statements) {
           .filter(t => t.kind === 'income' || t.kind === 'deposit')
           .reduce((s, t) => s - t.amount, 0)
       ),
+      transfersOut: round2(
+        transactions
+          .filter(t => t.kind === 'transfer' && t.amount > 0)
+          .reduce((s, t) => s + t.amount, 0)
+      ),
+      transfersIn: round2(
+        transactions
+          .filter(t => t.kind === 'transfer' && t.amount < 0)
+          .reduce((s, t) => s - t.amount, 0)
+      ),
+      cardPayments: round2(
+        transactions.filter(t => t.kind === 'card_payment').reduce((s, t) => s + t.amount, 0)
+      ),
       count: transactions.length,
       from: dates[0] || '',
       to: dates[dates.length - 1] || '',

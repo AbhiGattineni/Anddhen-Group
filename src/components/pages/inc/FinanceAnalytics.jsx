@@ -92,7 +92,9 @@ function Overview({ analysis }) {
           value={usd(totals.spend)}
           sub="purchases, fees & interest, net of refunds"
         />
-        <Stat label="Payments & credits" value={usd(totals.payments)} sub="paid toward cards" />
+        {(totals.payments > 0 || analysis.accounts.some(a => a.accountType === 'credit')) && (
+          <Stat label="Payments & credits" value={usd(totals.payments)} sub="paid toward cards" />
+        )}
         <Stat
           label="Interest & fees"
           value={usd(totals.interestAndFees)}
@@ -101,6 +103,20 @@ function Overview({ analysis }) {
         />
         {totals.income > 0 && (
           <Stat label="Income & deposits" value={usd(totals.income)} sub="checking accounts" />
+        )}
+        {(totals.transfersOut > 0 || totals.transfersIn > 0) && (
+          <Stat
+            label="Transfers (Zelle etc.)"
+            value={usd(totals.transfersOut)}
+            sub={`sent · ${usd(totals.transfersIn)} received`}
+          />
+        )}
+        {totals.cardPayments > 0 && (
+          <Stat
+            label="Card bills paid"
+            value={usd(totals.cardPayments)}
+            sub="from checking — not counted as spend"
+          />
         )}
         <Stat
           label="Transactions"
