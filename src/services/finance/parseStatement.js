@@ -220,9 +220,33 @@ const NOISE_RE =
 function yearFor(month, period) {
   if (!period) return new Date().getFullYear();
   const { end } = period;
+  // Activity exports run up to the day they were downloaded, so no row can be
+  // later than that: a later month is last year.
+  if (period.reference) return month > end.m ? end.y - 1 : end.y;
   // A statement covers ~1 month: a month later than the closing month belongs
   // to the previous year (December rows on a January statement).
   return month > end.m + 1 ? end.y - 1 : end.y;
+}
+
+/**
+ * For activity exports with no statement period ("Discover-RecentActivity-
+ * 20261002.pdf"): the export date, from the file name or a date printed near
+ * the top, anchors the year of "MM/DD" rows.
+ */
+function findReferenceDate(text, fileName) {
+  const f = (fileName || '').match(/(20\d{2})[-_.]?(\d{2})[-_.]?(\d{2})(?!\d)/);
+  if (f && validDate(+f[1], +f[2], +f[3])) return { y: +f[1], m: +f[2], d: +f[3] };
+  const head = text.slice(0, 4000);
+  const labelled = head.match(
+    /(?:as\s+of|printed(?:\s+on)?|generated(?:\s+on)?|downloaded(?:\s+on)?|report\s+date|date)\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{4}|[A-Za-z]{3,9}\.?\s+\d{1,2},?\s+\d{4})/i
+  );
+  if (labelled) return parseLooseDate(labelled[1]);
+  // Otherwise the latest full date near the top.
+  const all = [...head.matchAll(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g)]
+    .map(m => ({ y: +m[3], m: +m[1], d: +m[2] }))
+    .filter(d => validDate(d.y, d.m, d.d))
+    .sort((a, b) => b.y - a.y || b.m - a.m || b.d - a.d);
+  return all[0] || null;
 }
 
 // Lines that look like rows but are summaries, headers or year-to-date totals.
@@ -320,7 +344,11 @@ export function parseStatement(lines, fileName = '') {
   const text = lines.join('\n');
   const bank = detectBank(text, fileName);
   const accountType = detectAccountType(text);
-  const period = findPeriod(text);
+  let period = findPeriod(text);
+  if (!period) {
+    const ref = findReferenceDate(text, fileName);
+    if (ref) period = { start: null, end: ref, reference: true };
+  }
   const cardName = detectCardName(text);
   const last4 = detectLast4(text);
   const bankName = BANKS[bank]?.name || 'Other bank';
@@ -340,6 +368,7 @@ export function parseStatement(lines, fileName = '') {
 
   const transactions = [];
   const seen = new Set();
+  let guessedYears = false;
   let section = '';
 
   lines.forEach((rawLine, idx) => {
@@ -395,6 +424,7 @@ export function parseStatement(lines, fileName = '') {
 
     const { month, day, year: printedYear } = rowDate(dm);
     const year = printedYear || yearFor(month, period);
+    if (!printedYear && !period) guessedYears = true;
     if (!validDate(year, month, day)) return;
 
     const rest = line.slice(dm[0].length);
@@ -492,8 +522,10 @@ export function parseStatement(lines, fileName = '') {
         ? 'No transactions found. Supported: Chase, American Express, Discover and U.S. Bank statements.'
         : `No transactions found in this ${bankName} statement. The layout may have changed — please report it.`
     );
-  } else if (!period) {
-    warnings.push('Could not find the statement period; years were guessed for MM/DD dates.');
+  } else if (!period && guessedYears) {
+    warnings.push(
+      'No statement period or date found in this file, so the year of each MM/DD date was assumed to be this year.'
+    );
   }
 
   const dates = transactions.map(t => t.date).sort();
@@ -508,9 +540,10 @@ export function parseStatement(lines, fileName = '') {
     periodStart: period?.start
       ? iso(period.start.y, period.start.m, period.start.d)
       : dates[0] || '',
-    periodEnd: period?.end
-      ? iso(period.end.y, period.end.m, period.end.d)
-      : dates[dates.length - 1] || '',
+    periodEnd:
+      period?.end && !period.reference
+        ? iso(period.end.y, period.end.m, period.end.d)
+        : dates[dates.length - 1] || '',
     transactions,
     warnings,
   };
