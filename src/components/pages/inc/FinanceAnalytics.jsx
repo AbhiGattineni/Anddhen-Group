@@ -1,702 +1,602 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import { Alert, Badge, Col, Form, Pagination, Row, Tab, Table, Tabs } from 'react-bootstrap';
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  Row,
-  Col,
-  Table,
-  Badge,
-  Spinner,
-  Alert,
-  Pagination,
-  Form,
-  ListGroup,
-} from 'react-bootstrap';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
 } from 'recharts';
+import { CATEGORIES } from 'src/services/finance/categorize';
 
 const COLORS = [
-  '#0088FE',
-  '#00C49F',
-  '#FFBB28',
-  '#FF8042',
-  '#8884D8',
-  '#82CA9D',
-  '#FFC658',
-  '#FF6B6B',
-  '#4ECDC4',
-  '#45B7D1',
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#ef4444',
+  '#06b6d4',
+  '#ec4899',
+  '#84cc16',
+  '#f97316',
+  '#6366f1',
+  '#14b8a6',
+  '#64748b',
 ];
 
-const CardSuggestions = ({ cardSuggestions }) => {
-  if (!cardSuggestions) return null;
+const usd = n =>
+  `${n < 0 ? '-' : ''}$${Math.abs(n).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+const usd0 = n => `$${Math.round(n).toLocaleString('en-US')}`;
+const fmtDate = d =>
+  d
+    ? new Date(`${d}T00:00:00`).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : '—';
+const fmtMonth = m =>
+  new Date(`${m}-01T00:00:00`).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
 
+const KIND_LABELS = {
+  purchase: 'Purchase',
+  refund: 'Refund',
+  payment: 'Card payment',
+  card_payment: 'Card payment',
+  fee: 'Fee',
+  interest: 'Interest',
+  cash: 'Cash',
+  transfer: 'Transfer',
+  income: 'Income',
+  deposit: 'Deposit',
+};
+
+function Stat({ label, value, sub, tone }) {
   return (
-    <Card className="mb-4">
-      <CardHeader>
-        <h5 className="mb-0">Card Recommendations</h5>
-      </CardHeader>
-      <CardBody>
-        <Row>
-          <Col md={6}>
-            <Card className="mb-3">
-              <CardHeader>
-                <h6 className="mb-0">Recommended Cards</h6>
-              </CardHeader>
-              <CardBody>
-                <ListGroup>
-                  {cardSuggestions.recommended_cards.map((card, index) => (
-                    <ListGroup.Item key={index}>
-                      <h6 className="mb-2">{card.card_name}</h6>
-                      <p className="mb-1">
-                        <strong>Issuer:</strong> {card.issuer}
-                      </p>
-                      <p className="mb-1">
-                        <strong>Annual Fee:</strong> ${card.annual_fee}
-                      </p>
-                      <p className="mb-1">
-                        <strong>Sign-up Bonus:</strong> {card.signup_bonus}
-                      </p>
-                      <p className="mb-1">
-                        <strong>Estimated Monthly Savings:</strong> $
-                        {card.estimated_monthly_savings}
-                      </p>
-                      <div className="mb-2">
-                        <strong>Rewards Structure:</strong>
-                        <Table size="sm" className="mt-2">
-                          <thead>
-                            <tr>
-                              <th>Category</th>
-                              <th>Rate</th>
-                              <th>Cap</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {card.rewards_structure.map((reward, idx) => (
-                              <tr key={idx}>
-                                <td>{reward.category}</td>
-                                <td>{reward.rate}</td>
-                                <td>{reward.cap}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      </div>
-                      <p className="mb-1">
-                        <strong>Best For:</strong>{' '}
-                        {card.best_for_categories.map(cat => (
-                          <Badge bg="success" className="me-1" key={cat}>
-                            {cat}
-                          </Badge>
-                        ))}
-                      </p>
-                      <p className="mb-0 text-muted small">{card.justification}</p>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md={6}>
-            <Card className="mb-3">
-              <CardHeader>
-                <h6 className="mb-0">Cards to Avoid</h6>
-              </CardHeader>
-              <CardBody>
-                <ListGroup>
-                  {cardSuggestions.cards_to_avoid.map((card, index) => (
-                    <ListGroup.Item key={index} className="text-danger">
-                      <h6 className="mb-1">{card.card_name}</h6>
-                      <p className="mb-0 small">{card.reason}</p>
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </CardBody>
-            </Card>
-            <Card>
-              <CardHeader>
-                <h6 className="mb-0">Spending Analysis</h6>
-              </CardHeader>
-              <CardBody>
-                <p className="mb-1">
-                  <strong>Highest Spending Category:</strong>{' '}
-                  <Badge bg="primary">
-                    {cardSuggestions.spending_analysis.highest_spending_category}
-                  </Badge>
-                </p>
-                <p className="mb-1">
-                  <strong>Potential Annual Savings:</strong> $
-                  {cardSuggestions.spending_analysis.potential_savings}
-                </p>
-                <p className="mb-0 text-muted small">
-                  {cardSuggestions.spending_analysis.recommendation_summary}
-                </p>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
+    <div className={`fin-stat${tone ? ` fin-stat-${tone}` : ''}`}>
+      <div className="fin-stat-label">{label}</div>
+      <div className="fin-stat-value">{value}</div>
+      {sub && <div className="fin-stat-sub">{sub}</div>}
+    </div>
   );
+}
+
+Stat.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.node.isRequired,
+  sub: PropTypes.node,
+  tone: PropTypes.string,
 };
 
-CardSuggestions.propTypes = {
-  cardSuggestions: PropTypes.shape({
-    recommended_cards: PropTypes.arrayOf(
-      PropTypes.shape({
-        card_name: PropTypes.string.isRequired,
-        issuer: PropTypes.string.isRequired,
-        annual_fee: PropTypes.number.isRequired,
-        signup_bonus: PropTypes.string.isRequired,
-        rewards_structure: PropTypes.arrayOf(
-          PropTypes.shape({
-            category: PropTypes.string.isRequired,
-            rate: PropTypes.string.isRequired,
-            cap: PropTypes.string.isRequired,
-          })
-        ).isRequired,
-        estimated_monthly_savings: PropTypes.number.isRequired,
-        justification: PropTypes.string.isRequired,
-        best_for_categories: PropTypes.arrayOf(PropTypes.string).isRequired,
-      })
-    ).isRequired,
-    cards_to_avoid: PropTypes.arrayOf(
-      PropTypes.shape({
-        card_name: PropTypes.string.isRequired,
-        reason: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-    spending_analysis: PropTypes.shape({
-      highest_spending_category: PropTypes.string.isRequired,
-      potential_savings: PropTypes.number.isRequired,
-      recommendation_summary: PropTypes.string.isRequired,
-    }).isRequired,
-  }),
-};
-
-const FinanceAnalytics = ({ transactions, cardSuggestions }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [merchantData, setMerchantData] = useState([]);
-  const [monthlyData, setMonthlyData] = useState([]);
-  const [merchantSummary, setMerchantSummary] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
-  const [recordsPerPage, setRecordsPerPage] = useState(20);
-  const [merchantPage, setMerchantPage] = useState(1);
-  const [merchantRecordsPerPage, setMerchantRecordsPerPage] = useState(10);
-  const [transactionSearch, setTransactionSearch] = useState('');
-  const [merchantSearch, setMerchantSearch] = useState('');
-
-  useEffect(() => {
-    if (!transactions || !Array.isArray(transactions)) {
-      console.log('No valid transactions data:', transactions);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      console.log('Processing transactions:', transactions);
-      // Process transactions for merchant pie chart
-      const merchantTotals = transactions.reduce((acc, txn) => {
-        console.log('Processing transaction:', txn);
-        const merchant = txn.merchant || 'UNKNOWN';
-        const amount = parseFloat(txn.amount) || 0;
-        acc[merchant] = (acc[merchant] || 0) + amount;
-        return acc;
-      }, {});
-
-      console.log('Merchant totals:', merchantTotals);
-      const pieData = Object.entries(merchantTotals)
-        .map(([name, value]) => ({
-          name,
-          value: parseFloat(value.toFixed(2)),
-        }))
-        .sort((a, b) => b.value - a.value); // Sort by amount in descending order
-      console.log('Pie chart data:', pieData);
-
-      // Process transactions for monthly bar chart
-      const monthlyTotals = transactions.reduce((acc, txn) => {
-        const date = new Date(txn.date);
-        if (isNaN(date.getTime())) {
-          console.warn('Invalid date:', txn.date);
-          return acc;
-        }
-        const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        const amount = parseFloat(txn.amount) || 0;
-        acc[month] = (acc[month] || 0) + amount;
-        return acc;
-      }, {});
-
-      const barData = Object.entries(monthlyTotals)
-        .map(([month, total]) => ({
-          month,
-          total: parseFloat(total.toFixed(2)),
-        }))
-        .sort((a, b) => a.month.localeCompare(b.month));
-      console.log('Bar chart data:', barData);
-
-      // Calculate merchant summary
-      const summary = transactions.reduce((acc, txn) => {
-        const merchant = txn.merchant || 'UNKNOWN';
-        const amount = parseFloat(txn.amount) || 0;
-        if (!acc[merchant]) {
-          acc[merchant] = {
-            count: 0,
-            total: 0,
-            avg: 0,
-            category: txn.category || 'OTHER', // Keep category for reference
-          };
-        }
-        acc[merchant].count++;
-        acc[merchant].total += amount;
-        acc[merchant].avg = acc[merchant].total / acc[merchant].count;
-        return acc;
-      }, {});
-
-      console.log('Merchant summary:', summary);
-      setMerchantData(pieData);
-      setMonthlyData(barData);
-      setMerchantSummary(summary);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error processing transactions:', err);
-      setError(err.message);
-      setLoading(false);
-    }
-  }, [transactions]);
-
-  // Filter transactions based on search
-  const filteredTransactions = transactions.filter(txn => {
-    const searchLower = transactionSearch.toLowerCase();
-    return (
-      txn.merchant.toLowerCase().includes(searchLower) ||
-      txn.category.toLowerCase().includes(searchLower) ||
-      txn.amount.toString().includes(searchLower) ||
-      new Date(txn.date).toLocaleDateString().includes(searchLower)
-    );
-  });
-
-  // Filter merchants based on search
-  const filteredMerchants = Object.entries(merchantSummary)
-    .filter(([merchant, data]) => {
-      const searchLower = merchantSearch.toLowerCase();
-      return (
-        merchant.toLowerCase().includes(searchLower) ||
-        data.category.toLowerCase().includes(searchLower) ||
-        data.total.toString().includes(searchLower)
-      );
-    })
-    .sort((a, b) => b[1].total - a[1].total);
-
-  // Update pagination calculations for filtered data
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredTransactions.slice(indexOfFirstRecord, indexOfLastRecord);
-  const totalPages = Math.ceil(filteredTransactions.length / recordsPerPage);
-
-  const handlePageChange = pageNumber => {
-    setCurrentPage(pageNumber);
-  };
-
-  const handleRecordsPerPageChange = event => {
-    setRecordsPerPage(Number(event.target.value));
-    setCurrentPage(1); // Reset to first page when changing records per page
-  };
-
-  // Update merchant pagination calculations for filtered data
-  const indexOfLastMerchant = merchantPage * merchantRecordsPerPage;
-  const indexOfFirstMerchant = indexOfLastMerchant - merchantRecordsPerPage;
-  const currentMerchants = filteredMerchants.slice(indexOfFirstMerchant, indexOfLastMerchant);
-  const totalMerchantPages = Math.ceil(filteredMerchants.length / merchantRecordsPerPage);
-
-  const handleMerchantPageChange = pageNumber => {
-    setMerchantPage(pageNumber);
-  };
-
-  const handleMerchantRecordsPerPageChange = event => {
-    setMerchantRecordsPerPage(Number(event.target.value));
-    setMerchantPage(1); // Reset to first page when changing records per page
-  };
-
-  if (loading) {
-    return (
-      <div className="text-center p-5">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </div>
-    );
-  }
-
-  if (error) {
-    return <Alert variant="danger">Error loading analytics: {error}</Alert>;
-  }
+function Overview({ analysis }) {
+  const { totals, byCategory, byMerchant, monthly, accountNames } = analysis;
+  const pie = byCategory.slice(0, 9);
+  const rest = byCategory.slice(9).reduce((s, c) => s + c.total, 0);
+  if (rest > 0) pie.push({ name: 'Everything else', total: Math.round(rest * 100) / 100 });
 
   return (
-    <div className="finance-analytics">
-      <Row className="mb-4">
-        <Col md={6}>
-          <Card>
-            <CardHeader>
-              <h5 className="mb-0">Spending by Merchant</h5>
-            </CardHeader>
-            <CardBody>
-              <div style={{ width: '100%', height: 400 }}>
-                <ResponsiveContainer>
-                  <PieChart>
-                    <Pie
-                      data={merchantData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="40%"
-                      cy="50%"
-                      outerRadius={100}
-                      label={false}
-                    >
-                      {merchantData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={value => `$${parseFloat(value).toFixed(2)}`}
-                      contentStyle={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        padding: '8px',
-                      }}
-                    />
-                    <Legend
-                      layout="vertical"
-                      align="right"
-                      verticalAlign="middle"
-                      content={({ payload }) => (
-                        <div
-                          style={{
-                            marginLeft: '20px',
-                            maxHeight: '350px',
-                            overflowY: 'auto',
-                            paddingRight: '10px',
-                          }}
-                        >
-                          {payload.map((entry, index) => (
-                            <div
-                              key={`legend-${index}`}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                marginBottom: '8px',
-                                fontSize: '13px',
-                              }}
-                            >
-                              <div
-                                style={{
-                                  width: '12px',
-                                  height: '12px',
-                                  borderRadius: '50%',
-                                  backgroundColor: entry.color,
-                                  marginRight: '8px',
-                                  flexShrink: 0,
-                                }}
-                              />
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  minWidth: 0, // Enable text truncation
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    maxWidth: '150px',
-                                  }}
-                                >
-                                  {entry.value}
-                                </span>
-                                <span
-                                  style={{
-                                    color: '#666',
-                                    fontSize: '12px',
-                                  }}
-                                >
-                                  ${parseFloat(merchantData[index].value).toFixed(2)}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardBody>
-          </Card>
+    <>
+      <div className="fin-stats">
+        <Stat
+          label="Total spend"
+          value={usd(totals.spend)}
+          sub="purchases, fees & interest, net of refunds"
+        />
+        <Stat label="Payments & credits" value={usd(totals.payments)} sub="paid toward cards" />
+        <Stat
+          label="Interest & fees"
+          value={usd(totals.interestAndFees)}
+          tone={totals.interestAndFees > 0 ? 'bad' : 'good'}
+          sub={totals.interestAndFees > 0 ? 'avoidable costs' : 'none — nice'}
+        />
+        {totals.income > 0 && (
+          <Stat label="Income & deposits" value={usd(totals.income)} sub="checking accounts" />
+        )}
+        <Stat
+          label="Transactions"
+          value={totals.count.toLocaleString()}
+          sub={`${fmtDate(totals.from)} – ${fmtDate(totals.to)}`}
+        />
+      </div>
+
+      <Row className="g-4 mt-1">
+        <Col lg={6}>
+          <h6 className="fin-h">Spending by category</h6>
+          {pie.length ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={pie}
+                  dataKey="total"
+                  nameKey="name"
+                  innerRadius={60}
+                  outerRadius={110}
+                  paddingAngle={1}
+                >
+                  {pie.map((c, i) => (
+                    <Cell key={c.name} fill={COLORS[i % COLORS.length]} stroke="#fff" />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(v, n) => [usd(v), n]} />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-muted">No spending found.</p>
+          )}
         </Col>
-        <Col md={6}>
-          <Card>
-            <CardHeader>
-              <h5 className="mb-0">Monthly Spending</h5>
-            </CardHeader>
-            <CardBody>
-              <div style={{ width: '100%', height: 300 }}>
-                <ResponsiveContainer>
-                  <BarChart data={monthlyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="month"
-                      tickFormatter={month =>
-                        new Date(month).toLocaleDateString('en-US', {
-                          month: 'short',
-                          year: '2-digit',
-                        })
-                      }
+        <Col lg={6}>
+          <h6 className="fin-h">Category totals</h6>
+          <Table size="sm" className="fin-table">
+            <tbody>
+              {byCategory.map((c, i) => (
+                <tr key={c.name}>
+                  <td>
+                    <span
+                      className="fin-dot"
+                      style={{ background: COLORS[Math.min(i, 9) % COLORS.length] }}
                     />
-                    <YAxis tickFormatter={value => `$${value.toLocaleString()}`} />
-                    <Tooltip formatter={value => `$${parseFloat(value).toFixed(2)}`} />
-                    <Bar dataKey="total" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardBody>
-          </Card>
+                    {c.name}
+                  </td>
+                  <td className="text-muted text-end">{c.count}×</td>
+                  <td className="text-end fw-semibold">{usd(c.total)}</td>
+                  <td className="text-end text-muted" style={{ width: 60 }}>
+                    {totals.spend > 0 ? `${Math.round((c.total / totals.spend) * 100)}%` : ''}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </Col>
       </Row>
 
-      {cardSuggestions && <CardSuggestions cardSuggestions={cardSuggestions} />}
+      {monthly.length > 0 && (
+        <>
+          <h6 className="fin-h mt-4">Monthly spend by account</h6>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={monthly} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#eef2f7" vertical={false} />
+              <XAxis dataKey="month" tickFormatter={fmtMonth} tick={{ fontSize: 12 }} />
+              <YAxis tickFormatter={usd0} tick={{ fontSize: 12 }} width={70} />
+              <Tooltip formatter={(v, n) => [usd(v), n]} labelFormatter={fmtMonth} />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              {accountNames.map((a, i) => (
+                <Bar key={a} dataKey={a} stackId="spend" fill={COLORS[i % COLORS.length]} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </>
+      )}
 
-      <Card className="mb-4">
-        <CardHeader className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Merchant Summary</h5>
-          <div className="d-flex align-items-center gap-3">
-            <Form.Control
-              type="search"
-              placeholder="Search merchants..."
-              value={merchantSearch}
-              onChange={e => {
-                setMerchantSearch(e.target.value);
-                setMerchantPage(1); // Reset to first page on search
-              }}
-              style={{ width: '200px' }}
-            />
-            <Form.Select
-              style={{ width: 'auto' }}
-              value={merchantRecordsPerPage}
-              onChange={handleMerchantRecordsPerPageChange}
-            >
-              <option value={5}>5 per page</option>
-              <option value={10}>10 per page</option>
-              <option value={20}>20 per page</option>
-              <option value={50}>50 per page</option>
-            </Form.Select>
-          </div>
-        </CardHeader>
-        <CardBody>
-          <Table responsive hover>
-            <thead>
-              <tr>
-                <th>Merchant</th>
-                <th>Category</th>
-                <th>Transactions</th>
-                <th>Total Spent</th>
-                <th>Average</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentMerchants.map(([merchant, data]) => (
-                <tr key={merchant}>
-                  <td>
-                    <Badge bg="primary">{merchant}</Badge>
-                  </td>
-                  <td>
-                    <Badge bg="secondary">{data.category}</Badge>
-                  </td>
-                  <td>{data.count}</td>
-                  <td>${data.total.toFixed(2)}</td>
-                  <td>${data.avg.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>
-              Showing {indexOfFirstMerchant + 1} to{' '}
-              {Math.min(indexOfLastMerchant, filteredMerchants.length)} of{' '}
-              {filteredMerchants.length} merchants
-            </div>
-            <Pagination>
-              <Pagination.First
-                onClick={() => handleMerchantPageChange(1)}
-                disabled={merchantPage === 1}
-              />
-              <Pagination.Prev
-                onClick={() => handleMerchantPageChange(merchantPage - 1)}
-                disabled={merchantPage === 1}
-              />
-              {[...Array(totalMerchantPages)].map((_, index) => (
-                <Pagination.Item
-                  key={index + 1}
-                  active={index + 1 === merchantPage}
-                  onClick={() => handleMerchantPageChange(index + 1)}
-                >
-                  {index + 1}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next
-                onClick={() => handleMerchantPageChange(merchantPage + 1)}
-                disabled={merchantPage === totalMerchantPages}
-              />
-              <Pagination.Last
-                onClick={() => handleMerchantPageChange(totalMerchantPages)}
-                disabled={merchantPage === totalMerchantPages}
-              />
-            </Pagination>
-          </div>
-        </CardBody>
-      </Card>
-
-      <Card>
-        <CardHeader className="d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Recent Transactions</h5>
-          <div className="d-flex align-items-center gap-3">
-            <Form.Control
-              type="search"
-              placeholder="Search transactions..."
-              value={transactionSearch}
-              onChange={e => {
-                setTransactionSearch(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
-              }}
-              style={{ width: '200px' }}
-            />
-            <Form.Select
-              style={{ width: 'auto' }}
-              value={recordsPerPage}
-              onChange={handleRecordsPerPageChange}
-            >
-              <option value={10}>10 per page</option>
-              <option value={20}>20 per page</option>
-              <option value={50}>50 per page</option>
-              <option value={100}>100 per page</option>
-            </Form.Select>
-          </div>
-        </CardHeader>
-        <CardBody>
-          <Table responsive hover>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Merchant</th>
-                <th>Category</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentRecords.map((txn, index) => (
-                <tr key={index}>
-                  <td>{new Date(txn.date).toLocaleDateString()}</td>
-                  <td>{txn.merchant}</td>
-                  <td>
-                    <Badge bg="primary">{txn.category}</Badge>
-                  </td>
-                  <td>${txn.amount.toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <div>
-              Showing {indexOfFirstRecord + 1} to{' '}
-              {Math.min(indexOfLastRecord, filteredTransactions.length)} of{' '}
-              {filteredTransactions.length} entries
-            </div>
-            <Pagination>
-              <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-              <Pagination.Prev
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              />
-              {[...Array(totalPages)].map((_, index) => (
-                <Pagination.Item
-                  key={index + 1}
-                  active={index + 1 === currentPage}
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              />
-              <Pagination.Last
-                onClick={() => handlePageChange(totalPages)}
-                disabled={currentPage === totalPages}
-              />
-            </Pagination>
-          </div>
-        </CardBody>
-      </Card>
-    </div>
+      <h6 className="fin-h mt-4">Top merchants</h6>
+      <Table size="sm" className="fin-table" responsive>
+        <thead>
+          <tr>
+            <th>Merchant</th>
+            <th className="text-end">Purchases</th>
+            <th className="text-end">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {byMerchant.map(m => (
+            <tr key={m.name}>
+              <td>{m.name}</td>
+              <td className="text-end text-muted">{m.count}</td>
+              <td className="text-end fw-semibold">{usd(m.total)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </>
   );
-};
+}
 
-FinanceAnalytics.propTypes = {
-  transactions: PropTypes.arrayOf(
-    PropTypes.shape({
-      date: PropTypes.string.isRequired,
-      merchant: PropTypes.string.isRequired,
-      category: PropTypes.string,
-      amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    })
-  ).isRequired,
-  cardSuggestions: PropTypes.shape({
-    recommended_cards: PropTypes.arrayOf(
-      PropTypes.shape({
-        card_name: PropTypes.string.isRequired,
-        issuer: PropTypes.string.isRequired,
-        annual_fee: PropTypes.number.isRequired,
-        signup_bonus: PropTypes.string.isRequired,
-        rewards_structure: PropTypes.arrayOf(
-          PropTypes.shape({
-            category: PropTypes.string.isRequired,
-            rate: PropTypes.string.isRequired,
-            cap: PropTypes.string.isRequired,
-          })
-        ).isRequired,
-        estimated_monthly_savings: PropTypes.number.isRequired,
-        justification: PropTypes.string.isRequired,
-        best_for_categories: PropTypes.arrayOf(PropTypes.string).isRequired,
-      })
-    ).isRequired,
-    cards_to_avoid: PropTypes.arrayOf(
-      PropTypes.shape({
-        card_name: PropTypes.string.isRequired,
-        reason: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-    spending_analysis: PropTypes.shape({
-      highest_spending_category: PropTypes.string.isRequired,
-      potential_savings: PropTypes.number.isRequired,
-      recommendation_summary: PropTypes.string.isRequired,
-    }).isRequired,
-  }),
-};
+Overview.propTypes = { analysis: PropTypes.object.isRequired };
 
-export default FinanceAnalytics;
+function Accounts({ analysis }) {
+  const { accounts } = analysis;
+  const maxSpend = Math.max(1, ...accounts.map(a => a.spend));
+  return (
+    <>
+      <Table className="fin-table" responsive hover>
+        <thead>
+          <tr>
+            <th>Account</th>
+            <th>Period</th>
+            <th className="text-end">Spend</th>
+            <th className="text-end">Payments in</th>
+            <th className="text-end">Interest</th>
+            <th className="text-end">Fees</th>
+            <th>Top category</th>
+          </tr>
+        </thead>
+        <tbody>
+          {accounts.map((a, i) => (
+            <tr key={a.account}>
+              <td>
+                <span className="fin-dot" style={{ background: COLORS[i % COLORS.length] }} />
+                <span className="fw-semibold">{a.account}</span>
+                <div className="small text-muted">
+                  {a.accountType === 'debit' ? 'Checking / debit' : 'Credit card'} · {a.statements}{' '}
+                  statement{a.statements > 1 ? 's' : ''} · {a.count} rows
+                </div>
+                <div className="fin-bar">
+                  <span
+                    style={{
+                      width: `${Math.max(2, (a.spend / maxSpend) * 100)}%`,
+                      background: COLORS[i % COLORS.length],
+                    }}
+                  />
+                </div>
+              </td>
+              <td className="small text-nowrap">
+                {fmtDate(a.from)}
+                <br />
+                {fmtDate(a.to)}
+              </td>
+              <td className="text-end fw-semibold">{usd(a.spend)}</td>
+              <td className="text-end">
+                {a.accountType === 'debit' ? usd(a.income) : usd(a.paymentsIn)}
+              </td>
+              <td className={`text-end${a.interest > 0 ? ' text-danger fw-semibold' : ''}`}>
+                {usd(a.interest)}
+              </td>
+              <td className={`text-end${a.fees > 0 ? ' text-danger fw-semibold' : ''}`}>
+                {usd(a.fees)}
+              </td>
+              <td>{a.topCategory}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <p className="small text-muted mb-0">
+        Card payments made from a checking account are not counted as spending, so uploading a
+        checking statement together with the cards it pays never double counts.
+      </p>
+    </>
+  );
+}
+
+Accounts.propTypes = { analysis: PropTypes.object.isRequired };
+
+function Insights({ analysis }) {
+  const { insights, recurring, duplicates, spikes } = analysis;
+  return (
+    <>
+      {insights.length === 0 && (
+        <Alert variant="success">No interest, fees, duplicates or unusual charges found.</Alert>
+      )}
+      {insights.map(i => (
+        <Alert key={i.title} variant={i.level}>
+          <div className="fw-semibold">{i.title}</div>
+          <div className="small">{i.detail}</div>
+        </Alert>
+      ))}
+
+      {recurring.length > 0 && (
+        <>
+          <h6 className="fin-h mt-4">Recurring charges</h6>
+          <Table size="sm" className="fin-table" responsive>
+            <thead>
+              <tr>
+                <th>Merchant</th>
+                <th>Category</th>
+                <th className="text-end">Each</th>
+                <th className="text-end">Months seen</th>
+                <th className="text-end">≈ Per year</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recurring.map(r => (
+                <tr key={r.merchant}>
+                  <td>{r.merchant}</td>
+                  <td>{r.category}</td>
+                  <td className="text-end">{usd(r.amount)}</td>
+                  <td className="text-end">{r.months}</td>
+                  <td className="text-end fw-semibold">{usd(r.yearly)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      )}
+
+      {duplicates.length > 0 && (
+        <>
+          <h6 className="fin-h mt-4">Possible duplicate charges</h6>
+          <Table size="sm" className="fin-table" responsive>
+            <thead>
+              <tr>
+                <th>Merchant</th>
+                <th>Account</th>
+                <th>Dates</th>
+                <th className="text-end">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {duplicates.map(d => (
+                <tr key={`${d.first.date}-${d.first.merchantKey}-${d.first.amount}`}>
+                  <td>{d.first.merchant}</td>
+                  <td>{d.first.account}</td>
+                  <td>
+                    {fmtDate(d.first.date)} &amp; {fmtDate(d.second.date)}
+                  </td>
+                  <td className="text-end">{usd(d.first.amount)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <p className="small text-muted">
+            Two identical charges a day apart are sometimes legitimate — check with the merchant
+            before disputing.
+          </p>
+        </>
+      )}
+
+      {spikes.length > 0 && (
+        <>
+          <h6 className="fin-h mt-4">Largest unusual purchases</h6>
+          <Table size="sm" className="fin-table" responsive>
+            <tbody>
+              {spikes.map(t => (
+                <tr key={`${t.date}-${t.description}-${t.amount}`}>
+                  <td>{fmtDate(t.date)}</td>
+                  <td>{t.merchant}</td>
+                  <td className="text-muted">{t.account}</td>
+                  <td className="text-end fw-semibold">{usd(t.amount)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      )}
+    </>
+  );
+}
+
+Insights.propTypes = { analysis: PropTypes.object.isRequired };
+
+function Recommendations({ analysis }) {
+  const rec = analysis.recommendations;
+  if (!rec) return <p className="text-muted">Not enough purchases to recommend a card.</p>;
+  const months = Math.max(1, Math.round(rec.basedOnDays / 30));
+  return (
+    <>
+      <p>
+        Based on about {months} month{months > 1 ? 's' : ''} of purchases, you spend roughly{' '}
+        <strong>{usd0(rec.annualSpend)}/year</strong> on reward-eligible categories. A basic 1% card
+        would earn about {usd0(rec.baseline)}/year.
+      </p>
+      <Row className="g-3">
+        {rec.cards.map((c, i) => (
+          <Col md={6} key={c.name}>
+            <div className={`fin-reco${i === 0 ? ' best' : ''}`}>
+              <div className="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <div className="fw-semibold">{c.name}</div>
+                  <div className="small text-muted">
+                    {c.issuer} · {c.fee ? `$${c.fee} annual fee` : 'No annual fee'}
+                  </div>
+                </div>
+                {i === 0 && <Badge bg="success">Best fit</Badge>}
+              </div>
+              <div className="fin-reco-value">
+                {usd0(c.net)}
+                <span>/yr after fees</span>
+              </div>
+              <div className="small">
+                {c.vsBaseline >= 0 ? '+' : ''}
+                {usd0(c.vsBaseline)} vs a 1% card
+                {c.bestFor && <> · strongest on {c.bestFor}</>}
+              </div>
+            </div>
+          </Col>
+        ))}
+      </Row>
+      <h6 className="fin-h mt-4">Estimated yearly spend used</h6>
+      <Table size="sm" className="fin-table" responsive>
+        <tbody>
+          {rec.annualByCategory.map(c => (
+            <tr key={c.name}>
+              <td>{c.name}</td>
+              <td className="text-end">{usd0(c.total)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <p className="small text-muted mb-0">
+        Estimates use each card&apos;s published earn rates (points valued at 1¢) and your spending
+        annualised from the uploaded statements. Rates, caps and fees change — check the
+        issuer&apos;s site before applying. This is not financial advice.
+      </p>
+    </>
+  );
+}
+
+Recommendations.propTypes = { analysis: PropTypes.object.isRequired };
+
+const PAGE = 25;
+
+function Transactions({ analysis }) {
+  const [q, setQ] = useState('');
+  const [account, setAccount] = useState('');
+  const [category, setCategory] = useState('');
+  const [kind, setKind] = useState('');
+  const [page, setPage] = useState(1);
+
+  const rows = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    return analysis.transactions
+      .filter(
+        t =>
+          (!account || t.account === account) &&
+          (!category || t.category === category) &&
+          (!kind || t.kind === kind) &&
+          (!s || t.description.toLowerCase().includes(s) || t.merchant.toLowerCase().includes(s))
+      )
+      .slice()
+      .reverse();
+  }, [analysis.transactions, q, account, category, kind]);
+
+  const pages = Math.max(1, Math.ceil(rows.length / PAGE));
+  const current = Math.min(page, pages);
+  const shown = rows.slice((current - 1) * PAGE, current * PAGE);
+  const usedKinds = [...new Set(analysis.transactions.map(t => t.kind))];
+  const usedCats = CATEGORIES.filter(c => analysis.transactions.some(t => t.category === c));
+
+  const exportCsv = () => {
+    const esc = v => `"${String(v).replace(/"/g, '""')}"`;
+    const csv = [
+      ['Date', 'Account', 'Description', 'Merchant', 'Category', 'Type', 'Amount'].join(','),
+      ...rows.map(t =>
+        [t.date, t.account, t.description, t.merchant, t.category, KIND_LABELS[t.kind], t.amount]
+          .map(esc)
+          .join(',')
+      ),
+    ].join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'transactions.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const reset = fn => e => {
+    fn(e.target.value);
+    setPage(1);
+  };
+
+  return (
+    <>
+      <Row className="g-2 mb-3">
+        <Col md={4}>
+          <Form.Control placeholder="Search transactions" value={q} onChange={reset(setQ)} />
+        </Col>
+        <Col md={3} xs={6}>
+          <Form.Select value={account} onChange={reset(setAccount)} aria-label="Account">
+            <option value="">All accounts</option>
+            {analysis.accountNames.map(a => (
+              <option key={a}>{a}</option>
+            ))}
+          </Form.Select>
+        </Col>
+        <Col md={3} xs={6}>
+          <Form.Select value={category} onChange={reset(setCategory)} aria-label="Category">
+            <option value="">All categories</option>
+            {usedCats.map(c => (
+              <option key={c}>{c}</option>
+            ))}
+          </Form.Select>
+        </Col>
+        <Col md={2}>
+          <Form.Select value={kind} onChange={reset(setKind)} aria-label="Type">
+            <option value="">All types</option>
+            {usedKinds.map(k => (
+              <option key={k} value={k}>
+                {KIND_LABELS[k] || k}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+      </Row>
+      <div className="d-flex justify-content-between align-items-center mb-2 small text-muted">
+        <span>
+          {rows.length} transaction{rows.length === 1 ? '' : 's'}
+        </span>
+        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={exportCsv}>
+          Export CSV
+        </button>
+      </div>
+      <Table size="sm" className="fin-table" responsive hover>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Account</th>
+            <th className="text-end">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {shown.map((t, i) => (
+            <tr key={`${t.date}-${t.description}-${t.amount}-${i}`}>
+              <td className="text-nowrap">{t.date}</td>
+              <td>
+                <div>{t.merchant}</div>
+                <div className="small text-muted">{t.description}</div>
+              </td>
+              <td>
+                {t.category}
+                {t.kind !== 'purchase' && (
+                  <div className="small text-muted">{KIND_LABELS[t.kind] || t.kind}</div>
+                )}
+              </td>
+              <td className="small">{t.account}</td>
+              <td className={`text-end fw-semibold ${t.amount < 0 ? 'text-success' : ''}`}>
+                {t.amount < 0 ? `+${usd(-t.amount)}` : usd(t.amount)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      {pages > 1 && (
+        <Pagination size="sm" className="justify-content-center">
+          <Pagination.Prev disabled={current === 1} onClick={() => setPage(current - 1)} />
+          <Pagination.Item active>
+            {current} / {pages}
+          </Pagination.Item>
+          <Pagination.Next disabled={current === pages} onClick={() => setPage(current + 1)} />
+        </Pagination>
+      )}
+    </>
+  );
+}
+
+Transactions.propTypes = { analysis: PropTypes.object.isRequired };
+
+export default function FinanceAnalytics({ analysis }) {
+  const flagged = analysis.insights.filter(i => i.level !== 'info').length;
+  return (
+    <Tabs defaultActiveKey="overview" className="mb-3 fin-tabs" mountOnEnter>
+      <Tab eventKey="overview" title="Overview">
+        <Overview analysis={analysis} />
+      </Tab>
+      <Tab eventKey="accounts" title={`Cards & accounts (${analysis.accounts.length})`}>
+        <Accounts analysis={analysis} />
+      </Tab>
+      <Tab
+        eventKey="insights"
+        title={
+          <>
+            Insights{' '}
+            {flagged > 0 && (
+              <Badge bg="danger" pill>
+                {flagged}
+              </Badge>
+            )}
+          </>
+        }
+      >
+        <Insights analysis={analysis} />
+      </Tab>
+      <Tab eventKey="cards" title="Card recommendations">
+        <Recommendations analysis={analysis} />
+      </Tab>
+      <Tab eventKey="transactions" title="Transactions">
+        <Transactions analysis={analysis} />
+      </Tab>
+    </Tabs>
+  );
+}
+
+FinanceAnalytics.propTypes = { analysis: PropTypes.object.isRequired };

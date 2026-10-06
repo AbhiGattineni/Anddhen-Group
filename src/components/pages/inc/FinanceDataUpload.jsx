@@ -1,337 +1,543 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'src/hooks/useAuth';
+import { readPdfLines } from 'src/services/finance/pdfText';
+import { parseStatement } from 'src/services/finance/parseStatement';
+import { analyze } from 'src/services/finance/analyze';
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  Button,
-  Form,
-  Alert,
-  Spinner,
-  Row,
-  Col,
-  ListGroup,
-} from 'react-bootstrap';
-import { useMutation } from 'react-query';
+  saveAnalysis,
+  listAnalyses,
+  loadAnalysis,
+  deleteAnalysis,
+  fileUrl,
+} from 'src/services/finance/financeStore';
+import { stashFiles, takeStashedFiles, clearStash } from 'src/services/finance/pendingStash';
 import FinanceAnalytics from './FinanceAnalytics';
-import { toast, Toaster } from 'react-hot-toast';
+import './FinanceDataUpload.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const MAX_FILES = 24;
+const MAX_MB = 25;
+
+const fmtSize = b =>
+  b > 1e6 ? `${(b / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1e3))} KB`;
+const fmtDay = d =>
+  d
+    ? new Date(`${d}T00:00:00`).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : '';
+
+let nextId = 1;
+
+/** Read + parse one file; never throws (errors land on the entry). */
+async function parseFile(file) {
+  try {
+    const { lines } = await readPdfLines(file);
+    const statement = parseStatement(lines, file.name);
+    return { status: statement.transactions.length ? 'ok' : 'empty', statement };
+  } catch (err) {
+    return { status: 'error', error: err?.message || 'Could not read this file.' };
+  }
+}
+
+const statementKey = s => `${s.label}|${s.periodStart}|${s.periodEnd}|${s.transactions.length}`;
+
+function defaultName(statements) {
+  const dates = statements
+    .flatMap(s => [s.periodStart, s.periodEnd])
+    .filter(Boolean)
+    .sort();
+  if (!dates.length) return 'Statements';
+  const m = d =>
+    new Date(`${d}T00:00:00`).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  const a = m(dates[0]);
+  const b = m(dates[dates.length - 1]);
+  return a === b ? `Statements ${a}` : `Statements ${a} – ${b}`;
+}
 
 const FinanceDataUpload = () => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [persistData, setPersistData] = useState(false);
-  const [uploadHistory, setUploadHistory] = useState([]);
-  const [currentTransactions, setCurrentTransactions] = useState([]);
-  const [currentCardSuggestions, setCurrentCardSuggestions] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState({});
-  const [fileInputKey, setFileInputKey] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const inputRef = useRef(null);
 
-  const uploadMutation = useMutation({
-    mutationFn: async files => {
-      setIsProcessing(true);
-      const formData = new FormData();
-      files.forEach(file => {
-        formData.append('statement', file);
-      });
-      const response = await fetch(`${API_BASE_URL}/api/finance/upload/`, {
-        method: 'POST',
-        body: formData,
-      });
+  const [entries, setEntries] = useState([]); // { id, file, status, statement?, error? }
+  const entriesRef = useRef(entries);
+  entriesRef.current = entries;
+  const [dragging, setDragging] = useState(false);
+  const [notice, setNotice] = useState(null); // { variant, text }
+  const [saveName, setSaveName] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState([]);
+  const [savedLoading, setSavedLoading] = useState(false);
+  const [openSaved, setOpenSaved] = useState(null); // loaded saved analysis
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Upload failed');
-      }
+  const addFiles = useCallback(async list => {
+    const incoming = Array.from(list || []);
+    const pdfs = incoming.filter(f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name || ''));
+    const msgs = [];
+    if (pdfs.length < incoming.length)
+      msgs.push('Only PDF statements are supported; other files were skipped.');
+    const tooBig = pdfs.filter(f => f.size > MAX_MB * 1e6);
+    if (tooBig.length) msgs.push(`Files over ${MAX_MB} MB were skipped.`);
 
-      return response.json();
-    },
-    onSuccess: data => {
-      console.log('Success handler data:', data);
-
-      // Update upload history with the new upload
-      const newUpload = {
-        id: Date.now(),
-        timestamp: new Date().toISOString(),
-        status: 'success',
-        message: data.message,
-        fileResults: data.file_results,
-        totalCount: data.total_count,
-        transactions: data.transactions,
-        cardSuggestions: data.card_suggestions,
-      };
-      setUploadHistory(prev => [newUpload, ...prev]);
-
-      // Update current transactions and card suggestions if available
-      if (data.transactions && Array.isArray(data.transactions)) {
-        console.log('Setting transactions:', data.transactions);
-        setCurrentTransactions(data.transactions);
-      }
-      if (data.card_suggestions) {
-        console.log('Setting card suggestions:', data.card_suggestions);
-        setCurrentCardSuggestions(data.card_suggestions);
-      }
-
-      // Clear selected files
-      setSelectedFiles([]);
-      setFileInputKey(Date.now());
-
-      // Show success message
-      toast.success(
-        `Files uploaded successfully! Processed ${data.total_count || 0} transactions.`
-      );
-      setIsProcessing(false);
-    },
-    onError: error => {
-      console.error('Upload error:', error);
-      setIsProcessing(false);
-
-      // Update upload history with the failed upload
-      const newUpload = {
-        id: Date.now(),
-        timestamp: new Date().toISOString(),
-        status: 'error',
-        message: error.message,
-      };
-      setUploadHistory(prev => [newUpload, ...prev]);
-
-      // Show error message
-      toast.error(error.message || 'Upload failed');
-    },
-  });
-
-  const handleFileChange = event => {
-    const files = Array.from(event.target.files);
-    const validFiles = files.filter(
-      file => file.type === 'text/csv' || file.type === 'application/pdf'
-    );
-
-    if (validFiles.length !== files.length) {
-      alert('Some files were skipped. Only CSV and PDF files are allowed.');
+    const prev = entriesRef.current;
+    const have = new Set(prev.map(e => `${e.file.name}|${e.file.size}`));
+    const fresh = pdfs
+      .filter(f => f.size <= MAX_MB * 1e6 && !have.has(`${f.name}|${f.size}`))
+      .slice(0, Math.max(0, MAX_FILES - prev.length))
+      .map(file => ({ id: nextId++, file, status: 'reading' }));
+    if (pdfs.length > fresh.length + tooBig.length) {
+      msgs.push(`Files already added, or past the ${MAX_FILES}-statement limit, were skipped.`);
     }
+    entriesRef.current = [...prev, ...fresh];
+    setEntries(p => [...p, ...fresh]);
+    if (msgs.length) setNotice({ variant: 'warning', text: msgs.join(' ') });
+    setOpenSaved(null);
 
-    setSelectedFiles(prev => [...prev, ...validFiles]);
-    setUploadProgress(prev => {
-      const newProgress = { ...prev };
-      validFiles.forEach(file => {
-        newProgress[file.name] = 'pending';
+    // Parse sequentially: pdf.js is CPU-heavy and statements are small.
+    for (const entry of fresh) {
+      const result = await parseFile(entry.file);
+      setEntries(prev => prev.map(e => (e.id === entry.id ? { ...e, ...result } : e)));
+    }
+  }, []);
+
+  // Back from the login page: restore the statements stashed before sign-in.
+  useEffect(() => {
+    if (authLoading || !user) return;
+    let cancelled = false;
+    takeStashedFiles().then(files => {
+      if (cancelled || !files?.length) return;
+      addFiles(files);
+      setNotice({
+        variant: 'success',
+        text: `Welcome back — your ${files.length} statement${files.length > 1 ? 's were' : ' was'} restored. Click “Save analysis” to keep it.`,
       });
-      return newProgress;
     });
-  };
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, user, addFiles]);
 
-  const removeFile = filename => {
-    setSelectedFiles(prev => prev.filter(file => file.name !== filename));
-    setUploadProgress(prev => {
-      const newProgress = { ...prev };
-      delete newProgress[filename];
-      return newProgress;
-    });
-  };
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    if (selectedFiles.length === 0) return;
+  const refreshSaved = useCallback(async () => {
+    if (!user) return;
+    setSavedLoading(true);
     try {
-      await uploadMutation.mutateAsync(selectedFiles);
-    } catch (error) {
-      console.error('Upload error:', error);
+      setSaved(await listAnalyses(user.uid));
+    } catch (err) {
+      console.error('listAnalyses failed:', err);
+    } finally {
+      setSavedLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) refreshSaved();
+    else setSaved([]);
+  }, [user, refreshSaved]);
+
+  // Statements that parsed, minus exact duplicates (same file uploaded twice).
+  const { statements, duplicateIds } = useMemo(() => {
+    const seen = new Set();
+    const dup = new Set();
+    const list = [];
+    entries.forEach(e => {
+      if (e.status !== 'ok') return;
+      const key = statementKey(e.statement);
+      if (seen.has(key)) dup.add(e.id);
+      else {
+        seen.add(key);
+        list.push(e.statement);
+      }
+    });
+    return { statements: list, duplicateIds: dup };
+  }, [entries]);
+
+  const shownStatements = openSaved ? openSaved.statements : statements;
+  const analysis = useMemo(
+    () => (shownStatements.length ? analyze(shownStatements) : null),
+    [shownStatements]
+  );
+  const reading = entries.some(e => e.status === 'reading');
+
+  useEffect(() => {
+    setSaveName(statements.length ? defaultName(statements) : '');
+  }, [statements]);
+
+  const removeEntry = id => setEntries(prev => prev.filter(e => e.id !== id));
+
+  const clearAll = () => {
+    setEntries([]);
+    setOpenSaved(null);
+    setNotice(null);
+    clearStash();
+  };
+
+  const signInToSave = async () => {
+    try {
+      await stashFiles(entries.filter(e => e.status === 'ok').map(e => e.file));
+    } catch (err) {
+      console.error('Could not stash statements before sign-in:', err);
+    }
+    localStorage.setItem('preLoginPath', '/ati/finance-data');
+    navigate('/login');
+  };
+
+  const save = async () => {
+    if (!user || !statements.length) return;
+    setSaving(true);
+    setNotice(null);
+    try {
+      const okEntries = entries.filter(e => e.status === 'ok' && !duplicateIds.has(e.id));
+      await saveAnalysis({
+        uid: user.uid,
+        name: saveName.trim() || defaultName(statements),
+        files: okEntries.map(e => e.file),
+        statements: okEntries.map(e => e.statement),
+        totals: analysis.totals,
+      });
+      setNotice({ variant: 'success', text: 'Saved to your account.' });
+      clearStash();
+      refreshSaved();
+    } catch (err) {
+      console.error('saveAnalysis failed:', err);
+      setNotice({
+        variant: 'danger',
+        text:
+          err?.code === 'permission-denied' || err?.code === 'storage/unauthorized'
+            ? 'You don’t have permission to save here. Try signing out and back in.'
+            : 'Saving failed. Please try again.',
+      });
+    } finally {
+      setSaving(false);
     }
   };
 
-  const getUploadStatus = filename => {
-    const status = uploadProgress[filename];
-    switch (status) {
-      case 'pending':
-        return <span className="text-muted">Pending</span>;
-      case 'uploading':
-        return (
-          <Spinner
-            as="span"
-            animation="border"
-            size="sm"
-            role="status"
-            aria-hidden="true"
-            className="me-2"
-          />
-        );
-      case 'success':
-        return <span className="text-success">Completed</span>;
-      case 'error':
-        return <span className="text-danger">Error</span>;
-      default:
-        return null;
+  const open = async item => {
+    setNotice(null);
+    try {
+      setOpenSaved(await loadAnalysis(item.id, user.uid));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      setNotice({ variant: 'danger', text: err?.message || 'Could not open that analysis.' });
     }
+  };
+
+  const remove = async item => {
+    if (!window.confirm(`Delete “${item.name}” and its statement files? This can’t be undone.`))
+      return;
+    try {
+      await deleteAnalysis(item.id, user.uid);
+      if (openSaved?.id === item.id) setOpenSaved(null);
+      refreshSaved();
+    } catch (err) {
+      setNotice({ variant: 'danger', text: 'Could not delete that analysis.' });
+    }
+  };
+
+  const download = async f => {
+    try {
+      window.open(await fileUrl(f.storagePath), '_blank', 'noopener');
+    } catch (err) {
+      setNotice({ variant: 'danger', text: 'Could not open that file.' });
+    }
+  };
+
+  const onDrop = e => {
+    e.preventDefault();
+    setDragging(false);
+    addFiles(e.dataTransfer.files);
   };
 
   return (
-    <div className="finance-data-upload">
-      <Toaster position="top-right" />
-      <Card>
-        <CardHeader>
-          <h4 className="mb-0">Finance Data Management</h4>
-        </CardHeader>
-        <CardBody>
-          <Row>
-            <Col md={4}>
-              <Card className="mb-4">
-                <CardHeader>
-                  <h5 className="mb-0">Upload Statements</h5>
-                </CardHeader>
-                <CardBody>
-                  <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Select Files (CSV or PDF)</Form.Label>
-                      <Form.Control
-                        type="file"
-                        onChange={handleFileChange}
-                        accept=".csv,.pdf"
-                        multiple
-                        key={fileInputKey}
-                        disabled={isProcessing}
-                      />
-                    </Form.Group>
+    <div className="fin-wrap">
+      <div className="mb-3">
+        <h2 className="fin-title">Statement Analyzer</h2>
+        <p className="text-muted mb-0">
+          Upload Chase, American Express or Discover statements — credit card or checking — and get
+          a combined assessment. Files are read right here in your browser.
+        </p>
+      </div>
 
-                    {selectedFiles.length > 0 && (
-                      <ListGroup className="mb-3">
-                        {selectedFiles.map(file => (
-                          <ListGroup.Item
-                            key={file.name}
-                            className="d-flex justify-content-between align-items-center"
-                          >
-                            <div>
-                              {file.name}
-                              <div className="small">{getUploadStatus(file.name)}</div>
-                            </div>
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="text-danger"
-                              onClick={() => removeFile(file.name)}
-                              disabled={isProcessing}
-                            >
-                              Remove
-                            </Button>
-                          </ListGroup.Item>
-                        ))}
-                      </ListGroup>
-                    )}
+      {!authLoading && !user && (
+        <Alert
+          variant="info"
+          className="d-flex flex-wrap align-items-center gap-2 justify-content-between"
+        >
+          <span>
+            <i className="bi bi-shield-lock me-1" />
+            You&apos;re not signed in, so this analysis is <strong>temporary</strong>: it stays in
+            this tab only and is gone when you leave. Sign in to save it.
+          </span>
+          {entries.some(e => e.status === 'ok') ? (
+            <Button size="sm" variant="primary" onClick={signInToSave}>
+              Sign in to save
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline-primary"
+              onClick={() => {
+                localStorage.setItem('preLoginPath', '/ati/finance-data');
+                navigate('/login');
+              }}
+            >
+              Sign in
+            </Button>
+          )}
+        </Alert>
+      )}
 
-                    <Form.Group className="mb-3">
-                      <Form.Check
-                        type="checkbox"
-                        label="Save data for future use"
-                        checked={persistData}
-                        onChange={e => setPersistData(e.target.checked)}
-                        disabled={isProcessing}
-                      />
-                    </Form.Group>
+      {notice && (
+        <Alert variant={notice.variant} dismissible onClose={() => setNotice(null)}>
+          {notice.text}
+        </Alert>
+      )}
 
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      disabled={
-                        selectedFiles.length === 0 || uploadMutation.isPending || isProcessing
-                      }
-                    >
-                      {uploadMutation.isPending || isProcessing ? (
-                        <>
-                          <Spinner
-                            as="span"
-                            animation="border"
-                            size="sm"
-                            role="status"
-                            aria-hidden="true"
-                            className="me-2"
-                          />
-                          {isProcessing ? 'Processing...' : 'Uploading...'}
-                        </>
-                      ) : (
-                        'Upload All'
-                      )}
-                    </Button>
-                  </Form>
-
-                  {uploadMutation.isError && (
-                    <Alert variant="danger" className="mt-3">
-                      Error uploading files: {uploadMutation.error.message}
-                    </Alert>
-                  )}
-                </CardBody>
-              </Card>
-
-              {uploadHistory.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <h5 className="mb-0">Upload History</h5>
-                  </CardHeader>
-                  <CardBody>
-                    <div className="upload-history">
-                      {uploadHistory.map(upload => (
-                        <div key={upload.id} className="mb-3">
-                          <h6>{upload.timestamp}</h6>
-                          <p className="mb-1">
-                            {upload.status === 'success' ? 'Upload successful' : 'Upload failed'}
-                          </p>
-                          {upload.fileResults && (
-                            <div className="mt-2">
-                              <h6 className="small">File Results:</h6>
-                              <ul className="list-unstyled small">
-                                {upload.fileResults.map(result => (
-                                  <li
-                                    key={result.filename}
-                                    className={
-                                      result.status === 'error' ? 'text-danger' : 'text-success'
-                                    }
-                                  >
-                                    {result.filename}:{' '}
-                                    {result.status === 'error'
-                                      ? result.error
-                                      : `${result.count} transactions`}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          <Button
-                            variant="link"
-                            size="sm"
-                            onClick={() => setCurrentTransactions(upload.transactions)}
-                          >
-                            View Analysis
-                          </Button>
-                        </div>
+      <Row className="g-4">
+        <Col
+          lg={openSaved || entries.length ? 12 : 8}
+          className={openSaved || entries.length ? '' : 'mx-auto'}
+        >
+          <Card className="fin-card">
+            <Card.Body>
+              {openSaved ? (
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                  <div>
+                    <div className="small text-muted">Viewing saved analysis</div>
+                    <div className="fw-semibold">{openSaved.name}</div>
+                    <div className="small mt-1">
+                      {(openSaved.files || []).map(f => (
+                        <button
+                          type="button"
+                          key={f.storagePath}
+                          className="btn btn-link btn-sm p-0 me-3"
+                          onClick={() => download(f)}
+                        >
+                          <i className="bi bi-file-earmark-pdf me-1" />
+                          {f.name}
+                        </button>
                       ))}
                     </div>
-                  </CardBody>
-                </Card>
-              )}
-            </Col>
-            <Col md={8}>
-              {isProcessing ? (
-                <div className="text-center p-5">
-                  <Spinner animation="border" role="status" className="mb-3">
-                    <span className="visually-hidden">Processing...</span>
-                  </Spinner>
-                  <h5>Processing your files...</h5>
-                  <p className="text-muted">This may take a few moments</p>
+                  </div>
+                  <Button variant="outline-secondary" size="sm" onClick={() => setOpenSaved(null)}>
+                    Close
+                  </Button>
                 </div>
-              ) : Array.isArray(currentTransactions) && currentTransactions.length > 0 ? (
-                <FinanceAnalytics
-                  transactions={currentTransactions}
-                  cardSuggestions={currentCardSuggestions}
-                />
               ) : (
-                <Alert variant="info">
-                  {uploadMutation.isPending
-                    ? 'Processing your files...'
-                    : 'Upload files to see analytics'}
-                </Alert>
+                <>
+                  <div
+                    className={`fin-drop${dragging ? ' active' : ''}`}
+                    onDragOver={e => {
+                      e.preventDefault();
+                      setDragging(true);
+                    }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={onDrop}
+                    onClick={() => inputRef.current?.click()}
+                    onKeyDown={e =>
+                      (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()
+                    }
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <i className="bi bi-cloud-arrow-up fs-2 d-block mb-1" />
+                    <div className="fw-semibold">Drop statement PDFs here or click to choose</div>
+                    <div className="small text-muted">
+                      Several at once is fine — mix cards, banks and months (up to {MAX_FILES}).
+                    </div>
+                    <input
+                      ref={inputRef}
+                      type="file"
+                      accept="application/pdf,.pdf"
+                      multiple
+                      hidden
+                      onChange={e => {
+                        addFiles(e.target.files);
+                        e.target.value = '';
+                      }}
+                    />
+                  </div>
+
+                  {entries.length > 0 && (
+                    <>
+                      <Table size="sm" className="fin-table mt-3 mb-2" responsive>
+                        <thead>
+                          <tr>
+                            <th>File</th>
+                            <th>Detected</th>
+                            <th>Period</th>
+                            <th className="text-end">Rows</th>
+                            <th />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {entries.map(e => (
+                            <tr key={e.id}>
+                              <td>
+                                <div className="text-break">{e.file.name}</div>
+                                <div className="small text-muted">{fmtSize(e.file.size)}</div>
+                              </td>
+                              <td>
+                                {e.status === 'reading' && (
+                                  <span className="text-muted">
+                                    <Spinner animation="border" size="sm" className="me-1" />
+                                    Reading…
+                                  </span>
+                                )}
+                                {e.status === 'error' && (
+                                  <span className="text-danger">{e.error}</span>
+                                )}
+                                {(e.status === 'ok' || e.status === 'empty') && (
+                                  <>
+                                    <div>{e.statement.label}</div>
+                                    <div className="small text-muted">
+                                      {e.statement.accountType === 'debit'
+                                        ? 'Checking / debit'
+                                        : 'Credit card'}
+                                    </div>
+                                    {duplicateIds.has(e.id) && (
+                                      <div className="small text-warning">
+                                        Duplicate — counted once
+                                      </div>
+                                    )}
+                                    {e.statement.warnings.map(w => (
+                                      <div key={w} className="small text-warning">
+                                        {w}
+                                      </div>
+                                    ))}
+                                  </>
+                                )}
+                              </td>
+                              <td className="small text-nowrap">
+                                {e.statement && (
+                                  <>
+                                    {fmtDay(e.statement.periodStart)}
+                                    <br />
+                                    {fmtDay(e.statement.periodEnd)}
+                                  </>
+                                )}
+                              </td>
+                              <td className="text-end">
+                                {e.statement ? e.statement.transactions.length : ''}
+                              </td>
+                              <td className="text-end">
+                                <button
+                                  type="button"
+                                  className="btn btn-link btn-sm text-danger p-0"
+                                  onClick={() => removeEntry(e.id)}
+                                  aria-label={`Remove ${e.file.name}`}
+                                >
+                                  <i className="bi bi-x-lg" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+
+                      <div className="d-flex flex-wrap gap-2 align-items-center">
+                        {user && statements.length > 0 && (
+                          <>
+                            <Form.Control
+                              size="sm"
+                              style={{ maxWidth: 280 }}
+                              value={saveName}
+                              onChange={e => setSaveName(e.target.value)}
+                              maxLength={80}
+                              aria-label="Name for this analysis"
+                            />
+                            <Button size="sm" onClick={save} disabled={saving || reading}>
+                              {saving ? (
+                                <>
+                                  <Spinner animation="border" size="sm" className="me-1" />
+                                  Saving…
+                                </>
+                              ) : (
+                                'Save analysis'
+                              )}
+                            </Button>
+                          </>
+                        )}
+                        {!user && statements.length > 0 && (
+                          <Button size="sm" onClick={signInToSave}>
+                            Sign in to save
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline-secondary" onClick={clearAll}>
+                          Clear all
+                        </Button>
+                        {user && statements.length > 0 && (
+                          <span className="small text-muted">
+                            Saves the statements and their transactions privately to your account.
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </>
               )}
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {analysis ? (
+        <Card className="fin-card mt-4">
+          <Card.Body>
+            <FinanceAnalytics analysis={analysis} />
+          </Card.Body>
+        </Card>
+      ) : reading ? (
+        <div className="text-center text-muted py-5">
+          <Spinner animation="border" className="mb-2" />
+          <div>Reading your statements…</div>
+        </div>
+      ) : null}
+
+      {user && (
+        <Card className="fin-card mt-4">
+          <Card.Body>
+            <h6 className="fin-h">Your saved analyses</h6>
+            {savedLoading ? (
+              <div className="text-muted small">Loading…</div>
+            ) : saved.length === 0 ? (
+              <div className="text-muted small">Nothing saved yet.</div>
+            ) : (
+              <Table size="sm" className="fin-table mb-0" responsive hover>
+                <tbody>
+                  {saved.map(item => (
+                    <tr key={item.id}>
+                      <td>
+                        <div className="fw-semibold">{item.name}</div>
+                        <div className="small text-muted">
+                          {item.fileCount} statement{item.fileCount === 1 ? '' : 's'} ·{' '}
+                          {item.txnCount} transactions · {fmtDay(item.from)} – {fmtDay(item.to)}
+                        </div>
+                      </td>
+                      <td className="text-end text-nowrap">
+                        <Button
+                          size="sm"
+                          variant="outline-primary"
+                          className="me-2"
+                          onClick={() => open(item)}
+                        >
+                          Open
+                        </Button>
+                        <Button size="sm" variant="outline-danger" onClick={() => remove(item)}>
+                          Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </Card.Body>
+        </Card>
+      )}
     </div>
   );
 };

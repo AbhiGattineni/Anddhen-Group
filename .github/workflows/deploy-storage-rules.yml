@@ -1,0 +1,80 @@
+# Deploys Firebase Storage security rules (storage.rules) to the `anddhen`
+# project. Kept separate from deploy-firestore-rules.yml so a Storage permission
+# problem can never block a Firestore rules deploy, or the other way round.
+#
+# Uses the same FIREBASE_SERVICE_ACCOUNT secret. If this fails with a 403
+# while the Firestore rules deploy succeeds, the service account is missing a
+# Storage-related role — see firestore/README.md.
+name: Deploy Storage rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'storage.rules'
+      - '.github/workflows/deploy-storage-rules.yml'
+  # Lets you re-run a deploy without pushing a commit (Actions tab > Run workflow).
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two rules deploys race each other; the last one merged should win.
+concurrency:
+  group: deploy-storage-rules
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Fail with a readable message rather than an opaque CLI auth error.
+      - name: Check the service account secret is present
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT is not set. Add the service account JSON under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Write service account credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-service-account.json" >> "$GITHUB_ENV"
+
+      # A 403 here is ambiguous: it can mean the roles are missing, OR that the
+      # key belongs to a different project than the one being deployed to, in
+      # which case granting roles on `anddhen` changes nothing. These two fields
+      # are identifiers, not credentials — printing them makes that distinction
+      # obvious instead of guesswork. project_id MUST read `anddhen`.
+      - name: Show which identity is deploying
+        run: |
+          node -e '
+            const sa = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+            console.log("project_id  :", sa.project_id);
+            console.log("client_email:", sa.client_email);
+            if (sa.project_id !== "anddhen") {
+              console.log("::error::This key belongs to project \"" + sa.project_id + "\", not \"anddhen\". Regenerate the key from the anddhen project and update the FIREBASE_SERVICE_ACCOUNT secret.");
+              process.exit(1);
+            }
+          '
+
+      - name: Deploy Storage rules
+        run: |
+          npx --yes firebase-tools@15 deploy \
+            --only storage \
+            --project anddhen \
+            --non-interactive
+
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-service-account.json"
