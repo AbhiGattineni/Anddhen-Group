@@ -13,7 +13,7 @@
  * real statements, so each bank's quirks are handled defensively: anything a
  * parser can't place is skipped rather than guessed.
  */
-import { categorize, merchantKey, merchantName } from './categorize';
+import { categorizeDetailed, merchantKey, merchantName } from './categorize';
 
 const BANKS = {
   chase: { name: 'Chase', test: /\bchase\b|jpmorgan/i },
@@ -234,10 +234,16 @@ const TRANSFER_RE =
 const INCOME_RE = /payroll|direct\s+dep|salary|dir\s+dep|paycheck|irs\s+treas|tax\s+ref/i;
 const CASH_RE = /\batm\b.*(withdrawal|w\/d)|cash\s+withdrawal/i;
 const LEADING_FEE_RE = /^fee\b/i;
+const REWARD_RE =
+  /cash\s*back\s+(bonus\s+)?(redemption|reward|credit)|cashback\s+bonus|rewards?\s+(redemption|credit)|points?\s+redemption|statement\s+credit\s+-?\s*(reward|points)/i;
 
 function classify(description, amount, accountType) {
   if (accountType === 'credit') {
-    if (amount < 0) return PAYMENT_RE.test(description) ? 'payment' : 'refund';
+    if (amount < 0) {
+      if (PAYMENT_RE.test(description)) return 'payment';
+      if (REWARD_RE.test(description)) return 'reward';
+      return 'refund';
+    }
     if (INTEREST_RE.test(description)) return 'interest';
     if (FEE_RE.test(description)) return 'fee';
     return 'purchase';
@@ -470,6 +476,7 @@ export function parseStatement(lines, fileName = '') {
 }
 
 function makeTxn(date, description, amount, kind, account, accountType, bankCategory) {
+  const { category, source } = categorizeDetailed(description, kind, bankCategory);
   return {
     date,
     description,
@@ -479,6 +486,8 @@ function makeTxn(date, description, amount, kind, account, accountType, bankCate
     accountType,
     merchant: merchantName(description),
     merchantKey: merchantKey(description),
-    category: categorize(description, kind, bankCategory),
+    bankCategory: bankCategory || '',
+    category,
+    categorySource: source,
   };
 }

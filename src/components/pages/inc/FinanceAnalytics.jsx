@@ -14,7 +14,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { CATEGORIES } from 'src/services/finance/categorize';
+import {
+  CATEGORIES,
+  SPENDING_CATEGORIES,
+  isRecategorizable,
+} from 'src/services/finance/categorize';
 
 const COLORS = [
   '#3b82f6',
@@ -29,7 +33,16 @@ const COLORS = [
   '#6366f1',
   '#14b8a6',
   '#64748b',
+  '#a855f7',
+  '#eab308',
+  '#22c55e',
+  '#0ea5e9',
+  '#f43f5e',
+  '#78716c',
+  '#d946ef',
+  '#0d9488',
 ];
+const colorAt = i => COLORS[i % COLORS.length];
 
 const usd = n =>
   `${n < 0 ? '-' : ''}$${Math.abs(n).toLocaleString('en-US', {
@@ -59,6 +72,7 @@ const KIND_LABELS = {
   transfer: 'Transfer',
   income: 'Income',
   deposit: 'Deposit',
+  reward: 'Reward',
 };
 
 function Stat({ label, value, sub, tone }) {
@@ -80,9 +94,8 @@ Stat.propTypes = {
 
 function Overview({ analysis }) {
   const { totals, byCategory, byMerchant, monthly, accountNames } = analysis;
-  const pie = byCategory.slice(0, 9);
-  const rest = byCategory.slice(9).reduce((s, c) => s + c.total, 0);
-  if (rest > 0) pie.push({ name: 'Everything else', total: Math.round(rest * 100) / 100 });
+  // Every category gets its own slice — no "everything else" lumping.
+  const pie = byCategory;
 
   return (
     <>
@@ -109,6 +122,14 @@ function Overview({ analysis }) {
             label="Transfers (Zelle etc.)"
             value={usd(totals.transfersOut)}
             sub={`sent · ${usd(totals.transfersIn)} received`}
+          />
+        )}
+        {totals.rewards > 0 && (
+          <Stat
+            label="Rewards earned"
+            value={usd(totals.rewards)}
+            sub="cash back & points redeemed"
+            tone="good"
           />
         )}
         {totals.cardPayments > 0 && (
@@ -157,10 +178,7 @@ function Overview({ analysis }) {
               {byCategory.map((c, i) => (
                 <tr key={c.name}>
                   <td>
-                    <span
-                      className="fin-dot"
-                      style={{ background: COLORS[Math.min(i, 9) % COLORS.length] }}
-                    />
+                    <span className="fin-dot" style={{ background: colorAt(i) }} />
                     {c.name}
                   </td>
                   <td className="text-muted text-end">{c.count}×</td>
@@ -217,6 +235,12 @@ function Overview({ analysis }) {
 }
 
 Overview.propTypes = { analysis: PropTypes.object.isRequired };
+
+const SOURCE_NOTE = {
+  guess: 'best guess',
+  merchant: 'merchant name',
+  user: 'your choice',
+};
 
 function Accounts({ analysis }) {
   const { accounts } = analysis;
@@ -442,10 +466,57 @@ Recommendations.propTypes = { analysis: PropTypes.object.isRequired };
 
 const PAGE = 25;
 
-function Transactions({ analysis }) {
+function CategoryCell({ t, onCategoryChange }) {
+  if (!isRecategorizable(t.kind, t.description) || !onCategoryChange) {
+    return (
+      <>
+        {t.category}
+        {t.kind !== 'purchase' && (
+          <div className="small text-muted">{KIND_LABELS[t.kind] || t.kind}</div>
+        )}
+      </>
+    );
+  }
+  const custom = !SPENDING_CATEGORIES.includes(t.category);
+  return (
+    <>
+      <Form.Select
+        size="sm"
+        value={t.category}
+        onChange={e =>
+          onCategoryChange(t.merchantKey, e.target.value === '__auto' ? null : e.target.value)
+        }
+        aria-label={`Category for ${t.merchant}`}
+        className={
+          t.categorySource === 'guess' || t.categorySource === 'merchant' ? 'fin-cat-unsure' : ''
+        }
+        style={{ minWidth: 170 }}
+      >
+        {custom && <option value={t.category}>{t.category}</option>}
+        {SPENDING_CATEGORIES.map(c => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+        {t.categorySource === 'user' && <option value="__auto">↺ Automatic</option>}
+      </Form.Select>
+      <div className="small text-muted">
+        {t.kind === 'refund' ? 'Refund' : ''}
+        {t.kind === 'refund' && SOURCE_NOTE[t.categorySource] ? ' · ' : ''}
+        {SOURCE_NOTE[t.categorySource] || ''}
+      </div>
+    </>
+  );
+}
+
+CategoryCell.propTypes = { t: PropTypes.object.isRequired, onCategoryChange: PropTypes.func };
+
+const UNSURE = '__unsure';
+
+function Transactions({ analysis, onCategoryChange, signedIn, initialCategory }) {
   const [q, setQ] = useState('');
   const [account, setAccount] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(initialCategory || '');
   const [kind, setKind] = useState('');
   const [page, setPage] = useState(1);
 
@@ -455,7 +526,10 @@ function Transactions({ analysis }) {
       .filter(
         t =>
           (!account || t.account === account) &&
-          (!category || t.category === category) &&
+          (!category ||
+            (category === UNSURE
+              ? t.categorySource === 'guess' || t.categorySource === 'merchant'
+              : t.category === category)) &&
           (!kind || t.kind === kind) &&
           (!s || t.description.toLowerCase().includes(s) || t.merchant.toLowerCase().includes(s))
       )
@@ -467,7 +541,11 @@ function Transactions({ analysis }) {
   const current = Math.min(page, pages);
   const shown = rows.slice((current - 1) * PAGE, current * PAGE);
   const usedKinds = [...new Set(analysis.transactions.map(t => t.kind))];
-  const usedCats = CATEGORIES.filter(c => analysis.transactions.some(t => t.category === c));
+  const present = new Set(analysis.transactions.map(t => t.category));
+  const usedCats = [
+    ...CATEGORIES.filter(c => present.has(c)),
+    ...[...present].filter(c => !CATEGORIES.includes(c)).sort((a, b) => a.localeCompare(b)),
+  ];
 
   const exportCsv = () => {
     const esc = v => `"${String(v).replace(/"/g, '""')}"`;
@@ -509,6 +587,9 @@ function Transactions({ analysis }) {
         <Col md={3} xs={6}>
           <Form.Select value={category} onChange={reset(setCategory)} aria-label="Category">
             <option value="">All categories</option>
+            {analysis.unsure > 0 && (
+              <option value={UNSURE}>Needs a check ({analysis.unsure})</option>
+            )}
             {usedCats.map(c => (
               <option key={c}>{c}</option>
             ))}
@@ -525,6 +606,13 @@ function Transactions({ analysis }) {
           </Form.Select>
         </Col>
       </Row>
+      <p className="small text-muted mb-2">
+        Change a category and it applies to every transaction from that merchant
+        {signedIn
+          ? ', and is remembered in your account.'
+          : ' (for this visit — sign in to remember it).'}{' '}
+        “Best guess” and “merchant name” mean we weren&apos;t sure.
+      </p>
       <div className="d-flex justify-content-between align-items-center mb-2 small text-muted">
         <span>
           {rows.length} transaction{rows.length === 1 ? '' : 's'}
@@ -552,10 +640,7 @@ function Transactions({ analysis }) {
                 <div className="small text-muted">{t.description}</div>
               </td>
               <td>
-                {t.category}
-                {t.kind !== 'purchase' && (
-                  <div className="small text-muted">{KIND_LABELS[t.kind] || t.kind}</div>
-                )}
+                <CategoryCell t={t} onCategoryChange={onCategoryChange} />
               </td>
               <td className="small">{t.account}</td>
               <td className={`text-end fw-semibold ${t.amount < 0 ? 'text-success' : ''}`}>
@@ -578,13 +663,39 @@ function Transactions({ analysis }) {
   );
 }
 
-Transactions.propTypes = { analysis: PropTypes.object.isRequired };
+Transactions.propTypes = {
+  analysis: PropTypes.object.isRequired,
+  onCategoryChange: PropTypes.func,
+  signedIn: PropTypes.bool,
+  initialCategory: PropTypes.string,
+};
 
-export default function FinanceAnalytics({ analysis }) {
+export default function FinanceAnalytics({ analysis, onCategoryChange, signedIn }) {
+  const [tab, setTab] = useState('overview');
+  // Bumped by "Review categories" so the Transactions tab reopens filtered.
+  const [review, setReview] = useState(0);
   const flagged = analysis.insights.filter(i => i.level !== 'info').length;
   return (
-    <Tabs defaultActiveKey="overview" className="mb-3 fin-tabs" mountOnEnter>
+    <Tabs activeKey={tab} onSelect={k => setTab(k)} className="mb-3 fin-tabs" mountOnEnter>
       <Tab eventKey="overview" title="Overview">
+        {analysis.unsure > 0 && (
+          <Alert variant="light" className="border small d-flex flex-wrap gap-2 align-items-center">
+            <span>
+              {analysis.unsure} merchant{analysis.unsure > 1 ? 's were' : ' was'} categorised by a
+              best guess or by name.
+            </span>
+            <button
+              type="button"
+              className="btn btn-link btn-sm p-0"
+              onClick={() => {
+                setReview(r => r + 1);
+                setTab('transactions');
+              }}
+            >
+              Review categories
+            </button>
+          </Alert>
+        )}
         <Overview analysis={analysis} />
       </Tab>
       <Tab eventKey="accounts" title={`Cards & accounts (${analysis.accounts.length})`}>
@@ -609,10 +720,20 @@ export default function FinanceAnalytics({ analysis }) {
         <Recommendations analysis={analysis} />
       </Tab>
       <Tab eventKey="transactions" title="Transactions">
-        <Transactions analysis={analysis} />
+        <Transactions
+          key={review}
+          initialCategory={review ? UNSURE : ''}
+          analysis={analysis}
+          onCategoryChange={onCategoryChange}
+          signedIn={signedIn}
+        />
       </Tab>
     </Tabs>
   );
 }
 
-FinanceAnalytics.propTypes = { analysis: PropTypes.object.isRequired };
+FinanceAnalytics.propTypes = {
+  analysis: PropTypes.object.isRequired,
+  onCategoryChange: PropTypes.func,
+  signedIn: PropTypes.bool,
+};

@@ -217,14 +217,20 @@ service cloud.firestore {
       }
     }
 
+    // Statement Analyzer category choices: one private doc per user.
+    match /financePrefs/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
     // --- Everything else (User, timesheetEntries and the Jira board handled
     //     above; exclude them here so their protections can't be bypassed via
     //     this broad rule) ---
     match /{col}/{docId} {
-      allow read: if !(col in ['timesheetEntries', 'jiraTickets', 'jiraMeta', 'financeAnalyses'])
+      allow read: if !(col in ['timesheetEntries', 'jiraTickets', 'jiraMeta', 'financeAnalyses',
+                               'financePrefs'])
         && signedIn();
       allow create, update, delete: if !(col in ['User', 'timesheetEntries', 'jiraTickets', 'jiraMeta',
-                                                  'financeAnalyses'])
+                                                  'financeAnalyses', 'financePrefs'])
         && (adminWritable(col) ? isAdminish() : signedIn());
     }
   }
