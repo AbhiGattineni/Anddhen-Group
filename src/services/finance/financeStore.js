@@ -6,6 +6,8 @@
  *                            files: [{ name, size, storagePath }] }
  *  financeAnalyses/{id}/chunks/{n} — { uid, statementIndex, transactions: [...] }
  *  Storage: finance/{uid}/{id}/{n}-{filename}.pdf — the original statements
+ *  financePrefs/{uid} — { categoryOverrides: { merchantKey: category } }, the
+ *    user's own category choices, applied to every analysis they open
  *
  * Transactions live in chunk docs so a year of statements never hits
  * Firestore's 1 MB document limit. Only parsed rows are stored; the
@@ -17,6 +19,9 @@ import {
   doc,
   getDoc,
   getDocs,
+  setDoc,
+  updateDoc,
+  deleteField,
   query,
   where,
   writeBatch,
@@ -113,4 +118,24 @@ export async function deleteAnalysis(id, uid) {
   chunks.docs.forEach(c => batch.delete(c.ref));
   batch.delete(doc(db, COL, id));
   await batch.commit();
+}
+
+const PREFS = 'financePrefs';
+
+/** merchantKey -> category the user picked (empty when none / signed out). */
+export async function getCategoryOverrides(uid) {
+  const snap = await getDoc(doc(db, PREFS, uid));
+  return (snap.exists() && snap.data().categoryOverrides) || {};
+}
+
+/** Remember (or with category=null, forget) a user's category for a merchant. */
+export async function setCategoryOverride(uid, merchantKey, category) {
+  const ref = doc(db, PREFS, uid);
+  if (category) {
+    await setDoc(ref, { categoryOverrides: { [merchantKey]: category } }, { merge: true });
+  } else {
+    await updateDoc(ref, { [`categoryOverrides.${merchantKey}`]: deleteField() }).catch(err => {
+      if (err?.code !== 'not-found') throw err;
+    });
+  }
 }

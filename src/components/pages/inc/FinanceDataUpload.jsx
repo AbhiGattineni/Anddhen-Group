@@ -11,6 +11,8 @@ import {
   loadAnalysis,
   deleteAnalysis,
   fileUrl,
+  getCategoryOverrides,
+  setCategoryOverride,
 } from 'src/services/finance/financeStore';
 import { stashFiles, takeStashedFiles, clearStash } from 'src/services/finance/pendingStash';
 import FinanceAnalytics from './FinanceAnalytics';
@@ -73,6 +75,9 @@ const FinanceDataUpload = () => {
   const [saved, setSaved] = useState([]);
   const [savedLoading, setSavedLoading] = useState(false);
   const [openSaved, setOpenSaved] = useState(null); // loaded saved analysis
+  // merchantKey -> category the user picked. Saved to their account when
+  // signed in; kept only for this tab when signed out.
+  const [overrides, setOverrides] = useState({});
 
   const addFiles = useCallback(async list => {
     const incoming = Array.from(list || []);
@@ -138,6 +143,42 @@ const FinanceDataUpload = () => {
     else setSaved([]);
   }, [user, refreshSaved]);
 
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    getCategoryOverrides(user.uid)
+      .then(saved => {
+        // Choices made before the load finished win over the stored ones.
+        if (!cancelled) setOverrides(prev => ({ ...saved, ...prev }));
+      })
+      .catch(err => console.error('getCategoryOverrides failed:', err));
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const changeCategory = useCallback(
+    (merchantKey, category) => {
+      if (!merchantKey) return;
+      setOverrides(prev => {
+        const next = { ...prev };
+        if (category) next[merchantKey] = category;
+        else delete next[merchantKey];
+        return next;
+      });
+      if (user) {
+        setCategoryOverride(user.uid, merchantKey, category).catch(err => {
+          console.error('setCategoryOverride failed:', err);
+          setNotice({
+            variant: 'warning',
+            text: 'Your category change applies here but could not be saved to your account.',
+          });
+        });
+      }
+    },
+    [user]
+  );
+
   // Statements that parsed, minus exact duplicates (same file uploaded twice).
   const { statements, duplicateIds } = useMemo(() => {
     const seen = new Set();
@@ -157,8 +198,8 @@ const FinanceDataUpload = () => {
 
   const shownStatements = openSaved ? openSaved.statements : statements;
   const analysis = useMemo(
-    () => (shownStatements.length ? analyze(shownStatements) : null),
-    [shownStatements]
+    () => (shownStatements.length ? analyze(shownStatements, overrides) : null),
+    [shownStatements, overrides]
   );
   const reading = entries.some(e => e.status === 'reading');
 
@@ -487,7 +528,11 @@ const FinanceDataUpload = () => {
       {analysis ? (
         <Card className="fin-card mt-4">
           <Card.Body>
-            <FinanceAnalytics analysis={analysis} />
+            <FinanceAnalytics
+              analysis={analysis}
+              onCategoryChange={changeCategory}
+              signedIn={!!user}
+            />
           </Card.Body>
         </Card>
       ) : reading ? (

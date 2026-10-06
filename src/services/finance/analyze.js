@@ -1,3 +1,5 @@
+import { categorizeDetailed, isRecategorizable } from './categorize';
+
 /**
  * Assessment of parsed statement transactions: spending breakdown, per-card
  * comparison, insights & flags, and reward-card recommendations.
@@ -415,11 +417,25 @@ function recommendCards(transactions) {
 // ---------------------------------------------------------------- main
 
 /**
- * @param {Array} statements parseStatement results (each with .transactions)
+ * Category for each row: recomputed on every run (so saved analyses pick up
+ * better rules), then the user's per-merchant choice on top.
  */
-export function analyze(statements) {
+function applyCategories(t, overrides) {
+  const user =
+    isRecategorizable(t.kind, t.description) && t.merchantKey && overrides[t.merchantKey];
+  if (user) return { ...t, category: user, categorySource: 'user' };
+  const { category, source } = categorizeDetailed(t.description, t.kind, t.bankCategory);
+  return { ...t, category, categorySource: source };
+}
+
+/**
+ * @param {Array} statements parseStatement results (each with .transactions)
+ * @param {Object} overrides merchantKey -> category chosen by the user
+ */
+export function analyze(statements, overrides = {}) {
   const transactions = statements
     .flatMap(s => s.transactions)
+    .map(t => applyCategories(t, overrides))
     .sort((a, b) => a.date.localeCompare(b.date));
   const accounts = accountsSummary(transactions, statements);
   const accountNames = accounts.map(a => a.account);
@@ -457,6 +473,9 @@ export function analyze(statements) {
           .filter(t => t.kind === 'transfer' && t.amount < 0)
           .reduce((s, t) => s - t.amount, 0)
       ),
+      rewards: round2(
+        transactions.filter(t => t.kind === 'reward').reduce((s, t) => s - t.amount, 0)
+      ),
       cardPayments: round2(
         transactions.filter(t => t.kind === 'card_payment').reduce((s, t) => s + t.amount, 0)
       ),
@@ -474,6 +493,13 @@ export function analyze(statements) {
     duplicates,
     spikes,
     insights: buildInsights(transactions, accounts, recurring, duplicates, spikes),
+    unsure: [
+      ...new Set(
+        transactions
+          .filter(t => t.categorySource === 'guess' || t.categorySource === 'merchant')
+          .map(t => t.merchantKey)
+      ),
+    ].length,
     recommendations: recommendCards(transactions),
   };
 }

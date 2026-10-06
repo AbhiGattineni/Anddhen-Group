@@ -1,6 +1,11 @@
 /**
  * Merchant clean-up and spending categories for statement transactions.
- * Keyword rules, checked in order; the first match wins.
+ *
+ * There is deliberately no "Other" bucket. A purchase is categorised by, in
+ * order: a known-merchant rule, the bank's own category (Discover prints one),
+ * a guess from words in the description ("ENTERTAINMEN" -> Entertainment),
+ * and finally the merchant's own name. The user can change any of these; the
+ * change applies to every transaction from that merchant (see analyze.js).
  */
 
 export const CATEGORIES = [
@@ -24,9 +29,11 @@ export const CATEGORIES = [
   'Transfers',
   'Card Payments',
   'Income',
-  'Refunds',
-  'Other',
+  'Rewards',
 ];
+
+/** Categories a user can assign to a purchase or refund. */
+export const SPENDING_CATEGORIES = CATEGORIES.slice(0, CATEGORIES.indexOf('Fees & Interest'));
 
 const RULES = [
   [
@@ -35,7 +42,7 @@ const RULES = [
   ],
   [
     'Groceries',
-    /whole\s*foods|trader\s*joe|safeway|kroger|costco|sam'?s\s*club|aldi|publix|wegmans|heb\b|h-e-b|albertsons|sprouts|food\s*lion|giant\s+(eagle|food)|stop\s*&\s*shop|harris\s*teeter|meijer|winco|qfc|fred\s*meyer|ralphs|vons|market\s*basket|patel\s*brothers|instacart|grocery|supermarket|99\s*ranch|h\s*mart|walmart\s+(grocery|supercenter)/i,
+    /total\s+wine|bevmo|liquor|wine\s*&\s*spirits|whole\s*foods|trader\s*joe|safeway|kroger|costco|sam'?s\s*club|aldi|publix|wegmans|heb\b|h-e-b|albertsons|sprouts|food\s*lion|giant\s+(eagle|food)|stop\s*&\s*shop|harris\s*teeter|meijer|winco|qfc|fred\s*meyer|ralphs|vons|market\s*basket|patel\s*brothers|instacart|grocery|supermarket|99\s*ranch|h\s*mart|walmart\s+(grocery|supercenter)/i,
   ],
   [
     'Gas',
@@ -107,21 +114,100 @@ const DISCOVER_MAP = {
   'government services': 'Utilities & Bills',
 };
 
-/** Category for a transaction. `bankCategory` is the bank's own label if it prints one. */
-export function categorize(description, kind, bankCategory = '') {
-  if (kind === 'interest' || kind === 'fee') return 'Fees & Interest';
-  if (kind === 'payment' || kind === 'card_payment') return 'Card Payments';
-  if (kind === 'transfer') return 'Transfers';
-  if (kind === 'income' || kind === 'deposit') return 'Income';
-  if (kind === 'cash') return 'Cash';
+// Word fragments that point to a category when no known merchant matched.
+// Looser than RULES, so only consulted after them.
+const GUESSES = [
+  [
+    'Entertainment',
+    /entertain|amuse|arcade|cinema|theat|music|concert|game|gaming|sport|stadium|arena|ticket|karaoke|escape\s*room|bowl|billiard|comedy|festival|attraction/i,
+  ],
+  [
+    'Dining',
+    /restau|grill|cafe|caf\u00e9|coffee|espresso|kitchen|\beat|food\s*(truck|hall|court)|pizz|taco|taqueria|burger|bbq|barbecue|sushi|noodle|curry|biryani|bakery|bake\s*shop|\bbar\b|pub\b|brew|cantina|dine|diner|bistro|tea\b|creamery|ice\s*cream|dessert|wings|chicken|steak|seafood|buffet/i,
+  ],
+  [
+    'Groceries',
+    /market|grocer|\bfoods?\b|produce|farm|butcher|halal|indian\s+store|asian\s+store|bazaar/i,
+  ],
+  [
+    'Health',
+    /pharm|medic|clinic|dental|dentist|ortho|health|\bcare\b|hospital|\blab\b|vision|optic|wellness|fitness|\bgym\b|yoga|pilates|physical\s+therapy|chiro|\bmd\b|\bdds\b/i,
+  ],
+  ['Personal Care', /salon|beauty|\bspa\b|barber|nail|cosmet|lash|brow|wax/i],
+  [
+    'Transportation',
+    /\bauto\b|motor|tire|garage|parking|transit|\bcar\b|repair|\btow|smog|lube|bike|scooter|\bev\b/i,
+  ],
+  [
+    'Travel',
+    /hotel|\binn\b|lodge|suites|travel|tours?\b|\bair\b|flight|airport|resort|hostel|vacation/i,
+  ],
+  [
+    'Utilities & Bills',
+    /utilit|electric|\bwater\b|telecom|wireless|internet|broadband|cable|\bphone\b|mobile\s+bill|\bbill\s*pay/i,
+  ],
+  ['Insurance', /insur|assurance|\bpolicy\b/i],
+  [
+    'Education',
+    /school|academy|college|universit|learning|tutor|course|training|institute|\bbooks?\b/i,
+  ],
+  [
+    'Housing',
+    /\brent\b|property|apartment|apts?\b|realty|mortgage|\bhoa\b|homeowners|lease|storage\s+unit|self\s+storage/i,
+  ],
+  ['Gifts & Donations', /donat|charit|church|temple|mosque|gurdwara|foundation|fundrais|\bgift/i],
+  [
+    'Streaming & Subscriptions',
+    /subscription|membership|monthly\s+plan|premium|\bpro\s+plan|\.tv\b|stream/i,
+  ],
+  [
+    'Shopping',
+    /store|shop|outlet|retail|boutique|depot|supply|supplies|goods|apparel|clothing|fashion|shoes|electronics|furniture|hardware|\bmall\b|emporium|\.com\b|online/i,
+  ],
+];
+
+const SPENDING_KINDS = new Set(['purchase', 'refund']);
+
+/**
+ * Category for a transaction, with where it came from:
+ *   'kind'     fees, transfers, income… (fixed by what the row is)
+ *   'rule'     a known merchant
+ *   'bank'     the bank's own category label (Discover)
+ *   'guess'    inferred from words in the description — worth a look
+ *   'merchant' nothing to go on: the merchant's own name — worth a look
+ */
+export function categorizeDetailed(description, kind, bankCategory = '') {
+  if (kind === 'interest' || kind === 'fee') return { category: 'Fees & Interest', source: 'kind' };
+  if (kind === 'payment' || kind === 'card_payment')
+    return { category: 'Card Payments', source: 'kind' };
+  if (kind === 'transfer') return { category: 'Transfers', source: 'kind' };
+  if (kind === 'income' || kind === 'deposit') return { category: 'Income', source: 'kind' };
+  if (kind === 'cash') return { category: 'Cash', source: 'kind' };
+  if (kind === 'reward') return { category: 'Rewards', source: 'kind' };
+  // A refunded / reversed fee nets against fees, not against a merchant.
+  if (kind === 'refund' && /\bfee\b|interest/i.test(description)) {
+    return { category: 'Fees & Interest', source: 'kind' };
+  }
   for (const [category, re] of RULES) {
-    if (re.test(description)) return category;
+    if (re.test(description)) return { category, source: 'rule' };
   }
   const mapped = DISCOVER_MAP[(bankCategory || '').toLowerCase()];
-  if (mapped) return mapped;
-  if (kind === 'refund') return 'Refunds';
-  return 'Other';
+  if (mapped) return { category: mapped, source: 'bank' };
+  const name = merchantName(description);
+  for (const [category, re] of GUESSES) {
+    if (re.test(description) || re.test(name)) return { category, source: 'guess' };
+  }
+  return { category: name || 'Unnamed merchant', source: 'merchant' };
 }
+
+/** Category name only (see categorizeDetailed). */
+export function categorize(description, kind, bankCategory = '') {
+  return categorizeDetailed(description, kind, bankCategory).category;
+}
+
+/** Whether the user may re-categorise this kind of transaction. */
+export const isRecategorizable = (kind, description = '') =>
+  SPENDING_KINDS.has(kind) && !(kind === 'refund' && /\bfee\b|interest/i.test(description));
 
 const BRANDS = [
   [/\batm\b|cash\s+withdrawal/i, 'ATM withdrawal'],

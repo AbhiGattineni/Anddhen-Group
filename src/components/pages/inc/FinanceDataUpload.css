@@ -138,3 +138,8 @@
 .fin-tabs .nav-link {
   font-weight: 600;
 }
+
+.fin-cat-unsure {
+  border-color: #fbbf24;
+  background-color: #fffbeb;
+}
