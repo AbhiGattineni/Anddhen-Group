@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Card, Col, Form, Row, Spinner, Table } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Form, Row, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from 'src/hooks/useAuth';
 import { readPdfLines } from 'src/services/finance/pdfText';
@@ -179,33 +179,77 @@ const FinanceDataUpload = () => {
     [user]
   );
 
+  // One list for the sidebar, whether showing fresh uploads or a saved analysis.
+  const items = useMemo(() => {
+    if (openSaved) {
+      return (openSaved.statements || []).map((statement, i) => ({
+        id: `s${i}`,
+        name: openSaved.files?.[i]?.name || statement.fileName,
+        size: openSaved.files?.[i]?.size,
+        storedFile: openSaved.files?.[i],
+        status: 'ok',
+        statement,
+      }));
+    }
+    return entries.map(e => ({
+      id: `u${e.id}`,
+      entryId: e.id,
+      name: e.file.name,
+      size: e.file.size,
+      file: e.file,
+      status: e.status,
+      statement: e.statement,
+      error: e.error,
+    }));
+  }, [entries, openSaved]);
+
+  // Which statements feed the analysis. Stored as the excluded set so newly
+  // added statements are included by default.
+  const [excluded, setExcluded] = useState(() => new Set());
+  useEffect(() => setExcluded(new Set()), [openSaved]);
+
   // Statements that parsed, minus exact duplicates (same file uploaded twice).
-  const { statements, duplicateIds } = useMemo(() => {
+  const { selectable, duplicateIds } = useMemo(() => {
     const seen = new Set();
     const dup = new Set();
     const list = [];
-    entries.forEach(e => {
-      if (e.status !== 'ok') return;
-      const key = statementKey(e.statement);
-      if (seen.has(key)) dup.add(e.id);
+    items.forEach(it => {
+      if (it.status !== 'ok') return;
+      const key = statementKey(it.statement);
+      if (seen.has(key)) dup.add(it.id);
       else {
         seen.add(key);
-        list.push(e.statement);
+        list.push(it);
       }
     });
-    return { statements: list, duplicateIds: dup };
-  }, [entries]);
+    return { selectable: list, duplicateIds: dup };
+  }, [items]);
 
-  const shownStatements = openSaved ? openSaved.statements : statements;
+  const selected = useMemo(
+    () => selectable.filter(it => !excluded.has(it.id)),
+    [selectable, excluded]
+  );
+  const statements = useMemo(() => selected.map(it => it.statement), [selected]);
+
   const analysis = useMemo(
-    () => (shownStatements.length ? analyze(shownStatements, overrides) : null),
-    [shownStatements, overrides]
+    () => (statements.length ? analyze(statements, overrides) : null),
+    [statements, overrides]
   );
   const reading = entries.some(e => e.status === 'reading');
 
   useEffect(() => {
-    setSaveName(statements.length ? defaultName(statements) : '');
-  }, [statements]);
+    if (!openSaved) setSaveName(statements.length ? defaultName(statements) : '');
+  }, [statements, openSaved]);
+
+  const toggle = id =>
+    setExcluded(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const selectAll = () => setExcluded(new Set());
+  const selectNone = () => setExcluded(new Set(selectable.map(it => it.id)));
 
   const removeEntry = id => setEntries(prev => prev.filter(e => e.id !== id));
 
@@ -218,7 +262,7 @@ const FinanceDataUpload = () => {
 
   const signInToSave = async () => {
     try {
-      await stashFiles(entries.filter(e => e.status === 'ok').map(e => e.file));
+      await stashFiles(selected.filter(it => it.file).map(it => it.file));
     } catch (err) {
       console.error('Could not stash statements before sign-in:', err);
     }
@@ -231,7 +275,8 @@ const FinanceDataUpload = () => {
     setSaving(true);
     setNotice(null);
     try {
-      const okEntries = entries.filter(e => e.status === 'ok' && !duplicateIds.has(e.id));
+      // Saves the statements currently selected in the sidebar.
+      const okEntries = selected.map(it => entries.find(e => e.id === it.entryId)).filter(Boolean);
       await saveAnalysis({
         uid: user.uid,
         name: saveName.trim() || defaultName(statements),
@@ -292,13 +337,242 @@ const FinanceDataUpload = () => {
     addFiles(e.dataTransfer.files);
   };
 
+  const sidebar = (
+    <div className="fin-side">
+      <Card className="fin-card mb-3">
+        <Card.Body>
+          {openSaved ? (
+            <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
+              <div>
+                <div className="small text-muted">Saved analysis</div>
+                <div className="fw-semibold">{openSaved.name}</div>
+              </div>
+              <Button variant="outline-secondary" size="sm" onClick={() => setOpenSaved(null)}>
+                Close
+              </Button>
+            </div>
+          ) : (
+            <div
+              className={`fin-drop fin-drop-compact${dragging ? ' active' : ''}`}
+              onDragOver={e => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={onDrop}
+              onClick={() => inputRef.current?.click()}
+              onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
+              role="button"
+              tabIndex={0}
+            >
+              <i className="bi bi-cloud-arrow-up fs-4 d-block" />
+              <div className="fw-semibold small">Add statement PDFs</div>
+              <div className="small text-muted">Drop here or click · up to {MAX_FILES}</div>
+              <input
+                ref={inputRef}
+                type="file"
+                accept="application/pdf,.pdf"
+                multiple
+                hidden
+                onChange={e => {
+                  addFiles(e.target.files);
+                  e.target.value = '';
+                }}
+              />
+            </div>
+          )}
+
+          {items.length > 0 && (
+            <>
+              <div className="d-flex justify-content-between align-items-center mt-3 mb-1">
+                <span className="fin-side-h">
+                  Statements
+                  <span className="text-muted fw-normal ms-1">
+                    {selected.length}/{selectable.length} selected
+                  </span>
+                </span>
+                <span className="small text-nowrap">
+                  <button
+                    type="button"
+                    className="btn btn-link btn-sm p-0 me-2"
+                    onClick={selectAll}
+                    disabled={selected.length === selectable.length}
+                  >
+                    All
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-link btn-sm p-0"
+                    onClick={selectNone}
+                    disabled={selected.length === 0}
+                  >
+                    None
+                  </button>
+                </span>
+              </div>
+              <ul className="fin-doc-list">
+                {items.map(it => {
+                  const usable = it.status === 'ok' && !duplicateIds.has(it.id);
+                  const checked = usable && !excluded.has(it.id);
+                  const s = it.statement;
+                  return (
+                    <li key={it.id} className={`fin-doc${checked ? ' on' : ''}`}>
+                      <Form.Check
+                        type="checkbox"
+                        id={`fin-doc-${it.id}`}
+                        checked={checked}
+                        disabled={!usable}
+                        onChange={() => toggle(it.id)}
+                        aria-label={`Include ${it.name}`}
+                      />
+                      <label htmlFor={`fin-doc-${it.id}`} className="fin-doc-body">
+                        {it.status === 'reading' ? (
+                          <span className="text-muted">
+                            <Spinner animation="border" size="sm" className="me-1" />
+                            Reading…
+                          </span>
+                        ) : s ? (
+                          <>
+                            <span className="fin-doc-title">{s.label}</span>
+                            <span className="fin-doc-sub">
+                              {fmtDay(s.periodStart)} – {fmtDay(s.periodEnd)} ·{' '}
+                              {s.transactions.length} rows
+                            </span>
+                          </>
+                        ) : null}
+                        <span className="fin-doc-file" title={it.name}>
+                          <i className="bi bi-file-earmark-pdf me-1" />
+                          {it.name}
+                          {it.size ? ` · ${fmtSize(it.size)}` : ''}
+                        </span>
+                        {it.status === 'error' && (
+                          <span className="text-danger small">{it.error}</span>
+                        )}
+                        {duplicateIds.has(it.id) && (
+                          <span className="text-warning small">Duplicate — counted once</span>
+                        )}
+                        {s?.warnings.map(w => (
+                          <span key={w} className="text-warning small">
+                            {w}
+                          </span>
+                        ))}
+                      </label>
+                      {it.storedFile ? (
+                        <button
+                          type="button"
+                          className="btn btn-link btn-sm p-0 text-secondary"
+                          onClick={() => download(it.storedFile)}
+                          aria-label={`Download ${it.name}`}
+                          title="Download PDF"
+                        >
+                          <i className="bi bi-download" />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-link btn-sm p-0 text-danger"
+                          onClick={() => removeEntry(it.entryId)}
+                          aria-label={`Remove ${it.name}`}
+                          title="Remove"
+                        >
+                          <i className="bi bi-x-lg" />
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {!openSaved && (
+                <div className="d-grid gap-2 mt-3">
+                  {user && selected.length > 0 && (
+                    <>
+                      <Form.Control
+                        size="sm"
+                        value={saveName}
+                        onChange={e => setSaveName(e.target.value)}
+                        maxLength={80}
+                        aria-label="Name for this analysis"
+                      />
+                      <Button size="sm" onClick={save} disabled={saving || reading}>
+                        {saving ? (
+                          <>
+                            <Spinner animation="border" size="sm" className="me-1" />
+                            Saving…
+                          </>
+                        ) : (
+                          `Save ${selected.length} selected`
+                        )}
+                      </Button>
+                    </>
+                  )}
+                  {!user && selected.length > 0 && (
+                    <Button size="sm" onClick={signInToSave}>
+                      Sign in to save
+                    </Button>
+                  )}
+                  <Button size="sm" variant="outline-secondary" onClick={clearAll}>
+                    Clear all
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+        </Card.Body>
+      </Card>
+
+      {user && (
+        <Card className="fin-card">
+          <Card.Body>
+            <div className="fin-side-h mb-2">Saved analyses</div>
+            {savedLoading ? (
+              <div className="text-muted small">Loading…</div>
+            ) : saved.length === 0 ? (
+              <div className="text-muted small">Nothing saved yet.</div>
+            ) : (
+              <ul className="fin-doc-list">
+                {saved.map(item => (
+                  <li key={item.id} className={`fin-doc${openSaved?.id === item.id ? ' on' : ''}`}>
+                    <button
+                      type="button"
+                      className="fin-doc-body btn btn-link p-0 text-start text-decoration-none"
+                      onClick={() => open(item)}
+                    >
+                      <span className="fin-doc-title">{item.name}</span>
+                      <span className="fin-doc-sub">
+                        {item.fileCount} statement{item.fileCount === 1 ? '' : 's'} ·{' '}
+                        {item.txnCount} rows
+                      </span>
+                      <span className="fin-doc-sub">
+                        {fmtDay(item.from)} – {fmtDay(item.to)}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-link btn-sm p-0 text-danger"
+                      onClick={() => remove(item)}
+                      aria-label={`Delete ${item.name}`}
+                      title="Delete"
+                    >
+                      <i className="bi bi-trash" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card.Body>
+        </Card>
+      )}
+    </div>
+  );
+
   return (
     <div className="fin-wrap">
       <div className="mb-3">
         <h2 className="fin-title">Statement Analyzer</h2>
         <p className="text-muted mb-0">
-          Upload Chase, American Express or Discover statements — credit card or checking — and get
-          a combined assessment. Files are read right here in your browser.
+          Upload Chase, American Express, Discover or U.S. Bank statements — credit card or checking
+          — and get a combined assessment. Files are read right here in your browser.
         </p>
       </div>
 
@@ -312,7 +586,7 @@ const FinanceDataUpload = () => {
             You&apos;re not signed in, so this analysis is <strong>temporary</strong>: it stays in
             this tab only and is gone when you leave. Sign in to save it.
           </span>
-          {entries.some(e => e.status === 'ok') ? (
+          {selected.length > 0 ? (
             <Button size="sm" variant="primary" onClick={signInToSave}>
               Sign in to save
             </Button>
@@ -338,251 +612,39 @@ const FinanceDataUpload = () => {
       )}
 
       <Row className="g-4">
-        <Col
-          lg={openSaved || entries.length ? 12 : 8}
-          className={openSaved || entries.length ? '' : 'mx-auto'}
-        >
-          <Card className="fin-card">
-            <Card.Body>
-              {openSaved ? (
-                <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                  <div>
-                    <div className="small text-muted">Viewing saved analysis</div>
-                    <div className="fw-semibold">{openSaved.name}</div>
-                    <div className="small mt-1">
-                      {(openSaved.files || []).map(f => (
-                        <button
-                          type="button"
-                          key={f.storagePath}
-                          className="btn btn-link btn-sm p-0 me-3"
-                          onClick={() => download(f)}
-                        >
-                          <i className="bi bi-file-earmark-pdf me-1" />
-                          {f.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <Button variant="outline-secondary" size="sm" onClick={() => setOpenSaved(null)}>
-                    Close
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <div
-                    className={`fin-drop${dragging ? ' active' : ''}`}
-                    onDragOver={e => {
-                      e.preventDefault();
-                      setDragging(true);
-                    }}
-                    onDragLeave={() => setDragging(false)}
-                    onDrop={onDrop}
-                    onClick={() => inputRef.current?.click()}
-                    onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()
-                    }
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <i className="bi bi-cloud-arrow-up fs-2 d-block mb-1" />
-                    <div className="fw-semibold">Drop statement PDFs here or click to choose</div>
-                    <div className="small text-muted">
-                      Several at once is fine — mix cards, banks and months (up to {MAX_FILES}).
-                    </div>
-                    <input
-                      ref={inputRef}
-                      type="file"
-                      accept="application/pdf,.pdf"
-                      multiple
-                      hidden
-                      onChange={e => {
-                        addFiles(e.target.files);
-                        e.target.value = '';
-                      }}
-                    />
-                  </div>
-
-                  {entries.length > 0 && (
-                    <>
-                      <Table size="sm" className="fin-table mt-3 mb-2" responsive>
-                        <thead>
-                          <tr>
-                            <th>File</th>
-                            <th>Detected</th>
-                            <th>Period</th>
-                            <th className="text-end">Rows</th>
-                            <th />
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {entries.map(e => (
-                            <tr key={e.id}>
-                              <td>
-                                <div className="text-break">{e.file.name}</div>
-                                <div className="small text-muted">{fmtSize(e.file.size)}</div>
-                              </td>
-                              <td>
-                                {e.status === 'reading' && (
-                                  <span className="text-muted">
-                                    <Spinner animation="border" size="sm" className="me-1" />
-                                    Reading…
-                                  </span>
-                                )}
-                                {e.status === 'error' && (
-                                  <span className="text-danger">{e.error}</span>
-                                )}
-                                {(e.status === 'ok' || e.status === 'empty') && (
-                                  <>
-                                    <div>{e.statement.label}</div>
-                                    <div className="small text-muted">
-                                      {e.statement.accountType === 'debit'
-                                        ? 'Checking / debit'
-                                        : 'Credit card'}
-                                    </div>
-                                    {duplicateIds.has(e.id) && (
-                                      <div className="small text-warning">
-                                        Duplicate — counted once
-                                      </div>
-                                    )}
-                                    {e.statement.warnings.map(w => (
-                                      <div key={w} className="small text-warning">
-                                        {w}
-                                      </div>
-                                    ))}
-                                  </>
-                                )}
-                              </td>
-                              <td className="small text-nowrap">
-                                {e.statement && (
-                                  <>
-                                    {fmtDay(e.statement.periodStart)}
-                                    <br />
-                                    {fmtDay(e.statement.periodEnd)}
-                                  </>
-                                )}
-                              </td>
-                              <td className="text-end">
-                                {e.statement ? e.statement.transactions.length : ''}
-                              </td>
-                              <td className="text-end">
-                                <button
-                                  type="button"
-                                  className="btn btn-link btn-sm text-danger p-0"
-                                  onClick={() => removeEntry(e.id)}
-                                  aria-label={`Remove ${e.file.name}`}
-                                >
-                                  <i className="bi bi-x-lg" />
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-
-                      <div className="d-flex flex-wrap gap-2 align-items-center">
-                        {user && statements.length > 0 && (
-                          <>
-                            <Form.Control
-                              size="sm"
-                              style={{ maxWidth: 280 }}
-                              value={saveName}
-                              onChange={e => setSaveName(e.target.value)}
-                              maxLength={80}
-                              aria-label="Name for this analysis"
-                            />
-                            <Button size="sm" onClick={save} disabled={saving || reading}>
-                              {saving ? (
-                                <>
-                                  <Spinner animation="border" size="sm" className="me-1" />
-                                  Saving…
-                                </>
-                              ) : (
-                                'Save analysis'
-                              )}
-                            </Button>
-                          </>
-                        )}
-                        {!user && statements.length > 0 && (
-                          <Button size="sm" onClick={signInToSave}>
-                            Sign in to save
-                          </Button>
-                        )}
-                        <Button size="sm" variant="outline-secondary" onClick={clearAll}>
-                          Clear all
-                        </Button>
-                        {user && statements.length > 0 && (
-                          <span className="small text-muted">
-                            Saves the statements and their transactions privately to your account.
-                          </span>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-            </Card.Body>
-          </Card>
+        <Col lg={4} xl={3}>
+          {sidebar}
+        </Col>
+        <Col lg={8} xl={9}>
+          {analysis ? (
+            <Card className="fin-card">
+              <Card.Body>
+                <FinanceAnalytics
+                  analysis={analysis}
+                  onCategoryChange={changeCategory}
+                  signedIn={!!user}
+                />
+              </Card.Body>
+            </Card>
+          ) : reading ? (
+            <div className="fin-empty">
+              <Spinner animation="border" className="mb-2" />
+              <div>Reading your statements…</div>
+            </div>
+          ) : selectable.length > 0 ? (
+            <div className="fin-empty">
+              <i className="bi bi-ui-checks fs-2 d-block mb-2" />
+              No statements selected. Tick one or more in the list to see the analysis.
+            </div>
+          ) : (
+            <div className="fin-empty">
+              <i className="bi bi-bar-chart-line fs-2 d-block mb-2" />
+              Add statements on the left to see your spending, card comparison, insights and card
+              recommendations.
+            </div>
+          )}
         </Col>
       </Row>
-
-      {analysis ? (
-        <Card className="fin-card mt-4">
-          <Card.Body>
-            <FinanceAnalytics
-              analysis={analysis}
-              onCategoryChange={changeCategory}
-              signedIn={!!user}
-            />
-          </Card.Body>
-        </Card>
-      ) : reading ? (
-        <div className="text-center text-muted py-5">
-          <Spinner animation="border" className="mb-2" />
-          <div>Reading your statements…</div>
-        </div>
-      ) : null}
-
-      {user && (
-        <Card className="fin-card mt-4">
-          <Card.Body>
-            <h6 className="fin-h">Your saved analyses</h6>
-            {savedLoading ? (
-              <div className="text-muted small">Loading…</div>
-            ) : saved.length === 0 ? (
-              <div className="text-muted small">Nothing saved yet.</div>
-            ) : (
-              <Table size="sm" className="fin-table mb-0" responsive hover>
-                <tbody>
-                  {saved.map(item => (
-                    <tr key={item.id}>
-                      <td>
-                        <div className="fw-semibold">{item.name}</div>
-                        <div className="small text-muted">
-                          {item.fileCount} statement{item.fileCount === 1 ? '' : 's'} ·{' '}
-                          {item.txnCount} transactions · {fmtDay(item.from)} – {fmtDay(item.to)}
-                        </div>
-                      </td>
-                      <td className="text-end text-nowrap">
-                        <Button
-                          size="sm"
-                          variant="outline-primary"
-                          className="me-2"
-                          onClick={() => open(item)}
-                        >
-                          Open
-                        </Button>
-                        <Button size="sm" variant="outline-danger" onClick={() => remove(item)}>
-                          Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            )}
-          </Card.Body>
-        </Card>
-      )}
     </div>
   );
 };
