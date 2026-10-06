@@ -112,6 +112,13 @@ const DISCOVER_MAP = {
   education: 'Education',
   automotive: 'Transportation',
   'government services': 'Utilities & Bills',
+  services: 'Utilities & Bills',
+  'gas stations': 'Gas',
+  'wholesale clubs': 'Groceries',
+  'grocery stores': 'Groceries',
+  'drug stores': 'Health',
+  utilities: 'Utilities & Bills',
+  'online shopping': 'Shopping',
 };
 
 // Word fragments that point to a category when no known merchant matched.
@@ -184,6 +191,7 @@ export function categorizeDetailed(description, kind, bankCategory = '') {
   if (kind === 'income' || kind === 'deposit') return { category: 'Income', source: 'kind' };
   if (kind === 'cash') return { category: 'Cash', source: 'kind' };
   if (kind === 'reward') return { category: 'Rewards', source: 'kind' };
+  if (kind === 'adjustment') return { category: 'Card Payments', source: 'kind' };
   // A refunded / reversed fee nets against fees, not against a merchant.
   if (kind === 'refund' && /\bfee\b|interest/i.test(description)) {
     return { category: 'Fees & Interest', source: 'kind' };
@@ -254,6 +262,11 @@ export function merchantName(description) {
     .replace(/\b[\w-]*\d{3,}[\w-]*\b/g, ' ')
     .replace(/\b(www\.)?[\w-]+\.(com|net|org)\b.*$/i, m => m.split(/\s/)[0])
     .replace(/\s+[A-Z][a-z]+(\s+[A-Z][a-z]+)?\s+[A-Z]{2}$/, '')
+    // "… LONG BEACH CA", "… SAN FRANCISCO CA": drop a two-word city too.
+    .replace(
+      /\s+(SAN|SANTA|LOS|LAS|NEW|LONG|FORT|FT|EL|ST|SAINT|PALO|MOUNTAIN|REDWOOD|DALY|WEST|EAST|NORTH|SOUTH|LAKE|PORT|SALT|HUNTINGTON|NEWPORT|CULVER|DEL|LA|SIOUX|KANSAS|OKLAHOMA|JERSEY|ATLANTIC|VIRGINIA|COLORADO|GRAND|BATON|CORPUS|CEDAR|ANN|ELK)\s+[A-Z]{2,}\s+[A-Z]{2}$/,
+      ''
+    )
     .replace(/\s+[A-Z]{2,}\s+[A-Z]{2}$/, '')
     .replace(/\s{2,}/g, ' ')
     .trim();

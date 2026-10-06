@@ -73,6 +73,7 @@ const KIND_LABELS = {
   income: 'Income',
   deposit: 'Deposit',
   reward: 'Reward',
+  adjustment: 'Balance refund',
 };
 
 function Stat({ label, value, sub, tone }) {

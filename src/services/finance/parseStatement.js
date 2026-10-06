@@ -64,6 +64,10 @@ function parseLooseDate(str) {
 /** Statement opening/closing dates, used to put a year on "MM/DD" rows. */
 export function findPeriod(text) {
   const patterns = [
+    // Discover: "OPEN TO CLOSE DATE: 05/07/2026 - 06/06/2026"
+    /open\s+to\s+close\s+date\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*[-–]\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/i,
+    // "Account Summary 05/07/2026 - 06/06/2026"
+    /account\s+summary\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*[-–]\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/i,
     // Chase credit: "Opening/Closing Date 08/14/25 - 09/13/25"
     /opening\/closing\s+date\s*:?\s*(\d{1,2}\/\d{1,2}\/\d{2,4})\s*[-–]\s*(\d{1,2}\/\d{1,2}\/\d{2,4})/i,
     // Chase checking: "September 14, 2025 through October 13, 2025"
@@ -176,6 +180,10 @@ function detectLast4(text) {
 }
 
 // A money amount: 1,234.56  -1,234.56  $1,234.56  -$1,234.56  ($12.00)  12.00 CR
+// A cell that ends in an amount ("$54.31", or "Payments and Credits -$120.00"
+// when two columns sit too close to split).
+const TRAILING_AMOUNT_RE =
+  /(?:^|\s)(\(?[-+]?\s?\$?\s?[-+]?\d{1,3}(?:,\d{3})*\.\d{2}-?\)?(?:\s?CR)?)$/i;
 const AMOUNT_RE = /(\(?-?\s?\$?\s?-?\d{1,3}(?:,\d{3})*\.\d{2}(?:-(?![\d]))?\)?(?:\s?CR\b)?)/gi;
 
 function toNumber(raw) {
@@ -234,6 +242,7 @@ const TRANSFER_RE =
 const INCOME_RE = /payroll|direct\s+dep|salary|dir\s+dep|paycheck|irs\s+treas|tax\s+ref/i;
 const CASH_RE = /\batm\b.*(withdrawal|w\/d)|cash\s+withdrawal/i;
 const LEADING_FEE_RE = /^fee\b/i;
+const BALANCE_REFUND_RE = /credit\s+balance\s+refund|refund\s+of\s+credit\s+balance/i;
 const REWARD_RE =
   /cash\s*back\s+(bonus\s+)?(redemption|reward|credit)|cashback\s+bonus|rewards?\s+(redemption|credit)|points?\s+redemption|statement\s+credit\s+-?\s*(reward|points)/i;
 
@@ -246,6 +255,9 @@ function classify(description, amount, accountType) {
     }
     if (INTEREST_RE.test(description)) return 'interest';
     if (FEE_RE.test(description)) return 'fee';
+    // The card sending you back a credit balance raises the balance but is
+    // not spending.
+    if (BALANCE_REFUND_RE.test(description)) return 'adjustment';
     return 'purchase';
   }
   if (amount > 0) {
@@ -281,6 +293,14 @@ const DISCOVER_CATEGORIES = [
   'Awards and Rebate Credits',
   'Fees',
   'Interest',
+  'Other/Miscellaneous',
+  'Miscellaneous',
+  'Gas Stations',
+  'Wholesale Clubs',
+  'Grocery Stores',
+  'Drug Stores',
+  'Utilities',
+  'Online Shopping',
 ];
 
 function stripDiscoverCategory(description) {
@@ -381,16 +401,35 @@ export function parseStatement(lines, fileName = '') {
     const amounts = rest.match(AMOUNT_RE);
     if (!amounts) return;
 
-    // Checking rows end "amount balance": take the second-to-last figure.
-    // Card rows end with just the amount.
+    // Card rows have one amount column. Use the PDF's column gaps to take the
+    // first cell that is purely an amount, so text printed beside the table
+    // (Discover's Cashback Bonus box: "REDEEMED THIS PERIOD -$0.00") can't be
+    // mistaken for it. Checking rows end "amount balance": second-to-last.
     let rawAmount;
-    if (accountType === 'debit' && amounts.length >= 2) rawAmount = amounts[amounts.length - 2];
-    else rawAmount = amounts[amounts.length - 1];
+    let description;
+    let columnCategory = '';
+    const cells = rawLine
+      .trim()
+      .split(/\s{3,}/)
+      .map(c => c.trim());
+    const amountCell = cells.findIndex((c, i) => i > 0 && TRAILING_AMOUNT_RE.test(c));
+    if (accountType === 'credit' && amountCell > 0) {
+      const m = cells[amountCell].match(TRAILING_AMOUNT_RE);
+      rawAmount = m[1];
+      const lead = cells[amountCell].slice(0, cells[amountCell].length - m[0].length).trim();
+      const first = `${cells[0]} `.replace(ROW_DATE_RE, '').trim();
+      const middle = [first, ...cells.slice(1, amountCell), lead].filter(Boolean);
+      // Discover: "date | merchant | MERCHANT CATEGORY | amount"
+      if (bank === 'discover' && middle.length >= 2) columnCategory = middle.pop();
+      description = middle.join(' ');
+    } else {
+      if (accountType === 'debit' && amounts.length >= 2) rawAmount = amounts[amounts.length - 2];
+      else rawAmount = amounts[amounts.length - 1];
+      description = rest.slice(0, rest.lastIndexOf(rawAmount)).replace(AMOUNT_RE, ' ');
+    }
     const value = toNumber(rawAmount);
     if (!value || Math.abs(value) > 1e7) return;
-
-    let description = rest.slice(0, rest.lastIndexOf(rawAmount)).replace(AMOUNT_RE, ' ');
-    description = description.replace(/\s+/g, ' ').trim();
+    description = description.replace(AMOUNT_RE, ' ').replace(/\s+/g, ' ').trim();
     // Some layouts wrap the merchant onto the next line (Amex): borrow it when
     // this row's description is too thin to be useful.
     if (description.length < 3 && lines[idx + 1] && !ROW_DATE_RE.test(lines[idx + 1])) {
@@ -424,8 +463,10 @@ export function parseStatement(lines, fileName = '') {
     }
     if (!description) return;
 
-    let bankCategory = '';
-    if (bank === 'discover') ({ description, bankCategory } = stripDiscoverCategory(description));
+    let bankCategory = columnCategory;
+    if (bank === 'discover' && !bankCategory) {
+      ({ description, bankCategory } = stripDiscoverCategory(description));
+    }
 
     let amount;
     if (flip) {
