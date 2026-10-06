@@ -188,3 +188,27 @@
   padding: 10px 12px;
   font-size: 14px;
 }
+
+.jira-assign-toggle {
+  border: none;
+  background: none;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.jira-assign-toggle::after {
+  display: none;
+}
+.jira-assign-toggle:hover .jira-avatar,
+.jira-assign-toggle:focus-visible .jira-avatar {
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+.jira-assign-menu {
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+.jira-assign-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+}
