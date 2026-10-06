@@ -4,6 +4,7 @@ rules_version = '2';
 //   resumes/**      (consultant original_resume, consulting_resume)
 //   products/**     (ShopingProduct.image)
 //   team_members/** (TeamMember.image)
+//   finance/{uid}/** (Statement Analyzer PDFs — owner-only)
 // Signed-in read; signed-in write with size + content-type limits.
 service firebase.storage {
   match /b/{bucket}/o {
@@ -27,6 +28,14 @@ service firebase.storage {
       allow read: if true; // team photos are public-facing
       allow write: if signedIn() && underSize(5)
         && request.resource.contentType.matches('image/.*');
+    }
+
+    // Original bank statements saved from the Statement Analyzer
+    // (/ati/finance-data): private to their owner.
+    match /finance/{uid}/{file=**} {
+      allow read, delete: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid && underSize(25)
+        && request.resource.contentType == 'application/pdf';
     }
 
     match /{allPaths=**} {

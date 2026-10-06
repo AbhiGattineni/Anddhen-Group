@@ -202,12 +202,29 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // --- Statement Analyzer (/ati/finance-data): saved analyses are PRIVATE to
+    //     their owner — nobody else, admins included, can read them. Parsed
+    //     transactions live in a chunks subcollection; each chunk carries the
+    //     owner's uid so it can be checked without reading the parent.
+    match /financeAnalyses/{analysisId} {
+      allow read, delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if signedIn() && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
+      match /chunks/{chunkId} {
+        allow read, delete: if signedIn() && resource.data.uid == request.auth.uid;
+        allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      }
+    }
+
     // --- Everything else (User, timesheetEntries and the Jira board handled
     //     above; exclude them here so their protections can't be bypassed via
     //     this broad rule) ---
     match /{col}/{docId} {
-      allow read: if !(col in ['timesheetEntries', 'jiraTickets', 'jiraMeta']) && signedIn();
-      allow create, update, delete: if !(col in ['User', 'timesheetEntries', 'jiraTickets', 'jiraMeta'])
+      allow read: if !(col in ['timesheetEntries', 'jiraTickets', 'jiraMeta', 'financeAnalyses'])
+        && signedIn();
+      allow create, update, delete: if !(col in ['User', 'timesheetEntries', 'jiraTickets', 'jiraMeta',
+                                                  'financeAnalyses'])
         && (adminWritable(col) ? isAdminish() : signedIn());
     }
   }

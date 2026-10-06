@@ -1,0 +1,140 @@
+/* Statement Analyzer — app design system (blue #3b82f6 / cyan #06b6d4 / indigo #6366f1). */
+
+.fin-wrap {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 8px 0 40px;
+}
+.fin-title {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 4px;
+}
+.fin-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+}
+.fin-h {
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.fin-drop {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 28px 16px;
+  text-align: center;
+  color: #334155;
+  background: #f8fafc;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.fin-drop:hover,
+.fin-drop:focus-visible,
+.fin-drop.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  outline: none;
+}
+.fin-drop .bi {
+  color: #3b82f6;
+}
+
+.fin-table td,
+.fin-table th {
+  vertical-align: middle;
+}
+.fin-table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+  font-weight: 600;
+}
+.fin-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-right: 8px;
+  vertical-align: baseline;
+}
+.fin-bar {
+  height: 4px;
+  background: #f1f5f9;
+  border-radius: 2px;
+  margin-top: 6px;
+  max-width: 220px;
+}
+.fin-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+}
+
+.fin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+.fin-stat {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.fin-stat-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+.fin-stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-top: 2px;
+}
+.fin-stat-sub {
+  font-size: 12px;
+  color: #94a3b8;
+}
+.fin-stat-bad .fin-stat-value {
+  color: #dc2626;
+}
+.fin-stat-good .fin-stat-value {
+  color: #15803d;
+}
+
+.fin-reco {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  height: 100%;
+}
+.fin-reco.best {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+.fin-reco-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 8px 0 2px;
+}
+.fin-reco-value span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.fin-tabs .nav-link {
+  font-weight: 600;
+}
