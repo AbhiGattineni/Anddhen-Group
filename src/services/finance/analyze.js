@@ -1,4 +1,4 @@
-import { categorizeDetailed, isRecategorizable } from './categorize';
+import { categorizeDetailed, isRecategorizable, matchUserRule } from './categorize';
 
 /**
  * Assessment of parsed statement transactions: spending breakdown, per-card
@@ -417,25 +417,50 @@ function recommendCards(transactions) {
 // ---------------------------------------------------------------- main
 
 /**
- * Category for each row: recomputed on every run (so saved analyses pick up
- * better rules), then the user's per-merchant choice on top.
+ * A user's choice can move money in or out of "spending": filing a Zelle
+ * transfer under Housing makes it spend; filing a purchase under Transfers
+ * takes it out. The row keeps its original kind for display.
  */
-function applyCategories(t, overrides) {
-  const user =
-    isRecategorizable(t.kind, t.description) && t.merchantKey && overrides[t.merchantKey];
-  if (user) return { ...t, category: user, categorySource: 'user' };
+function withUserCategory(t, category, source) {
+  const next = { ...t, category, categorySource: source };
+  if (category === 'Transfers') {
+    if (t.kind === 'purchase') return { ...next, kind: 'transfer', originalKind: t.kind };
+    return next;
+  }
+  if (t.kind === 'transfer' || t.kind === 'cash') {
+    return { ...next, kind: 'purchase', originalKind: t.kind };
+  }
+  return next;
+}
+
+/**
+ * Category for each row, in priority order:
+ *   1. the user's per-merchant choice   (source 'user')
+ *   2. the user's own rules              (source 'user-rule')
+ *   3. built-in rules and guesses        (see categorizeDetailed)
+ * Recomputed on every run, so saved analyses pick up rule changes.
+ */
+function applyCategories(t, prefs) {
+  if (isRecategorizable(t.kind, t.description, t.amount)) {
+    const chosen = t.merchantKey && prefs.overrides[t.merchantKey];
+    if (chosen) return withUserCategory(t, chosen, 'user');
+    const rule = matchUserRule(prefs.rules, t.description, t.merchant);
+    if (rule) return { ...withUserCategory(t, rule.category, 'user-rule'), ruleId: rule.id };
+  }
   const { category, source } = categorizeDetailed(t.description, t.kind, t.bankCategory);
   return { ...t, category, categorySource: source };
 }
 
 /**
  * @param {Array} statements parseStatement results (each with .transactions)
- * @param {Object} overrides merchantKey -> category chosen by the user
+ * @param {Object} prefs the user's category mapper:
+ *   { overrides: { merchantKey: category }, rules: [{ id, contains, category }] }
  */
-export function analyze(statements, overrides = {}) {
+export function analyze(statements, prefs = {}) {
+  const mapper = { overrides: prefs.overrides || {}, rules: prefs.rules || [] };
   const transactions = statements
     .flatMap(s => s.transactions)
-    .map(t => applyCategories(t, overrides))
+    .map(t => applyCategories(t, mapper))
     .sort((a, b) => a.date.localeCompare(b.date));
   const accounts = accountsSummary(transactions, statements);
   const accountNames = accounts.map(a => a.account);

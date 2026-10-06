@@ -225,3 +225,17 @@
   border-radius: 12px;
   padding: 64px 24px;
 }
+
+/* Category mapper */
+.fin-map-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.fin-map-add .form-control {
+  flex: 1 1 180px;
+}
+.fin-map-add .form-select {
+  flex: 0 1 200px;
+}

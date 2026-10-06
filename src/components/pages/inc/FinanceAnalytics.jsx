@@ -16,7 +16,7 @@ import {
 } from 'recharts';
 import {
   CATEGORIES,
-  SPENDING_CATEGORIES,
+  assignableCategories,
   isRecategorizable,
 } from 'src/services/finance/categorize';
 
@@ -241,6 +241,7 @@ const SOURCE_NOTE = {
   guess: 'best guess',
   merchant: 'merchant name',
   user: 'your choice',
+  'user-rule': 'your rule',
 };
 
 function Accounts({ analysis }) {
@@ -467,8 +468,9 @@ Recommendations.propTypes = { analysis: PropTypes.object.isRequired };
 
 const PAGE = 25;
 
-function CategoryCell({ t, onCategoryChange }) {
-  if (!isRecategorizable(t.kind, t.description) || !onCategoryChange) {
+function CategoryCell({ t, onCategoryChange, options }) {
+  const baseKind = t.originalKind || t.kind;
+  if (!isRecategorizable(baseKind, t.description, t.amount) || !onCategoryChange) {
     return (
       <>
         {t.category}
@@ -478,7 +480,7 @@ function CategoryCell({ t, onCategoryChange }) {
       </>
     );
   }
-  const custom = !SPENDING_CATEGORIES.includes(t.category);
+  const custom = !options.includes(t.category);
   return (
     <>
       <Form.Select
@@ -494,7 +496,7 @@ function CategoryCell({ t, onCategoryChange }) {
         style={{ minWidth: 170 }}
       >
         {custom && <option value={t.category}>{t.category}</option>}
-        {SPENDING_CATEGORIES.map(c => (
+        {options.map(c => (
           <option key={c} value={c}>
             {c}
           </option>
@@ -502,19 +504,34 @@ function CategoryCell({ t, onCategoryChange }) {
         {t.categorySource === 'user' && <option value="__auto">↺ Automatic</option>}
       </Form.Select>
       <div className="small text-muted">
-        {t.kind === 'refund' ? 'Refund' : ''}
-        {t.kind === 'refund' && SOURCE_NOTE[t.categorySource] ? ' · ' : ''}
-        {SOURCE_NOTE[t.categorySource] || ''}
+        {[
+          baseKind !== 'purchase' && (KIND_LABELS[baseKind] || baseKind),
+          SOURCE_NOTE[t.categorySource],
+        ]
+          .filter(Boolean)
+          .join(' · ')}
       </div>
     </>
   );
 }
 
-CategoryCell.propTypes = { t: PropTypes.object.isRequired, onCategoryChange: PropTypes.func };
+CategoryCell.propTypes = {
+  t: PropTypes.object.isRequired,
+  onCategoryChange: PropTypes.func,
+  options: PropTypes.array.isRequired,
+};
 
 const UNSURE = '__unsure';
 
-function Transactions({ analysis, onCategoryChange, signedIn, initialCategory }) {
+function Transactions({
+  analysis,
+  onCategoryChange,
+  signedIn,
+  initialCategory,
+  customCategories,
+  onOpenMapper,
+}) {
+  const options = useMemo(() => assignableCategories(customCategories), [customCategories]);
   const [q, setQ] = useState('');
   const [account, setAccount] = useState('');
   const [category, setCategory] = useState(initialCategory || '');
@@ -613,6 +630,20 @@ function Transactions({ analysis, onCategoryChange, signedIn, initialCategory })
           ? ', and is remembered in your account.'
           : ' (for this visit — sign in to remember it).'}{' '}
         “Best guess” and “merchant name” mean we weren&apos;t sure.
+        {onOpenMapper && (
+          <>
+            {' '}
+            For rules and your own categories, open the{' '}
+            <button
+              type="button"
+              className="btn btn-link btn-sm p-0 align-baseline"
+              onClick={onOpenMapper}
+            >
+              category mapper
+            </button>
+            .
+          </>
+        )}
       </p>
       <div className="d-flex justify-content-between align-items-center mb-2 small text-muted">
         <span>
@@ -641,7 +672,7 @@ function Transactions({ analysis, onCategoryChange, signedIn, initialCategory })
                 <div className="small text-muted">{t.description}</div>
               </td>
               <td>
-                <CategoryCell t={t} onCategoryChange={onCategoryChange} />
+                <CategoryCell t={t} onCategoryChange={onCategoryChange} options={options} />
               </td>
               <td className="small">{t.account}</td>
               <td className={`text-end fw-semibold ${t.amount < 0 ? 'text-success' : ''}`}>
@@ -667,11 +698,19 @@ function Transactions({ analysis, onCategoryChange, signedIn, initialCategory })
 Transactions.propTypes = {
   analysis: PropTypes.object.isRequired,
   onCategoryChange: PropTypes.func,
+  onOpenMapper: PropTypes.func,
+  customCategories: PropTypes.array,
   signedIn: PropTypes.bool,
   initialCategory: PropTypes.string,
 };
 
-export default function FinanceAnalytics({ analysis, onCategoryChange, signedIn }) {
+export default function FinanceAnalytics({
+  analysis,
+  onCategoryChange,
+  onOpenMapper,
+  customCategories,
+  signedIn,
+}) {
   const [tab, setTab] = useState('overview');
   // Bumped by "Review categories" so the Transactions tab reopens filtered.
   const [review, setReview] = useState(0);
@@ -725,6 +764,8 @@ export default function FinanceAnalytics({ analysis, onCategoryChange, signedIn 
           key={review}
           initialCategory={review ? UNSURE : ''}
           analysis={analysis}
+          customCategories={customCategories || []}
+          onOpenMapper={onOpenMapper}
           onCategoryChange={onCategoryChange}
           signedIn={signedIn}
         />
@@ -736,5 +777,7 @@ export default function FinanceAnalytics({ analysis, onCategoryChange, signedIn 
 FinanceAnalytics.propTypes = {
   analysis: PropTypes.object.isRequired,
   onCategoryChange: PropTypes.func,
+  onOpenMapper: PropTypes.func,
+  customCategories: PropTypes.array,
   signedIn: PropTypes.bool,
 };

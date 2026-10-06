@@ -173,8 +173,6 @@ const GUESSES = [
   ],
 ];
 
-const SPENDING_KINDS = new Set(['purchase', 'refund']);
-
 /**
  * Category for a transaction, with where it came from:
  *   'kind'     fees, transfers, income… (fixed by what the row is)
@@ -214,8 +212,32 @@ export function categorize(description, kind, bankCategory = '') {
 }
 
 /** Whether the user may re-categorise this kind of transaction. */
-export const isRecategorizable = (kind, description = '') =>
-  SPENDING_KINDS.has(kind) && !(kind === 'refund' && /\bfee\b|interest/i.test(description));
+// Outgoing transfers and cash can be re-filed too: a monthly Zelle to the
+// landlord is really Housing.
+const MAPPABLE_KINDS = new Set(['purchase', 'refund', 'transfer', 'cash']);
+
+export const isRecategorizable = (kind, description = '', amount = 1) =>
+  MAPPABLE_KINDS.has(kind) &&
+  !(kind === 'transfer' && amount < 0) &&
+  !(kind === 'refund' && /\bfee\b|interest/i.test(description));
+
+/**
+ * Categories a user can file a transaction under: the built-in spending ones,
+ * their own, and "Transfers" (to mark something as not spending at all).
+ */
+export function assignableCategories(customCategories = []) {
+  const custom = customCategories.filter(c => c && !SPENDING_CATEGORIES.includes(c));
+  return [...SPENDING_CATEGORIES, ...custom, 'Transfers'];
+}
+
+/** First user rule ("description contains …") that matches, if any. */
+export function matchUserRule(rules, description, merchant) {
+  if (!rules?.length) return null;
+  const hay = `${description} ${merchant || ''}`.toLowerCase();
+  return (
+    rules.find(r => r.contains && r.category && hay.includes(r.contains.toLowerCase())) || null
+  );
+}
 
 const BRANDS = [
   [/\batm\b|cash\s+withdrawal/i, 'ATM withdrawal'],
