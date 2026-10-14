@@ -140,11 +140,15 @@ service cloud.firestore {
     //     dashboard card (User/{uid}.cardAccess). Anyone with access may create,
     //     edit, move and delete tickets. jiraMeta/board holds the AG-n counter.
     //     Excluded from the catch-all so plain signed-in users can't reach it.
-    function canUseJira() {
+    // Admins and above, or an employee granted this dashboard card.
+    function hasCard(card) {
       return isAdminish()
         || (myRole() == 'employee'
-            && 'jira' in get(/databases/$(database)/documents/User/$(request.auth.uid))
-                           .data.get('cardAccess', []));
+            && card in get(/databases/$(database)/documents/User/$(request.auth.uid))
+                         .data.get('cardAccess', []));
+    }
+    function canUseJira() {
+      return hasCard('jira');
     }
     // A customer issue from the public Contact page: anyone (signed in or not)
     // may create a ticket of exactly this shape, straight into Backlog. Its key
@@ -222,15 +226,131 @@ service cloud.firestore {
       allow read, write: if signedIn() && request.auth.uid == uid;
     }
 
+    // --- Stocks → Trade Journal. Shared with everyone holding the Stocks card,
+    //     authors shown only by alias. Public docs never carry a uid (User docs
+    //     are readable by any signed-in user, so a uid would expose the real
+    //     name): ownership lives in owner-only lookups that these rules read.
+    function myTradeAlias() {
+      return get(/databases/$(database)/documents/tradeAliasOwners/$(request.auth.uid)).data;
+    }
+    function ownsTrade(tradeId) {
+      let p = /databases/$(database)/documents/tradeOwners/$(tradeId);
+      return exists(p) && get(p).data.uid == request.auth.uid;
+    }
+    function validTrade(d) {
+      return d.keys().hasOnly(['aliasId', 'alias', 'ticker', 'companyName', 'market', 'currency',
+                               'side', 'price', 'quantity', 'tradeDate', 'description',
+                               'up', 'down', 'createdAt', 'updatedAt'])
+        && d.ticker is string && d.ticker.size() > 0 && d.ticker.size() <= 20
+        && d.companyName is string && d.companyName.size() <= 100
+        && d.market is string && d.market.size() <= 10
+        && d.currency is string && d.currency.size() > 0 && d.currency.size() <= 5
+        && d.side in ['buy', 'sell']
+        && d.price is number && d.price > 0
+        && d.quantity is number && d.quantity > 0
+        && d.tradeDate is string && d.tradeDate.size() == 10
+        && d.description is string && d.description.size() <= 4000;
+    }
+    function validNote(d) {
+      return d.keys().hasOnly(['aliasId', 'alias', 'kind', 'text', 'up', 'down', 'createdAt'])
+        && d.kind in ['holding', 'pro', 'con', 'update']
+        && d.text is string && d.text.size() > 0 && d.text.size() <= 2000;
+    }
+    // A vote changes only up/down, and exactly as the voter's own vote doc
+    // changes in the same write (tradeVotes/{item}_{uid}).
+    function voteMatches(item) {
+      let p = /databases/$(database)/documents/tradeVotes/$(item + '_' + request.auth.uid);
+      let before = exists(p) ? get(p).data.value : 0;
+      let after = existsAfter(p) ? getAfter(p).data.value : 0;
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['up', 'down'])
+        && request.resource.data.up
+             == resource.data.get('up', 0) + (after == 1 ? 1 : 0) - (before == 1 ? 1 : 0)
+        && request.resource.data.down
+             == resource.data.get('down', 0) + (after == -1 ? 1 : 0) - (before == -1 ? 1 : 0);
+    }
+
+    match /tradeAliases/{aliasId} {
+      allow read: if signedIn() && hasCard('stocks');
+      // Created together with the caller's private alias doc, once.
+      allow create: if signedIn() && hasCard('stocks')
+        && !exists(/databases/$(database)/documents/tradeAliasOwners/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/tradeAliasOwners/$(request.auth.uid)).data.aliasId == aliasId
+        && request.resource.data.keys().hasOnly(['alias', 'createdAt'])
+        && request.resource.data.alias is string
+        && request.resource.data.alias.size() > 0 && request.resource.data.alias.size() <= 40;
+    }
+    match /tradeAliasOwners/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid && hasCard('stocks')
+        && request.resource.data.keys().hasOnly(['aliasId', 'alias', 'createdAt'])
+        && getAfter(/databases/$(database)/documents/tradeAliases/$(request.resource.data.aliasId)).data.alias
+             == request.resource.data.alias;
+    }
+    match /tradeOwners/{tradeId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if signedIn() && hasCard('stocks')
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    match /trades/{tradeId} {
+      allow read: if signedIn() && hasCard('stocks');
+      allow create: if signedIn() && hasCard('stocks')
+        && validTrade(request.resource.data)
+        && request.resource.data.aliasId == myTradeAlias().aliasId
+        && request.resource.data.alias == myTradeAlias().alias
+        && request.resource.data.up == 0 && request.resource.data.down == 0
+        && getAfter(/databases/$(database)/documents/tradeOwners/$(tradeId)).data.uid == request.auth.uid;
+      allow update: if signedIn() && hasCard('stocks') && (
+        // The author edits the trade (identity and votes untouched)…
+        (ownsTrade(tradeId)
+          && validTrade(request.resource.data)
+          && !request.resource.data.diff(resource.data).affectedKeys()
+                .hasAny(['aliasId', 'alias', 'up', 'down', 'createdAt']))
+        // …anyone else may only vote (never on their own post).
+        || (!ownsTrade(tradeId) && voteMatches('t-' + tradeId))
+      );
+      allow delete: if signedIn() && (ownsTrade(tradeId) || isAdminish());
+
+      match /notes/{noteId} {
+        allow read: if signedIn() && hasCard('stocks');
+        // Only the trade's author adds to its timeline.
+        allow create: if signedIn() && hasCard('stocks') && ownsTrade(tradeId)
+          && validNote(request.resource.data)
+          && request.resource.data.aliasId == myTradeAlias().aliasId
+          && request.resource.data.alias == myTradeAlias().alias
+          && request.resource.data.up == 0 && request.resource.data.down == 0;
+        allow update: if signedIn() && hasCard('stocks')
+          && !ownsTrade(tradeId) && voteMatches('n-' + tradeId + '-' + noteId);
+        allow delete: if signedIn() && (ownsTrade(tradeId) || isAdminish());
+      }
+    }
+    match /tradeVotes/{voteId} {
+      // Own votes only. A not-yet-cast vote reads as missing (resource == null).
+      allow read: if signedIn() && (resource == null || resource.data.uid == request.auth.uid);
+      allow create, update: if signedIn() && hasCard('stocks')
+        && request.resource.data.keys().hasOnly(['uid', 'item', 'value'])
+        && request.resource.data.uid == request.auth.uid
+        && voteId == request.resource.data.item + '_' + request.auth.uid
+        && request.resource.data.value in [1, -1];
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    match /tradeFollows/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
     // --- Everything else (User, timesheetEntries and the Jira board handled
     //     above; exclude them here so their protections can't be bypassed via
     //     this broad rule) ---
     match /{col}/{docId} {
       allow read: if !(col in ['timesheetEntries', 'jiraTickets', 'jiraMeta', 'financeAnalyses',
-                               'financePrefs'])
+                               'financePrefs', 'tradeAliases', 'tradeAliasOwners', 'tradeOwners',
+                               'trades', 'tradeVotes', 'tradeFollows'])
         && signedIn();
       allow create, update, delete: if !(col in ['User', 'timesheetEntries', 'jiraTickets', 'jiraMeta',
-                                                  'financeAnalyses', 'financePrefs'])
+                                                  'financeAnalyses', 'financePrefs',
+                                                  'tradeAliases', 'tradeAliasOwners', 'tradeOwners',
+                                                  'trades', 'tradeVotes', 'tradeFollows'])
         && (adminWritable(col) ? isAdminish() : signedIn());
     }
   }
