@@ -10,6 +10,7 @@ import {
   GithubAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  connectAuthEmulator,
 } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -35,6 +36,12 @@ getAnalytics(app); // Initialize Firebase Analytics if needed
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
+
+// Local development / testing only: REACT_APP_USE_EMULATORS=true points Auth
+// (and Firestore/Storage, see connector/firebase.js) at the Firebase emulators.
+if (process.env.REACT_APP_USE_EMULATORS === 'true') {
+  connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+}
 
 // Google Auth
 const googleAuthProvider = new GoogleAuthProvider();

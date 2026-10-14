@@ -3,16 +3,18 @@ import { ensureDefaultParameters, listParameters, listCompanies } from 'src/serv
 import CompanyAnalysis from './CompanyAnalysis';
 import ParameterManager from './ParameterManager';
 import SectorDashboard from './SectorDashboard';
+import TradeJournal from './TradeJournal';
 import './Stocks.css';
 
 const TABS = [
+  { id: 'journal', label: 'Trade Journal' },
   { id: 'analysis', label: 'Company Analysis' },
   { id: 'sectors', label: 'Sector Dashboard' },
   { id: 'params', label: 'Parameters' },
 ];
 
 const Stocks = () => {
-  const [tab, setTab] = useState('analysis');
+  const [tab, setTab] = useState('journal');
   const [parameters, setParameters] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ const Stocks = () => {
         </p>
       </div>
 
-      {error && <div className="alert alert-warning">{error}</div>}
+      {error && tab !== 'journal' && <div className="alert alert-warning">{error}</div>}
 
       <ul className="nav nav-pills gap-2 mb-3">
         {TABS.map(t => (
@@ -68,7 +70,11 @@ const Stocks = () => {
         ))}
       </ul>
 
-      {loading ? (
+      {/* The journal has its own data and access rules; it never waits on the
+          fundamentals data below. */}
+      {tab === 'journal' ? (
+        <TradeJournal />
+      ) : loading ? (
         <div className="text-muted">Loading…</div>
       ) : (
         <>
