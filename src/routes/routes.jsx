@@ -33,6 +33,7 @@ import AtiSubPage from 'src/components/pages/inc/AtiSubPage';
 import PortfolioDashboard from 'src/components/pages/inc/PortfolioDashboard';
 import GlobalInvestmentOptions from 'src/components/pages/inc/GlobalInvestmentOptions';
 import HousePricePredictor from 'src/components/pages/inc/HousePricePredictor';
+import TradeJournal from 'src/components/SuperAdmin/Stocks/TradeJournal';
 import VideoEditor from 'src/components/pages/inc/VideoEditor';
 import TermsAndConditions from 'src/components/pages/Policies/TermsAndConditions';
 import PrivacyPolicy from 'src/components/pages/Policies/PrivacyPolicy';
@@ -121,6 +122,20 @@ const router = createBrowserRouter([
         element: (
           <AtiSubPage>
             <GlobalInvestmentOptions />
+          </AtiSubPage>
+        ),
+      },
+      {
+        // Public, read-only for guests; logging in unlocks posting/voting.
+        path: 'trade-journal',
+        element: (
+          <AtiSubPage>
+            <h2 className="mb-1">Trade Journal</h2>
+            <p className="text-muted">
+              Real trades with the reasoning behind them, and how each view held up over time.
+              Traders appear only by alias.
+            </p>
+            <TradeJournal />
           </AtiSubPage>
         ),
       },
