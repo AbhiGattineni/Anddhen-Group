@@ -23,6 +23,7 @@ import {
   noteItem,
   getFollows,
   setFollows,
+  cleanUrl,
 } from 'src/services/stocks/tradeJournal';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -102,6 +103,7 @@ const EMPTY = {
   quantity: '',
   tradeDate: '',
   description: '',
+  sourceUrl: '',
 };
 
 function TradeForm({ show, trade, onClose, onSave }) {
@@ -124,6 +126,7 @@ function TradeForm({ show, trade, onClose, onSave }) {
             quantity: String(trade.quantity),
             tradeDate: trade.tradeDate,
             description: trade.description || '',
+            sourceUrl: trade.sourceUrl || '',
           }
         : { ...EMPTY, tradeDate: today() }
     );
@@ -142,6 +145,8 @@ function TradeForm({ show, trade, onClose, onSave }) {
     if (!(Number(f.quantity) > 0)) return setError('Enter the quantity.');
     if (!/^[A-Za-z]{3,5}$/.test(f.currency.trim()))
       return setError('Enter a currency code like USD.');
+    if (f.sourceUrl.trim() && !cleanUrl(f.sourceUrl))
+      return setError('The source must be a web link, e.g. https://example.com/article.');
     setSaving(true);
     setError('');
     try {
@@ -259,6 +264,20 @@ function TradeForm({ show, trade, onClose, onSave }) {
                 onChange={set('description')}
                 maxLength={4000}
                 placeholder="Thesis, key points, target, risks…"
+              />
+            </Col>
+            <Col xs={12}>
+              <Form.Label className="fw-semibold">
+                Source URL <span className="text-muted fw-normal">(optional)</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                inputMode="url"
+                aria-label="Source URL"
+                value={f.sourceUrl}
+                onChange={set('sourceUrl')}
+                maxLength={500}
+                placeholder="https://… — article, filing or report you're quoting"
               />
             </Col>
           </Row>
@@ -784,6 +803,19 @@ export default function TradeJournal() {
                 <span className="text-muted">{fmtDate(t.tradeDate)}</span>
               </div>
               {t.description && <div className="tj-text">{t.description}</div>}
+              {cleanUrl(t.sourceUrl) && (
+                <div className="tj-source">
+                  <i className="bi bi-link-45deg me-1" />
+                  Source:{' '}
+                  <a
+                    href={cleanUrl(t.sourceUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                  >
+                    {new URL(cleanUrl(t.sourceUrl)).hostname.replace(/^www\./, '')}
+                  </a>
+                </div>
+              )}
               <div className="tj-card-foot">
                 <span className="small">
                   by{' '}

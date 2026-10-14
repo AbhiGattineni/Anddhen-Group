@@ -11,7 +11,8 @@
  *  tradeAliasOwners/{uid}        private { aliasId, alias, createdAt }
  *  trades/{tradeId}              public  { aliasId, alias, ticker, companyName, market,
  *                                          currency, side, price, quantity, tradeDate,
- *                                          description, up, down, createdAt, updatedAt }
+ *                                          description, sourceUrl?, up, down, createdAt,
+ *                                          updatedAt }
  *  trades/{tradeId}/notes/{id}   public  { aliasId, alias, kind, text, up, down, createdAt }
  *  tradeOwners/{tradeId}         private { uid }
  *  tradeVotes/{item}_{uid}       private { uid, item, value: 1 | -1 }  (item: t-… / n-…)
@@ -187,6 +188,20 @@ export function subscribeTrades(onChange, onError) {
   );
 }
 
+/** An http(s) URL, or '' (anything else is dropped). */
+export function cleanUrl(raw) {
+  const v = (raw || '').trim();
+  if (!v) return '';
+  const withScheme = /^https?:\/\//i.test(v) ? v : `https://${v}`;
+  try {
+    const u = new URL(withScheme);
+    if (!/^https?:$/.test(u.protocol) || !u.hostname.includes('.')) return '';
+    return u.href.slice(0, 500);
+  } catch (err) {
+    return '';
+  }
+}
+
 function tradeFields(f) {
   return {
     ticker: f.ticker.trim().toUpperCase().slice(0, 20),
@@ -198,6 +213,7 @@ function tradeFields(f) {
     quantity: Number(f.quantity),
     tradeDate: f.tradeDate,
     description: (f.description || '').trim().slice(0, 4000),
+    sourceUrl: cleanUrl(f.sourceUrl),
   };
 }
 

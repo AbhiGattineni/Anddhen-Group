@@ -240,7 +240,7 @@ service cloud.firestore {
     function validTrade(d) {
       return d.keys().hasOnly(['aliasId', 'alias', 'ticker', 'companyName', 'market', 'currency',
                                'side', 'price', 'quantity', 'tradeDate', 'description',
-                               'up', 'down', 'createdAt', 'updatedAt'])
+                               'sourceUrl', 'up', 'down', 'createdAt', 'updatedAt'])
         && d.ticker is string && d.ticker.size() > 0 && d.ticker.size() <= 20
         && d.companyName is string && d.companyName.size() <= 100
         && d.market is string && d.market.size() <= 10
@@ -249,7 +249,11 @@ service cloud.firestore {
         && d.price is number && d.price > 0
         && d.quantity is number && d.quantity > 0
         && d.tradeDate is string && d.tradeDate.size() == 10
-        && d.description is string && d.description.size() <= 4000;
+        && d.description is string && d.description.size() <= 4000
+        // Optional source link: empty, or a plain http(s) URL (never javascript: etc.).
+        && (!('sourceUrl' in d)
+            || (d.sourceUrl is string && d.sourceUrl.size() <= 500
+                && (d.sourceUrl == '' || d.sourceUrl.matches('https?://[^\\s]+'))));
     }
     function validNote(d) {
       return d.keys().hasOnly(['aliasId', 'alias', 'kind', 'text', 'up', 'down', 'createdAt'])
