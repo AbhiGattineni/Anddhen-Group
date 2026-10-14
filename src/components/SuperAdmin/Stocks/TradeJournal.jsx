@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Badge, Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from 'src/hooks/useAuth';
+import './Stocks.css';
 import {
   MARKETS,
   CURRENCIES,
@@ -519,8 +521,19 @@ TickerSummary.propTypes = {
 
 // ---------------------------------------------------------------- main
 
+/**
+ * Shared trade journal. Used on the Stocks dashboard card and on the public
+ * /ati/trade-journal page: guests can browse everything (aliases only);
+ * posting, timeline notes, voting and following need a login.
+ */
 export default function TradeJournal() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  // Send a guest to log in, then straight back here.
+  const askLogin = useCallback(() => {
+    localStorage.setItem('preLoginPath', window.location.pathname);
+    navigate('/login');
+  }, [navigate]);
   const [trades, setTrades] = useState(null);
   const [error, setError] = useState('');
   const [me, setMe] = useState(null);
@@ -553,7 +566,10 @@ export default function TradeJournal() {
 
   const onVote = useCallback(
     async (target, value) => {
-      if (!user) return;
+      if (!user) {
+        askLogin();
+        return;
+      }
       const key = target.noteId
         ? noteItem(target.tradeId, target.noteId)
         : tradeItem(target.tradeId);
@@ -566,10 +582,14 @@ export default function TradeJournal() {
         setError(err?.message || 'Could not record your vote.');
       }
     },
-    [user, myVotes]
+    [user, myVotes, askLogin]
   );
 
   const toggleFollow = async aliasId => {
+    if (!user) {
+      askLogin();
+      return;
+    }
     const next = follows.includes(aliasId)
       ? follows.filter(a => a !== aliasId)
       : [...follows, aliasId];
@@ -651,7 +671,13 @@ export default function TradeJournal() {
     <div className="tj-wrap">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <div className="small text-muted">
-          {me ? (
+          {!user ? (
+            <>
+              <i className="bi bi-eye me-1" />
+              You&apos;re browsing as a guest. Traders appear only by alias.{' '}
+              <strong className="text-body">Log in to post, vote or follow.</strong>
+            </>
+          ) : me ? (
             <>
               You post as <strong className="text-body">{me.alias}</strong>. Others never see your
               name.
@@ -660,18 +686,29 @@ export default function TradeJournal() {
             'You get an anonymous alias with your first post — others never see your name.'
           )}
         </div>
-        <Button onClick={() => setForm({ show: true, trade: null })} disabled={!user}>
-          <i className="bi bi-plus-lg me-1" />
-          Log a trade
-        </Button>
+        {user ? (
+          <Button onClick={() => setForm({ show: true, trade: null })}>
+            <i className="bi bi-plus-lg me-1" />
+            Log a trade
+          </Button>
+        ) : (
+          <Button onClick={askLogin}>
+            <i className="bi bi-box-arrow-in-right me-1" />
+            Log in to contribute
+          </Button>
+        )}
       </div>
 
       <div className="tj-filters">
         <div className="tj-seg" role="group" aria-label="Whose trades">
           {[
             ['all', 'Everyone'],
-            ['mine', 'My trades'],
-            ['following', `Following (${follows.length})`],
+            ...(user
+              ? [
+                  ['mine', 'My trades'],
+                  ['following', `Following (${follows.length})`],
+                ]
+              : []),
           ].map(([id, label]) => (
             <button
               key={id}
@@ -791,7 +828,7 @@ export default function TradeJournal() {
                   up={t.up}
                   down={t.down}
                   mine={myVotes[tradeItem(t.id)]}
-                  disabled={mine || !user}
+                  disabled={mine}
                   onVote={v => onVote({ tradeId: t.id }, v)}
                 />
               </div>

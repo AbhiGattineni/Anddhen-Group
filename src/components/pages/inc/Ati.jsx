@@ -119,6 +119,22 @@ export const Ati = () => {
                       </Card.Body>
                     </Card>
                   </div>
+                  <div className="col-md-6 mb-4">
+                    <Card className="shadow border-0 h-100">
+                      <Card.Body className="text-center d-flex flex-column">
+                        <Card.Title>Trade Journal</Card.Title>
+                        <Card.Text className="flex-grow-1">
+                          See what traders bought and sold around the world, why, and how their view
+                          changed over time — with pros, cons and votes. Log in to share your own.
+                        </Card.Text>
+                        <div>
+                          <Button as={Link} to="trade-journal" variant="primary">
+                            View Trades
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </div>
                 </div>
               </div>
 

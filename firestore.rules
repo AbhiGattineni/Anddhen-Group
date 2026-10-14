@@ -226,8 +226,10 @@ service cloud.firestore {
       allow read, write: if signedIn() && request.auth.uid == uid;
     }
 
-    // --- Stocks → Trade Journal. Shared with everyone holding the Stocks card,
-    //     authors shown only by alias. Public docs never carry a uid (User docs
+    // --- Trade Journal (Stocks card on the dashboard, and the public /ati page).
+    //     Anyone — signed in or not — may READ trades, timelines and aliases;
+    //     any signed-in user may post, add timeline notes, vote and follow.
+    //     Authors are shown only by alias. Public docs never carry a uid (User docs
     //     are readable by any signed-in user, so a uid would expose the real
     //     name): ownership lives in owner-only lookups that these rules read.
     function myTradeAlias() {
@@ -274,9 +276,9 @@ service cloud.firestore {
     }
 
     match /tradeAliases/{aliasId} {
-      allow read: if signedIn() && hasCard('stocks');
+      allow read: if true;
       // Created together with the caller's private alias doc, once.
-      allow create: if signedIn() && hasCard('stocks')
+      allow create: if signedIn()
         && !exists(/databases/$(database)/documents/tradeAliasOwners/$(request.auth.uid))
         && getAfter(/databases/$(database)/documents/tradeAliasOwners/$(request.auth.uid)).data.aliasId == aliasId
         && request.resource.data.keys().hasOnly(['alias', 'createdAt'])
@@ -285,27 +287,27 @@ service cloud.firestore {
     }
     match /tradeAliasOwners/{uid} {
       allow read: if signedIn() && request.auth.uid == uid;
-      allow create: if signedIn() && request.auth.uid == uid && hasCard('stocks')
+      allow create: if signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['aliasId', 'alias', 'createdAt'])
         && getAfter(/databases/$(database)/documents/tradeAliases/$(request.resource.data.aliasId)).data.alias
              == request.resource.data.alias;
     }
     match /tradeOwners/{tradeId} {
       allow read: if signedIn() && resource.data.uid == request.auth.uid;
-      allow create: if signedIn() && hasCard('stocks')
+      allow create: if signedIn()
         && request.resource.data.keys().hasOnly(['uid'])
         && request.resource.data.uid == request.auth.uid;
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
     match /trades/{tradeId} {
-      allow read: if signedIn() && hasCard('stocks');
-      allow create: if signedIn() && hasCard('stocks')
+      allow read: if true;
+      allow create: if signedIn()
         && validTrade(request.resource.data)
         && request.resource.data.aliasId == myTradeAlias().aliasId
         && request.resource.data.alias == myTradeAlias().alias
         && request.resource.data.up == 0 && request.resource.data.down == 0
         && getAfter(/databases/$(database)/documents/tradeOwners/$(tradeId)).data.uid == request.auth.uid;
-      allow update: if signedIn() && hasCard('stocks') && (
+      allow update: if signedIn() && (
         // The author edits the trade (identity and votes untouched)…
         (ownsTrade(tradeId)
           && validTrade(request.resource.data)
@@ -317,14 +319,14 @@ service cloud.firestore {
       allow delete: if signedIn() && (ownsTrade(tradeId) || isAdminish());
 
       match /notes/{noteId} {
-        allow read: if signedIn() && hasCard('stocks');
+        allow read: if true;
         // Only the trade's author adds to its timeline.
-        allow create: if signedIn() && hasCard('stocks') && ownsTrade(tradeId)
+        allow create: if signedIn() && ownsTrade(tradeId)
           && validNote(request.resource.data)
           && request.resource.data.aliasId == myTradeAlias().aliasId
           && request.resource.data.alias == myTradeAlias().alias
           && request.resource.data.up == 0 && request.resource.data.down == 0;
-        allow update: if signedIn() && hasCard('stocks')
+        allow update: if signedIn()
           && !ownsTrade(tradeId) && voteMatches('n-' + tradeId + '-' + noteId);
         allow delete: if signedIn() && (ownsTrade(tradeId) || isAdminish());
       }
@@ -332,7 +334,7 @@ service cloud.firestore {
     match /tradeVotes/{voteId} {
       // Own votes only. A not-yet-cast vote reads as missing (resource == null).
       allow read: if signedIn() && (resource == null || resource.data.uid == request.auth.uid);
-      allow create, update: if signedIn() && hasCard('stocks')
+      allow create, update: if signedIn()
         && request.resource.data.keys().hasOnly(['uid', 'item', 'value'])
         && request.resource.data.uid == request.auth.uid
         && voteId == request.resource.data.item + '_' + request.auth.uid
