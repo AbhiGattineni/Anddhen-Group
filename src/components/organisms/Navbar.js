@@ -5,6 +5,7 @@ import useAuthStore from '../../services/store/globalStore';
 import { useAuth } from 'src/hooks/useAuth';
 import { useRole } from 'src/services/roles/RoleContext';
 import { ROLES, hasAtLeast } from 'src/services/roles/roles';
+import { BRAND_NAME, TAGLINE } from 'src/config/brand';
 
 function Navbar() {
   const [navbarOpen, setNavbarOpen] = useState(false);
@@ -44,8 +45,9 @@ function Navbar() {
           <div className="col-md-12">
             <nav className="navbar navbar-expand-lg ">
               <div className="container-fluid">
-                <Link to="/" className="navbar-brand nav-link-highlight">
-                  Anddhen Group
+                <Link to="/" className="navbar-brand nav-link-highlight brand-lockup">
+                  <span className="brand-name">{BRAND_NAME}</span>
+                  <span className="brand-tagline">{TAGLINE}</span>
                 </Link>
                 <button
                   className="navbar-toggler"

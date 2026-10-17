@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import Slider from '../organisms/Slider';
 import { subsidiaries } from '../../dataconfig';
+import { BRAND_NAME, TAGLINE } from '../../config/brand';
 import './Home.css';
 
 const Home = () => {
@@ -105,9 +106,9 @@ const Home = () => {
                       letterSpacing: '-0.03em',
                     }}
                   >
-                    More Than a Business—
+                    {BRAND_NAME}—
                     <br />
-                    <span className="gradient-accent">A Conglomerate with Purpose</span>
+                    <span className="gradient-accent">{TAGLINE}</span>
                   </Typography>
                   <Typography
                     variant="h6"
@@ -119,9 +120,10 @@ const Home = () => {
                       maxWidth: '90%',
                     }}
                   >
-                    Deeply invested in India&apos;s dynamic market and beyond, we deliver bespoke
-                    solutions across software, consulting, and marketing while making a difference
-                    through philanthropy.
+                    More than a business—a conglomerate with purpose. Deeply invested in
+                    India&apos;s dynamic market and beyond, we deliver bespoke solutions across
+                    software, consulting, and marketing while making a difference through
+                    philanthropy.
                     {/* solutions across software, consulting, investment, and marketing while making a */}
                   </Typography>
                   <Stack direction="row" spacing={2} flexWrap="wrap">
@@ -282,6 +284,18 @@ const Home = () => {
                   &quot;Choose Anddhen, where our services meet your ambition, and together we
                   create not just success, but a legacy of positive impact.&quot;
                 </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontSize: { xs: '1.05rem', md: '1.2rem' },
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    letterSpacing: '0.02em',
+                    mb: 3.5,
+                  }}
+                >
+                  {BRAND_NAME}, {TAGLINE}.
+                </Typography>
                 <Button
                   component={Link}
                   to="/about"
@@ -340,7 +354,7 @@ const Home = () => {
                 fontWeight: 400,
               }}
             >
-              Six specialized divisions, one unified vision for excellence
+              Six specialized divisions, one unified vision for excellence — together, {TAGLINE}.
             </Typography>
           </Box>
           <Grid container spacing={4}>

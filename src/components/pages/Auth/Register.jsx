@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import useUnifiedAuth from 'src/hooks/useUnifiedAuth';
 import useErrorHandling from 'src/hooks/useErrorHandling';
 import useAuthStore from 'src/services/store/globalStore';
+import { BRAND_NAME, TAGLINE } from 'src/config/brand';
 import './Auth.css';
 
 export const Register = () => {
@@ -88,7 +89,8 @@ export const Register = () => {
               <div className="text-center mb-4">
                 <h2 className="auth-title mb-0">Create Account</h2>
                 <div className="auth-divider-line"></div>
-                <p className="auth-subtitle mt-3 mb-0">Join Anddhen Group</p>
+                <p className="auth-subtitle mt-3 mb-0">Join {BRAND_NAME}</p>
+                <p className="auth-tagline mb-0">{TAGLINE}</p>
               </div>
               {/* <div className="d-flex align-items-center mb-3">
                 <div>Sign up with </div>

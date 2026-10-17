@@ -6,6 +6,7 @@ import Toast from 'src/components/organisms/Toast';
 import useErrorHandling from 'src/hooks/useErrorHandling';
 import useAuthStore from 'src/services/store/globalStore';
 import LoadingSpinner from 'src/components/atoms/LoadingSpinner/LoadingSpinner';
+import { BRAND_NAME, TAGLINE } from 'src/config/brand';
 import './Auth.css';
 
 export const Login = () => {
@@ -58,7 +59,8 @@ export const Login = () => {
               <div className="text-center mb-4">
                 <h2 className="auth-title mb-0">Sign In</h2>
                 <div className="auth-divider-line"></div>
-                <p className="auth-subtitle mt-3 mb-0">Welcome back to Anddhen Group</p>
+                <p className="auth-subtitle mt-3 mb-0">Welcome back to {BRAND_NAME}</p>
+                <p className="auth-tagline mb-0">{TAGLINE}</p>
               </div>
               <div className="d-flex align-items-center mb-3">
                 <div className="text-muted">Sign in with</div>

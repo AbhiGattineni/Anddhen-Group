@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Anddhen",
+  "name": "Anddhen Group — that gets you anything",
+  "description": "A conglomerate with a heart, spanning software development, staffing and consulting, travel, philanthropy and comprehensive marketing services.",
   "icons": [
     {
       "src": "favicon.ico",

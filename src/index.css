@@ -202,6 +202,37 @@ p {
   text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
 }
 
+/* Brand lockup: the wordmark with the tagline sitting under it. Stacked so the
+   tagline reads as a strapline rather than as part of the name, and kept small
+   enough that the navbar height doesn't change. */
+.brand-lockup {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-lockup .brand-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.brand-lockup .brand-tagline {
+  font-size: 0.7rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+  text-shadow: none;
+}
+
+/* Footer strapline — sits above the company blurb, so it reads as the line the
+   paragraph then explains. */
+.footer-tagline {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 /* This styles the button itself, if needed */
 .navbar-toggler {
   border-color: white;

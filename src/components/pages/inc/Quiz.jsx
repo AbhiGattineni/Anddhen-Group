@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from '../../organisms/Modal';
+import { BRAND_NAME, TAGLINE } from '../../../config/brand';
 
 export const Quiz = () => {
   const [quiz, setQuiz] = useState([]);
@@ -94,7 +95,10 @@ export const Quiz = () => {
         <>
           <nav className="navbar bg-dark">
             <div className="container-fluid">
-              <span className="navbar-brand mb-0 h1 text-white">Anddhen Group</span>
+              <span className="navbar-brand brand-lockup mb-0 h1 text-white">
+                <span className="brand-name">{BRAND_NAME}</span>
+                <span className="brand-tagline">{TAGLINE}</span>
+              </span>
             </div>
           </nav>
           <div className="container">
