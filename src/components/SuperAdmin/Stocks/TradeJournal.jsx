@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Badge, Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +27,7 @@ import {
   setFollows,
   cleanUrl,
 } from 'src/services/stocks/tradeJournal';
+import { searchSymbols } from 'src/services/stocks/symbolSearch';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -93,6 +94,122 @@ Votes.propTypes = {
   onVote: PropTypes.func.isRequired,
 };
 
+// ---------------------------------------------------------------- symbol type-ahead
+
+// Text input that suggests listed securities worldwide as you type. Picking one
+// fills ticker, company, market and currency together; free typing still works.
+function SymbolInput({ value, onChange, onPick, placeholder, maxLength, upper, label }) {
+  const [list, setList] = useState([]);
+  const [openList, setOpenList] = useState(false);
+  const [active, setActive] = useState(-1);
+  const [busy, setBusy] = useState(false);
+  const typed = useRef(false);
+
+  useEffect(() => {
+    const q = value.trim();
+    if (!typed.current || q.length < 1) {
+      setList([]);
+      return undefined;
+    }
+    let live = true;
+    setBusy(true);
+    const id = setTimeout(() => {
+      searchSymbols(q).then(r => {
+        if (!live) return;
+        setList(r);
+        setActive(-1);
+        setBusy(false);
+      });
+    }, 250);
+    return () => {
+      live = false;
+      clearTimeout(id);
+    };
+  }, [value]);
+
+  const pick = r => {
+    typed.current = false;
+    setOpenList(false);
+    setList([]);
+    onPick(r);
+  };
+  const onKey = e => {
+    if (!openList || !list.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActive(a => (a + 1) % list.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive(a => (a <= 0 ? list.length - 1 : a - 1));
+    } else if (e.key === 'Enter' && active >= 0) {
+      e.preventDefault();
+      pick(list[active]);
+    } else if (e.key === 'Escape') {
+      setOpenList(false);
+    }
+  };
+
+  const show = openList && value.trim() && (list.length > 0 || busy);
+  return (
+    <div className="tj-sym">
+      <Form.Control
+        value={value}
+        onChange={e => {
+          typed.current = true;
+          setOpenList(true);
+          onChange(e);
+        }}
+        onKeyDown={onKey}
+        onFocus={() => setOpenList(true)}
+        onBlur={() => setOpenList(false)}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        style={upper ? { textTransform: 'uppercase' } : undefined}
+        autoComplete="off"
+        aria-label={label}
+        aria-autocomplete="list"
+        aria-expanded={Boolean(show)}
+      />
+      {show && (
+        <ul className="tj-sym-list" role="listbox" aria-label={`${label} suggestions`}>
+          {list.length === 0 ? (
+            <li className="tj-sym-empty">Searching…</li>
+          ) : (
+            list.map((r, i) => (
+              <li
+                key={r.symbol}
+                role="option"
+                aria-selected={i === active}
+                className={i === active ? 'on' : ''}
+                onMouseDown={e => {
+                  e.preventDefault();
+                  pick(r);
+                }}
+              >
+                <span className="tj-sym-ticker">{r.ticker}</span>
+                <span className="tj-sym-name">{r.name}</span>
+                <span className="tj-sym-ex">
+                  {r.exchange} · {r.currency}
+                </span>
+              </li>
+            ))
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+SymbolInput.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onPick: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  maxLength: PropTypes.number,
+  upper: PropTypes.bool,
+  label: PropTypes.string.isRequired,
+};
+
 // ---------------------------------------------------------------- trade form
 
 const EMPTY = {
@@ -139,6 +256,15 @@ function TradeForm({ show, trade, onClose, onSave }) {
     const m = MARKETS.find(x => x.id === e.target.value);
     setF(p => ({ ...p, market: m.id, currency: m.currency || p.currency }));
   };
+
+  const pickSymbol = r =>
+    setF(p => ({
+      ...p,
+      ticker: r.ticker,
+      companyName: r.name || p.companyName,
+      market: r.market,
+      currency: r.currency || p.currency,
+    }));
 
   const submit = async e => {
     e.preventDefault();
@@ -199,12 +325,14 @@ function TradeForm({ show, trade, onClose, onSave }) {
             </Col>
             <Col md={3} xs={6}>
               <Form.Label className="fw-semibold">Ticker</Form.Label>
-              <Form.Control
+              <SymbolInput
                 value={f.ticker}
                 onChange={set('ticker')}
+                onPick={pickSymbol}
                 placeholder="AAPL, RELIANCE…"
                 maxLength={20}
-                style={{ textTransform: 'uppercase' }}
+                upper
+                label="Ticker"
               />
             </Col>
             <Col md={3} xs={6}>
@@ -220,7 +348,14 @@ function TradeForm({ show, trade, onClose, onSave }) {
               <Form.Label className="fw-semibold">
                 Company <span className="text-muted fw-normal">(optional)</span>
               </Form.Label>
-              <Form.Control value={f.companyName} onChange={set('companyName')} maxLength={100} />
+              <SymbolInput
+                value={f.companyName}
+                onChange={set('companyName')}
+                onPick={pickSymbol}
+                placeholder="Start typing — e.g. Apple, Reliance"
+                maxLength={100}
+                label="Company"
+              />
             </Col>
             <Col md={2} xs={4}>
               <Form.Label className="fw-semibold">Currency</Form.Label>
@@ -425,6 +560,100 @@ Timeline.propTypes = {
   onVote: PropTypes.func.isRequired,
 };
 
+// ---------------------------------------------------------------- pagination
+
+const PAGE_SIZES = [10, 25, 50, 100];
+
+// Page numbers around the current page, with gaps: 1 … 4 5 6 … 12
+function pageList(page, pages) {
+  const set = new Set([1, pages, page - 1, page, page + 1]);
+  const nums = [...set].filter(n => n >= 1 && n <= pages).sort((a, b) => a - b);
+  const out = [];
+  nums.forEach((n, i) => {
+    if (i && n - nums[i - 1] > 1) out.push(`gap${n}`);
+    out.push(n);
+  });
+  return out;
+}
+
+function Pager({ page, pages, total, pageSize, onPage, onPageSize }) {
+  const from = (page - 1) * pageSize + 1;
+  const to = Math.min(total, page * pageSize);
+  const go = n => {
+    onPage(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  return (
+    <nav className="tj-pager" aria-label="Trades pages">
+      <span className="small text-muted">
+        Showing {from}–{to} of {total}
+      </span>
+      {pages > 1 && (
+        <div className="tj-pages">
+          <button
+            type="button"
+            disabled={page === 1}
+            onClick={() => go(page - 1)}
+            aria-label="Previous page"
+          >
+            ‹
+          </button>
+          {pageList(page, pages).map(n =>
+            typeof n === 'string' ? (
+              <span key={n} className="tj-gap">
+                …
+              </span>
+            ) : (
+              <button
+                key={n}
+                type="button"
+                className={n === page ? 'on' : ''}
+                aria-current={n === page ? 'page' : undefined}
+                onClick={() => go(n)}
+              >
+                {n}
+              </button>
+            )
+          )}
+          <button
+            type="button"
+            disabled={page === pages}
+            onClick={() => go(page + 1)}
+            aria-label="Next page"
+          >
+            ›
+          </button>
+        </div>
+      )}
+      <label className="small text-muted d-flex align-items-center gap-2 mb-0">
+        Per page
+        <Form.Select
+          size="sm"
+          value={pageSize}
+          onChange={e => onPageSize(Number(e.target.value))}
+          style={{ width: 80 }}
+          aria-label="Trades per page"
+        >
+          {PAGE_SIZES.map(n => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </Form.Select>
+      </label>
+    </nav>
+  );
+}
+
+Pager.propTypes = {
+  page: PropTypes.number.isRequired,
+  pages: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  onPage: PropTypes.func.isRequired,
+  onPageSize: PropTypes.func.isRequired,
+};
+
 // ---------------------------------------------------------------- ticker summary
 
 function TickerSummary({ ticker, trades }) {
@@ -547,6 +776,15 @@ export default function TradeJournal() {
   const [aliasFilter, setAliasFilter] = useState(null); // { aliasId, alias }
   const [form, setForm] = useState({ show: false, trade: null });
   const [open, setOpen] = useState(() => new Set());
+  const [pageSize, setPageSize] = useState(() => {
+    try {
+      const n = Number(localStorage.getItem('tjPageSize'));
+      return PAGE_SIZES.includes(n) ? n : 10;
+    } catch {
+      return 10;
+    }
+  });
+  const [page, setPage] = useState(1);
 
   useEffect(() => subscribeTrades(setTrades, setError), []);
   useEffect(() => {
@@ -652,6 +890,20 @@ export default function TradeJournal() {
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trades, scope, follows, aliasFilter, side, market, tickerQ, sort, me]);
+
+  // Back to page 1 whenever the filters change.
+  useEffect(() => setPage(1), [scope, aliasFilter, side, market, tickerQ, sort, pageSize]);
+  const pages = Math.max(1, Math.ceil(shown.length / pageSize));
+  const curPage = Math.min(page, pages);
+  const pageItems = shown.slice((curPage - 1) * pageSize, curPage * pageSize);
+  const changePageSize = n => {
+    setPageSize(n);
+    try {
+      localStorage.setItem('tjPageSize', String(n));
+    } catch {
+      /* private mode */
+    }
+  };
 
   // Exact ticker typed → show what everyone thinks about it.
   const exactTicker = useMemo(() => {
@@ -805,7 +1057,7 @@ export default function TradeJournal() {
             : 'No trades match these filters.'}
         </div>
       ) : (
-        shown.map(t => {
+        pageItems.map(t => {
           const mine = isMine(t);
           const total = t.price * t.quantity;
           return (
@@ -911,6 +1163,17 @@ export default function TradeJournal() {
             </div>
           );
         })
+      )}
+
+      {trades && shown.length > 0 && (
+        <Pager
+          page={curPage}
+          pages={pages}
+          total={shown.length}
+          pageSize={pageSize}
+          onPage={setPage}
+          onPageSize={changePageSize}
+        />
       )}
 
       <TradeForm
