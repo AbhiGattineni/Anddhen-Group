@@ -429,3 +429,90 @@
   margin-top: 6px;
   word-break: break-all;
 }
+
+/* Trade Journal — symbol type-ahead */
+.tj-sym {
+  position: relative;
+}
+.tj-sym-list {
+  position: absolute;
+  z-index: 1060;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 340px;
+  max-width: 90vw;
+  max-height: 320px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.tj-sym-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.tj-sym-list li.on,
+.tj-sym-list li:hover {
+  background: #eef4ff;
+}
+.tj-sym-ticker {
+  font-weight: 700;
+}
+.tj-sym-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tj-sym-ex {
+  grid-column: 2;
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+.tj-sym-list li.tj-sym-empty {
+  display: block;
+  cursor: default;
+  color: #6c757d;
+}
+
+/* Trade Journal — pagination */
+.tj-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0 8px;
+}
+.tj-pages {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.tj-pages button {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #fff;
+  color: #212529;
+}
+.tj-pages button.on {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+.tj-pages button:disabled {
+  opacity: 0.45;
+}
+.tj-gap {
+  padding: 0 4px;
+  color: #6c757d;
+}
