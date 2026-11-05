@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useRole } from 'src/services/roles/RoleContext';
-import { ROLE_LABELS, ROLES } from 'src/services/roles/roles';
-import { cardLabel, normalizeCards } from 'src/services/roles/cards';
+import { ROLE_LABELS, ROLES, hasAtLeast } from 'src/services/roles/roles';
+import { canAccessCard, cardLabel, normalizeCards } from 'src/services/roles/cards';
 import { auth } from 'src/services/Authentication/firebase';
 
 /**
@@ -13,21 +13,33 @@ import { auth } from 'src/services/Authentication/firebase';
  */
 const NotAuthorizedPage = () => {
   const { state } = useLocation();
-  const { role: currentRole } = useRole();
-  const role = state?.role || currentRole || ROLES.USER;
+  const { role: currentRole, cards: currentCards, loading } = useRole();
+  // Navigation state survives a reload, so the role recorded at denial time
+  // can be stale. Once the live role has resolved, it is the one to show.
+  const role = (loading ? state?.role : currentRole) || ROLES.USER;
+  const granted = loading ? state?.granted : currentCards;
+
+  // Access granted since this denial (role changed, card ticked): go back to
+  // the page that was refused instead of showing an outdated 403.
+  if (!loading && state?.from) {
+    const nowAllowed =
+      (state.reason === 'role' && hasAtLeast(currentRole, state.requiredRole)) ||
+      (state.reason === 'card' && canAccessCard(currentRole, currentCards, state.requiredCard));
+    if (nowAllowed) return <Navigate to={state.from} replace />;
+  }
 
   const detail = (() => {
     if (state?.reason === 'card') {
-      const granted = normalizeCards(state.granted);
+      const grantedCards = normalizeCards(granted);
       return {
         headline: `You don't have access to ${cardLabel(state.requiredCard)}.`,
         body: (
           <>
             Your role is <strong>{ROLE_LABELS[role] || role}</strong>
-            {granted.length ? (
+            {grantedCards.length ? (
               <>
-                , and you currently have {granted.length} card
-                {granted.length === 1 ? '' : 's'}: {granted.map(cardLabel).join(', ')}.
+                , and you currently have {grantedCards.length} card
+                {grantedCards.length === 1 ? '' : 's'}: {grantedCards.map(cardLabel).join(', ')}.
               </>
             ) : (
               <>, and no cards have been assigned to you yet.</>
