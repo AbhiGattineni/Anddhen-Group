@@ -12,6 +12,7 @@
 import {
   doc,
   getDoc,
+  waitForPendingWrites,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -111,7 +112,20 @@ export async function ensureUserProfile(user) {
 
   try {
     const ref = doc(db, 'User', user.uid);
-    const snap = await getDoc(ref);
+    // Sign-in writes profile fields to this same document (usePostUserData)
+    // at the same moment. Until that write is acknowledged, Firestore answers
+    // reads — even server reads — with the local merge: those fields and no
+    // role, which resolved a real employee as `user` and flashed a 403 on every
+    // login. So wait for pending writes, then read again. Capped, because
+    // offline the wait would never end.
+    let snap = await getDoc(ref);
+    if (snap.metadata.hasPendingWrites) {
+      await Promise.race([
+        waitForPendingWrites(db),
+        new Promise(resolve => setTimeout(resolve, 5000)),
+      ]);
+      snap = await getDoc(ref);
+    }
 
     if (snap.exists()) {
       const data = snap.data();
@@ -171,6 +185,9 @@ export function subscribeUserProfile(user, onChange, onError) {
   return onSnapshot(
     doc(db, 'User', user.uid),
     snap => {
+      // Same trap as above: a snapshot carrying a local, unconfirmed write
+      // may lack the role. The server-confirmed snapshot follows right after.
+      if (snap.metadata.hasPendingWrites) return;
       const data = snap.exists() ? snap.data() : {};
       onChange({
         role: bootstrap ? ROLES.SUPERADMIN : data.role || ROLES.USER,
