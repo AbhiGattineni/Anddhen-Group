@@ -5,6 +5,12 @@
  *    { key: 'AG-12', title, description, type, priority, status,
  *      assigneeUid, assigneeName, reporterUid, reporterName,
  *      createdAt, updatedAt }
+ *  jiraTickets/{id}/activity/{autoId} — the ticket's comments and its log:
+ *    comment: { kind: 'comment', text, actorUid, actorName, createdAt, editedAt? }
+ *    change:  { kind: 'change', field, from, to, actorUid, actorName, createdAt }
+ *    Change entries are written in the same batch as the ticket update they
+ *    describe and can never be edited or deleted (firestore.rules). Creation
+ *    isn't logged: it's read off the ticket itself (createdAt, reporter).
  *  jiraMeta/board — { nextNumber } (counter behind the AG-n keys)
  *  jiraProducts/{autoId} — { name, active, createdAt } (products/clients that
  *    customers can report issues against; managed under Roles & Access)
@@ -17,11 +23,15 @@
 import {
   collection,
   doc,
+  getDocs,
   onSnapshot,
+  orderBy,
+  query,
   runTransaction,
   updateDoc,
   deleteDoc,
   addDoc,
+  writeBatch,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../connector/firebase';
@@ -118,12 +128,112 @@ export async function reportIssue({ product, type, priority, title, description,
   return key;
 }
 
-export async function updateTicket(id, fields) {
-  await updateDoc(doc(db, TICKETS, id), { ...fields, updatedAt: serverTimestamp() });
+// ---------------------------------------------------------------- activity
+
+const ACTIVITY = 'activity';
+
+/** Ticket fields whose changes are logged, and how each is shown. */
+export const LOGGED_FIELDS = {
+  status: 'Status',
+  assignee: 'Assignee',
+  priority: 'Priority',
+  type: 'Type',
+  title: 'Summary',
+  description: 'Description',
+  product: 'Product / client',
+};
+
+const clip = v => String(v ?? '').slice(0, 300);
+
+/** Log entries for the difference between a ticket and the fields saved over it. */
+function changesFor(before, fields) {
+  const out = [];
+  const add = (field, from, to) => out.push({ field, from: clip(from), to: clip(to) });
+  ['status', 'priority', 'type', 'title', 'product'].forEach(f => {
+    if (f in fields && (fields[f] || '') !== (before[f] || '')) add(f, before[f], fields[f]);
+  });
+  if ('assigneeUid' in fields && (fields.assigneeUid || '') !== (before.assigneeUid || '')) {
+    add('assignee', before.assigneeName, fields.assigneeName);
+  }
+  // The text itself would bloat the log; record that it changed.
+  if ('description' in fields && (fields.description || '') !== (before.description || '')) {
+    add('description', '', '');
+  }
+  return out;
 }
 
+export const actorOf = user => ({
+  actorUid: user.uid,
+  actorName: String(user.displayName || user.email || 'Someone').slice(0, 100),
+});
+
+/**
+ * Save fields over a ticket and log what changed, atomically. `before` is the
+ * ticket as the user saw it; `user` is who made the change.
+ */
+export async function updateTicket(id, fields, before, user) {
+  const ref = doc(db, TICKETS, id);
+  const batch = writeBatch(db);
+  batch.update(ref, { ...fields, updatedAt: serverTimestamp() });
+  if (before && user) {
+    changesFor(before, fields).forEach(c =>
+      batch.set(doc(collection(ref, ACTIVITY)), {
+        kind: 'change',
+        ...c,
+        ...actorOf(user),
+        createdAt: serverTimestamp(),
+      })
+    );
+  }
+  await batch.commit();
+}
+
+/** Delete a ticket together with its comments and log. */
 export async function deleteTicket(id) {
-  await deleteDoc(doc(db, TICKETS, id));
+  const ref = doc(db, TICKETS, id);
+  const entries = await getDocs(collection(ref, ACTIVITY));
+  // A batch holds 500 writes; a ticket's history rarely comes close, but chunk
+  // anyway and delete the ticket last so nothing is left orphaned on failure.
+  const docs = entries.docs.map(d => d.ref);
+  for (let i = 0; i < docs.length; i += 450) {
+    const batch = writeBatch(db);
+    docs.slice(i, i + 450).forEach(r => batch.delete(r));
+    if (i + 450 >= docs.length) batch.delete(ref);
+    await batch.commit();
+  }
+  if (!docs.length) await deleteDoc(ref);
+}
+
+/** Live comments + log for one ticket, oldest first. Returns the unsubscribe function. */
+export function subscribeActivity(ticketId, onChange, onError) {
+  return onSnapshot(
+    query(collection(db, TICKETS, ticketId, ACTIVITY), orderBy('createdAt', 'asc')),
+    snap => onChange(snap.docs.map(withId)),
+    err => {
+      console.error('subscribeActivity failed:', err);
+      if (onError) onError(err?.code || err?.message || String(err));
+    }
+  );
+}
+
+export async function addComment(ticketId, text, user) {
+  await addDoc(collection(db, TICKETS, ticketId, ACTIVITY), {
+    kind: 'comment',
+    text: text.trim().slice(0, 5000),
+    ...actorOf(user),
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function editComment(ticketId, entryId, text) {
+  await updateDoc(doc(db, TICKETS, ticketId, ACTIVITY, entryId), {
+    text: text.trim().slice(0, 5000),
+    editedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteComment(ticketId, entryId) {
+  await deleteDoc(doc(db, TICKETS, ticketId, ACTIVITY, entryId));
 }
 
 /** Live list of products/clients, sorted by name. Returns the unsubscribe function. */

@@ -185,6 +185,49 @@ service cloud.firestore {
         && request.resource.data.get('title', '').size() > 0
         && request.resource.data.get('title', '').size() <= 200;
     }
+    // A ticket's comments and change log (see src/services/jira/jiraBoard.js).
+    // Comments: their author may edit the text or delete them. Change entries
+    // are append-only, must be by the requester, and must agree with the
+    // ticket as written in the same batch — so the log can't be forged or
+    // rewritten. Everything goes when the ticket itself is deleted.
+    match /jiraTickets/{ticketId}/activity/{entryId} {
+      function ticketAfter() {
+        return getAfter(/databases/$(database)/documents/jiraTickets/$(ticketId)).data;
+      }
+      function validComment(d) {
+        return d.keys().hasOnly(['kind', 'text', 'actorUid', 'actorName', 'createdAt'])
+          && d.text is string && d.text.size() > 0 && d.text.size() <= 5000;
+      }
+      function validChange(d) {
+        let t = ticketAfter();
+        return d.keys().hasOnly(['kind', 'field', 'from', 'to', 'actorUid', 'actorName', 'createdAt'])
+          && d.from is string && d.from.size() <= 300
+          && d.to is string && d.to.size() <= 300
+          && (d.field == 'description'
+              || (d.field == 'assignee' && t.get('assigneeName', '') == d.to)
+              || (d.field in ['status', 'priority', 'type', 'title', 'product']
+                  && t.get(d.field, '') == d.to))
+          && t.updatedAt == request.time;
+      }
+      allow read: if signedIn() && canUseJira();
+      allow create: if signedIn() && canUseJira()
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorName is string
+        && request.resource.data.actorName.size() <= 100
+        && request.resource.data.createdAt == request.time
+        && ((request.resource.data.kind == 'comment' && validComment(request.resource.data))
+            || (request.resource.data.kind == 'change' && validChange(request.resource.data)));
+      allow update: if signedIn() && canUseJira()
+        && resource.data.kind == 'comment'
+        && resource.data.actorUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'editedAt'])
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 5000
+        && request.resource.data.editedAt == request.time;
+      allow delete: if signedIn() && canUseJira()
+        && ((resource.data.kind == 'comment' && resource.data.actorUid == request.auth.uid)
+            || !existsAfter(/databases/$(database)/documents/jiraTickets/$(ticketId)));
+    }
     match /jiraMeta/{docId} {
       // Only the ticket counter lives here; the Contact page reads it and may
       // advance it by exactly one (to allocate a key for a customer report).
