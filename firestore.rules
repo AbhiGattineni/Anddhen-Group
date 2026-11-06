@@ -179,8 +179,17 @@ service cloud.firestore {
     match /jiraTickets/{ticketId} {
       allow create: if isContactReport();
       allow read, delete: if signedIn() && canUseJira();
+      // Anyone may read the tickets assigned to them — the Timesheet's Daily
+      // status asks for the tickets worked on, and not everyone who files a
+      // status holds the Jira card.
+      allow read: if signedIn() && resource.data.get('assigneeUid', '') == request.auth.uid;
       allow create, update: if signedIn() && canUseJira()
-        && request.resource.data.keys().size() <= 16
+        && request.resource.data.keys().size() <= 20
+        && (!('estimateHours' in request.resource.data)
+            || (request.resource.data.estimateHours is number
+                && request.resource.data.estimateHours > 0
+                && request.resource.data.estimateHours <= 24 * 365))
+        && (!('dueAt' in request.resource.data) || request.resource.data.dueAt is timestamp)
         && request.resource.data.get('title', '') is string
         && request.resource.data.get('title', '').size() > 0
         && request.resource.data.get('title', '').size() <= 200;
@@ -203,7 +212,7 @@ service cloud.firestore {
         return d.keys().hasOnly(['kind', 'field', 'from', 'to', 'actorUid', 'actorName', 'createdAt'])
           && d.from is string && d.from.size() <= 300
           && d.to is string && d.to.size() <= 300
-          && (d.field == 'description'
+          && (d.field in ['description', 'estimate']
               || (d.field == 'assignee' && t.get('assigneeName', '') == d.to)
               || (d.field in ['status', 'priority', 'type', 'title', 'product']
                   && t.get(d.field, '') == d.to))

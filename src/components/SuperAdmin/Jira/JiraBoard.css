@@ -310,3 +310,37 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+/* Time required: overdue / due-soon highlighting */
+.jira-card.jira-overdue {
+  background: #fef2f2;
+  border-left: 4px solid #dc2626;
+}
+.jira-card.jira-overdue:hover {
+  background: #fee2e2;
+}
+.jira-card.jira-soon {
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+}
+.jira-due {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin-bottom: 6px;
+}
+.jira-due-overdue {
+  background: #dc2626;
+  color: #fff;
+}
+.jira-due-soon {
+  background: #fde68a;
+  color: #92400e;
+}
+.jira-due-ok {
+  background: #f1f5f9;
+  color: #475569;
+}

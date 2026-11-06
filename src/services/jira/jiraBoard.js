@@ -4,7 +4,7 @@
  *  jiraTickets/{autoId} —
  *    { key: 'AG-12', title, description, type, priority, status,
  *      assigneeUid, assigneeName, reporterUid, reporterName,
- *      createdAt, updatedAt }
+ *      estimateHours?, dueAt? (createdAt + estimate), createdAt, updatedAt }
  *  jiraTickets/{id}/activity/{autoId} — the ticket's comments and its log:
  *    comment: { kind: 'comment', text, actorUid, actorName, createdAt, editedAt? }
  *    change:  { kind: 'change', field, from, to, actorUid, actorName, createdAt }
@@ -27,12 +27,14 @@ import {
   onSnapshot,
   orderBy,
   query,
+  where,
   runTransaction,
   updateDoc,
   deleteDoc,
   addDoc,
   writeBatch,
   serverTimestamp,
+  Timestamp,
 } from 'firebase/firestore';
 import { db } from '../connector/firebase';
 
@@ -64,6 +66,43 @@ export const PRIORITIES = {
 };
 
 const withId = s => ({ id: s.id, ...s.data() });
+
+// ---------------------------------------------------------------- time required
+
+const HOUR = 3600 * 1000;
+
+/** 8 → '8h', 48 → '2d', 30 → '1d 6h'. */
+export function formatHours(h) {
+  const n = Number(h);
+  if (!(n > 0)) return '';
+  const d = Math.floor(n / 24);
+  const r = Math.round((n % 24) * 10) / 10;
+  return [d && `${d}d`, r && `${r}h`].filter(Boolean).join(' ');
+}
+
+const toMillis = ts =>
+  ts?.toMillis ? ts.toMillis() : ts instanceof Date ? ts.getTime() : Number(ts) || null;
+
+/** Deadline for a ticket created at `createdAt` (now if not yet saved). */
+export function dueAtFor(createdAt, estimateHours) {
+  const start = toMillis(createdAt) || Date.now();
+  return Timestamp.fromMillis(start + Number(estimateHours) * HOUR);
+}
+
+/**
+ * Where a ticket stands against its time required: 'overdue' (past due and
+ * not Done), 'soon' (due within 24h), 'ok', or null when it has no estimate
+ * or is Done. `label` is short text for the card.
+ */
+export function dueState(ticket, now = Date.now()) {
+  const due = toMillis(ticket.dueAt);
+  if (!due || ticket.status === 'done') return null;
+  const left = due - now;
+  const span = formatHours(Math.max(1, Math.round(Math.abs(left) / HOUR)));
+  if (left < 0) return { state: 'overdue', label: `Overdue ${span}` };
+  if (left <= 24 * HOUR) return { state: 'soon', label: `Due in ${span}` };
+  return { state: 'ok', label: `${span} left` };
+}
 
 /** Live list of every ticket. Returns the unsubscribe function. */
 export function subscribeTickets(onChange, onError) {
@@ -140,6 +179,7 @@ export const LOGGED_FIELDS = {
   type: 'Type',
   title: 'Summary',
   description: 'Description',
+  estimate: 'Time required',
   product: 'Product / client',
 };
 
@@ -154,6 +194,12 @@ function changesFor(before, fields) {
   });
   if ('assigneeUid' in fields && (fields.assigneeUid || '') !== (before.assigneeUid || '')) {
     add('assignee', before.assigneeName, fields.assigneeName);
+  }
+  if (
+    'estimateHours' in fields &&
+    Number(fields.estimateHours || 0) !== Number(before.estimateHours || 0)
+  ) {
+    add('estimate', formatHours(before.estimateHours), formatHours(fields.estimateHours));
   }
   // The text itself would bloat the log; record that it changed.
   if ('description' in fields && (fields.description || '') !== (before.description || '')) {
@@ -211,6 +257,29 @@ export function subscribeActivity(ticketId, onChange, onError) {
     snap => onChange(snap.docs.map(withId)),
     err => {
       console.error('subscribeActivity failed:', err);
+      if (onError) onError(err?.code || err?.message || String(err));
+    }
+  );
+}
+
+/**
+ * Live list of the tickets assigned to `uid` that are still open, or were
+ * finished in the last 7 days — what someone can say they worked on in their
+ * daily status. Readable without the Jira card (firestore.rules).
+ */
+export function subscribeMyTickets(uid, onChange, onError) {
+  const weekAgo = Date.now() - 7 * 24 * HOUR;
+  return onSnapshot(
+    query(collection(db, TICKETS), where('assigneeUid', '==', uid)),
+    snap =>
+      onChange(
+        snap.docs
+          .map(withId)
+          .filter(t => t.status !== 'done' || (toMillis(t.updatedAt) || 0) >= weekAgo)
+          .sort((a, b) => String(a.key).localeCompare(String(b.key), undefined, { numeric: true }))
+      ),
+    err => {
+      console.error('subscribeMyTickets failed:', err);
       if (onError) onError(err?.code || err?.message || String(err));
     }
   );
