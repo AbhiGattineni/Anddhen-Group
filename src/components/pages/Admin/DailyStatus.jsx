@@ -14,7 +14,10 @@ import {
   TextField,
   Alert,
   FormHelperText,
+  Autocomplete,
+  Chip,
 } from '@mui/material';
+import { STAGES, subscribeMyTickets } from 'src/services/jira/jiraBoard';
 import StatusTable from '../../generalComponents/StatusTable';
 import useGetSubsidiaries from 'src/react-query/useGetSubsidiaries';
 
@@ -26,6 +29,7 @@ const initialFormState = {
   endDate: '',
   leave: false,
   description: '',
+  tickets: [],
   AMS: { source: '' },
   ACS: {
     studentName: '',
@@ -81,6 +85,15 @@ const DailyStatus = () => {
   const { statusMutation, updateMutation } = useStatusUpdateMutation();
   const [userSubsidaries, setUserSubsidaries] = useState([]);
   const [userTimezone, setUserTimezone] = useState('UTC');
+  // Tickets assigned to me — every working-day status must name the ones
+  // worked on.
+  const [myTickets, setMyTickets] = useState(null);
+  const [ticketsError, setTicketsError] = useState('');
+  useEffect(() => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return undefined;
+    return subscribeMyTickets(uid, setMyTickets, setTicketsError);
+  }, []);
 
   // Calendar state management - NEW
   const [calendarSelectedDate, setCalendarSelectedDate] = useState(new Date());
@@ -236,6 +249,10 @@ const DailyStatus = () => {
     const descriptionError = validateField('description', formValues.description);
     if (descriptionError) errors.description = descriptionError;
 
+    if (!formValues.leave && !formValues.tickets?.length) {
+      errors.tickets = 'Pick at least one ticket you worked on.';
+    }
+
     // Validate end date if it's a leave request
     if (formValues.leave && formValues.endDate) {
       const endDateError = validateField('endDate', formValues.endDate);
@@ -252,6 +269,9 @@ const DailyStatus = () => {
 
     // Description is always required
     if (!formValues.description?.trim()) return false;
+
+    // A working day must name the tickets worked on.
+    if (!formValues.leave && !formValues.tickets?.length) return false;
 
     // For non-leave submissions
     if (!formValues.leave) {
@@ -503,6 +523,18 @@ const DailyStatus = () => {
     }, {});
   };
 
+  // What's stored: the tickets as { id, key, title }; never the UI-only
+  // subsidiary object.
+  const payload = values => {
+    const { selectedSubsidiaryObj, ...rest } = values;
+    return {
+      ...rest,
+      tickets: rest.leave
+        ? []
+        : (rest.tickets || []).map(t => ({ id: t.id, key: t.key, title: t.title })),
+    };
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
 
@@ -551,7 +583,7 @@ const DailyStatus = () => {
           for (const date of dateArray) {
             const formattedDate = formatDate(date);
             const statusData = {
-              ...formValues,
+              ...payload(formValues),
               date: formattedDate,
             };
 
@@ -607,7 +639,7 @@ const DailyStatus = () => {
         }
       }
 
-      const postStatus = flattenObject(formValues);
+      const postStatus = flattenObject(payload(formValues));
 
       try {
         // Only create new status, never update from form
@@ -812,6 +844,63 @@ const DailyStatus = () => {
                 <MenuItem value={false}>No</MenuItem>
               </TextField>
             </Grid>
+
+            {!formValues.leave && (
+              <Grid item xs={12}>
+                <Autocomplete
+                  multiple
+                  options={myTickets || []}
+                  loading={myTickets === null && !ticketsError}
+                  value={formValues.tickets}
+                  onChange={(_, value) => {
+                    setFormValues(prev => ({ ...prev, tickets: value }));
+                    if (fieldErrors.tickets) {
+                      setFieldErrors(prev => ({ ...prev, tickets: undefined }));
+                    }
+                  }}
+                  isOptionEqualToValue={(a, b) => a.id === b.id}
+                  getOptionLabel={t => `${t.key} · ${t.title}`}
+                  renderOption={(props, t) => (
+                    <li {...props} key={t.id}>
+                      <strong className="me-2">{t.key}</strong>
+                      <span className="flex-grow-1">{t.title}</span>
+                      <span className="text-muted small ms-2">
+                        {STAGES.find(s => s.id === t.status)?.label || t.status}
+                      </span>
+                    </li>
+                  )}
+                  renderTags={(value, getTagProps) =>
+                    value.map((t, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={t.id}
+                        size="small"
+                        label={`${t.key} · ${t.title}`}
+                      />
+                    ))
+                  }
+                  noOptionsText="No tickets are assigned to you"
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Tickets worked on *"
+                      placeholder={
+                        formValues.tickets.length ? '' : 'Pick the tickets you worked on'
+                      }
+                      error={!!fieldErrors.tickets || !!ticketsError}
+                      helperText={
+                        fieldErrors.tickets ||
+                        (ticketsError
+                          ? `Couldn't load your tickets (${ticketsError}).`
+                          : myTickets && myTickets.length === 0
+                            ? 'No tickets are assigned to you. Ask your lead to assign your work on the Jira board before submitting.'
+                            : 'Required — tickets assigned to you that are open or were finished in the last 7 days.')
+                      }
+                    />
+                  )}
+                />
+              </Grid>
+            )}
 
             {renderSubsidaryFields()}
 

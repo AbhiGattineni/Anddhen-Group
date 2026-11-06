@@ -12,6 +12,9 @@ import {
   subscribeProducts,
   createTicket,
   updateTicket,
+  dueState,
+  dueAtFor,
+  formatHours,
   deleteTicket,
 } from 'src/services/jira/jiraBoard';
 import Avatar from './JiraAvatar';
@@ -28,6 +31,17 @@ const EMPTY_FORM = {
   status: 'todo',
   assigneeUid: '',
   product: '',
+  estimate: '',
+  estimateUnit: 'hours',
+};
+
+/** Stored hours → the editor's number + unit (whole days shown as days). */
+const estimateFields = hours => {
+  const h = Number(hours);
+  if (!(h > 0)) return { estimate: '', estimateUnit: 'hours' };
+  return h % 24 === 0
+    ? { estimate: String(h / 24), estimateUnit: 'days' }
+    : { estimate: String(h), estimateUnit: 'hours' };
 };
 
 function TicketModal({ show, ticket, people, products, user, onClose, onSave, onDelete }) {
@@ -48,6 +62,7 @@ function TicketModal({ show, ticket, people, products, user, onClose, onSave, on
             status: ticket.status || 'todo',
             assigneeUid: ticket.assigneeUid || '',
             product: ticket.product || '',
+            ...estimateFields(ticket.estimateHours),
           }
         : EMPTY_FORM
     );
@@ -59,6 +74,13 @@ function TicketModal({ show, ticket, people, products, user, onClose, onSave, on
     e.preventDefault();
     if (!form.title.trim()) {
       setError('Give the ticket a summary.');
+      return;
+    }
+    // Required for new tickets; older ones (and Contact-page reports) may
+    // still be without one until someone sets it.
+    const est = Number(form.estimate);
+    if ((!ticket || form.estimate !== '') && !(est > 0)) {
+      setError('Enter the time required to complete this ticket.');
       return;
     }
     setSaving(true);
@@ -184,6 +206,38 @@ function TicketModal({ show, ticket, people, products, user, onClose, onSave, on
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="col-sm-6">
+              <label className="form-label fw-semibold" htmlFor="jira-estimate">
+                Time required{!ticket && <span className="text-danger"> *</span>}
+              </label>
+              <div className="input-group">
+                <input
+                  id="jira-estimate"
+                  type="number"
+                  min="0.5"
+                  step="0.5"
+                  className="form-control"
+                  value={form.estimate}
+                  onChange={set('estimate')}
+                  placeholder={ticket ? 'Not set' : 'e.g. 4'}
+                />
+                <select
+                  className="form-select"
+                  style={{ maxWidth: 110 }}
+                  value={form.estimateUnit}
+                  onChange={set('estimateUnit')}
+                  aria-label="Time unit"
+                >
+                  <option value="hours">hours</option>
+                  <option value="days">days</option>
+                </select>
+              </div>
+              <div className="form-text">
+                {ticket?.dueAt
+                  ? `Due ${ticket.dueAt.toDate().toLocaleString()} — counted from creation.`
+                  : 'Counted from when the ticket is created; it turns red if not Done in time.'}
+              </div>
             </div>
             <div className="col-sm-6">
               <label className="form-label fw-semibold" htmlFor="jira-priority">
@@ -342,12 +396,13 @@ AssigneePicker.propTypes = {
   onAssign: PropTypes.func.isRequired,
 };
 
-function TicketCard({ ticket, people, onOpen, onDragStart, onAssign }) {
+function TicketCard({ ticket, people, now, onOpen, onDragStart, onAssign }) {
   const type = TYPES[ticket.type] || TYPES.task;
   const priority = PRIORITIES[ticket.priority] || PRIORITIES.medium;
+  const due = dueState(ticket, now);
   return (
     <div
-      className="jira-card"
+      className={`jira-card${due && due.state !== 'ok' ? ` jira-${due.state}` : ''}`}
       draggable
       onDragStart={e => onDragStart(e, ticket)}
       onClick={() => onOpen(ticket)}
@@ -356,6 +411,17 @@ function TicketCard({ ticket, people, onOpen, onDragStart, onAssign }) {
       tabIndex={0}
     >
       <div className="jira-card-title">{ticket.title}</div>
+      {due && (
+        <div
+          className={`jira-due jira-due-${due.state}`}
+          title={`Time required ${formatHours(ticket.estimateHours)} · due ${ticket.dueAt
+            .toDate()
+            .toLocaleString()}`}
+        >
+          <i className={`bi ${due.state === 'overdue' ? 'bi-alarm-fill' : 'bi-clock'} me-1`} />
+          {due.label}
+        </div>
+      )}
       {ticket.product && (
         <div className="mb-2">
           <span className="jira-product" title="Product / client">
@@ -389,6 +455,7 @@ function TicketCard({ ticket, people, onOpen, onDragStart, onAssign }) {
 TicketCard.propTypes = {
   ticket: PropTypes.object.isRequired,
   people: PropTypes.array.isRequired,
+  now: PropTypes.number.isRequired,
   onOpen: PropTypes.func.isRequired,
   onDragStart: PropTypes.func.isRequired,
   onAssign: PropTypes.func.isRequired,
@@ -401,6 +468,12 @@ const byPriorityThenNewest = (a, b) =>
 export default function JiraBoard() {
   const { user } = useAuth();
   const [tickets, setTickets] = useState([]);
+  // Re-evaluate due/overdue highlighting every minute.
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [users, setUsers] = useState([]);
@@ -515,6 +588,12 @@ export default function JiraBoard() {
         ? nameFor(form.assigneeUid) || modal.ticket?.assigneeName || ''
         : '',
     };
+    const est = Number(form.estimate);
+    if (est > 0) {
+      fields.estimateHours = form.estimateUnit === 'days' ? est * 24 : est;
+      // The clock runs from creation, so the deadline moves with the estimate.
+      fields.dueAt = dueAtFor(modal.ticket?.createdAt, fields.estimateHours);
+    }
     if (modal.ticket) {
       // Diff against the live ticket, not the copy the editor opened with, so
       // a change someone else made meanwhile isn't logged as ours.
@@ -696,6 +775,7 @@ export default function JiraBoard() {
                     key={t.id}
                     ticket={t}
                     people={people}
+                    now={now}
                     onAssign={assign}
                     onOpen={ticket => setModal({ show: true, ticket })}
                     onDragStart={onDragStart}

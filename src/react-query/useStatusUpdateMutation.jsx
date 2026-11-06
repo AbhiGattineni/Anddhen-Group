@@ -1,93 +1,34 @@
 import { useMutation, useQueryClient } from 'react-query';
 import { auth } from 'src/services/Authentication/firebase';
+import connector from 'src/services/connector';
 
+/**
+ * Create / edit a daily status through the connector, so it lands wherever
+ * the app reads statuses from (Firestore `Status_updates` by default; the
+ * Django endpoints when that provider is selected). This used to POST straight
+ * to the Django API while useStatusCalendar read from Firestore, so submitted
+ * statuses never showed up.
+ *
+ * Both reject on failure, so callers can tell the user it didn't save.
+ */
 export const useStatusUpdateMutation = () => {
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const queryClient = useQueryClient();
+  const refresh = () => queryClient.invalidateQueries(['calendarData', auth.currentUser?.uid]);
 
   const postStatus = async statusData => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/create_status_update`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(statusData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // If the response is not ok, throw an error with the message from the response
-        throw new Error(data.message);
-      }
-
-      return data;
-    } catch (error) {
-      // Log the error for debugging
-      console.error('Error in postStatus:', error.message);
-      // Return the error message so it can be used in the calling function
-      return { message: error.message };
-    }
+    const saved = await connector.create('statusUpdates', statusData);
+    return { message: saved?.message || 'Status submitted.', ...saved };
   };
 
-  const updateStatus = async updatedData => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/update_status_by_id`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // If the response is not ok, throw an error with the message from the response
-        throw new Error(data.message);
-      }
-
-      return data;
-    } catch (error) {
-      // Log the error for debugging
-      console.error('Error in postStatus:', error.message);
-      // Return the error message so it can be used in the calling function
-      return { message: error.message };
-    }
+  // Rows reach the table normalised for display (see useStatusCalendar), so
+  // only the editable fields go back — never the tickets summary text.
+  const updateStatus = async ({ id, tickets, createdAt, updatedAt, ...fields }) => {
+    if (!id) throw new Error('This status has no id and cannot be edited.');
+    return connector.update('statusUpdates', id, fields);
   };
 
-  const statusMutation = useMutation(postStatus, {
-    onMutate: async newStatus => {
-      await queryClient.cancelQueries(['calendarData', auth.currentUser.uid]);
-
-      const previousStatus = queryClient.getQueryData(['calendarData', auth.currentUser.uid]);
-
-      queryClient.setQueryData(['calendarData', auth.currentUser.uid], oldData => {
-        if (oldData) {
-          const statsusOldData = oldData?.status_updates;
-          return [...statsusOldData, auth.currentUser.uid];
-        }
-        return [newStatus];
-      });
-
-      return { previousStatus };
-    },
-    onError: (error, newStatus, context) => {
-      if (context?.previousStatus) {
-        queryClient.setQueryData(['calendarData', auth.currentUser.uid], context.previousStatus);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(['calendarData', auth.currentUser.uid]);
-    },
-  });
-
-  const updateMutation = useMutation(updateStatus, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['calendarData', auth.currentUser.uid]);
-    },
-  });
+  const statusMutation = useMutation(postStatus, { onSettled: refresh });
+  const updateMutation = useMutation(updateStatus, { onSuccess: refresh });
 
   return { statusMutation, updateMutation };
 };
