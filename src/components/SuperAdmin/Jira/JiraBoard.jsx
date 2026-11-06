@@ -13,36 +13,12 @@ import {
   createTicket,
   updateTicket,
   deleteTicket,
-  initials,
-  avatarColor,
 } from 'src/services/jira/jiraBoard';
+import Avatar from './JiraAvatar';
+import TicketActivity from './TicketActivity';
 import './JiraBoard.css';
 
 const UNASSIGNED = '__unassigned__';
-
-function Avatar({ name, seed, size = 26, title }) {
-  return (
-    <span
-      className="jira-avatar"
-      title={title || name || 'Unassigned'}
-      style={{
-        width: size,
-        height: size,
-        fontSize: size * 0.4,
-        background: name ? avatarColor(seed || name) : '#cbd5e1',
-      }}
-    >
-      {name ? initials(name) : <i className="bi bi-person" />}
-    </span>
-  );
-}
-
-Avatar.propTypes = {
-  name: PropTypes.string,
-  seed: PropTypes.string,
-  size: PropTypes.number,
-  title: PropTypes.string,
-};
 
 const EMPTY_FORM = {
   title: '',
@@ -54,7 +30,7 @@ const EMPTY_FORM = {
   product: '',
 };
 
-function TicketModal({ show, ticket, people, products, onClose, onSave, onDelete }) {
+function TicketModal({ show, ticket, people, products, user, onClose, onSave, onDelete }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -275,6 +251,7 @@ function TicketModal({ show, ticket, people, products, onClose, onSave, onDelete
             </p>
           )}
           {error && <div className="alert alert-danger mt-3 mb-0 py-2">{error}</div>}
+          {ticket && <TicketActivity ticket={ticket} user={user} />}
         </Modal.Body>
         <Modal.Footer className="justify-content-between">
           <div>
@@ -308,6 +285,7 @@ TicketModal.propTypes = {
   ticket: PropTypes.object,
   people: PropTypes.array.isRequired,
   products: PropTypes.array.isRequired,
+  user: PropTypes.object,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
@@ -538,7 +516,10 @@ export default function JiraBoard() {
         : '',
     };
     if (modal.ticket) {
-      await updateTicket(modal.ticket.id, fields);
+      // Diff against the live ticket, not the copy the editor opened with, so
+      // a change someone else made meanwhile isn't logged as ours.
+      const before = tickets.find(t => t.id === modal.ticket.id) || modal.ticket;
+      await updateTicket(modal.ticket.id, fields, before, user);
     } else {
       await createTicket({
         ...fields,
@@ -554,7 +535,7 @@ export default function JiraBoard() {
     // Optimistic; the live listener confirms (or reverts) it.
     setTickets(list => list.map(t => (t.id === ticket.id ? { ...t, ...fields } : t)));
     try {
-      await updateTicket(ticket.id, fields);
+      await updateTicket(ticket.id, fields, ticket, user);
     } catch (err) {
       setError(err?.message || 'Could not assign the ticket.');
       setTickets(list =>
@@ -581,7 +562,7 @@ export default function JiraBoard() {
     // Optimistic move; the live listener confirms (or reverts) it.
     setTickets(list => list.map(t => (t.id === id ? { ...t, status: stageId } : t)));
     try {
-      await updateTicket(id, { status: stageId });
+      await updateTicket(id, { status: stageId }, ticket, user);
     } catch (err) {
       setError(err?.message || 'Could not move the ticket.');
       setTickets(list => list.map(t => (t.id === id ? { ...t, status: ticket.status } : t)));
@@ -732,6 +713,7 @@ export default function JiraBoard() {
         ticket={modal.ticket}
         people={people}
         products={productNames}
+        user={user}
         onClose={() => setModal({ show: false, ticket: null })}
         onSave={save}
         onDelete={() => deleteTicket(modal.ticket.id)}
