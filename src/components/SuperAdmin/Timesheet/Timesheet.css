@@ -16,3 +16,40 @@
   color: #4a5568;
   margin: 4px 0 0;
 }
+
+/* Team Timesheets */
+.tt-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.tt-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #4a5568;
+  margin: 0;
+}
+.tt-tickets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.tt-ticket {
+  background: #eef2ff;
+  color: #3730a3;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 12px;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tt-desc {
+  white-space: pre-wrap;
+  min-width: 260px;
+}

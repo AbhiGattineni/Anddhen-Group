@@ -255,6 +255,25 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // --- Daily statuses (the Timesheet). Everyone files and reads their own;
+    //     admins, managers holding the Team Timesheets card, and holders of the
+    //     older Status Updates card read everyone's. Only the author (or an
+    //     admin) may change or delete one.
+    match /Status_updates/{statusId} {
+      allow read: if signedIn()
+        && (resource.data.get('user_id', '') == request.auth.uid
+            || hasCard('teamtimesheets') || hasCard('status'));
+      allow create: if signedIn()
+        && request.resource.data.get('user_id', '') == request.auth.uid
+        && request.resource.data.keys().size() <= 60;
+      allow update: if signedIn()
+        && ((resource.data.get('user_id', '') == request.auth.uid
+             && request.resource.data.get('user_id', '') == request.auth.uid)
+            || isAdminish());
+      allow delete: if signedIn()
+        && (resource.data.get('user_id', '') == request.auth.uid || isAdminish());
+    }
+
     // --- Statement Analyzer (/ati/finance-data): saved analyses are PRIVATE to
     //     their owner — nobody else, admins included, can read them. Parsed
     //     transactions live in a chunks subcollection; each chunk carries the
@@ -398,11 +417,11 @@ service cloud.firestore {
     //     above; exclude them here so their protections can't be bypassed via
     //     this broad rule) ---
     match /{col}/{docId} {
-      allow read: if !(col in ['timesheetEntries', 'jiraTickets', 'jiraMeta', 'financeAnalyses',
+      allow read: if !(col in ['Status_updates', 'timesheetEntries', 'jiraTickets', 'jiraMeta', 'financeAnalyses',
                                'financePrefs', 'tradeAliases', 'tradeAliasOwners', 'tradeOwners',
                                'trades', 'tradeVotes', 'tradeFollows'])
         && signedIn();
-      allow create, update, delete: if !(col in ['User', 'timesheetEntries', 'jiraTickets', 'jiraMeta',
+      allow create, update, delete: if !(col in ['User', 'Status_updates', 'timesheetEntries', 'jiraTickets', 'jiraMeta',
                                                   'financeAnalyses', 'financePrefs',
                                                   'tradeAliases', 'tradeAliasOwners', 'tradeOwners',
                                                   'trades', 'tradeVotes', 'tradeFollows'])
