@@ -409,7 +409,13 @@ export const adminPlates = [
     child: 'Timesheet',
     route: 'timesheet',
     icon: 'bi-stopwatch',
-    desc: 'Log hours and submit your daily status update',
+    desc: 'Submit your daily status with the tickets you worked on',
+  },
+  {
+    child: 'Team Timesheets',
+    route: 'teamtimesheets',
+    icon: 'bi-person-lines-fill',
+    desc: "Review your team's daily statuses and the tickets they worked on",
   },
   {
     child: 'Jira',
