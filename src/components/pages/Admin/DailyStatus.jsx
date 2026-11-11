@@ -89,6 +89,8 @@ const DailyStatus = () => {
   // worked on.
   const [myTickets, setMyTickets] = useState(null);
   const [ticketsError, setTicketsError] = useState('');
+  // Always an array, whatever state the form was loaded from.
+  const pickedTickets = Array.isArray(formValues.tickets) ? formValues.tickets : [];
   useEffect(() => {
     const uid = auth.currentUser?.uid;
     if (!uid) return undefined;
@@ -249,7 +251,7 @@ const DailyStatus = () => {
     const descriptionError = validateField('description', formValues.description);
     if (descriptionError) errors.description = descriptionError;
 
-    if (!formValues.leave && !formValues.tickets?.length) {
+    if (!formValues.leave && !pickedTickets.length) {
       errors.tickets = 'Pick at least one ticket you worked on.';
     }
 
@@ -271,7 +273,7 @@ const DailyStatus = () => {
     if (!formValues.description?.trim()) return false;
 
     // A working day must name the tickets worked on.
-    if (!formValues.leave && !formValues.tickets?.length) return false;
+    if (!formValues.leave && !pickedTickets.length) return false;
 
     // For non-leave submissions
     if (!formValues.leave) {
@@ -472,8 +474,11 @@ const DailyStatus = () => {
           setDisableInputs(false);
         } else {
           // For non-multi-status, disable after one entry
+          // Statuses filed before tickets were required have no ticket list
+          // (and loaded rows carry only a display summary), so give the form
+          // an empty one rather than leave it undefined.
           const currentStatus = restructureObject(filtered[0]);
-          setFormValues(currentStatus);
+          setFormValues({ ...currentStatus, tickets: [] });
           setDisableInputs(true);
         }
       } else {
@@ -531,7 +536,11 @@ const DailyStatus = () => {
       ...rest,
       tickets: rest.leave
         ? []
-        : (rest.tickets || []).map(t => ({ id: t.id, key: t.key, title: t.title })),
+        : (Array.isArray(rest.tickets) ? rest.tickets : []).map(t => ({
+            id: t.id,
+            key: t.key,
+            title: t.title,
+          })),
     };
   };
 
@@ -851,7 +860,7 @@ const DailyStatus = () => {
                   multiple
                   options={myTickets || []}
                   loading={myTickets === null && !ticketsError}
-                  value={formValues.tickets}
+                  value={pickedTickets}
                   onChange={(_, value) => {
                     setFormValues(prev => ({ ...prev, tickets: value }));
                     if (fieldErrors.tickets) {
@@ -884,9 +893,7 @@ const DailyStatus = () => {
                     <TextField
                       {...params}
                       label="Tickets worked on *"
-                      placeholder={
-                        formValues.tickets.length ? '' : 'Pick the tickets you worked on'
-                      }
+                      placeholder={pickedTickets.length ? '' : 'Pick the tickets you worked on'}
                       error={!!fieldErrors.tickets || !!ticketsError}
                       helperText={
                         fieldErrors.tickets ||
