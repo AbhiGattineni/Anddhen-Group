@@ -5,6 +5,7 @@ import {
   TYPES,
   PRIORITIES,
   LOGGED_FIELDS,
+  formatDeadline,
   subscribeActivity,
   addComment,
   editComment,
@@ -39,6 +40,7 @@ function valueLabel(field, v) {
   if (field === 'status') return STAGES.find(s => s.id === v)?.label || v;
   if (field === 'priority') return PRIORITIES[v]?.label || v;
   if (field === 'type') return TYPES[v]?.label || v;
+  if (field === 'deadline') return formatDeadline(v);
   return v;
 }
 

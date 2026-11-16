@@ -190,6 +190,9 @@ service cloud.firestore {
                 && request.resource.data.estimateHours > 0
                 && request.resource.data.estimateHours <= 24 * 365))
         && (!('dueAt' in request.resource.data) || request.resource.data.dueAt is timestamp)
+        && (!('deadline' in request.resource.data)
+            || (request.resource.data.deadline is string
+                && request.resource.data.deadline.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')))
         && request.resource.data.get('title', '') is string
         && request.resource.data.get('title', '').size() > 0
         && request.resource.data.get('title', '').size() <= 200;
@@ -214,7 +217,7 @@ service cloud.firestore {
           && d.to is string && d.to.size() <= 300
           && (d.field in ['description', 'estimate']
               || (d.field == 'assignee' && t.get('assigneeName', '') == d.to)
-              || (d.field in ['status', 'priority', 'type', 'title', 'product']
+              || (d.field in ['status', 'priority', 'type', 'title', 'product', 'deadline']
                   && t.get(d.field, '') == d.to))
           && t.updatedAt == request.time;
       }

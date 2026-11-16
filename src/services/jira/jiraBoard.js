@@ -4,7 +4,10 @@
  *  jiraTickets/{autoId} —
  *    { key: 'AG-12', title, description, type, priority, status,
  *      assigneeUid, assigneeName, reporterUid, reporterName,
- *      estimateHours?, dueAt? (createdAt + estimate), createdAt, updatedAt }
+ *      estimateHours? (effort estimate), deadline? 'YYYY-MM-DD',
+ *      dueAt? (end of the deadline day — what overdue alerts use; older
+ *      tickets carry createdAt + estimate from before deadlines existed),
+ *      createdAt, updatedAt }
  *  jiraTickets/{id}/activity/{autoId} — the ticket's comments and its log:
  *    comment: { kind: 'comment', text, actorUid, actorName, createdAt, editedAt? }
  *    change:  { kind: 'change', field, from, to, actorUid, actorName, createdAt }
@@ -83,16 +86,27 @@ export function formatHours(h) {
 const toMillis = ts =>
   ts?.toMillis ? ts.toMillis() : ts instanceof Date ? ts.getTime() : Number(ts) || null;
 
-/** Deadline for a ticket created at `createdAt` (now if not yet saved). */
-export function dueAtFor(createdAt, estimateHours) {
-  const start = toMillis(createdAt) || Date.now();
-  return Timestamp.fromMillis(start + Number(estimateHours) * HOUR);
+/** The moment a 'YYYY-MM-DD' deadline passes: the end of that day, local time. */
+export function dueAtForDate(deadline) {
+  const [y, m, d] = deadline.split('-').map(Number);
+  return Timestamp.fromDate(new Date(y, m - 1, d, 23, 59, 59, 999));
+}
+
+/** '2026-11-18' → '18 Nov 2026'. */
+export function formatDeadline(deadline) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(deadline || '')) return deadline || '';
+  const [y, m, d] = deadline.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 }
 
 /**
- * Where a ticket stands against its time required: 'overdue' (past due and
- * not Done), 'soon' (due within 24h), 'ok', or null when it has no estimate
- * or is Done. `label` is short text for the card.
+ * Where a ticket stands against its deadline: 'overdue' (past due and not
+ * Done), 'soon' (due within 24h), 'ok', or null when it has none or is Done.
+ * `label` is short text for the card.
  */
 export function dueState(ticket, now = Date.now()) {
   const due = toMillis(ticket.dueAt);
@@ -101,6 +115,7 @@ export function dueState(ticket, now = Date.now()) {
   const span = formatHours(Math.max(1, Math.round(Math.abs(left) / HOUR)));
   if (left < 0) return { state: 'overdue', label: `Overdue ${span}` };
   if (left <= 24 * HOUR) return { state: 'soon', label: `Due in ${span}` };
+  if (ticket.deadline) return { state: 'ok', label: `Due ${formatDeadline(ticket.deadline)}` };
   return { state: 'ok', label: `${span} left` };
 }
 
@@ -180,6 +195,7 @@ export const LOGGED_FIELDS = {
   title: 'Summary',
   description: 'Description',
   estimate: 'Time required',
+  deadline: 'Deadline',
   product: 'Product / client',
 };
 
@@ -200,6 +216,9 @@ function changesFor(before, fields) {
     Number(fields.estimateHours || 0) !== Number(before.estimateHours || 0)
   ) {
     add('estimate', formatHours(before.estimateHours), formatHours(fields.estimateHours));
+  }
+  if ('deadline' in fields && (fields.deadline || '') !== (before.deadline || '')) {
+    add('deadline', before.deadline, fields.deadline);
   }
   // The text itself would bloat the log; record that it changed.
   if ('description' in fields && (fields.description || '') !== (before.description || '')) {
