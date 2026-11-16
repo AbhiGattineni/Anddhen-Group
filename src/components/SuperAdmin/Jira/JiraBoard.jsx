@@ -13,7 +13,8 @@ import {
   createTicket,
   updateTicket,
   dueState,
-  dueAtFor,
+  dueAtForDate,
+  formatDeadline,
   formatHours,
   deleteTicket,
 } from 'src/services/jira/jiraBoard';
@@ -22,6 +23,13 @@ import TicketActivity from './TicketActivity';
 import './JiraBoard.css';
 
 const UNASSIGNED = '__unassigned__';
+
+/** Local 'YYYY-MM-DD' for today. */
+const todayStr = () => {
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
 
 const EMPTY_FORM = {
   title: '',
@@ -33,6 +41,7 @@ const EMPTY_FORM = {
   product: '',
   estimate: '',
   estimateUnit: 'hours',
+  deadline: '',
 };
 
 /** Stored hours → the editor's number + unit (whole days shown as days). */
@@ -63,6 +72,7 @@ function TicketModal({ show, ticket, people, products, user, onClose, onSave, on
             assigneeUid: ticket.assigneeUid || '',
             product: ticket.product || '',
             ...estimateFields(ticket.estimateHours),
+            deadline: ticket.deadline || '',
           }
         : EMPTY_FORM
     );
@@ -81,6 +91,16 @@ function TicketModal({ show, ticket, people, products, user, onClose, onSave, on
     const est = Number(form.estimate);
     if ((!ticket || form.estimate !== '') && !(est > 0)) {
       setError('Enter the time required to complete this ticket.');
+      return;
+    }
+    // The deadline drives the overdue alert: required on new tickets, and a
+    // new ticket can't start out already late.
+    if (!ticket && !form.deadline) {
+      setError('Pick a deadline date.');
+      return;
+    }
+    if (!ticket && form.deadline < todayStr()) {
+      setError('The deadline can’t be in the past.');
       return;
     }
     setSaving(true);
@@ -233,10 +253,24 @@ function TicketModal({ show, ticket, people, products, user, onClose, onSave, on
                   <option value="days">days</option>
                 </select>
               </div>
+              <div className="form-text">Effort estimate — the deadline date drives alerts.</div>
+            </div>
+            <div className="col-sm-6">
+              <label className="form-label fw-semibold" htmlFor="jira-deadline">
+                Deadline{!ticket && <span className="text-danger"> *</span>}
+              </label>
+              <input
+                id="jira-deadline"
+                type="date"
+                className="form-control"
+                value={form.deadline}
+                min={ticket ? undefined : todayStr()}
+                onChange={set('deadline')}
+              />
               <div className="form-text">
-                {ticket?.dueAt
-                  ? `Due ${ticket.dueAt.toDate().toLocaleString()} — counted from creation.`
-                  : 'Counted from when the ticket is created; it turns red if not Done in time.'}
+                {ticket && !ticket.deadline && ticket.dueAt
+                  ? `Currently due ${ticket.dueAt.toDate().toLocaleString()} (from time required). Set a date to replace it.`
+                  : 'Amber within 24h of the end of this day, red once it passes — unless Done.'}
               </div>
             </div>
             <div className="col-sm-6">
@@ -414,9 +448,14 @@ function TicketCard({ ticket, people, now, onOpen, onDragStart, onAssign }) {
       {due && (
         <div
           className={`jira-due jira-due-${due.state}`}
-          title={`Time required ${formatHours(ticket.estimateHours)} · due ${ticket.dueAt
-            .toDate()
-            .toLocaleString()}`}
+          title={[
+            ticket.deadline
+              ? `Deadline ${formatDeadline(ticket.deadline)}`
+              : `Due ${ticket.dueAt.toDate().toLocaleString()}`,
+            ticket.estimateHours && `time required ${formatHours(ticket.estimateHours)}`,
+          ]
+            .filter(Boolean)
+            .join(' · ')}
         >
           <i className={`bi ${due.state === 'overdue' ? 'bi-alarm-fill' : 'bi-clock'} me-1`} />
           {due.label}
@@ -589,10 +628,12 @@ export default function JiraBoard() {
         : '',
     };
     const est = Number(form.estimate);
-    if (est > 0) {
-      fields.estimateHours = form.estimateUnit === 'days' ? est * 24 : est;
-      // The clock runs from creation, so the deadline moves with the estimate.
-      fields.dueAt = dueAtFor(modal.ticket?.createdAt, fields.estimateHours);
+    if (est > 0) fields.estimateHours = form.estimateUnit === 'days' ? est * 24 : est;
+    // The deadline date is what alerts run on. Tickets from before it existed
+    // keep their creation + estimate deadline until someone picks a date.
+    if (form.deadline) {
+      fields.deadline = form.deadline;
+      fields.dueAt = dueAtForDate(form.deadline);
     }
     if (modal.ticket) {
       // Diff against the live ticket, not the copy the editor opened with, so
